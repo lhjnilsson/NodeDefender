@@ -4,6 +4,9 @@ run:
 env:
 	virtualenv -p python3 py
 
+upgradepip:
+	./py/bin/pip install pip --upgrade
+
 deps:
 	./py/bin/pip install -r requirements.txt
 
@@ -20,4 +23,4 @@ dbmigrate:
 dbupgrade:
 	./py/bin/python manage.py db upgrade
 
-install: env deps zwave db dbmigrate dbupgrade
+install: env upgradepip deps db dbmigrate dbupgrade
