@@ -15,7 +15,7 @@ Before we can start we need to make sure we have all the tools needed. Below is 
 This will get you up and running under a minute. After installation you should be able to access your application through 127.0.0.1:5000. Gunicorn can be added to run the application as a Deamon.
 ```sh
 # Downloads NodeDefender- application
-git pull https://github.com/ctsne/NodeDefender
+git clone https://github.com/ctsne/NodeDefender
 # Changes into the downloaded application
 cd NodeDefender
 # Runs the Makefile and the steps explained below
@@ -25,19 +25,25 @@ make install
 ```
 ## Details of the Makefile and installation
 
->  Make env
+> make env
 
 Installs the python local virtualenv. So we dont install alot of otherwise not so used stuff in system- libary
 
-> Make deps
+> make deps
 
 Installs the requirements to the local enviroment. Flask and more
 
-> Make zwave
+> make db
 
-Downloads the latest support of Z-Wave Classes 
+Make a local SQLite instance that will hold all the data used by the application. MySQL/ MariaDB and PostgreSQL support will be added later.
 
-> Make db
+> make dbmigrate
+
+Migrates the Database and imports the latest Tables
+
+> make dbupgrade
+
+Upgrades the tables from migrate to database
 
 Make a local SQLite instance that will hold all the data used by the application. MySQL/ MariaDB and PostgreSQL support will be added later.
 
