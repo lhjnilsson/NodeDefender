@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header">
+					User Settings <small>{{user.firstname}} {{user.lastname}}</small>
+        </h1>
+             <ol class="breadcrumb">
+           <li>
+						 <i class="fa fa-map-marker"></i> <a href="{{url_for('index')}}">Dashboard</a>
+          </li>
+					<li class="active">User Settings</li>
+       </ol>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-lg-4">
+      <h3>Information</h3>
+      <div class="box">
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <h3>Notifications</h3>
+      <div class="box">
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <h3>Delete Me</h3>
+      <div class="box">
+      </div>
+    </div>
+</div>
+{% endblock %}

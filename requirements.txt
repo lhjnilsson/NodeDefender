@@ -1,0 +1,17 @@
+Flask
+Flask-Script
+Flask-WTF
+Flask-Restful
+Flask-Socketio
+gevent
+Flask-login
+Flask-bcrypt
+WTForms
+SQLAlchemy
+Flask-SQLAlchemy
+Flask-migrate
+geopy
+flask-wtf
+paho-mqtt
+requests
+xmltodict

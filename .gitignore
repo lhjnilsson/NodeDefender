@@ -1,0 +1,7 @@
+*.xml
+app.db
+app.log
+migrations/
+__pycache__/
+py/
+last_changed.txt
