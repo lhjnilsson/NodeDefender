@@ -45,7 +45,6 @@ Migrates the Database and imports the latest Tables
 
 Upgrades the tables from migrate to database
 
-Make a local SQLite instance that will hold all the data used by the application. MySQL/ MariaDB and PostgreSQL support will be added later.
 
 ## Things to do before Beta- release
 #### - [ ] Fix the Threading- issue
