@@ -39,8 +39,8 @@
 		</div>
 	</div>
 </div>
-{% if znodes|length > 0 %}
 <div class="row">
+	{% if znodes|length > 0 %}
 	{% for znode in znodes %}
 	<div class="col-lg-3">
 		<h3 style="width: 100%;">
@@ -64,8 +64,27 @@
 		</div>
   </div>
 	{% endfor %}
+	{% endif %}
+	<div class="col-lg-12">
+		<div class="col-lg-4">
+			<h3>Power Usage</h3>
+			<div class="box" style="padding: 0;">
+				<div id="PowerChart" style="height: 250px;"></div>
+			</div>
+		</div>
+		<div class="col-lg-4">
+			<h3>Heat</h3>
+			<div class="box" style="padding: 0;">
+				<div id="HeatChart" style="height: 250px;"></div
+			></div>
+		</div>
+		<div class="col-lg-4">
+			<h3>Notes</h3>
+			<div class="box">
+			</div>
+		</div>
+	</div>
 </div>
-{% endif %}
 <div class="modal fade" id="DeleteNode" role="dialog">
 	<div class="modal-dialog">
 		<div class="modal-content">
@@ -133,6 +152,36 @@ socket.on('roomevent', function(msg) {
 		$('#'+msg['nodeid']+msg['class']).val(msg['value'])
 	}
 });
+new Morris.Line({
+	  // ID of the element in which to draw the chart.
+	  element: 'PowerChart',
+
+		data: [
+		{% for powerstat in iCPE.powerstat %}
+		{ x: '{{powerstat.date}}', value: {{'%0.2f' % powerstat.power|float }} },
+		{% endfor %}
+		],
+
+		xkey : 'x',
+		ykeys : ['value'],
+		labels : ['Watt']
+
+});
+new Morris.Line({
+	  // ID of the element in which to draw the chart.
+	  element: 'HeatChart',
+
+		data : [
+		{% for heatstat in iCPE.heatstat %}
+		{ x: '{{heatstat.date}}', {{heatstat.nodeid}} : {{'%0.2f' % heatstat.heat|float }} },
+		{% endfor %}
+		],
+		xkey : 'x',
+		ykeys : ['11', '12'],
+		labels : ['Celsius']
+});
+
+
 });	
 	var map = L.map('map',{
 		center: [{{iCPE.location.geolat}}, {{iCPE.location.geolong}}],

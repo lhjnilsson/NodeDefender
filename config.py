@@ -15,4 +15,3 @@ if config['DATABASE']['SQL'] == 'local':
 
 SECRET_KEY = config['BASE']['key']
 WTF_CSRF_ENABLED = True
-

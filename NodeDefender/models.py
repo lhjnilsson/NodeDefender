@@ -142,6 +142,8 @@ class iCPEModel(db.Model):
     events = db.relationship('NodeEventModel', backref='icpe')
     heat = db.relationship('NodeHeatModel', backref='icpe')
     power = db.relationship('NodePowerModel', backref='icpe')
+    heatstat = db.relationship('NodeHeatStatModel', backref='icpe')
+    powerstat = db.relationship('NodePowerStatModel', backref='icpe')
 
     def __init__(self, mac, alias):
         self.mac = mac.upper()
@@ -205,6 +207,38 @@ class NodeModel(db.Model):
         self.generic_class = generic_class
         self.productname = productname
         self.brandname = brandname
+
+class NodeHeatStatModel(db.Model):
+    __tablename__ = 'nodeheatstat'
+    id = db.Column(db.Integer, primary_key=True)
+    parent_id = db.Column(db.Integer, db.ForeignKey('icpe.id'))
+    parent = db.relationship('iCPEModel', backref='Heats')
+    nodeid = db.Column(db.Integer)
+    events = db.Column(db.Integer)
+    heat = db.Column(db.Float)
+    date = db.Column(db.DateTime)
+
+    def __init__(self, nodeid, events, heat, date):
+        self.nodeid = int(nodeid)
+        self.events = int(events)
+        self.heat = float(heat)
+        self.date = date
+
+class NodePowerStatModel(db.Model):
+    __tablename__ = 'nodepowerstat'
+    id = db.Column(db.Integer, primary_key=True)
+    parent_id = db.Column(db.Integer, db.ForeignKey('icpe.id'))
+    parent = db.relationship('iCPEModel', backref='Powers')
+    nodeid = db.Column(db.Integer)
+    events = db.Column(db.Integer)
+    power = db.Column(db.Float)
+    date = db.Column(db.DateTime)
+
+    def __init__(self, nodeid, events, power, date):
+        self.nodeid = int(nodeid)
+        self.events = int(events)
+        self.power = float(power)
+        self.date = date
 
 class NodeEventModel(db.Model):
     '''

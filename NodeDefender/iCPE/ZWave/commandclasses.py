@@ -76,6 +76,23 @@ class c0025:
     def c0x0025(self, topic, payload):
         pass
 
+class c0031:
+    Celsius = Attribute('Celsius', float, 'Celsius')
+
+    def __init__(self):
+        self.WebForm['fields'].append({'class' : 'Celsius', 'type': 'value',
+                                      'value' : 0.00, 'readonly' : True})
+        super().__init__()
+    
+    def c0x0031(self, topic, payload):
+        try:
+            getattr(self, payload['descr'] + payload['type'])(topic, payload)
+        except AttributeError:
+            print('0031',payload['desc'], payload['type'])
+
+    def msensor0x01(self, topic, payload):
+        self.Celsius = int(payload['data'], 0) / 10
+
 class c0032:
     Meter = Attribute('Meter', float, 'Watt')
     def __init__(self):

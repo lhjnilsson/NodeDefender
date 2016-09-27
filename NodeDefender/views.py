@@ -27,7 +27,7 @@ from flask import render_template, request, flash, redirect, url_for, abort, \
 json
 from flask_login import login_required, login_user, current_user, logout_user
 from .models import UserModel, iCPEModel, MessageModel, LoginLogModel,\
-NodeEventModel
+NodeEventModel, NodeHeatStatModel, NodePowerStatModel
 from .forms import NodeForm, LoginForm, RegisterForm, AdminServerForm
 from datetime import datetime
 
@@ -191,11 +191,6 @@ def UserSettings():
 def NodesList():
     if request.method == 'GET':
         nodes = iCPEModel.query.all()
-        NodesList = []
-        '''for node in nodes:
-            NodesList.append({'alias' : node.alias, 'mac' : node.mac, \
-                        'city' : node.city, 'online' : node.online})
-        '''
         return render_template('nodes/list.html', nodes = nodes)
     try:
         icpe.AddiCPE(request.form['mac'], request.form['alias'],
@@ -220,7 +215,10 @@ def NodesNode(mac):
     form = NodeForm()
     if request.method == 'GET':
         znodes = icpe.WebForm(mac)
-        print('znodes', znodes)
+        '''
+        powerstat = dict((nodeid, list(events)) for nodeid, events in
+                    groupby(iCPE.powerstat, lambda stat: stat.nodeid))
+        '''
         return render_template('nodes/node.html', mac=mac, form=form, iCPE =
                                iCPE, znodes = znodes)
     if form.validate():
@@ -275,12 +273,14 @@ def DeleteNode(mac):
 @app.route('/data/power')
 def DataPower():
     if request.method == 'GET':
-        return render_template('data/power.html')
+        stats = NodePowerStatModel.query.all()
+        return render_template('data/power.html', stats = stats)
 
 @app.route('/data/heat')
 def DataHeat():
     if request.method == 'GET':
-        return render_template('data/heat.html')
+        stats = NodeHeatStatModel.query.all()
+        return render_template('data/heat.html', stats = stats)
 
 
 #

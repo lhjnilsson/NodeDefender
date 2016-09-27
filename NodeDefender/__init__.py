@@ -30,7 +30,9 @@ from flask_bcrypt import Bcrypt
 from flask_socketio import SocketIO
 from . import chconf
 import logging
+from flask_apscheduler import APScheduler
 from queue import Queue
+from apscheduler.schedulers.gevent import GeventScheduler
 from gevent import monkey, sleep
 monkey.patch_all()
 
@@ -83,6 +85,7 @@ outSocketQueue = Queue()
 # Logging Queue
 NodeLogQueue = Queue()
 
+
 '''
 below is temporary solution, to prevent from not starting
 '''
@@ -96,7 +99,13 @@ try: # To make flask-script and DB init work if not present
     icpe = iCPE.iCPEset.FromDB()
     mqtt = MQTT(MQTTConf['ip'], MQTTConf['port'], icpe)
 
-    from . import views, forms, sockets, mylogger
+    from . import views, forms, sockets, mylogger, cronjobs
 except Exception as e:
     print('Warning: Not able to start application, is Database updated?')
     print('Msg: ', e)
+
+# Scheduled tasks
+from . import cronjobs
+scheduler = GeventScheduler()
+scheduler.add_job(cronjobs.StatTask, 'interval', minutes=15)
+scheduler.start()
