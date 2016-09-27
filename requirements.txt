@@ -15,4 +15,4 @@ flask-wtf
 paho-mqtt
 requests
 xmltodict
-aspscheduler
+apscheduler
