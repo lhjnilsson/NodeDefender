@@ -107,4 +107,6 @@ except Exception as e:
 from . import cronjobs
 scheduler = GeventScheduler()
 scheduler.add_job(cronjobs.StatTask, 'interval', minutes=15)
+scheduler.add_job(cronjobs.UpdateHourly, 'cron', hour='*')
+scheduler.add_job(cronjobs.UpdateDaily, 'cron', day='*')
 scheduler.start()

@@ -173,11 +173,11 @@ new Morris.Line({
 
 		data : [
 		{% for heatstat in iCPE.heatstat %}
-		{ x: '{{heatstat.date}}', {{heatstat.nodeid}} : {{'%0.2f' % heatstat.heat|float }} },
+		{ x: '{{heatstat.date}}', value : {{'%0.2f' % heatstat.heat|float }} },
 		{% endfor %}
 		],
 		xkey : 'x',
-		ykeys : ['11', '12'],
+		ykeys : ['value'],
 		labels : ['Celsius']
 });
 

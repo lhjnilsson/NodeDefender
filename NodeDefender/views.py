@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE
 SOFTWARE.
 '''
-from . import app, LoginMan, db, icpe, chconf, mqtt
+from . import app, LoginMan, db, icpe, chconf, mqtt, statistics
 from flask import render_template, request, flash, redirect, url_for, abort, \
 json
 from flask_login import login_required, login_user, current_user, logout_user
@@ -30,6 +30,7 @@ from .models import UserModel, iCPEModel, MessageModel, LoginLogModel,\
 NodeEventModel, NodeHeatStatModel, NodePowerStatModel
 from .forms import NodeForm, LoginForm, RegisterForm, AdminServerForm
 from datetime import datetime
+from sqlalchemy import desc
 
 # Welcome Text that should be added when new user is added.
 WelcomeText = "Welcome to NodeDefender {} \n \
@@ -137,22 +138,11 @@ cookie. Data is later filled in via AJAX from Webpage
 @app.route('/index')
 @login_required
 def index():
-    nodelist = []
     nodes = iCPEModel.query.all()
-    # Staticlly configured data. Just for demo...
-    heat = {'Current' : '23.2', 'Daily' : '23.1', 'Weekly' : '24.2', \
-            'Monthly' : '24.4'}
-    power = {'Current' : '1249', 'Daily' : '1600', 'Weekly' : '1320', \
-             'Monthly' : '1410'}
-    events = {'Current' : '0', 'Daily' : '124', 'Weekly' : '110', \
-              'Monthly' : '78'}
-    for node in nodes:
-        nodelist.append({'alias' : node.alias, 'mac' : node.mac,
-                         'lat' : node.location.geolat, 'long' : node.location.geolong})
-    nodeevents = NodeEventModel.query.order_by('created_on desc').limit(20)
-    return render_template('index.html', nodelist=nodes, heat = heat, \
-                           power = power, events = events, nodeevents =
-                           nodeevents)
+    stats = statistics.GetAllStats()
+    nodeevents = NodeEventModel.query.order_by(desc(NodeEventModel.id)).limit(20)
+    return render_template('index.html', nodelist=nodes, stats = stats,
+                           nodeevents = nodeevents)
 
 #
 # User specific profile-views

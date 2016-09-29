@@ -26,6 +26,86 @@ from itertools import groupby
 from .models import iCPEModel, NodeHeatStatModel, NodePowerStatModel, \
         NodeHeatModel, NodePowerModel
 from . import db
+from datetime import datetime, timedelta
+from .statistics import *
+
+def UpdateDaily():
+    Yesterday = datetime.now() - timedelta(days=1)
+    HeatEvents = NodeHeatStatModel.query.filter(NodeHeatStatModel.date >
+                                                Yesterday).all()
+    NumEvents = NodeEventModel.query.filter(NodeEventModel.created_on >
+                                            Yesterday).all()
+    PowerEvents = NodePowerStatModel.query.filter(NodePowerStatModel.date
+                                                  > Yesterday).all()
+    totalHeat = 0.0
+    for event in HeatEvents:
+        totalHeat += event.heat
+    try:
+        totalHeat = totalHeat / len(HeatEvents)
+    except ZeroDivisionError:
+        totalHeat = 0.0
+
+    totalPower = 0.0
+    for event in PowerEvents:
+        totalPower += event.power
+    try:
+        totalPower = totalPower / len(PowerEvents)
+    except ZeroDivisionError:
+        totalPower = 0.0
+
+    SetDailyLog(totalHeat, totalPower, len(NumEvents))
+    stats = GetDailyStat()
+    totalHeat = (totalHeat + stats['heat']) / 2
+    totalPower = (totalPower + stats['power']) / 2
+    NumEvents = (len(NumEvents) + stats['events']) / 2
+    SetDailyStat(totalHeat, totalPower, NumEvents)
+'''
+    To Maybe use later...
+    Dailylog = DailylogStatitics(totalHeat, totalPower, len(NumEvents))
+    db.session.add(Dailylog)
+
+    DailyStat = DailyStaititcs.query.first() # Should be only 1 ?
+    DailyStat.heat = (DailyStat.heat + totalHeat) / 2
+    DailyStat.power = (DailyStat.power + totalPower) / 2
+    DailyStat.events = len(NumEvents)
+    Statitics = Statitics.query.first()
+    Statitics.daily.append(DailyStat)
+    db.session.add(Statitics)
+    db.session.commit()
+'''
+
+def UpdateHourly():
+    LastHour = datetime.now() - timedelta(hours=1)
+    HeatEvents = NodeHeatStatModel.query.filter(NodeHeatStatModel.date >
+                                              LastHour).all()
+    PowerEvents = NodePowerStatModel.query.filter(NodePowerStatModel.date >
+                                                LastHour).all()
+    NumEvents = NodeEventModel.query.filter(NodeEventModel.created_on >
+                                              LastHour).all()
+
+    totalPower = 0.0
+    for stat in PowerEvents:
+        totalPower += stat.power
+    try:
+        totalPower = totalPower / len(PowerEvents)
+    except ZeroDivisionError:
+        totalPower = 0.0
+
+    totalHeat = 0.0
+    for stat in HeatEvents:
+        totalHeat += stat.heat
+    try:
+        totalHeat = totalHeat / len(HeatEvents)
+    except ZeroDivisionError:
+        totalHeat = 0.0
+
+    SetHourlyLog(totalHeat, totalPower, len(NumEvents))
+    
+    stats = GetHourlyStat()
+    totalHeat = (totalHeat + stats['heat']) / 2
+    totalPower = (totalPower + stats['power']) / 2
+    NumEvents = (len(NumEvents) + stats['events']) / 2
+    SetHourlyStat(totalHeat, totalPower, NumEvents)
 
 def GetHeatEvents():
     events = NodeHeatModel.query.all()
