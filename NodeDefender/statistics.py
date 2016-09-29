@@ -7,7 +7,7 @@ def GetHourlyStat():
     if Hourly is not None:
         return Hourly
     else:
-        return {'heat': 0.0, 'power' : 0.0, 'events' : 0}
+        return False
 
 def SetHourlyStat(heat, power, events):
     Hourly = HourlyStatistics.query.first()
@@ -25,7 +25,7 @@ def GetDailyStat():
     if Daily is not None:
         return Daily
     else:
-        return {'heat': 0.0, 'power' : 0.0, 'events' : 0}
+        return False
 
 def SetDailyStat(heat, power, events):
     Daily = DailyStatistics.query.first()

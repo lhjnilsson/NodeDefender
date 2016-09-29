@@ -105,8 +105,13 @@ except Exception as e:
 
 # Scheduled tasks
 from . import cronjobs
-scheduler = GeventScheduler()
-scheduler.add_job(cronjobs.StatTask, 'interval', minutes=15)
-scheduler.add_job(cronjobs.UpdateHourly, 'cron', hour='*')
-scheduler.add_job(cronjobs.UpdateDaily, 'cron', day='*')
-scheduler.start()
+StatTaskSched = GeventScheduler()
+StatTaskSched.add_job(cronjobs.StatTask, 'interval', minutes=15)
+HourlyCron = GeventScheduler()
+HourlyCron.add_job(cronjobs.UpdateHourly, 'cron', hour='*')
+DailyCron = GeventScheduler()
+DailyCron.add_job(cronjobs.UpdateDaily, 'cron', day='*')
+
+StatTaskSched.start()
+HourlyCron.start()
+DailyCron.start()

@@ -53,11 +53,13 @@ def UpdateDaily():
     except ZeroDivisionError:
         totalPower = 0.0
 
-    SetDailyLog(totalHeat, totalPower, len(NumEvents))
+    NumEvents = len(NumEvents)
+    SetDailyLog(totalHeat, totalPower, NumEvents)
     stats = GetDailyStat()
-    totalHeat = (totalHeat + stats['heat']) / 2
-    totalPower = (totalPower + stats['power']) / 2
-    NumEvents = (len(NumEvents) + stats['events']) / 2
+    if stats:
+        totalHeat = (totalHeat + stats.heat) / 2
+        totalPower = (totalPower + stats.power) / 2
+        NumEvents = (NumEvents + stats.events) / 2
     SetDailyStat(totalHeat, totalPower, NumEvents)
 '''
     To Maybe use later...
@@ -101,10 +103,12 @@ def UpdateHourly():
 
     SetHourlyLog(totalHeat, totalPower, len(NumEvents))
     
+    NumEvents = len(NumEvents)
     stats = GetHourlyStat()
-    totalHeat = (totalHeat + stats['heat']) / 2
-    totalPower = (totalPower + stats['power']) / 2
-    NumEvents = (len(NumEvents) + stats['events']) / 2
+    if stats:
+        totalHeat = (totalHeat + stats.heat) / 2
+        totalPower = (totalPower + stats.power) / 2
+        NumEvents = (NumEvents + stats.events) / 2
     SetHourlyStat(totalHeat, totalPower, NumEvents)
 
 def GetHeatEvents():
