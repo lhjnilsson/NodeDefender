@@ -14,6 +14,9 @@ class c0071:
                            # change this later
         super().__init__()
 
+    def WSDoor(self, **kwargs):
+        pass
+
     def c0x0071(self, topic, payload):
         getattr(self, 'evt'+payload['evt'])(topic, payload)
 
