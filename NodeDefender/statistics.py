@@ -4,7 +4,7 @@ from sqlalchemy import desc
 
 def GetHourlyStat():
     Hourly = HourlyStatistics.query.first()
-    if Hourly is not None:
+    if Hourly:
         return Hourly
     else:
         return {'heat': 0.0, 'power' : 0.0, 'events' : 0}
@@ -22,7 +22,7 @@ def SetHourlyStat(heat, power, events):
 
 def GetDailyStat():
     Daily = DailyStatistics.query.first()
-    if Daily is not None:
+    if Daily:
         return Daily
     else:
         return {'heat': 0.0, 'power' : 0.0, 'events' : 0}
