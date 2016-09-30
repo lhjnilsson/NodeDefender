@@ -56,7 +56,7 @@ def UpdateDaily():
     NumEvents = len(NumEvents)
     SetDailyLog(totalHeat, totalPower, NumEvents)
     stats = GetDailyStat()
-    if stats:
+    if type(stats) is not dict:
         totalHeat = (totalHeat + stats.heat) / 2
         totalPower = (totalPower + stats.power) / 2
         NumEvents = (NumEvents + stats.events) / 2
@@ -105,7 +105,7 @@ def UpdateHourly():
     
     NumEvents = len(NumEvents)
     stats = GetHourlyStat()
-    if stats:
+    if type(stats) is not dict:
         totalHeat = (totalHeat + stats.heat) / 2
         totalPower = (totalPower + stats.power) / 2
         NumEvents = (NumEvents + stats.events) / 2
