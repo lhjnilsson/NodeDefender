@@ -97,16 +97,16 @@ class c0031:
         self.Celsius = int(payload['data'], 0) / 10
 
 class c0032:
-    Meter = Attribute('Meter', float, 'Watt')
+    Watt = Attribute('Watt', float, 'Watt')
     def __init__(self):
-        self.WebForm['fields'].append({'class' : 'Meter', 'type': 'value', 'value' :
+        self.WebForm['fields'].append({'class' : 'Watt', 'type': 'value', 'value' :
                                        0.00, 'readonly' : True}) 
         _t1 = Thread(target=self._CheckPower,)
         _t1.start()
         super().__init__()
     
     def c0x0032(self, topic, payload):
-        self.Meter = int(payload['data'], 0) / 10
+        self.Watt = int(payload['data'], 0) / 10
 
     def _CheckPower(self):
         while True:

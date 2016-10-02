@@ -4,6 +4,10 @@
     <div class="col-lg-12">
         <h1 class="page-header">
 					Nodes <small> {{iCPE.alias}} </small>
+          <a href="#" data-toggle="modal" data-target="#NodeSettings"
+                                          style="position: absolute; right: 0; margin-right: 1vw;">
+            <i class="fa fa-cog" aria-hidden="true"></i>
+          </a>
         </h1>
              <ol class="breadcrumb">
            <li>
@@ -22,7 +26,7 @@
 		<div id="map" style="height: 200px; width: 100%;"></div>
 	</div>
 	<div class="col-lg-3">
-		<div class="box">
+		<div class="box" style="height: 200px;">
 			<p><strong>Mac: </strong>{{ iCPE.mac }}</p>
 			<p><strong>Location: </strong>{{ iCPE.location.street }}, {{ iCPE.location.city }}</p>
 			<p><strong>Created on: </strong>{{ iCPE.created_on }}</p>
@@ -31,12 +35,23 @@
 		</div>
 	</div>
 	<div class="col-lg-3">
-		<div class="box">
-			<a href="{{ url_for('NodesUpdate', mac=mac) }}"><button class="btn btn-default">Update Devices</button></a><br>
-			<a href="{{ url_for('NodesInclude', mac=mac) }}"><button class="btn btn-default">Include Device</button></a><br>
-			<a href="{{ url_for('NodesExclude', mac=mac) }}"><button class="btn btn-default">Exclude Device</button></a><br>
-			<button class="btn btn-danger" data-toggle="modal" data-target="#DeleteNode">Delete Node</button><br>
-		</div>
+		<div class="box" style="height: 200px;">
+      <div class="row">
+			  <a href="{{ url_for('NodesUpdate', mac=mac) }}" class="col-lg-4">
+          <i class="fa fa-refresh fa-3x" aria-hidden="true"></i>
+        </a>
+			  <a href="{{ url_for('NodesInclude', mac=mac) }}" class="col-lg-4">
+          <i class="fa fa-sign-in fa-3x" aria-hidden="true"></i>
+        </a>
+			  <a href="{{ url_for('NodesExclude', mac=mac) }}" class="col-lg-4">
+          <i class="fa fa-sign-out fa-3x" aria-hidden="true"></i>
+        </a>
+      </div>
+      <br>
+      <h4><strong>Connection:</strong> <small> - </small></h3>
+      <br>
+      <h4><strong>Battery:</strong> <small> - </small></h3>
+    </div>
 	</div>
 </div>
 <div class="row">
@@ -65,22 +80,30 @@
   </div>
 	{% endfor %}
 	{% endif %}
+</div>
+<div class="row">
 	<div class="col-lg-12">
-		<div class="col-lg-4">
+    {% if iCPE.powerstat.date %}
+    <div class="col-lg-4">
 			<h3>Power Usage</h3>
 			<div class="box" style="padding: 0;">
 				<div id="PowerChart" style="height: 250px;"></div>
 			</div>
 		</div>
+    {% endif %}
+    {% if iCPE.heatstat.date %}
 		<div class="col-lg-4">
 			<h3>Heat</h3>
 			<div class="box" style="padding: 0;">
 				<div id="HeatChart" style="height: 250px;"></div
 			></div>
 		</div>
+    {% endif %}
 		<div class="col-lg-4">
 			<h3>Notes</h3>
-			<div class="box">
+			<div class="box" style="padding: 0;">
+        <label for="notes">Enter note</label>
+        <input type="text" max-length="150" class="form-control"></input>
 			</div>
 		</div>
 	</div>
@@ -115,6 +138,18 @@
 </div>
 </div>
 {% endfor %}
+<div class="modal fade" id="NodeSettings" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>{{iCPE.alias}}</h3>
+      </div>
+      <div class="modal-body">
+        <h4>Settings</h4>
+      </div>
+    </div>
+  </div>
+</div>
 <script>
 $(document).ready(function() {
 	$(".my-checkbox").bootstrapSwitch();
