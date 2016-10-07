@@ -27,7 +27,7 @@ from flask import render_template, request, flash, redirect, url_for, abort, \
 json
 from flask_login import login_required, login_user, current_user, logout_user
 from .models import UserModel, iCPEModel, MessageModel, LoginLogModel,\
-NodeEventModel, NodeHeatStatModel, NodePowerStatModel
+NodeEventModel, NodeHeatStatModel, NodePowerStatModel, NodeNotesModel
 from .forms import NodeForm, LoginForm, RegisterForm, AdminServerForm
 from datetime import datetime
 from sqlalchemy import desc
@@ -244,6 +244,20 @@ def NodesExclude(mac):
         icpe.Event(mac, 'NodeExclude')
         flash('Node ' + mac + ' in Exclude for 30sec', 'success')
     return redirect(url_for('NodesNode', mac=mac))
+
+@app.route('/nodes/<mac>/notes/add', methods=['GET', 'POST'])
+@login_required
+def NodesNotesAdd(mac):
+    if request.method == 'POST':
+        note = request.form['note']
+        icpe = iCPEModel.query.filter_by(mac = mac).first()
+        dbnote = NodeNotesModel(current_user.email, note)
+        icpe.notes.append(dbnote)
+        db.session.add(icpe)
+        db.session.commit()
+        return redirect(url_for('NodesNode', mac=mac))
+    else:
+        return redirect(url_for('NodesNode', mac=mac))
 
 @app.route('/nodes/<mac>/delete')
 @login_required

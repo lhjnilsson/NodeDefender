@@ -28,6 +28,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_restful import Api
 from flask_bcrypt import Bcrypt
 from flask_socketio import SocketIO
+from flask_moment import Moment
 from . import chconf
 import logging
 from queue import Queue
@@ -83,6 +84,9 @@ outSocketQueue = Queue()
 
 # Logging Queue
 NodeLogQueue = Queue()
+
+# Flask moment
+moment = Moment(app)
 
 
 '''

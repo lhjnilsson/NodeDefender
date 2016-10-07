@@ -83,7 +83,7 @@
 </div>
 <div class="row">
 	<div class="col-lg-12">
-    {% if iCPE.powerstat.date %}
+    {% if iCPE.powerstat %}
     <div class="col-lg-4">
 			<h3>Power Usage</h3>
 			<div class="box" style="padding: 0;">
@@ -91,7 +91,7 @@
 			</div>
 		</div>
     {% endif %}
-    {% if iCPE.heatstat.date %}
+    {% if iCPE.heatstat %}
 		<div class="col-lg-4">
 			<h3>Heat</h3>
 			<div class="box" style="padding: 0;">
@@ -102,8 +102,20 @@
 		<div class="col-lg-4">
 			<h3>Notes</h3>
 			<div class="box" style="padding: 0;">
-        <label for="notes">Enter note</label>
-        <input type="text" max-length="150" class="form-control"></input>
+				<ol>
+					{% for note in iCPE.notes %}
+					<li><small>{{note.created_on }} - {{note.author}}</small><br>
+						{{note.note}}
+					</li>
+					{% endfor %}
+				</ol>
+				<form action="{{url_for('NodesNotesAdd', mac=mac)}}" method="post" class="form-horizonal">
+					<div class="form-group">
+						<label for="notes">Enter note</label>
+						<input type="text" max-length="150" class="form-control" name="note"></input>
+						<button type="submit" class="btn btn-default">Submit</button>
+					</div>
+				</form>
 			</div>
 		</div>
 	</div>
