@@ -246,6 +246,7 @@ class iCPEModel(db.Model):
     alias = db.Column(db.String(20), unique=True)
     location = db.relationship('LocationModel', uselist=False,
                                backref='icpe')
+    comment = db.Column(db.String(100))
     created_on = db.Column(db.DateTime)
     online =  db.Column(db.Boolean)
     last_online = db.Column(db.DateTime)

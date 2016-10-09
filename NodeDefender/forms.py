@@ -24,6 +24,8 @@ SOFTWARE.
 '''
 from wtforms import StringField, BooleanField, PasswordField, SelectField, Form, validators
 from .chconf import *
+from flask_wtf import FlaskForm
+from wtforms.validators import DataRequired, InputRequired
 
 def loggingchoices():
     '''
@@ -81,4 +83,12 @@ class DatabaseServerForn(Form):
     SQL = StringField()
     TrackModifications = BooleanField()
 
+class NodeAddressForm(FlaskForm):
+    street = StringField("Steet", [validators.DataRequired()])
+    city = StringField("City", [validators.DataRequired()])
+    geolat = StringField("Latitude", [validators.DataRequired()])
+    geolong = StringField("Longitude", [validators.DataRequired()])
 
+class NodeBasicForm(FlaskForm):
+    alias = StringField('Alias', validators=[InputRequired()])
+    comment = StringField('Comment', validators=[])

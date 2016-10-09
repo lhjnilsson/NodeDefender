@@ -28,7 +28,8 @@ json
 from flask_login import login_required, login_user, current_user, logout_user
 from .models import UserModel, iCPEModel, MessageModel, LoginLogModel,\
 NodeEventModel, NodeHeatStatModel, NodePowerStatModel, NodeNotesModel
-from .forms import NodeForm, LoginForm, RegisterForm, AdminServerForm
+from .forms import NodeForm, LoginForm, RegisterForm, AdminServerForm, \
+        NodeBasicForm, NodeAddressForm
 from datetime import datetime
 from sqlalchemy import desc
 
@@ -203,6 +204,8 @@ def NodesNode(mac):
     if not iCPE:
         raise ValueError('Cant find mac')
     form = NodeForm()
+    BasicForm = NodeBasicForm()
+    AddressForm = NodeAddressForm()
     if request.method == 'GET':
         znodes = icpe.WebForm(mac)
         '''
@@ -210,10 +213,30 @@ def NodesNode(mac):
                     groupby(iCPE.powerstat, lambda stat: stat.nodeid))
         '''
         return render_template('nodes/node.html', mac=mac, form=form, iCPE =
-                               iCPE, znodes = znodes)
-    if form.validate():
-        print(form.NodeField.data)
-    return render_template('nodes/node.html', mac=mac, form=form, iCPE = iCPE)
+                               iCPE, znodes = znodes, NodeBasicForm =
+                               BasicForm, NodeAddressForm = AddressForm)
+    elif request.method == 'POST':
+        if BasicForm.validate_on_submit():
+            iCPE.alias = BasicForm.alias.data
+            iCPE.comment = BasicForm.comment.data
+        elif AddressForm.validate_on_submit():
+            iCPE.location.street = AddressForm.street.data
+            iCPE.location.city = AddressForm.city.data
+            iCPE.location.geolat = AddressForm.geolat.data
+            iCPE.location.geolong = AddressForm.geolong.data
+
+
+        db.session.add(iCPE)
+        db.session.commit()
+        return render_template('nodes/node.html', mac=mac, form=form, iCPE = iCPE,
+                          NodeAddressForm = AddressForm, NodeBasicForm =
+                           BasicForm)
+
+@app.route('/nodes/list/<mac>/configure', methods=['GET', 'POST'])
+@login_required
+def NodesNodeConfigure(mac):
+    pass
+
 
 @app.route('/nodes/<mac>/update')
 @login_required
