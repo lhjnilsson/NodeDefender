@@ -10,6 +10,7 @@ WTForms
 SQLAlchemy
 Flask-SQLAlchemy
 Flask-migrate
+Flask-moment
 geopy
 flask-wtf
 paho-mqtt
