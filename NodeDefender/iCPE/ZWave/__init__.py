@@ -32,6 +32,10 @@ class _ZWaveNode:
             field['value'] = eval('self.' +field['class'])
         return self.WebForm
 
+    def Update(self, **kwargs):
+        for key, value in kwargs.items():
+            self.WebForm[key.capitalize()] = value
+
 def ZWaveNode(mac, nodeid, *classes):
     supported = []
     unsupported = []

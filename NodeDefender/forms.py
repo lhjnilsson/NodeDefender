@@ -83,12 +83,16 @@ class DatabaseServerForn(Form):
     SQL = StringField()
     TrackModifications = BooleanField()
 
-class NodeAddressForm(FlaskForm):
+class iCPEAddressForm(FlaskForm):
     street = StringField("Steet", [validators.DataRequired()])
     city = StringField("City", [validators.DataRequired()])
     geolat = StringField("Latitude", [validators.DataRequired()])
     geolong = StringField("Longitude", [validators.DataRequired()])
 
-class NodeBasicForm(FlaskForm):
+class iCPEBasicForm(FlaskForm):
     alias = StringField('Alias', validators=[InputRequired()])
     comment = StringField('Comment', validators=[])
+
+class NodeBasicForm(FlaskForm):
+    alias = StringField('Alias', validators=[InputRequired()])
+

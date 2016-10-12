@@ -91,6 +91,14 @@ class iCPE(MQTTFunctions, WSFunctions):
         return [znode.callback.Form() for znode in
     self.ZWaveNodes]
 
+    def UpdateNodeInfo(self, **kwargs):
+        Node = self.__contains__(kwargs['nodeid'])
+        if Node:
+            Node.callback.Update(**kwargs)
+            return True
+        else:
+            return False
+
     def UpdateNode(self):
         try:
             outMQTTQueue.put(('icpe/0x' + self.mac +
@@ -200,6 +208,12 @@ class iCPEset:
         if not icpe:
             return False
         return icpe.callback.Form()
+
+    def UpdateNodeInfo(self, **kwargs):
+        icpe = self.__contains__(kwargs['mac'])
+        if not icpe:
+            return False
+        return icpe.callback.UpdateNodeInfo(**kwargs)
 
     def _MQTTSubscriber(self):
         while True:

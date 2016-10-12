@@ -29,7 +29,7 @@ from flask_login import login_required, login_user, current_user, logout_user
 from .models import UserModel, iCPEModel, MessageModel, LoginLogModel,\
 NodeEventModel, NodeHeatStatModel, NodePowerStatModel, NodeNotesModel
 from .forms import NodeForm, LoginForm, RegisterForm, AdminServerForm, \
-        NodeBasicForm, NodeAddressForm
+        iCPEBasicForm, iCPEAddressForm, NodeBasicForm
 from datetime import datetime
 from sqlalchemy import desc
 
@@ -204,8 +204,9 @@ def NodesNode(mac):
     if not iCPE:
         raise ValueError('Cant find mac')
     form = NodeForm()
-    BasicForm = NodeBasicForm()
-    AddressForm = NodeAddressForm()
+    BasicForm = iCPEBasicForm()
+    AddressForm = iCPEAddressForm()
+    NodeBasic = NodeBasicForm()
     if request.method == 'GET':
         znodes = icpe.WebForm(mac)
         '''
@@ -213,8 +214,9 @@ def NodesNode(mac):
                     groupby(iCPE.powerstat, lambda stat: stat.nodeid))
         '''
         return render_template('nodes/node.html', mac=mac, form=form, iCPE =
-                               iCPE, znodes = znodes, NodeBasicForm =
-                               BasicForm, NodeAddressForm = AddressForm)
+                               iCPE, znodes = znodes, iCPEBasicForm =
+                               BasicForm, iCPEAddressForm = AddressForm,
+                               NodeBasicForm = NodeBasic)
     elif request.method == 'POST':
         if BasicForm.validate_on_submit():
             iCPE.alias = BasicForm.alias.data
@@ -225,17 +227,31 @@ def NodesNode(mac):
             iCPE.location.geolat = AddressForm.geolat.data
             iCPE.location.geolong = AddressForm.geolong.data
 
-
         db.session.add(iCPE)
         db.session.commit()
         return render_template('nodes/node.html', mac=mac, form=form, iCPE = iCPE,
-                          NodeAddressForm = AddressForm, NodeBasicForm =
-                           BasicForm)
+                          iCPEAddressForm = AddressForm, iCPEBasicForm =
+                           BasicForm, NodeBasicForm = NodeBasic)
 
-@app.route('/nodes/list/<mac>/configure', methods=['GET', 'POST'])
+@app.route('/nodes/list/<mac>/<nodeid>', methods=['GET', 'POST'])
 @login_required
-def NodesNodeConfigure(mac):
-    pass
+def NodesNodeConfigure(mac, nodeid):
+    iCPE = iCPEModel.query.filter_by(mac = mac).first()
+    if iCPE is None:
+        return redirect(url_for('index'))
+    NodeBasic = NodeBasicForm()
+    if request.method =='POST':
+        try:
+            ZNode = [node for node in iCPE.znodes if node.nodeid == int(nodeid)][0]
+        except IndexError:
+            print('could not find ZWave NOde')
+            return redirect(url_for('NodesNode', mac=mac))
+        icpe.UpdateNodeInfo(**{'Alias' :  NodeBasic.alias.data, 'mac' : mac, 'nodeid' : nodeid})
+        ZNode.alias = NodeBasic.alias.data
+        db.session.add(ZNode)
+        db.session.commit()
+        return redirect(url_for('NodesNode', mac=mac))
+    return redirect(url_for('NodesNode', mac=mac))
 
 
 @app.route('/nodes/<mac>/update')
