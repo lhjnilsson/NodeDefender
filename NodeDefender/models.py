@@ -246,7 +246,6 @@ class iCPEModel(db.Model):
     alias = db.Column(db.String(20), unique=True)
     location = db.relationship('LocationModel', uselist=False,
                                backref='icpe')
-    comment = db.Column(db.String(100))
     created_on = db.Column(db.DateTime)
     online =  db.Column(db.Boolean)
     last_online = db.Column(db.DateTime)
@@ -309,6 +308,7 @@ class NodeModel(db.Model):
     generic_class = db.Column(db.String(10))
     productname = db.Column(db.String(30))
     brandname = db.Column(db.String(30))
+    nodeclasses = db.relationship('NodeClassModel', backref='node')
 
     def __init__(self, nodeid, vid, ptype, pid, generic_class, productname,
                  brandname):
@@ -320,6 +320,27 @@ class NodeModel(db.Model):
         self.generic_class = generic_class
         self.productname = productname
         self.brandname = brandname
+
+
+class NodeClassModel(db.Model):
+    __tablename__ = 'nodeclass'
+    id = db.Column(db.Integer, primary_key=True)
+    parent_id = db.Column(db.Integer, db.ForeignKey('node.id'))
+    parent = db.relationship('NodeModel', backref='NodeClasses')
+    commandclass = db.Column(db.String(10))
+    hiddenFields = db.relationship('NodeHiddenFieldModel', backref='NodeClasses')
+
+    def __init__(self, commandclass):
+        self.commandclass = commandclass
+
+class NodeHiddenFieldModel(db.Model):
+    __tablename__ = 'hiddenfields'
+    id = db.Column(db.Integer, primary_key=True)
+    parent_id = db.Column(db.Integer, db.ForeignKey('nodeclass.id'))
+    field = db.Column(db.String(10))
+
+    def __init__(self, field):
+        self.field = field
 
 class NodeHeatStatModel(db.Model):
     __tablename__ = 'nodeheatstat'

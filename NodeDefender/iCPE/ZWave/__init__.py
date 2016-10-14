@@ -36,13 +36,14 @@ class _ZWaveNode:
         for key, value in kwargs.items():
             self.WebForm[key.capitalize()] = value
 
-def ZWaveNode(mac, nodeid, *classes):
+def ZWaveNode(mac, nodeid, classes):
     supported = []
     unsupported = []
     for cls in classes:
         try:
-            eval('c' + cls)
-            supported.append(cls)
+            print('cls', cls.commandclass)
+            eval('c' + cls.commandclass)
+            supported.append(cls.commandclass)
         except NameError:
             unsupported.append(cls)
     class _NewClass(_ZWaveNode, *[eval('c'+x) for x in supported]):

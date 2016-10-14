@@ -24,7 +24,8 @@ SOFTWARE.
 '''
 from .. import db, handler, outMQTTQueue, inMQTTQueue,\
         outSocketQueue, NodeLogQueue
-from ..models import iCPEModel, LocationModel, NodeModel
+from ..models import iCPEModel, LocationModel, NodeModel, NodeClassModel,\
+NodeHiddenFieldModel
 import logging
 from collections import namedtuple
 from . import PepperDB
@@ -130,21 +131,20 @@ class iCPE(MQTTFunctions, WSFunctions):
     def LoadNodes(self, nodes):
         if len(nodes) < 1:
             return
-        print(nodes)
         for node in nodes:
             kwargs = {}
             kwargs['Alias'] = node.alias
             kwargs['Brandname'] = node.brandname
             kwargs['Productname'] = node.productname
             kwargs['Generic Class'] = node.generic_class
-            self.LoadNode(node.nodeid, node.vid, node.ptype, node.pid, **kwargs)
+            self.LoadNode(node, **kwargs)
 
-    def LoadNode(self, nodeid, vid, ptype, pid, **kwargs):
-        classlist = PepperDB.Classlist(vid, ptype, pid)
-        NodeClass, unsupported = ZWaveNode(self.mac, nodeid, *classlist)
+    def LoadNode(self, nodemodel, **kwargs):
+        NodeClass, unsupported = ZWaveNode(self.mac, nodemodel.nodeid,
+                                           nodemodel.nodeclasses)
         kwargs['unsupported'] = unsupported
-        NodeObj = NodeClass(self.mac, nodeid, outMQTTQueue, outSocketQueue, **kwargs)
-        self.ZWaveNodes.add(self.ZWaveNode(nodeid, NodeObj))
+        NodeObj = NodeClass(self.mac, nodemodel.nodeid, outMQTTQueue, outSocketQueue, **kwargs)
+        self.ZWaveNodes.add(self.ZWaveNode(nodemodel.nodeid, NodeObj))
         return True
 
     def AddNode(self, nodeid, vid, ptype, pid, generic_0):
@@ -152,10 +152,20 @@ class iCPE(MQTTFunctions, WSFunctions):
         ProdInfo = PepperDB.GetBaseInfo(vid, ptype, pid)
         AddNode = NodeModel(nodeid, vid, ptype, pid, generic_0,
                             ProdInfo['ProductName'], ProdInfo['BrandName'])
+        AddNode = self.AddNodeClasses(AddNode, vid, ptype, pid)
         iCPENode.znodes.append(AddNode)
         db.session.add(iCPENode)
         db.session.commit()
+        self.LoadNodes([AddNode])
         return True
+
+    def AddNodeClasses(self, nodemodel, vid, ptype, pid):
+        classlist = PepperDB.Classlist(vid, ptype, pid)
+        print('classlist', classlist)
+        for cls in classlist:
+            print('adding ', cls)
+            nodemodel.nodeclasses.append(NodeClassModel(cls))
+        return nodemodel
 
     def removenode(self):
         pass
