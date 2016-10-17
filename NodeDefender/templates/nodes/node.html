@@ -72,9 +72,9 @@
 			<form name="#" class="form-horizontal" method="#">
 			{% for field in znode['fields'] %}
 			<div class="form-group">
-			<label class="col-sm-2 control-label">{{field['class']}}</label>
+			<label class="col-sm-2 control-label">{{field['attribute']}}</label>
 			<div class="col-sm-5 col-sm-offset-5">
-				<input type="{{field['type']}}" value="{{field['value']}}" id="{{znode['nodeid']}}{{field['class']}}" size="10">
+				<input type="{{field['type']}}" value="{{field['value']}}" id="{{znode['nodeid']}}{{field['attribute']}}" size="10">
 			</div>
 			</div>
 			{% endfor %}
@@ -192,10 +192,37 @@
 						</div>
 					</div>
 				</form>
+				<h4>Supported classes</h4>
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th>Class</th>
+							<th>Attribute</th>
+							<th>Display</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for field in znode['fields'] %}
+						<tr>
+							<td>
+								{{ field['class'] }}
+							</td>
+							<td>
+								{{ field['attribute'] }}
+							</td>
+							<td>
+								{{ field['hidden'] }}
+							</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>	
 				<h4>Unsupported Classses</h4>
+				<p>
 				{% for class in znode['unsupported'] %}
-					<p>{{class}}</p>
+					{{class.commandclass}} 
 				{% endfor %}
+				</p>
 			</div>
 		</div>
 	</div>
@@ -297,14 +324,14 @@ $('input[name="geolong"]').val('{{iCPE.location.geolong}}');
 {% for znode in znodes %}
 {% for field in znode['fields'] %}
 	{% if field['type'] == 'checkbox' %}
-	$("#{{znode['nodeid']}}{{field['class']}}").bootstrapSwitch();
-	$("#{{znode['nodeid']}}{{field['class']}}").bootstrapSwitch('size', 'small');
-	$("#{{znode['nodeid']}}{{field['class']}}").bootstrapSwitch('state', 
+	$("#{{znode['nodeid']}}{{field['attribute']}}").bootstrapSwitch();
+	$("#{{znode['nodeid']}}{{field['attribute']}}").bootstrapSwitch('size', 'small');
+	$("#{{znode['nodeid']}}{{field['attribute']}}").bootstrapSwitch('state', 
 		{% if field['value'] %} true, true {% else %} false, false {% endif %});
-	$("#{{znode['nodeid']}}{{field['class']}}").bootstrapSwitch('readonly', 
+	$("#{{znode['nodeid']}}{{field['attribute']}}").bootstrapSwitch('readonly', 
 		{% if field['readonly'] %} true, true {% else %} false, false {% endif %});
-	$("#{{znode['nodeid']}}{{field['class']}}").on('switchChange.bootstrapSwitch', function(event, state) {
-		socket.emit('event', {mac : "{{iCPE.mac}}", nodeid : "{{znode['nodeid']}}", state : state, class : "{{field['class']}}"});
+	$("#{{znode['nodeid']}}{{field['attribute']}}").on('switchChange.bootstrapSwitch', function(event, state) {
+		socket.emit('event', {mac : "{{iCPE.mac}}", nodeid : "{{znode['nodeid']}}", state : state, class : "{{field['attribute']}}"});
 	});
 	{% endif %}
 {% endfor %}
@@ -314,9 +341,9 @@ socket.on('roomevent', function(msg) {
 	console.log(msg);
 	console.log('roomevent..!');
 	if (msg['datatype'] == "<class 'bool'>") {
-		$('#'+msg['nodeid']+msg['class']).bootstrapSwitch('state', msg['value'], false)
+		$('#'+msg['nodeid']+msg['attribute']).bootstrapSwitch('state', msg['value'], false)
 	} else {
-		$('#'+msg['nodeid']+msg['class']).val(msg['value'])
+		$('#'+msg['nodeid']+msg['attribute']).val(msg['value'])
 	}
 });
 new Morris.Line({

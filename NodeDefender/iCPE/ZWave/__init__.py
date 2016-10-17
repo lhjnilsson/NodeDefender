@@ -29,7 +29,7 @@ class _ZWaveNode:
 
     def Form(self):
         for field in self.WebForm['fields']:
-            field['value'] = eval('self.' +field['class'])
+            field['value'] = eval('self.' +field['attribute'])
         return self.WebForm
 
     def Update(self, **kwargs):

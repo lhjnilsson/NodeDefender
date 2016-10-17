@@ -8,8 +8,9 @@ class c0071:
     '''
     Door = Attribute('Door', bool)
     def __init__(self):
-        self.WebForm['fields'].append({'class' : 'Door', 'type' : 'checkbox',
-                                       'value' : False, 'readonly' : False})
+        self.WebForm['fields'].append({'class' : '0071', 'type' : 'checkbox',
+                                       'value' : False, 'readonly' : False,
+                                       'attribute' : 'Door', 'hidden' : False})
         self.Door = False # Dont know how to send and get intial value, will
                            # change this later
         super().__init__()
@@ -34,8 +35,9 @@ class c0020:
     '''
     Basic = Attribute('Basic', bool)
     def __init__(self):
-        self.WebForm['fields'].append({'class' : 'Basic', 'type': 'checkbox', 'value' :
-                                       False, 'readonly' : False})
+        self.WebForm['fields'].append({'class' : '0020', 'type': 'checkbox', 'value' :
+                                       False, 'readonly' : False, 'attribute' :
+                                       'Basic', 'hidden' : False})
         self.MQTT.put(('icpe/0x'+self.mac+'/cmd/node/'+self.nodeid+'/class/basic/act/get',
                        '')) # To know the current state
         super().__init__()
@@ -83,8 +85,10 @@ class c0031:
     Celsius = Attribute('Celsius', float, 'Celsius')
 
     def __init__(self):
-        self.WebForm['fields'].append({'class' : 'Celsius', 'type': 'value',
-                                      'value' : 0.00, 'readonly' : True})
+        self.WebForm['fields'].append({'class' : '0031', 'type': 'value',
+                                      'value' : 0.00, 'readonly' : True,
+                                       'attribute' : 'Celsius', 'hidden' :
+                                       False})
         super().__init__()
     
     def c0x0031(self, topic, payload):
@@ -100,7 +104,8 @@ class c0032:
     Watt = Attribute('Watt', float, 'Watt')
     def __init__(self):
         self.WebForm['fields'].append({'class' : 'Watt', 'type': 'value', 'value' :
-                                       0.00, 'readonly' : True}) 
+                                       0.00, 'readonly' : True, 'attribute' :
+                                       'Watt', 'hidden' : False})
         _t1 = Thread(target=self._CheckPower,)
         _t1.start()
         super().__init__()
@@ -114,7 +119,7 @@ class c0032:
             payload = '2'
             self.MQTT.put((topic, payload))
             sleep(10)
-
+'''
 class c0073:
     def __init__(self):
         print('0073')
@@ -125,3 +130,4 @@ class c0073:
 
     def c0x0073(self, topic, payload):
         return getattr(self, 'info'+payload['descr'])(payload)
+'''
