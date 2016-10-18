@@ -10,7 +10,7 @@ class c0071:
     def __init__(self):
         self.WebForm['fields'].append({'class' : '0071', 'type' : 'checkbox',
                                        'value' : False, 'readonly' : False,
-                                       'attribute' : 'Door', 'hidden' : False})
+                                       'attribute' : 'Door', 'display' : True})
         self.Door = False # Dont know how to send and get intial value, will
                            # change this later
         super().__init__()
@@ -37,7 +37,7 @@ class c0020:
     def __init__(self):
         self.WebForm['fields'].append({'class' : '0020', 'type': 'checkbox', 'value' :
                                        False, 'readonly' : False, 'attribute' :
-                                       'Basic', 'hidden' : False})
+                                       'Basic', 'display' : True})
         self.MQTT.put(('icpe/0x'+self.mac+'/cmd/node/'+self.nodeid+'/class/basic/act/get',
                        '')) # To know the current state
         super().__init__()
@@ -54,7 +54,6 @@ class c0020:
         return 'lights', 'off'
 
     def WSBasic(self, **kwargs):
-        print(kwargs)
         getattr(self, 'State'+str(kwargs['state']))(**kwargs)
 
     def StateTrue(self, **kwargs):
@@ -75,7 +74,6 @@ class c0020:
 
 class c0025:
     def __init__(self):
-        print('0025')
         super().__init__()
 
     def c0x0025(self, topic, payload):
@@ -87,8 +85,8 @@ class c0031:
     def __init__(self):
         self.WebForm['fields'].append({'class' : '0031', 'type': 'value',
                                       'value' : 0.00, 'readonly' : True,
-                                       'attribute' : 'Celsius', 'hidden' :
-                                       False})
+                                       'attribute' : 'Celsius', 'display' :
+                                       True})
         super().__init__()
     
     def c0x0031(self, topic, payload):
@@ -105,7 +103,7 @@ class c0032:
     def __init__(self):
         self.WebForm['fields'].append({'class' : 'Watt', 'type': 'value', 'value' :
                                        0.00, 'readonly' : True, 'attribute' :
-                                       'Watt', 'hidden' : False})
+                                       'Watt', 'display' : True})
         _t1 = Thread(target=self._CheckPower,)
         _t1.start()
         super().__init__()

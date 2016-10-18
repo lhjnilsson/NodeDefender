@@ -71,12 +71,14 @@
 			<p><strong>{{znode['Brandname'] }}</strong></p>
 			<form name="#" class="form-horizontal" method="#">
 			{% for field in znode['fields'] %}
+			{% if field['display'] == True %}
 			<div class="form-group">
 			<label class="col-sm-2 control-label">{{field['attribute']}}</label>
 			<div class="col-sm-5 col-sm-offset-5">
 				<input type="{{field['type']}}" value="{{field['value']}}" id="{{znode['nodeid']}}{{field['attribute']}}" size="10">
 			</div>
 			</div>
+			{% endif %}
 			{% endfor %}
 			</form>
 		</div>
@@ -211,7 +213,11 @@
 								{{ field['attribute'] }}
 							</td>
 							<td>
-								{{ field['hidden'] }}
+								{% if field['display'] %}
+								<a href="{{url_for('NodesNodeClassHide', mac=mac, nodeid=znode['nodeid'], cls=field['class'], field = field['attribute'])}}"><button class="btn btn-default">Hide</button></a>
+								{% else %}
+								<a href="{{url_for('NodesNodeClassDisplay', mac=mac, nodeid=znode['nodeid'], cls=field['class'], field = field['attribute'])}}"><button class="btn btn-default">Display</button></a>
+								{% endif %}
 							</td>
 						</tr>
 						{% endfor %}

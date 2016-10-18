@@ -26,8 +26,9 @@ from . import app, LoginMan, db, icpe, chconf, mqtt, statistics
 from flask import render_template, request, flash, redirect, url_for, abort, \
 json
 from flask_login import login_required, login_user, current_user, logout_user
-from .models import UserModel, iCPEModel, MessageModel, LoginLogModel,\
-NodeEventModel, NodeHeatStatModel, NodePowerStatModel, NodeNotesModel
+from .models import UserModel, iCPEModel, NodeModel, MessageModel, LoginLogModel,\
+NodeEventModel, NodeHeatStatModel, NodePowerStatModel, NodeNotesModel,\
+        NodeClassModel, NodeHiddenFieldModel
 from .forms import NodeForm, LoginForm, RegisterForm, AdminServerForm, \
         iCPEBasicForm, iCPEAddressForm, NodeBasicForm
 from datetime import datetime
@@ -308,6 +309,53 @@ def DeleteNode(mac):
     except Exception as e:
         flash('Unable to remove ' + str(mac) + '. Error: ' + str(e), 'danger')
         return redirect(url_for('NodesList'))
+
+
+@app.route('/nodes/<mac>/<nodeid>/<cls>/<field>/hide')
+def NodesNodeClassHide(mac, nodeid, cls, field):
+    if 1 < db.session.query(iCPEModel, NodeModel).\
+                            filter(iCPEModel.mac == mac).\
+                            filter(NodeModel.nodeid == int(nodeid)).count():
+        CleanDuplicate(db.session.query(iCPEModel, NodeModel).\
+                                        filter(iCPEModel.mac == mac).\
+                                        filter(NodeModel.nodeid == int(nodeid)).all())
+    Cls = NodeClassModel.query.join(NodeModel).join(iCPEModel).\
+            filter(NodeClassModel.commandclass == cls).\
+            filter(NodeModel.nodeid == nodeid).\
+            filter(iCPEModel.mac == mac).first()
+    Cls.hiddenFields.append(NodeHiddenFieldModel(field))
+    db.session.add(Cls)
+    db.session.commit()
+    icpe.HideNodeClass(mac, nodeid, cls)
+    return redirect(url_for('NodesNode', mac=mac))
+
+@app.route('/nodes/<mac>/<nodeid>/<cls>/<field>/display')
+def NodesNodeClassDisplay(mac, nodeid, cls, field):
+    if 1 < db.session.query(iCPEModel, NodeModel).\
+                            filter(iCPEModel.mac == mac).\
+                            filter(NodeModel.nodeid == nodeid).count():
+        CleanDuplicate(db.session.query(iCPEModel, NodeModel).\
+                                        filter(iCPEModel.mac == mac).\
+                                        filter(NodeModel.nodeid == nodeid).all())
+    Cls = NodeClassModel.query.join(NodeModel).join(iCPEModel).\
+            filter(NodeClassModel.commandclass == cls).\
+            filter(NodeModel.nodeid == nodeid).\
+            filter(iCPEModel.mac == mac).first()
+    
+    for hiddenfield in Cls.hiddenFields:
+        db.session.delete(hiddenfield)
+    db.session.commit()
+    icpe.DisplayNodeClass(mac, nodeid, cls)
+    return redirect(url_for('NodesNode', mac=mac))
+
+
+
+def CleanDuplicate(records):
+    for record in records:
+        if record.parent_id == None:
+            db.session.delete(record)
+    db.session.commit()
+    return True
 
 #
 # Views for Data- view
