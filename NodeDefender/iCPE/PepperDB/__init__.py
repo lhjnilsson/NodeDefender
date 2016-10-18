@@ -55,8 +55,11 @@ def Classlist(vid, ptype, pid):
 
     if fulldict:
         ReturnList = []
-        for x in fulldict['ZWaveDevice']['commandClasses']['commandClass']:
-            ReturnList.append(x['@id'])
+        try:
+            for x in fulldict['ZWaveDevice']['commandClasses']['commandClass']:
+                ReturnList.append(x['@id'])
+        except KeyError:
+            pass
 
     return ReturnList
 

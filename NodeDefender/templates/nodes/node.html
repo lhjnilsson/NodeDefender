@@ -27,23 +27,26 @@
 	</div>
 	<div class="col-lg-3">
 		<div class="box" style="height: 200px;">
-			<p><strong>Mac: </strong>{{ iCPE.mac }}</p>
-			<p><strong>Location: </strong>{{ iCPE.location.street }}, {{ iCPE.location.city }}</p>
-			<p><strong>Created on: </strong>{{ iCPE.created_on }}</p>
-			<p><strong>Online: </strong>{{ iCPE.online }}</p>
-			<p><strong>Last Online: </strong>{{ iCPE.last_online }}</p>
+			<h4>Location: </h4>
+			<p>{{ iCPE.location.street }}, {{ iCPE.location.city }}</p>
+			<h4>Notebook:<a href="#" data-toggle="modal" data-target="#NoteBook"><i class="fa fa-book" aria-hidden="true" style="position: absolute; right: 0; margin-right: 2vw;"></i></a></h4>
+			{% if iCPE.notes %}
+			{% set note = iCPE.notes|last %}
+			<p>Latest Note by {{note.author}}</p>
+			<p><p>{{moment(note.created_on).format('Do MMM YYYY, HH:mm:ss')}} - {{note.note}}</p>
+			{% endif %}
 		</div>
 	</div>
 	<div class="col-lg-3">
 		<div class="box" style="height: 200px;">
       <div class="row">
-			  <a href="{{ url_for('NodesUpdate', mac=mac) }}" class="col-lg-4">
+			  <a href="{{ url_for('NodesUpdate', mac=mac) }}" class="col-lg-4" data-toggle="tooltip" title="Update known Z-Wave devices">
           <i class="fa fa-refresh fa-3x" aria-hidden="true"></i>
         </a>
-			  <a href="{{ url_for('NodesInclude', mac=mac) }}" class="col-lg-4">
+			  <a href="{{ url_for('NodesInclude', mac=mac) }}" class="col-lg-4" data-toggle="tooltip" title="Include Z-Wave device">
           <i class="fa fa-sign-in fa-3x" aria-hidden="true"></i>
         </a>
-			  <a href="{{ url_for('NodesExclude', mac=mac) }}" class="col-lg-4">
+				<a href="{{ url_for('NodesExclude', mac=mac) }}" class="col-lg-4" data-toggle="tooltip" title="Exclude Z-Wave device">
           <i class="fa fa-sign-out fa-3x" aria-hidden="true"></i>
         </a>
       </div>
@@ -68,12 +71,14 @@
 			<p><strong>{{znode['Brandname'] }}</strong></p>
 			<form name="#" class="form-horizontal" method="#">
 			{% for field in znode['fields'] %}
+			{% if field['display'] == True %}
 			<div class="form-group">
-			<label class="col-sm-2 control-label">{{field['class']}}</label>
+			<label class="col-sm-2 control-label">{{field['attribute']}}</label>
 			<div class="col-sm-5 col-sm-offset-5">
-				<input type="{{field['type']}}" value="{{field['value']}}" id="{{znode['nodeid']}}{{field['class']}}" size="10">
+				<input type="{{field['type']}}" value="{{field['value']}}" id="{{znode['nodeid']}}{{field['attribute']}}" size="10">
 			</div>
 			</div>
+			{% endif %}
 			{% endfor %}
 			</form>
 		</div>
@@ -99,25 +104,37 @@
 			></div>
 		</div>
     {% endif %}
+		{% if iCPE.events %}
 		<div class="col-lg-4">
-			<h3>Notes</h3>
+			<h3>Events</h3>
 			<div class="box" style="padding: 0;">
-				<ol>
-					{% for note in iCPE.notes %}
-					<li><small>{{note.created_on }} - {{note.author}}</small><br>
-						{{note.note}}
-					</li>
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th>Event</th>
+							<th>ZWave</th>
+							<th>Date</th>
+						</tr>
+					</thead>
+					<tbody>
+					{% for event in iCPE.events[-6:]|sort(attribute='created_on', reverse=True) %}
+						<tr>
+							<td>
+								<i class="fa fa-{{event.fonticon}}" aria-hidden="true"></i>
+							</td>
+							<td>
+								{{ event.productname }}
+							</td>
+							<td>
+								{{ moment(event.created_on).format('Do MMM YYYY, HH:mm:ss') }}
+							</td>
+						</tr>
 					{% endfor %}
-				</ol>
-				<form action="{{url_for('NodesNotesAdd', mac=mac)}}" method="post" class="form-horizonal">
-					<div class="form-group">
-						<label for="notes">Enter note</label>
-						<input type="text" max-length="150" class="form-control" name="note"></input>
-						<button type="submit" class="btn btn-default">Submit</button>
-					</div>
-				</form>
+					</tbody>
+				</table>		
 			</div>
 		</div>
+		{% endif %}
 	</div>
 </div>
 <div class="modal fade" id="DeleteNode" role="dialog">
@@ -132,6 +149,28 @@
 		</div>
 	</div>
 </div>
+<div class="modal fade" id="NoteBook" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h2 class="modal-title">Notebook</h2>
+			</div>
+			<div class="modal-body">
+				{% for note in iCPE.notes|sort(attribute='created_on', reverse=True) %}
+				<p style="width: 100%">{{note.author}} <span style="position: absolute; right: 0; margin-right: 1vw;">{{moment(note.created_on).format('Do MMM YYYY, HH:mm:ss')}}</span></p>
+				<p style="width: 100%;padding: 0.2vw; background-color: #f5f5f5">{{note.note}}</p>
+				{% endfor %}
+				<form action="{{url_for('NodesNotesAdd', mac=mac)}}" method="post" class="form-horizonal">
+					<div class="form-group">
+						<label for="notes">Enter note</label>
+						<input type="text" max-length="150" class="form-control" name="note"></input>
+						<button type="submit" class="btn btn-default">Submit</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
 {% for znode in znodes %}
 <div class="modal fade" id="PopCFG{{znode['nodeid']}}" role="dialog">
 	<div class="modal-dialog">
@@ -140,10 +179,56 @@
 				<h4 class="modal-title">{{znode['Alias']}}</h4>
 			</div>
 			<div class="modal-body">
+				<form method="POST" action="{{url_for('NodesNodeConfigure', mac=mac, nodeid=znode.nodeid)}}">
+					{{ NodeBasicForm.csfr_token }}
+					{{ NodeBasicForm.hidden_tag() }}
+					<div class="form-group">
+						{{ NodeBasicForm.alias.label(class="col-sm-2 control-label")}}
+						<div class="col-sm-10">
+							{{ NodeBasicForm.alias(class="form-control")}}
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+							<button type="submit" class="btn btn-default">Update</button>
+						</div>
+					</div>
+				</form>
+				<h4>Supported classes</h4>
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th>Class</th>
+							<th>Attribute</th>
+							<th>Display</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for field in znode['fields'] %}
+						<tr>
+							<td>
+								{{ field['class'] }}
+							</td>
+							<td>
+								{{ field['attribute'] }}
+							</td>
+							<td>
+								{% if field['display'] %}
+								<a href="{{url_for('NodesNodeClassHide', mac=mac, nodeid=znode['nodeid'], cls=field['class'], field = field['attribute'])}}"><button class="btn btn-default">Hide</button></a>
+								{% else %}
+								<a href="{{url_for('NodesNodeClassDisplay', mac=mac, nodeid=znode['nodeid'], cls=field['class'], field = field['attribute'])}}"><button class="btn btn-default">Display</button></a>
+								{% endif %}
+							</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>	
 				<h4>Unsupported Classses</h4>
+				<p>
 				{% for class in znode['unsupported'] %}
-					<p>{{class}}</p>
+					{{class.commandclass}} 
 				{% endfor %}
+				</p>
 			</div>
 		</div>
 	</div>
@@ -157,7 +242,64 @@
         <h3>{{iCPE.alias}}</h3>
       </div>
       <div class="modal-body">
-        <h4>Settings</h4>
+        <h4 class="col-sm-offset-2">Basic Settings</h4>
+				<form method="POST" action="{{url_for('NodesNode', mac=mac)}}" name="basic">
+					{{ iCPEBasicForm.csfr_token }}
+					{{ iCPEBasicForm.hidden_tag() }}
+					<div class="form-group">
+						{{ iCPEBasicForm.alias.label(class="col-sm-2 control-label")}}
+						<div class="col-sm-10">
+							{{ iCPEBasicForm.alias(class="form-control")}}
+						</div>
+					</div>
+					<div class="form-group">
+						{{ iCPEBasicForm.comment.label(class="col-sm-2 control-label")}}
+						<div class="col-sm-10">
+							{{ iCPEBasicForm.comment(class="form-control")}}
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+							<button type="submit" class="btn btn-default">Update</button>
+						</div>
+					</div>
+				</form>
+				<h4 class="col-sm-offset-2">Node Address</h4>
+				<form method="POST" action="{{url_for('NodesNode', mac=mac)}}" name="address">
+					{{ iCPEAddressForm.csfr_token }}
+					{{ iCPEAddressForm.hidden_tag() }}
+					<div class="form-group">
+						{{ iCPEAddressForm.street.label(class="col-sm-2 control-label")}}
+						<div class="col-sm-10">
+							{{ iCPEAddressForm.street(class="form-control")}}
+						</div>
+					</div>
+					<div class="form-group">
+						{{ iCPEAddressForm.city.label(class="col-sm-2 control-label")}}
+						<div class="col-sm-10">
+							{{ iCPEAddressForm.city(class="form-control")}}
+						</div>
+					</div>
+					<div class="form-group">
+						{{ iCPEAddressForm.geolat.label(class="col-sm-2 control-label")}}
+						<div class="col-sm-10">
+							{{ iCPEAddressForm.geolat(class="form-control")}}
+						</div>
+					</div>
+					<div class="form-group">
+						{{ iCPEAddressForm.geolong.label(class="col-sm-2 control-label")}}
+						<div class="col-sm-10">
+							{{ iCPEAddressForm.geolong(class="form-control")}}
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+							<button type="submit" class="btn btn-default">Update</button>
+						</div>
+					</div>
+				</form>
+				<button type="#" class="btn btn-default" data-toggle="modal" data-target="#DeleteNode">Delete Node</button>
+				<button type="#" class="btn btn-default">Exit</button>
       </div>
     </div>
   </div>
@@ -174,17 +316,28 @@ socket.on('connect', function() {
 	socket.emit('join', {room : '{{mac}}'});
 });
 
+$('input[name="alias"]').val('Alias');
+
+/*
+setting values for adddress- form
+*/
+$('input[name="street"]').val('{{iCPE.location.street}}');
+$('input[name="city"]').val('{{iCPE.location.city}}');
+$('input[name="geolat"]').val('{{iCPE.location.geolat}}');
+$('input[name="geolong"]').val('{{iCPE.location.geolong}}');
+
+
 {% for znode in znodes %}
 {% for field in znode['fields'] %}
 	{% if field['type'] == 'checkbox' %}
-	$("#{{znode['nodeid']}}{{field['class']}}").bootstrapSwitch();
-	$("#{{znode['nodeid']}}{{field['class']}}").bootstrapSwitch('size', 'small');
-	$("#{{znode['nodeid']}}{{field['class']}}").bootstrapSwitch('state', 
+	$("#{{znode['nodeid']}}{{field['attribute']}}").bootstrapSwitch();
+	$("#{{znode['nodeid']}}{{field['attribute']}}").bootstrapSwitch('size', 'small');
+	$("#{{znode['nodeid']}}{{field['attribute']}}").bootstrapSwitch('state', 
 		{% if field['value'] %} true, true {% else %} false, false {% endif %});
-	$("#{{znode['nodeid']}}{{field['class']}}").bootstrapSwitch('readonly', 
+	$("#{{znode['nodeid']}}{{field['attribute']}}").bootstrapSwitch('readonly', 
 		{% if field['readonly'] %} true, true {% else %} false, false {% endif %});
-	$("#{{znode['nodeid']}}{{field['class']}}").on('switchChange.bootstrapSwitch', function(event, state) {
-		socket.emit('event', {mac : "{{iCPE.mac}}", nodeid : "{{znode['nodeid']}}", state : state, class : "{{field['class']}}"});
+	$("#{{znode['nodeid']}}{{field['attribute']}}").on('switchChange.bootstrapSwitch', function(event, state) {
+		socket.emit('event', {mac : "{{iCPE.mac}}", nodeid : "{{znode['nodeid']}}", state : state, class : "{{field['attribute']}}"});
 	});
 	{% endif %}
 {% endfor %}
@@ -194,9 +347,9 @@ socket.on('roomevent', function(msg) {
 	console.log(msg);
 	console.log('roomevent..!');
 	if (msg['datatype'] == "<class 'bool'>") {
-		$('#'+msg['nodeid']+msg['class']).bootstrapSwitch('state', msg['value'], false)
+		$('#'+msg['nodeid']+msg['attribute']).bootstrapSwitch('state', msg['value'], false)
 	} else {
-		$('#'+msg['nodeid']+msg['class']).val(msg['value'])
+		$('#'+msg['nodeid']+msg['attribute']).val(msg['value'])
 	}
 });
 new Morris.Line({

@@ -15,7 +15,6 @@ class _ZWaveNode:
         self.WebForm['mac'] = self.mac
         for key, value in kwargs.items():
             self.WebForm[key] = value
-            print(key, value)
             self.__dict__[key] = value
         super().__init__()
 
@@ -29,16 +28,31 @@ class _ZWaveNode:
 
     def Form(self):
         for field in self.WebForm['fields']:
-            field['value'] = eval('self.' +field['class'])
+            field['value'] = eval('self.' +field['attribute'])
         return self.WebForm
 
-def ZWaveNode(mac, nodeid, *classes):
+    def Update(self, **kwargs):
+        for key, value in kwargs.items():
+            self.WebForm[key.capitalize()] = value
+
+    def HideClass(self, cls):
+        for field in self.WebForm['fields']:
+            if field['class'] == cls:
+                field['display'] = False
+
+    def DisplayClass(self, cls):
+        for field in self.WebForm['fields']:
+            if field['class'] == cls:
+                field['display'] = True
+
+
+def ZWaveNode(mac, nodeid, classes):
     supported = []
     unsupported = []
     for cls in classes:
         try:
-            eval('c' + cls)
-            supported.append(cls)
+            eval('c' + cls.commandclass)
+            supported.append(cls.commandclass)
         except NameError:
             unsupported.append(cls)
     class _NewClass(_ZWaveNode, *[eval('c'+x) for x in supported]):

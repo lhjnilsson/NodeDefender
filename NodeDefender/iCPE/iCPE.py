@@ -24,7 +24,8 @@ SOFTWARE.
 '''
 from .. import db, handler, outMQTTQueue, inMQTTQueue,\
         outSocketQueue, NodeLogQueue
-from ..models import iCPEModel, LocationModel, NodeModel
+from ..models import iCPEModel, LocationModel, NodeModel, NodeClassModel,\
+NodeHiddenFieldModel
 import logging
 from collections import namedtuple
 from . import PepperDB
@@ -91,6 +92,14 @@ class iCPE(MQTTFunctions, WSFunctions):
         return [znode.callback.Form() for znode in
     self.ZWaveNodes]
 
+    def UpdateNodeInfo(self, **kwargs):
+        Node = self.__contains__(kwargs['nodeid'])
+        if Node:
+            Node.callback.Update(**kwargs)
+            return True
+        else:
+            return False
+
     def UpdateNode(self):
         try:
             outMQTTQueue.put(('icpe/0x' + self.mac +
@@ -122,21 +131,29 @@ class iCPE(MQTTFunctions, WSFunctions):
     def LoadNodes(self, nodes):
         if len(nodes) < 1:
             return
-        print(nodes)
         for node in nodes:
             kwargs = {}
             kwargs['Alias'] = node.alias
             kwargs['Brandname'] = node.brandname
             kwargs['Productname'] = node.productname
             kwargs['Generic Class'] = node.generic_class
-            self.LoadNode(node.nodeid, node.vid, node.ptype, node.pid, **kwargs)
+            self.LoadNode(node, **kwargs)
 
-    def LoadNode(self, nodeid, vid, ptype, pid, **kwargs):
-        classlist = PepperDB.Classlist(vid, ptype, pid)
-        NodeClass, unsupported = ZWaveNode(self.mac, nodeid, *classlist)
+    def LoadNode(self, nodemodel, **kwargs):
+        if len(nodemodel.nodeclasses) < 1:
+            print('-- Node ', nodemodel.alias, ' does not support any classes.\
+                  Updating..')
+            nodemodel = self.AddNodeClasses(nodemodel)
+            db.session.add(nodemodel)
+            db.session.commit()
+        NodeClass, unsupported = ZWaveNode(self.mac, nodemodel.nodeid,
+                                           nodemodel.nodeclasses)
         kwargs['unsupported'] = unsupported
-        NodeObj = NodeClass(self.mac, nodeid, outMQTTQueue, outSocketQueue, **kwargs)
-        self.ZWaveNodes.add(self.ZWaveNode(nodeid, NodeObj))
+        NodeObj = NodeClass(self.mac, nodemodel.nodeid, outMQTTQueue, outSocketQueue, **kwargs)
+        self.ZWaveNodes.add(self.ZWaveNode(nodemodel.nodeid, NodeObj))
+        for cls in nodemodel.nodeclasses:
+            for hidden in cls.hiddenFields:
+                NodeObj.HideClass(cls.commandclass)
         return True
 
     def AddNode(self, nodeid, vid, ptype, pid, generic_0):
@@ -144,9 +161,31 @@ class iCPE(MQTTFunctions, WSFunctions):
         ProdInfo = PepperDB.GetBaseInfo(vid, ptype, pid)
         AddNode = NodeModel(nodeid, vid, ptype, pid, generic_0,
                             ProdInfo['ProductName'], ProdInfo['BrandName'])
+        AddNode = self.AddNodeClasses(AddNode, vid, ptype, pid)
         iCPENode.znodes.append(AddNode)
         db.session.add(iCPENode)
         db.session.commit()
+        self.LoadNodes([AddNode])
+        return True
+
+    def AddNodeClasses(self, nodemodel, vid = None, ptype = None, pid = None):
+        if vid is None:
+            vid = nodemodel.vid
+            ptype = nodemodel.ptype
+            pid = nodemodel.pid
+        classlist = PepperDB.Classlist(vid, ptype, pid)
+        for cls in classlist:
+            nodemodel.nodeclasses.append(NodeClassModel(cls))
+        return nodemodel
+
+    def HideNodeClass(self, nodeid, cls):
+        node = self.__contains__(nodeid)
+        node.callback.HideClass(cls)
+        return True
+
+    def DisplayNodeClass(self, nodeid, cls):
+        node = self.__contains__(nodeid)
+        node.callback.DisplayClass(cls)
         return True
 
     def removenode(self):
@@ -201,6 +240,12 @@ class iCPEset:
             return False
         return icpe.callback.Form()
 
+    def UpdateNodeInfo(self, **kwargs):
+        icpe = self.__contains__(kwargs['mac'])
+        if not icpe:
+            return False
+        return icpe.callback.UpdateNodeInfo(**kwargs)
+
     def _MQTTSubscriber(self):
         while True:
             mac, topic, payload = inMQTTQueue.get()
@@ -250,6 +295,18 @@ class iCPEset:
         if not icpe:
             return False
         icpe.callback.SocketEvent(**kwargs)
+
+    def HideNodeClass(self, mac, nodeid, cls):
+        icpe = self.__contains__(mac)
+        icpe.callback.HideNodeClass(nodeid, cls)
+        return True
+    
+    def DisplayNodeClass(self, mac, nodeid, cls):
+        icpe = self.__contains__(mac)
+        icpe.callback.DisplayNodeClass(nodeid, cls)
+        return True
+
+
 
 if not path.isfile('NodeDefender/iCPE/PepperDB/last_changed.txt'):
     print('--PepperDB not intialized, downloading..')

@@ -123,16 +123,8 @@ class MQTTFunctions:
             return
         iCPENode = iCPEModel.query.filter_by(mac = self.mac).first()
         payload = self.PayloadToDict(payload.decode('ascii'))
-        ProductInfo = PepperDB.GetBaseInfo(payload['vid'], payload['ptype'],
-                                           payload['pid'])
-        AppendNode = NodeModel(topic['nodeid'], payload['vid'], payload['ptype'],
-                                    payload['pid'], payload['generic_0'],
-                                    ProductInfo['ProductName'],
-                                    ProductInfo['BrandName'])
-        iCPENode.znodes.append(AppendNode)
-        db.session.add(iCPENode)
-        db.session.commit()
-        self.LoadNodes([AppendNode])
+        self.AddNode(topic['nodeid'], payload['vid'], payload['ptype'],
+                     payload['pid'], payload['generic_0'])
         return True
 
     def actset(self, topic, payload):

@@ -26,9 +26,11 @@ from . import app, LoginMan, db, icpe, chconf, mqtt, statistics
 from flask import render_template, request, flash, redirect, url_for, abort, \
 json
 from flask_login import login_required, login_user, current_user, logout_user
-from .models import UserModel, iCPEModel, MessageModel, LoginLogModel,\
-NodeEventModel, NodeHeatStatModel, NodePowerStatModel, NodeNotesModel
-from .forms import NodeForm, LoginForm, RegisterForm, AdminServerForm
+from .models import UserModel, iCPEModel, NodeModel, MessageModel, LoginLogModel,\
+NodeEventModel, NodeHeatStatModel, NodePowerStatModel, NodeNotesModel,\
+        NodeClassModel, NodeHiddenFieldModel
+from .forms import NodeForm, LoginForm, RegisterForm, AdminServerForm, \
+        iCPEBasicForm, iCPEAddressForm, NodeBasicForm
 from datetime import datetime
 from sqlalchemy import desc
 
@@ -203,6 +205,9 @@ def NodesNode(mac):
     if not iCPE:
         raise ValueError('Cant find mac')
     form = NodeForm()
+    BasicForm = iCPEBasicForm()
+    AddressForm = iCPEAddressForm()
+    NodeBasic = NodeBasicForm()
     if request.method == 'GET':
         znodes = icpe.WebForm(mac)
         '''
@@ -210,10 +215,45 @@ def NodesNode(mac):
                     groupby(iCPE.powerstat, lambda stat: stat.nodeid))
         '''
         return render_template('nodes/node.html', mac=mac, form=form, iCPE =
-                               iCPE, znodes = znodes)
-    if form.validate():
-        print(form.NodeField.data)
-    return render_template('nodes/node.html', mac=mac, form=form, iCPE = iCPE)
+                               iCPE, znodes = znodes, iCPEBasicForm =
+                               BasicForm, iCPEAddressForm = AddressForm,
+                               NodeBasicForm = NodeBasic)
+    elif request.method == 'POST':
+        if BasicForm.validate_on_submit():
+            iCPE.alias = BasicForm.alias.data
+            iCPE.comment = BasicForm.comment.data
+        elif AddressForm.validate_on_submit():
+            iCPE.location.street = AddressForm.street.data
+            iCPE.location.city = AddressForm.city.data
+            iCPE.location.geolat = AddressForm.geolat.data
+            iCPE.location.geolong = AddressForm.geolong.data
+
+        db.session.add(iCPE)
+        db.session.commit()
+        return render_template('nodes/node.html', mac=mac, form=form, iCPE = iCPE,
+                          iCPEAddressForm = AddressForm, iCPEBasicForm =
+                           BasicForm, NodeBasicForm = NodeBasic)
+
+@app.route('/nodes/list/<mac>/<nodeid>', methods=['GET', 'POST'])
+@login_required
+def NodesNodeConfigure(mac, nodeid):
+    iCPE = iCPEModel.query.filter_by(mac = mac).first()
+    if iCPE is None:
+        return redirect(url_for('index'))
+    NodeBasic = NodeBasicForm()
+    if request.method =='POST':
+        try:
+            ZNode = [node for node in iCPE.znodes if node.nodeid == int(nodeid)][0]
+        except IndexError:
+            print('could not find ZWave NOde')
+            return redirect(url_for('NodesNode', mac=mac))
+        icpe.UpdateNodeInfo(**{'Alias' :  NodeBasic.alias.data, 'mac' : mac, 'nodeid' : nodeid})
+        ZNode.alias = NodeBasic.alias.data
+        db.session.add(ZNode)
+        db.session.commit()
+        return redirect(url_for('NodesNode', mac=mac))
+    return redirect(url_for('NodesNode', mac=mac))
+
 
 @app.route('/nodes/<mac>/update')
 @login_required
@@ -269,6 +309,53 @@ def DeleteNode(mac):
     except Exception as e:
         flash('Unable to remove ' + str(mac) + '. Error: ' + str(e), 'danger')
         return redirect(url_for('NodesList'))
+
+
+@app.route('/nodes/<mac>/<nodeid>/<cls>/<field>/hide')
+def NodesNodeClassHide(mac, nodeid, cls, field):
+    if 1 < db.session.query(iCPEModel, NodeModel).\
+                            filter(iCPEModel.mac == mac).\
+                            filter(NodeModel.nodeid == int(nodeid)).count():
+        CleanDuplicate(db.session.query(iCPEModel, NodeModel).\
+                                        filter(iCPEModel.mac == mac).\
+                                        filter(NodeModel.nodeid == int(nodeid)).all())
+    Cls = NodeClassModel.query.join(NodeModel).join(iCPEModel).\
+            filter(NodeClassModel.commandclass == cls).\
+            filter(NodeModel.nodeid == nodeid).\
+            filter(iCPEModel.mac == mac).first()
+    Cls.hiddenFields.append(NodeHiddenFieldModel(field))
+    db.session.add(Cls)
+    db.session.commit()
+    icpe.HideNodeClass(mac, nodeid, cls)
+    return redirect(url_for('NodesNode', mac=mac))
+
+@app.route('/nodes/<mac>/<nodeid>/<cls>/<field>/display')
+def NodesNodeClassDisplay(mac, nodeid, cls, field):
+    if 1 < db.session.query(iCPEModel, NodeModel).\
+                            filter(iCPEModel.mac == mac).\
+                            filter(NodeModel.nodeid == nodeid).count():
+        CleanDuplicate(db.session.query(iCPEModel, NodeModel).\
+                                        filter(iCPEModel.mac == mac).\
+                                        filter(NodeModel.nodeid == nodeid).all())
+    Cls = NodeClassModel.query.join(NodeModel).join(iCPEModel).\
+            filter(NodeClassModel.commandclass == cls).\
+            filter(NodeModel.nodeid == nodeid).\
+            filter(iCPEModel.mac == mac).first()
+    
+    for hiddenfield in Cls.hiddenFields:
+        db.session.delete(hiddenfield)
+    db.session.commit()
+    icpe.DisplayNodeClass(mac, nodeid, cls)
+    return redirect(url_for('NodesNode', mac=mac))
+
+
+
+def CleanDuplicate(records):
+    for record in records:
+        if record.parent_id == None:
+            db.session.delete(record)
+    db.session.commit()
+    return True
 
 #
 # Views for Data- view
