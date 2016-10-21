@@ -25,11 +25,23 @@ SOFTWARE.
 from itertools import groupby
 from .models import iCPEModel, NodeHeatStatModel, NodePowerStatModel, \
         NodeHeatModel, NodePowerModel
-from . import db
+from . import db, logghandler
 from datetime import datetime, timedelta
 from .statistics import *
+import logging
+
+logger = logging.getLogger('SQL')
+logger.setLevel(logging.INFO)
+logger.addHandler(logghandler)
+
 
 def UpdateDaily():
+    '''
+    Updates static values every midnight
+    Staticvalues are Number of events, Heat and Power from nodes
+
+    saves the values in SQL
+    '''
     Yesterday = datetime.now() - timedelta(days=1)
     HeatEvents = NodeHeatStatModel.query.filter(NodeHeatStatModel.date >
                                                 Yesterday).all()
@@ -61,6 +73,8 @@ def UpdateDaily():
         totalPower = (totalPower + stats.power) / 2
         NumEvents = (NumEvents + stats.events) / 2
     SetDailyStat(totalHeat, totalPower, NumEvents)
+    logger.info('Daily cronjob completed, heat {}, power {}, events\
+                {}'.format(totalHeat, totalPower, NumEvents))
 '''
     To Maybe use later...
     Dailylog = DailylogStatitics(totalHeat, totalPower, len(NumEvents))
@@ -77,6 +91,12 @@ def UpdateDaily():
 '''
 
 def UpdateHourly():
+    '''
+    Updates static values every midnight
+    Staticvalues are Number of events, Heat and Power from nodes
+
+    saves the values in SQL
+    '''
     LastHour = datetime.now() - timedelta(hours=1)
     HeatEvents = NodeHeatStatModel.query.filter(NodeHeatStatModel.date >
                                               LastHour).all()
@@ -110,6 +130,9 @@ def UpdateHourly():
         totalPower = (totalPower + stats.power) / 2
         NumEvents = (NumEvents + stats.events) / 2
     SetHourlyStat(totalHeat, totalPower, NumEvents)
+    logger.info('Hourly cronjob completed, heat {}, power {}, events\
+                {}'.format(totalHeat, totalPower, NumEvents))
+
 
 def GetHeatEvents():
     events = NodeHeatModel.query.all()
