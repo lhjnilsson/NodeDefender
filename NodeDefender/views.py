@@ -351,9 +351,9 @@ def NodesNodeClassDisplay(mac, nodeid, cls, field):
 
 
 def CleanDuplicate(records):
-    for record in records:
-        if record.parent_id == None:
-            db.session.delete(record)
+    for icpe, node in records:
+        if node.parent_id == None:
+            db.session.delete(node)
     db.session.commit()
     return True
 
