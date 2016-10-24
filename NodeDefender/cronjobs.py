@@ -46,7 +46,7 @@ def UpdateDaily():
     HeatEvents = NodeHeatStatModel.query.filter(NodeHeatStatModel.date >
                                                 Yesterday).all()
     NumEvents = NodeEventModel.query.filter(NodeEventModel.created_on >
-                                            Yesterday).all()
+                                            Yesterday).count()
     PowerEvents = NodePowerStatModel.query.filter(NodePowerStatModel.date
                                                   > Yesterday).all()
     totalHeat = 0.0
@@ -65,7 +65,6 @@ def UpdateDaily():
     except ZeroDivisionError:
         totalPower = 0.0
 
-    NumEvents = len(NumEvents)
     SetDailyLog(totalHeat, totalPower, NumEvents)
     stats = GetDailyStat()
     if type(stats) is not dict:
@@ -103,7 +102,7 @@ def UpdateHourly():
     PowerEvents = NodePowerStatModel.query.filter(NodePowerStatModel.date >
                                                 LastHour).all()
     NumEvents = NodeEventModel.query.filter(NodeEventModel.created_on >
-                                              LastHour).all()
+                                              LastHour).count()
 
     totalPower = 0.0
     for stat in PowerEvents:
@@ -121,14 +120,12 @@ def UpdateHourly():
     except ZeroDivisionError:
         totalHeat = 0.0
 
-    SetHourlyLog(totalHeat, totalPower, len(NumEvents))
+    SetHourlyLog(totalHeat, totalPower, NumEvents)
     
-    NumEvents = len(NumEvents)
     stats = GetHourlyStat()
     if type(stats) is not dict:
         totalHeat = (totalHeat + stats.heat) / 2
         totalPower = (totalPower + stats.power) / 2
-        NumEvents = (NumEvents + stats.events) / 2
     SetHourlyStat(totalHeat, totalPower, NumEvents)
     logger.info('Hourly cronjob completed, heat {}, power {}, events\
                 {}'.format(totalHeat, totalPower, NumEvents))
