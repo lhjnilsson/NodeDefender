@@ -9,7 +9,7 @@ class c0071:
     Door = Attribute('Door', bool)
     def __init__(self):
         self.WebForm['fields'].append({'class' : '0071', 'type' : 'checkbox',
-                                       'value' : False, 'readonly' : False,
+                                       'value' : False, 'readonly' : True,
                                        'attribute' : 'Door', 'display' : True})
         self.Door = False # Dont know how to send and get intial value, will
                            # change this later
