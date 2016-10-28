@@ -1,5 +1,21 @@
 {% extends "base.html" %}
 {% block content %}
+<script>
+
+namespace = '/icpeevent';
+var socket = io.connect('http://' + document.domain + ':' + location.port + namespace);
+
+
+function checkboxChange(box, icpe, nodeid, attribute) {
+	if (box.checked) {
+		socket.emit('event', {mac : icpe, nodeid : nodeid, state : 'True', class : attribute});
+	} else {
+		socket.emit('event', {mac : icpe, nodeid : nodeid, state : 'False', class : attribute});
+	}
+}
+
+</script>
+
 <div class="row">
     <div class="col-lg-12">
         <h1 class="page-header">
@@ -27,14 +43,11 @@
 	</div>
 	<div class="col-lg-3">
 		<div class="box" style="height: 200px;">
-			<h4>Location: </h4>
-			<p>{{ iCPE.location.street }}, {{ iCPE.location.city }}</p>
-			<h4>Notebook:<a href="#" data-toggle="modal" data-target="#NoteBook"><i class="fa fa-book" aria-hidden="true" style="position: absolute; right: 0; margin-right: 2vw;"></i></a></h4>
-			{% if iCPE.notes %}
-			{% set note = iCPE.notes|last %}
-			<p>Latest Note by {{note.author}}</p>
-			<p><p>{{moment(note.created_on).format('Do MMM YYYY, HH:mm:ss')}} - {{note.note}}</p>
-			{% endif %}
+			<h4><strong>Information <a href="#" data-toggle="modal" data-target="#iCPEInfo"><i class="fa fa-info" aria-hidden="true" style="position: absolute; right: 0; margin-right: 2vw"></i></a></strong></h4>
+			<br>
+			<h4><strong>Notebook <a href="#" data-toggle="modal" data-target="#NoteBook"><i class="fa fa-book" aria-hidden="true" style="position: absolute; right: 0; margin-right: 2vw;"></i></a></strong></h4>
+			<h4><strong>Sticky Note: <a href="#" data-toggle="modal" data-target="#StickyNote"><i class="fa fa-pencil" aria-hidden="true" style="position: absolute; right: 0; margin-right: 2vw"></i></a></strong></h4>
+			<p>{{iCPE.notesticky}}</p>
 		</div>
 	</div>
 	<div class="col-lg-3">
@@ -60,22 +73,33 @@
 <div class="row">
 	{% if znodes|length > 0 %}
 	{% for znode in znodes %}
-	<div class="col-lg-3">
-		<h3 style="width: 100%;">
+	<div class="col-lg-2">
+		<h3 style="max-width: 80%;">
 			{{ znode['Alias'] }}
 			<a href="#" data-toggle="modal" data-target="#PopCFG{{znode['nodeid']}}" style="position: absolute; right: 0; margin-right: 1vw;">
 				<i class="fa fa-cog" aria-hidden="true"></i>
 			</a>
 		</h3>
     <div class="box">
-			<p><strong>{{znode['Brandname'] }}</strong></p>
 			<form name="#" class="form-horizontal" method="#">
 			{% for field in znode['fields'] %}
 			{% if field['display'] == True %}
 			<div class="form-group">
 			<label class="col-sm-2 control-label">{{field['attribute']}}</label>
 			<div class="col-sm-5 col-sm-offset-5">
-				<input type="{{field['type']}}" value="{{field['value']}}" id="{{znode['nodeid']}}{{field['attribute']}}" size="10">
+				{% if field['type'] == 'checkbox' %}
+					{% if field['readonly'] %}
+					<label class="lightbox {% if field['value'] %} light {% endif %}" id="{{znode['nodeid']}}{{field['attribute']}}">
+					</label>
+					{% else %}
+					<label class="switch">
+						<input type="checkbox" {% if field['value'] %} id="{{znode['nodeid']}}{{field['attribute']}}" checked{% endif %} onclick="checkboxChange(this, '{{iCPE.mac}}', '{{znode['nodeid']}}','{{field['attribute']}}');">
+						<div class="slider"></div>
+					</label>
+					{% endif %}
+				{% else %}
+				<p id="{{znode['nodeid']}}{{field['attribute']}}">{{field['value']}}</p>
+				{% endif %}
 			</div>
 			</div>
 			{% endif %}
@@ -149,6 +173,46 @@
 		</div>
 	</div>
 </div>
+<div class="modal fade" id="iCPEInfo" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h2 class="modal-title">Information</h2>
+			</div>
+			<div class="modal-body">
+				<table class="table">
+					<thead>
+					</thead>
+					<tbody>
+						<tr>
+							<td>Alias</td>
+							<td>{{iCPE.alias}}</td>
+						</tr>
+						<tr>
+							<td>Mac</td>
+							<td>{{iCPE.mac}}</td>
+						</tr>
+						<tr>
+							<td>Street</td>
+							<td>{{iCPE.location.street}}</td>
+						</tr>
+						<tr>
+							<td>City</td>
+							<td>{{iCPE.location.city}}</td>
+						</tr>
+						<tr>
+							<td>Created</td>
+							<td>{{moment(iCPE.created_on).format('Do MMM YYYY, HH:mm:ss')}}</td>
+						<tr>
+							<td>Last Online</td>
+							<td>{{moment(iCPE.last_online).format('Do MMM YYYY, HH:mm:ss')}}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
 <div class="modal fade" id="NoteBook" role="dialog">
 	<div class="modal-dialog">
 		<div class="modal-content">
@@ -160,12 +224,27 @@
 				<p style="width: 100%">{{note.author}} <span style="position: absolute; right: 0; margin-right: 1vw;">{{moment(note.created_on).format('Do MMM YYYY, HH:mm:ss')}}</span></p>
 				<p style="width: 100%;padding: 0.2vw; background-color: #f5f5f5">{{note.note}}</p>
 				{% endfor %}
-				<form action="{{url_for('NodesNotesAdd', mac=mac)}}" method="post" class="form-horizonal">
-					<div class="form-group">
+				<form action="{{url_for('NodesNotesAdd', mac=mac)}}" method="post" class="form-horizontal">
+					<div class="form-group" style="margin: 1vw;">
 						<label for="notes">Enter note</label>
 						<input type="text" max-length="150" class="form-control" name="note"></input>
 						<button type="submit" class="btn btn-default">Submit</button>
 					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="StickyNote" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h2 class="modal-title">Modify Note</h2>
+			</div>
+			<div class="modal-body">
+				<form action="{{url_for('NodesNoteSticky', mac=mac)}}" method="post" class="form-horizontal">
+					<input type="text" max-length="150" class="form-control" name="note" value="{{iCPE.notesticky}}"></input>
+					<button type="submit" class="btn btn-default">update</button>
 				</form>
 			</div>
 		</div>
@@ -179,6 +258,26 @@
 				<h4 class="modal-title">{{znode['Alias']}}</h4>
 			</div>
 			<div class="modal-body">
+				<h3>Static values</h3>
+				<table class="table">
+					<thead>
+					</thead>
+					<tbody>
+						<tr>
+							<td>Brandname</td>
+							<td>{{ znode['Brandname'] }}</td>
+						</tr>
+						<tr>
+							<td>Productname</td>
+							<td>{{ znode['Productname'] }}</td>
+						</tr>
+						<tr>
+							<td>Generic Class</td>
+							<td>{{ znode['Generic Class'] }}</td>
+						</tr>
+					</tbody>
+				</table>
+				<h3>Modify values</h3>
 				<form method="POST" action="{{url_for('NodesNodeConfigure', mac=mac, nodeid=znode.nodeid)}}">
 					{{ NodeBasicForm.csfr_token }}
 					{{ NodeBasicForm.hidden_tag() }}
@@ -194,7 +293,7 @@
 						</div>
 					</div>
 				</form>
-				<h4>Supported classes</h4>
+				<h3>Supported classes</h3>
 				<table class="table table-striped">
 					<thead>
 						<tr>
@@ -306,7 +405,6 @@
 </div>
 <script>
 $(document).ready(function() {
-	$(".my-checkbox").bootstrapSwitch();
 var marker = L.marker([{{iCPE.location.geolat}}, {{iCPE.location.geolong}}]).addTo(map);
 
 namespace = '/icpeevent';
@@ -327,29 +425,21 @@ $('input[name="geolat"]').val('{{iCPE.location.geolat}}');
 $('input[name="geolong"]').val('{{iCPE.location.geolong}}');
 
 
-{% for znode in znodes %}
-{% for field in znode['fields'] %}
-	{% if field['type'] == 'checkbox' %}
-	$("#{{znode['nodeid']}}{{field['attribute']}}").bootstrapSwitch();
-	$("#{{znode['nodeid']}}{{field['attribute']}}").bootstrapSwitch('size', 'small');
-	$("#{{znode['nodeid']}}{{field['attribute']}}").bootstrapSwitch('state', 
-		{% if field['value'] %} true, true {% else %} false, false {% endif %});
-	$("#{{znode['nodeid']}}{{field['attribute']}}").bootstrapSwitch('readonly', 
-		{% if field['readonly'] %} true, true {% else %} false, false {% endif %});
-	$("#{{znode['nodeid']}}{{field['attribute']}}").on('switchChange.bootstrapSwitch', function(event, state) {
-		socket.emit('event', {mac : "{{iCPE.mac}}", nodeid : "{{znode['nodeid']}}", state : state, class : "{{field['attribute']}}"});
-	});
-	{% endif %}
-{% endfor %}
-{% endfor %}
-
 socket.on('roomevent', function(msg) {
 	console.log(msg);
-	console.log('roomevent..!');
 	if (msg['datatype'] == "<class 'bool'>") {
-		$('#'+msg['nodeid']+msg['attribute']).bootstrapSwitch('state', msg['value'], false)
+		checkbox = document.getElementById(msg['nodeid']+msg['attribute']);
+		if ($(checkbox).hasClass('.lightbox')) {
+			if (msg['value']) {
+				$(checkbox).addClass('.light');
+			} else {
+				$(checkbox).removeClass('.light');
+			}
+		}	else {
+			$(checkbox).prop('checked', msg['value']);
+		} 
 	} else {
-		$('#'+msg['nodeid']+msg['attribute']).val(msg['value'])
+		$('#'+msg['nodeid']+msg['attribute']).text(msg['value'])
 	}
 });
 new Morris.Line({
@@ -357,7 +447,7 @@ new Morris.Line({
 	  element: 'PowerChart',
 
 		data: [
-		{% for powerstat in iCPE.powerstat %}
+		{% for powerstat in iCPE.powerstat[-10:] %}
 		{ x: '{{powerstat.date}}', value: {{'%0.2f' % powerstat.power|float }} },
 		{% endfor %}
 		],
@@ -372,7 +462,7 @@ new Morris.Line({
 	  element: 'HeatChart',
 
 		data : [
-		{% for heatstat in iCPE.heatstat %}
+		{% for heatstat in iCPE.heatstat[-10:] %}
 		{ x: '{{heatstat.date}}', value : {{'%0.2f' % heatstat.heat|float }} },
 		{% endfor %}
 		],

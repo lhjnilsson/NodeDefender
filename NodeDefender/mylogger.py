@@ -40,7 +40,7 @@ def ZWaveEvent(**kwargs):
     icpe = iCPEModel.query.filter_by(mac = kwargs['mac']).first()
     if not icpe:
         return
-    FAIcon = GetFA(kwargs['class'] + str(kwargs['value']))
+    FAIcon = GetFA(kwargs['attribute'] + str(kwargs['value']))
     event = NodeEventModel(kwargs['nodeid'], kwargs['Alias'], FAIcon)
     icpe.events.append(event)
     db.session.add(icpe)

@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE
 SOFTWARE.
 '''
-from . import db, bcrypt, handler
+from . import db, bcrypt, logghandler
 from datetime import datetime
 import logging
 from uuid import uuid4
@@ -31,7 +31,7 @@ from geopy.geocoders import Nominatim
 # Setup logging
 logger = logging.getLogger('SQL')
 logger.setLevel(logging.INFO)
-logger.addHandler(handler)
+logger.addHandler(logghandler)
 
 '''
 
@@ -256,6 +256,7 @@ class iCPEModel(db.Model):
     heatstat = db.relationship('NodeHeatStatModel', backref='icpe')
     powerstat = db.relationship('NodePowerStatModel', backref='icpe')
     notes = db.relationship('NodeNotesModel', backref='icpe')
+    notesticky = db.Column(db.String(150))
 
     def __init__(self, mac, alias):
         self.mac = mac.upper()

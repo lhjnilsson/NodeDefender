@@ -299,6 +299,19 @@ def NodesNotesAdd(mac):
     else:
         return redirect(url_for('NodesNode', mac=mac))
 
+@app.route('/nodes/<mac>/notes/sticky', methods=['GET', 'POST'])
+@login_required
+def NodesNoteSticky(mac):
+    if request.method == 'POST':
+        note = request.form['note']
+        icpe = iCPEModel.query.filter_by(mac = mac).first()
+        icpe.notesticky = note
+        db.session.add(icpe)
+        db.session.commit()
+        return redirect(url_for('NodesNode', mac=mac))
+    else:
+        return redirect(url_for('NodesNode', mac=mac))
+
 @app.route('/nodes/<mac>/delete')
 @login_required
 def DeleteNode(mac):
@@ -351,9 +364,9 @@ def NodesNodeClassDisplay(mac, nodeid, cls, field):
 
 
 def CleanDuplicate(records):
-    for record in records:
-        if record.parent_id == None:
-            db.session.delete(record)
+    for icpe, node in records:
+        if node.parent_id == None:
+            db.session.delete(node)
     db.session.commit()
     return True
 

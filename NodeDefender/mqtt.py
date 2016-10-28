@@ -23,8 +23,9 @@ THE
 SOFTWARE.
 '''
 import paho.mqtt.client as PahoMQTT
-from . import inMQTTQueue, outMQTTQueue
+from . import inMQTTQueue, outMQTTQueue, logghandler
 from threading import Thread
+import logging
 
 class MQTT:
     '''
@@ -40,10 +41,14 @@ class MQTT:
         self.client = PahoMQTT.Client()
         self.client.on_message = self._on_message
         self.client.on_connect = self._on_connect
+        self.logger = logging.getLogger('MQTT')
+        self.logger.setLevel(logging.INFO)
+        self.logger.addHandler(logghandler)
         try:
             self.client.connect(self.ip, self.port, 60)
             t1 = Thread(target=self._subscribeOut).start()
             self.online = True
+            self.logger.info('MQTT {}:{} active'.format(self.ip, self.port))
             self.client.loop_start()
         except ConnectionRefusedError:
             pass #log this later
@@ -57,8 +62,8 @@ class MQTT:
     def _subscribeOut(self):
         while True:
             topic, payload = outMQTTQueue.get()
-            print(topic, payload)
             self.client.publish(topic, payload)
+            self.logger.debug('MQTT Message. Topic: {}, Payload: {}'.format(topic, payload))
 
     def publish(self, event):
         self.client.publish(event)

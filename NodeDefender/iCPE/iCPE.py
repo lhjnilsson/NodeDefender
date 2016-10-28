@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE
 SOFTWARE.
 '''
-from .. import db, handler, outMQTTQueue, inMQTTQueue,\
+from .. import db, logghandler, outMQTTQueue, inMQTTQueue,\
         outSocketQueue, NodeLogQueue
 from ..models import iCPEModel, LocationModel, NodeModel, NodeClassModel,\
 NodeHiddenFieldModel
@@ -50,7 +50,7 @@ class iCPE(MQTTFunctions, WSFunctions):
         self.LoadNodes(ZNodes)
         self.logger = logging.getLogger(self.alias)
         self.logger.setLevel(logging.INFO)
-        self.logger.addHandler(handler)
+        self.logger.addHandler(logghandler)
         self.logger.info('iCPE {} Started'.format(self.mac))
 
     @classmethod

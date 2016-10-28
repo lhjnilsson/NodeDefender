@@ -37,14 +37,14 @@ from gevent import monkey, sleep
 monkey.patch_all()
 
 # Setup logging
-handler = logging.FileHandler('app.log')
-handler.setLevel(logging.INFO)
+logghandler = logging.FileHandler('app.log')
+logghandler.setLevel(logging.INFO)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-handler.setFormatter(formatter)
+logghandler.setFormatter(formatter)
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
-logger.addHandler(handler)
+logger.addHandler(logghandler)
 
 # Initialize the Flask- Application
 app = Flask(__name__)

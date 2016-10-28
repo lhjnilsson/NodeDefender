@@ -23,7 +23,7 @@ class Attribute:
         nodeid = instance.__dict__['nodeid']
         Alias = instance.__dict__['Alias']
         # print('---setting: ', mac, nodeid, self.name, value)
-        msg = {'nodeid' : nodeid, 'mac' : mac, 'class' : self.name, 'value' :
+        msg = {'nodeid' : nodeid, 'mac' : mac, 'attribute' : self.name, 'value' :
                value, 'Alias' : Alias, 'datatype' : str(self.datatype)}
         outSocketQueue.put(('roomevent', msg, mac))
         NodeLogQueue.put((self.unit, msg))

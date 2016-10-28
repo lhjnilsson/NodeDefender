@@ -48,13 +48,11 @@ def icpeevent(msg):
 def _echoToChannel():
     while True:
         event, msg, room = outSocketQueue.get()
-        print(event, msg, room)
         socketio.emit(event, msg, namespace = '/icpeevent', room = room)
 
 
 @socketio.on('join', namespace='/icpeevent')
 def joinicpe(msg):
-    print('joining: ', msg['room'])
     join_room(msg['room'])
 
 t1 = Thread(target=_echoToChannel,)

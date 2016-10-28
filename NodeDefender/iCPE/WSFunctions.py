@@ -32,6 +32,5 @@ class WSFunctions:
         znode = self.__contains__(kwargs['nodeid'])
         if not znode:
             return False
-        print(znode)
         getattr(znode.callback, 'WS'+kwargs['class'])(**kwargs)
         return True
