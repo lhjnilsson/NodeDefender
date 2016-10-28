@@ -68,9 +68,14 @@ def UpdateDaily():
     SetDailyLog(totalHeat, totalPower, NumEvents)
     stats = GetDailyStat()
     if type(stats) is not dict:
-        totalHeat = (totalHeat + stats.heat) / 2
-        totalPower = (totalPower + stats.power) / 2
-        NumEvents = (NumEvents + stats.events) / 2
+        if len(totalHeat) > 0:
+            totalHeat = (totalHeat + stats.heat) / 2
+        
+        if len(totalPower) > 0:
+            totalPower = (totalPower + stats.power) / 2
+        
+        if len(NumEvents):
+            NumEvents = (NumEvents + stats.events) / 2
     SetDailyStat(totalHeat, totalPower, NumEvents)
     logger.info('Daily cronjob completed, heat {}, power {}, events\
                 {}'.format(totalHeat, totalPower, NumEvents))
@@ -112,6 +117,7 @@ def UpdateHourly():
     except ZeroDivisionError:
         totalPower = 0.0
 
+    
     totalHeat = 0.0
     for stat in HeatEvents:
         totalHeat += stat.heat
@@ -124,8 +130,11 @@ def UpdateHourly():
     
     stats = GetHourlyStat()
     if type(stats) is not dict:
-        totalHeat = (totalHeat + stats.heat) / 2
-        totalPower = (totalPower + stats.power) / 2
+        if stats.heat > 0:
+            totalHeat = (totalHeat + stats.heat) / 2
+        
+        if stats.power > 0:
+            totalPower = (totalPower + stats.power) / 2
     SetHourlyStat(totalHeat, totalPower, NumEvents)
     logger.info('Hourly cronjob completed, heat {}, power {}, events\
                 {}'.format(totalHeat, totalPower, NumEvents))
