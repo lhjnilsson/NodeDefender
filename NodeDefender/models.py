@@ -256,6 +256,7 @@ class iCPEModel(db.Model):
     heatstat = db.relationship('NodeHeatStatModel', backref='icpe')
     powerstat = db.relationship('NodePowerStatModel', backref='icpe')
     notes = db.relationship('NodeNotesModel', backref='icpe')
+    notesticky = db.Column(db.String(150))
 
     def __init__(self, mac, alias):
         self.mac = mac.upper()
