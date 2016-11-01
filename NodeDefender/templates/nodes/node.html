@@ -89,7 +89,7 @@ function checkboxChange(box, icpe, nodeid, attribute) {
 			<div class="col-sm-5 col-sm-offset-5">
 				{% if field['type'] == 'checkbox' %}
 					{% if field['readonly'] %}
-					<label class="lightbox {% if field['value'] %} light {% endif %}" id="{{znode['nodeid']}}{{field['attribute']}}">
+					<label class="lightbox {% if field['value'] %} lightboxlight {% endif %} asdf" id="{{znode['nodeid']}}{{field['attribute']}}">
 					</label>
 					{% else %}
 					<label class="switch">
@@ -429,11 +429,11 @@ socket.on('roomevent', function(msg) {
 	console.log(msg);
 	if (msg['datatype'] == "<class 'bool'>") {
 		checkbox = document.getElementById(msg['nodeid']+msg['attribute']);
-		if ($(checkbox).hasClass('.lightbox')) {
+		if ($(checkbox).hasClass('lightbox')) {
 			if (msg['value']) {
-				$(checkbox).addClass('.light');
+				$(checkbox).addClass('lightboxlight');
 			} else {
-				$(checkbox).removeClass('.light');
+				$(checkbox).removeClass('lightboxlight');
 			}
 		}	else {
 			$(checkbox).prop('checked', msg['value']);
