@@ -70,7 +70,7 @@
 								<div class="media">
 									<div class="media-body">
 										<h5 class="media-heading"><strong>{{ message.subject }}</strong></h5>
-										<p class="small text-muted"><i class="fa fa-clock-o"></i> Yesterday at 4:32 PM</p>
+										<p class="small text-muted"><i class="fa fa-clock-o"></i> {{ moment(message.created_on).format('Do MMM YYYY, HH:mm:ss') }} </p>
 									</div>
 								</div>
 							</a>

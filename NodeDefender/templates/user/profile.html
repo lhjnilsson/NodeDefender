@@ -19,55 +19,107 @@
 	<div class="col-lg-6">
 	<div class="col-lg-6">
 		<h3>User information</h3>
-		<div class="box">
-			<p><Strong>Name </strong>{{ user.firstname }}, {{ user.lastname }}</p>
-			<p><Strong>Email </strong> {{ user.email }}</p>
+		<div class="box" style="padding: 0;">
+			<table class="table">
+				<thead>
+				</thead>
+				<tbody>
+					<tr>
+						<td>Name: </td>
+						<td>{{user.firstname}} {{user.lastname}}</td>
+					</tr>
+					<tr>
+						<td>Email: </td>
+						<td>{{user.email}}</td>
+					</tr>
+				</tbody>
+			</table>
 		</div>
 	</div>
 	<div class="col-lg-6">
 		<h3>User Stats</h3>
-		<div class="box">
-			<p><Strong>Registered: </strong>{{ user.registered_on }}</p>
-			<p><strong>Last Login: </strong>{{ user.last_login }}</p>
+		<div class="box" style="padding: 0;">
+			<table class="table">
+				<thead>
+				</thead>
+				<tbody>
+					<tr>
+						<td>Registered at:</td>
+						<td>{{ moment(user.registered_on).format('Do MMM YYYY, HH:mm:ss') }}
+					</tr>
+					<tr>
+						<td>Last Login:</td>
+						<td>{{ moment(user.last_login).format('Do MMM YYYY, HH:mm:ss') }}
+					</tr>
+				</tbody>
+			</table>
 		</div>
 	</div>
 	<div class="col-lg-12">
 		<h3>Login Log</h3>
-		<div class="box">
-			<p>
-			<strong>Date</strong> - <Strong>Successful</strong> - <strong>IP Addr</strong> - <strong>Browser</strong> - <strong>Platform</strong>
-		<br>
-			{% for log in user.loginlog %}
-			{{ log.date }} - 
-			{{ log.successful }} - 
-			{{ log.ipaddr }} - 
-			{{ log.browser }} - 
-			{{ log.platform }} -
-			<br>
-			{% endfor %}
-			</p>
+		<div class="box" style="padding: 0;">
+			<table class="table">
+				<thead>
+					<tr>
+						<th>Date</th>
+						<th>Successful</th>
+						<th>IP Address</th>
+						<th>Platform</th>
+						<th>Browser</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for log in user.loginlog %}
+					<td>
+						{{ moment(log.date).format('Do MMM YYYY, HH:mm:ss') }}
+					</td>
+					<td>
+						{{ log.successful }} 
+					</td>
+					<td>
+						{{ log.ipaddr }} 
+					</td>
+					<td>
+						{{ log.browser }} 
+					</td>
+					<td>
+						{{ log.platform }}
+					</td>
+					{% endfor %}
+				</tbody>
+			</table>
 		</div>
 	</div>
 	</div>
 	<div class="col-lg-6">
 		<h3>Team members </h3>
 		<div class="box" style="padding: 0;">
-			<div class="list-group">
-				{% for member  in Team %}
-				<a href="#" data-toggle="modal" data-target="#{{member.id}}" class="list-group-item">
-					<p><strong>User: </strong>{{ member.firstname }} {{ member.lastname }}   
-					<strong>Level: </strong>
-					{% if user.is_admin %}
-					Admin
-					{% elif user.is_moderator %}
-					Moderator
-					{% else %}
-					User
-					{% endif %}
-					</p>
-				</a>
-			{% endfor %}
-			</div>
+			<table class="table">
+				<thead>
+					<th>Name</th>
+					<th>Email</th>
+					<th>Level</th>
+				</thead>
+				<tbody>	
+					{% for member  in Team %}
+					<td>
+						{{ member.firstname}} {{ member.lastname }}
+					</td>
+					<td>
+						{{ member.email }}
+					</td>
+					<td>
+						{% if user.is_admin %}
+						Admin
+						{% elif user.is_moderator %}
+						Moderator
+						{% else %}
+						User
+						{% endif %}
+					</td>
+				{% endfor %}
+				</tbody>
+			</table>
 		</div>
 	</div>
 </div>
