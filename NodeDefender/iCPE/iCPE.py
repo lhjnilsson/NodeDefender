@@ -75,6 +75,8 @@ class iCPE(MQTTFunctions, WSFunctions):
                     int(nodeid)][0]
         except IndexError:
             return False
+        except ValueError:
+            pass # ../sys/.. things.
 
     @staticmethod
     def PayloadToDict(payload):
