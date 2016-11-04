@@ -68,7 +68,11 @@ class MQTTFunctions:
         '''
         respond from iCPE for a call
         '''
-        getattr(self, topic['act']+topic['action'])(topic, payload)
+        try:
+            getattr(self, topic['act']+topic['action'])(topic, payload)
+        except AttributeError:
+            pass
+
         return True
 
     @todict

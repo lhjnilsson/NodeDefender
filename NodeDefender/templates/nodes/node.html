@@ -93,7 +93,7 @@ function checkboxChange(box, icpe, nodeid, attribute) {
 					</label>
 					{% else %}
 					<label class="switch">
-						<input type="checkbox" {% if field['value'] %} id="{{znode['nodeid']}}{{field['attribute']}}" checked{% endif %} onclick="checkboxChange(this, '{{iCPE.mac}}', '{{znode['nodeid']}}','{{field['attribute']}}');">
+						<input type="checkbox" id="{{znode['nodeid']}}{{field['attribute']}}" {% if field['value'] %} checked{% endif %} onclick="checkboxChange(this, '{{iCPE.mac}}', '{{znode['nodeid']}}','{{field['attribute']}}');">
 						<div class="slider"></div>
 					</label>
 					{% endif %}
