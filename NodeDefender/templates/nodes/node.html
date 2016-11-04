@@ -5,6 +5,9 @@
 namespace = '/icpeevent';
 var socket = io.connect('http://' + document.domain + ':' + location.port + namespace);
 
+socket.on('connect', function() {
+    socket.emit('join', {room : '{{mac}}'});
+});
 
 function checkboxChange(box, icpe, nodeid, attribute) {
 	if (box.checked) {
@@ -13,6 +16,24 @@ function checkboxChange(box, icpe, nodeid, attribute) {
 		socket.emit('event', {mac : icpe, nodeid : nodeid, state : 'False', class : attribute});
 	}
 }
+
+socket.on('roomevent', function(msg) {
+	console.log(msg);
+	if (msg['datatype'] == "<class 'bool'>") {
+		checkbox = document.getElementById(msg['nodeid']+msg['attribute']);
+		if ($(checkbox).hasClass('lightbox')) {
+			if (msg['value']) {
+				$(checkbox).addClass('lightboxlight');
+			} else {
+				$(checkbox).removeClass('lightboxlight');
+			}
+		}	else {
+			$(checkbox).prop('checked', msg['value']);
+		} 
+	} else {
+		$('#'+msg['nodeid']+msg['attribute']).text(msg['value'])
+	}
+});
 
 </script>
 
@@ -407,13 +428,6 @@ function checkboxChange(box, icpe, nodeid, attribute) {
 $(document).ready(function() {
 var marker = L.marker([{{iCPE.location.geolat}}, {{iCPE.location.geolong}}]).addTo(map);
 
-namespace = '/icpeevent';
-var socket = io.connect('http://' + document.domain + ':' + location.port + namespace);
-
-socket.on('connect', function() {
-	socket.emit('join', {room : '{{mac}}'});
-});
-
 $('input[name="alias"]').val('Alias');
 
 /*
@@ -425,23 +439,6 @@ $('input[name="geolat"]').val('{{iCPE.location.geolat}}');
 $('input[name="geolong"]').val('{{iCPE.location.geolong}}');
 
 
-socket.on('roomevent', function(msg) {
-	console.log(msg);
-	if (msg['datatype'] == "<class 'bool'>") {
-		checkbox = document.getElementById(msg['nodeid']+msg['attribute']);
-		if ($(checkbox).hasClass('lightbox')) {
-			if (msg['value']) {
-				$(checkbox).addClass('lightboxlight');
-			} else {
-				$(checkbox).removeClass('lightboxlight');
-			}
-		}	else {
-			$(checkbox).prop('checked', msg['value']);
-		} 
-	} else {
-		$('#'+msg['nodeid']+msg['attribute']).text(msg['value'])
-	}
-});
 new Morris.Line({
 	  // ID of the element in which to draw the chart.
 	  element: 'PowerChart',
