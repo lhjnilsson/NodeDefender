@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>NodeDefender</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="/static/css/main.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="/static/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body>
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-offset-1 col-lg-10">
+				<div class="box">
+					<h2 class="col-sm-offset-2">Welcome to <b>NodeDefender</b></h2>
+					{% include "flash.html" %}
+					<div class="row">
+						<div class="col-lg-6">
+							<h4 class="col-sm-offset-2"><b>Login</b></h4>
+							<form name="lform" class="form-horizontal" method="post" action="{{ url_for('login') }}">
+								<div class="form-group">
+									{{ lform.email.label(class="col-sm-2 control-label") }}
+									<div class="col-sm-10">
+										<div class="control">
+											{{ lform.email(class="form-control") }}
+										</div>
+									</div>
+								</div>
+								<div class="form-group">
+									{{ lform.password.label(class="col-sm-2 control-label") }}
+									<div class="col-sm-10">
+										<div class="control">
+											{{ lform.password(class="form-control") }}
+										</div>
+									</div>
+								</div>
+								<div class="form-group">
+									{{ lform.remember_me.label(class="col-sm-2 control-label") }}
+									<div class="col-sm-10">
+										<div class="control">
+											{{ lform.remember_me(class="form-control") }}
+										</div>
+									</div>
+								</div>
+								<div class="form-group">
+									<div class="col-sm-offset-2 col-sm-10">
+										<button type="submit" class="btn btn-default">Login</button>*
+									</div>
+								</div>
+							</form>
+							<p class="col-sm-offset-2"><i>*By logging in you agree to the terms of use</i></p>
+						</div>
+						<div class="col-lg-6">
+							<h4 class="col-sm-offset-2"><b>Register</b></h2>
+							<form name="rform" class="form-horizontal" method="post" action="{{ url_for('register') }}">
+								<div class="form-group">
+									{{ rform.email.label(class="col-sm-2 control-label") }}
+									<div class="col-sm-10">
+										<div class="control">
+											{{ rform.email(class="form-control") }}
+										</div>
+									</div>
+								</div>
+								<div class="form-group">
+									{{ rform.firstname.label(class="col-sm-2 control-label") }}
+									<div class="col-sm-10">
+										<div class="control">
+											{{ rform.firstname(class="form-control") }}
+										</div>
+									</div>
+								</div>
+								<div class="form-group">
+									{{ rform.lastname.label(class="col-sm-2 control-label") }}
+									<div class="col-sm-10">
+										<div class="control">
+											{{ rform.lastname(class="form-control") }}
+										</div>
+									</div>
+								</div>
+								<div class="form-group">
+									{{ rform.password.label(class="col-sm-2 control-label") }}
+									<div class="col-sm-10">
+										<div class="control">
+											{{ rform.password(class="form-control") }}
+										</div>
+									</div>
+								</div>
+								<div class="form-group">
+									{{ rform.confirm.label(class="col-sm-2 control-label") }}
+									<div class="col-sm-10">
+										<div class="control">
+											{{ rform.confirm(class="form-control") }}
+										</div>
+									</div>
+								</div>
+								<div class="form-group">
+									<div class="col-sm-offset-2 col-sm-10">
+										<button type="submit" class="btn btn-default">Register</button>
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>
+	    </div>
+	  </div>
+  </div>
+	</div>
+    <!-- jQuery -->
+    <script src="/static/js/jquery-2.2.4.min.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="/static/js/bootstrap.min.js"></script>
+
+
+</body>
+
+</html>
