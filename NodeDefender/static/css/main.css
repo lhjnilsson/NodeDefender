@@ -7,12 +7,30 @@ body {
     background-color: #222;
     height: 100%;
 }
+h1, h2, h3, h4, h5, a, p {
+	font-family: ubuntu;
+}
+h1 {
 
+}
+h2 {
 
+}
 h3 {
 	margin-left: 1vw;
 }
+h4 {
 
+}
+h5 {
+
+}
+p {
+
+}
+a {
+
+}
 @media(min-width:768px) {
     body {
         margin-top: 50px;

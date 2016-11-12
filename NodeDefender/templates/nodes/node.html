@@ -34,7 +34,6 @@ socket.on('roomevent', function(msg) {
 		$('#'+msg['nodeid']+msg['attribute']).text(msg['value'])
 	}
 });
-
 </script>
 
 <div class="row">
@@ -64,8 +63,8 @@ socket.on('roomevent', function(msg) {
 	</div>
 	<div class="col-lg-3">
 		<div class="box" style="height: 200px;">
-			<h4><strong>Information <a href="#" data-toggle="modal" data-target="#iCPEInfo"><i class="fa fa-info" aria-hidden="true" style="position: absolute; right: 0; margin-right: 2vw"></i></a></strong></h4>
-			<br>
+			<p>{{iCPE.location.street}}<br>
+			{{iCPE.location.city}}</p>
 			<h4><strong>Notebook <a href="#" data-toggle="modal" data-target="#NoteBook"><i class="fa fa-book" aria-hidden="true" style="position: absolute; right: 0; margin-right: 2vw;"></i></a></strong></h4>
 			<h4><strong>Sticky Note: <a href="#" data-toggle="modal" data-target="#StickyNote"><i class="fa fa-pencil" aria-hidden="true" style="position: absolute; right: 0; margin-right: 2vw"></i></a></strong></h4>
 			<p>{{iCPE.notesticky}}</p>
@@ -84,10 +83,10 @@ socket.on('roomevent', function(msg) {
           <i class="fa fa-sign-out fa-3x" aria-hidden="true"></i>
         </a>
       </div>
-      <br>
-      <h4><strong>Connection:</strong> <small> - </small></h3>
-      <br>
-      <h4><strong>Battery:</strong> <small> - </small></h3>
+      <h4><strong>Connection:</strong> <small> - </small></h4>
+			<p>IP Address:<small> - </small><br>
+			<p>Last Online:<small> - </small></p>
+      <h4><strong>Battery:</strong> <small> - </small></h4>
     </div>
 	</div>
 </div>
@@ -135,7 +134,9 @@ socket.on('roomevent', function(msg) {
 	<div class="col-lg-12">
     {% if iCPE.powerstat %}
     <div class="col-lg-4">
-			<h3>Power Usage</h3>
+			<h3>Power Usage
+				<a href="{{url_for('DataPoweriCPE', mac = mac)}}" style="position: absolute; right: 0; margin-right: 1vw;"><i class="fa fa-line-chart" aria-hidden="true"></i></a>
+			</h3>
 			<div class="box" style="padding: 0;">
 				<div id="PowerChart" style="height: 250px;"></div>
 			</div>
@@ -143,7 +144,9 @@ socket.on('roomevent', function(msg) {
     {% endif %}
     {% if iCPE.heatstat %}
 		<div class="col-lg-4">
-			<h3>Heat</h3>
+			<h3>Heat
+				<a href="{{url_for('DataHeatiCPE', mac = mac)}}" style="position: absolute; right: 0; margin-right: 1vw;"><i class="fa fa-line-chart" aria-hidden="true"></i></a>
+				</h3>
 			<div class="box" style="padding: 0;">
 				<div id="HeatChart" style="height: 250px;"></div
 			></div>
@@ -151,7 +154,9 @@ socket.on('roomevent', function(msg) {
     {% endif %}
 		{% if iCPE.events %}
 		<div class="col-lg-4">
-			<h3>Events</h3>
+			<h3>Events
+				<a href="{{url_for('DataPoweriCPE', mac = mac)}}" style="position: absolute; right: 0; margin-right: 1vw;"><i class="fa fa-bar-chart" aria-hidden="true"></i></a>
+			</h3>
 			<div class="box" style="padding: 0;">
 				<table class="table table-striped">
 					<thead>
@@ -191,47 +196,6 @@ socket.on('roomevent', function(msg) {
 			</div>
 			<div class="modal-body">
 				<a href="{{ url_for('DeleteNode', mac=mac) }}"><button class="btn btn-danger">I Confirm</button></a>
-			</div>
-		</div>
-	</div>
-</div>
-<div class="modal fade" id="iCPEInfo" role="dialog">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal">&times;</button>
-				<h2 class="modal-title">Information</h2>
-			</div>
-			<div class="modal-body">
-				<table class="table">
-					<thead>
-					</thead>
-					<tbody>
-						<tr>
-							<td>Alias</td>
-							<td>{{iCPE.alias}}</td>
-						</tr>
-						<tr>
-							<td>Mac</td>
-							<td>{{iCPE.mac}}</td>
-						</tr>
-						<tr>
-							<td>Street</td>
-							<td>{{iCPE.location.street}}</td>
-						</tr>
-						<tr>
-							<td>City</td>
-							<td>{{iCPE.location.city}}</td>
-						</tr>
-						<tr>
-							<td>Created</td>
-							<td>{{moment(iCPE.created_on).format('Do MMM YYYY, HH:mm:ss')}}</td>
-						<tr>
-							<td>Last Online</td>
-							<td>{{moment(iCPE.last_online).format('Do MMM YYYY, HH:mm:ss')}}</td>
-						</tr>
-					</tbody>
-				</table>
 			</div>
 		</div>
 	</div>
@@ -281,10 +245,9 @@ socket.on('roomevent', function(msg) {
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal">&times;</button>
-				<h4 class="modal-title">{{znode['Alias']}}</h4>
+				<h3 class="modal-title">{{znode['Alias']}}</h3>
 			</div>
 			<div class="modal-body">
-				<h3>Static values</h3>
 				<table class="table">
 					<thead>
 					</thead>
@@ -303,8 +266,8 @@ socket.on('roomevent', function(msg) {
 						</tr>
 					</tbody>
 				</table>
-				<h3>Modify values</h3>
-				<form method="POST" action="{{url_for('NodesNodeConfigure', mac=mac, nodeid=znode.nodeid)}}">
+				<h4>Modify values</h4>
+				<form method="POST" class="form-horizontal" action="{{url_for('NodesNodeConfigure', mac=mac, nodeid=znode.nodeid)}}">
 					{{ NodeBasicForm.csfr_token }}
 					{{ NodeBasicForm.hidden_tag() }}
 					<div class="form-group">
@@ -319,7 +282,7 @@ socket.on('roomevent', function(msg) {
 						</div>
 					</div>
 				</form>
-				<h3>Supported classes</h3>
+				<h4>Supported classes</h4>
 				<table class="table table-striped">
 					<thead>
 						<tr>
@@ -369,7 +332,7 @@ socket.on('roomevent', function(msg) {
       </div>
       <div class="modal-body">
         <h4 class="col-sm-offset-2">Basic Settings</h4>
-				<form method="POST" action="{{url_for('NodesNode', mac=mac)}}" name="basic">
+				<form method="POST" class="form-horizontal" action="{{url_for('NodesNode', mac=mac)}}" name="basic">
 					{{ iCPEBasicForm.csfr_token }}
 					{{ iCPEBasicForm.hidden_tag() }}
 					<div class="form-group">
@@ -378,16 +341,6 @@ socket.on('roomevent', function(msg) {
 							{{ iCPEBasicForm.alias(class="form-control")}}
 						</div>
 					</div>
-					<div class="form-group">
-						<div class="col-sm-offset-2 col-sm-10">
-							<button type="submit" class="btn btn-default">Update</button>
-						</div>
-					</div>
-				</form>
-				<h4 class="col-sm-offset-2">Node Address</h4>
-				<form method="POST" action="{{url_for('NodesNode', mac=mac)}}" name="address">
-					{{ iCPEAddressForm.csfr_token }}
-					{{ iCPEAddressForm.hidden_tag() }}
 					<div class="form-group">
 						{{ iCPEAddressForm.street.label(class="col-sm-2 control-label")}}
 						<div class="col-sm-10">
@@ -418,8 +371,8 @@ socket.on('roomevent', function(msg) {
 						</div>
 					</div>
 				</form>
+				<br>
 				<button type="#" class="btn btn-default" data-toggle="modal" data-target="#DeleteNode">Delete Node</button>
-				<button type="#" class="btn btn-default">Exit</button>
       </div>
     </div>
   </div>
