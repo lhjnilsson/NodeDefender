@@ -1,14 +1,27 @@
-class iCPEModel(db.Model):
-    # Table storing iCPEs
+class NodeModel(db.Model):
     '''
-    iCPEs
+    Nodes represent a place that can contain one or more iCPEs
+    '''
+    __tablename__ = 'node'
+    id = db.Column(db.Integer, primary_key=True)
+    alias = db.Column(db.String(20), unique=True)
+    location = db.relationship('LocationModel', uselist=False, backref='node')
+    created_on = db.Column(db.DateTime)
+    notes = db.relationship('NodeNotesModel', backref='node')
+    notesticky = db.Column(db.String(150))
+
+    def __init__(self):
+        pass
+
+
+class iCPEModel(db.Model):
+    '''
+    iCPE attached to a Node
     '''
     __tablename__ = 'icpe'
     id = db.Column(db.Integer, primary_key=True)
     mac = db.Column(db.String(12), unique=True)
     alias = db.Column(db.String(20), unique=True)
-    location = db.relationship('LocationModel', uselist=False,
-                               backref='icpe')
     created_on = db.Column(db.DateTime)
     online =  db.Column(db.Boolean)
     last_online = db.Column(db.DateTime)
@@ -31,7 +44,6 @@ class iCPEModel(db.Model):
         return '<Node %r, Mac %r>' % (self.alias, self.mac)
 
 class LocationModel(db.Model):
-    # Address of an iCPE
     '''
     One-to-one Table representing Location for iCPE
     '''
