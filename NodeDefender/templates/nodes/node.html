@@ -65,9 +65,11 @@ socket.on('roomevent', function(msg) {
 		<div class="box" style="height: 200px;">
 			<p>{{iCPE.location.street}}<br>
 			{{iCPE.location.city}}</p>
-			<h4><strong>Notebook <a href="#" data-toggle="modal" data-target="#NoteBook"><i class="fa fa-book" aria-hidden="true" style="position: absolute; right: 0; margin-right: 2vw;"></i></a></strong></h4>
-			<h4><strong>Sticky Note: <a href="#" data-toggle="modal" data-target="#StickyNote"><i class="fa fa-pencil" aria-hidden="true" style="position: absolute; right: 0; margin-right: 2vw"></i></a></strong></h4>
-			<p>{{iCPE.notesticky}}</p>
+			<h4><strong>Notes <a href="#" data-toggle="modal" data-target="#NoteBook"><i class="fa fa-book" aria-hidden="true" style="position: absolute; right: 0; margin-right: 2vw;"></i></a></strong></h4>
+			{% if iCPE.notesticky %}
+			<p><strong>Sticky set {{ moment(iCPE.notesticky.created_on).format('Do MMM YYYY, HH:mm:ss') }} by: <br> {{ iCPE.notesticky.author }}</strong> - {{ iCPE.notesticky.note }}</p>
+
+			{% endif %}
 		</div>
 	</div>
 	<div class="col-lg-3">
@@ -208,6 +210,12 @@ socket.on('roomevent', function(msg) {
 				<h2 class="modal-title">Notebook</h2>
 			</div>
 			<div class="modal-body">
+				<h4>Sticky Note</h4>
+				<form action="{{url_for('NodesNoteSticky', mac=mac)}}" method="post" class="form-horizontal">
+					<input type="text" max-length="150" class="form-control" name="note" value="{{iCPE.notesticky.note}}"></input>
+					<button type="submit" class="btn btn-default">update</button>
+				</form>
+				<h4>Notebook</h4>
 				{% for note in iCPE.notes|sort(attribute='created_on', reverse=True) %}
 				<p style="width: 100%">{{note.author}} <span style="position: absolute; right: 0; margin-right: 1vw;">{{moment(note.created_on).format('Do MMM YYYY, HH:mm:ss')}}</span></p>
 				<p style="width: 100%;padding: 0.2vw; background-color: #f5f5f5">{{note.note}}</p>
@@ -218,22 +226,6 @@ socket.on('roomevent', function(msg) {
 						<input type="text" max-length="150" class="form-control" name="note"></input>
 						<button type="submit" class="btn btn-default">Submit</button>
 					</div>
-				</form>
-			</div>
-		</div>
-	</div>
-</div>
-<div class="modal fade" id="StickyNote" role="dialog">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal">&times;</button>
-				<h2 class="modal-title">Modify Note</h2>
-			</div>
-			<div class="modal-body">
-				<form action="{{url_for('NodesNoteSticky', mac=mac)}}" method="post" class="form-horizontal">
-					<input type="text" max-length="150" class="form-control" name="note" value="{{iCPE.notesticky}}"></input>
-					<button type="submit" class="btn btn-default">update</button>
 				</form>
 			</div>
 		</div>

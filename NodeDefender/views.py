@@ -28,7 +28,7 @@ json
 from flask_login import login_required, login_user, current_user, logout_user
 from .models import UserModel, iCPEModel, NodeModel, MessageModel, LoginLogModel,\
 NodeEventModel, NodeHeatStatModel, NodePowerStatModel, NodeNotesModel,\
-        NodeClassModel, NodeHiddenFieldModel
+        NodeNoteStickyModel, NodeClassModel, NodeHiddenFieldModel
 from .forms import NodeForm, LoginForm, RegisterForm, AdminServerForm, \
         iCPEBasicForm, iCPEAddressForm, NodeBasicForm
 from datetime import datetime
@@ -305,7 +305,13 @@ def NodesNoteSticky(mac):
     if request.method == 'POST':
         note = request.form['note']
         icpe = iCPEModel.query.filter_by(mac = mac).first()
-        icpe.notesticky = note
+        if icpe.notesticky:
+            icpe.notesticky.author = current_user.email
+            icpe.notesticky.note = note
+            icpe.notesticky.created_on = datetime.now()
+        else:
+            StickyModel = NodeNoteStickyModel(current_user.email, note)
+            icpe.notesticky= StickyModel
         db.session.add(icpe)
         db.session.commit()
         return redirect(url_for('NodesNode', mac=mac))

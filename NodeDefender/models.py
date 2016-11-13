@@ -256,7 +256,7 @@ class iCPEModel(db.Model):
     heatstat = db.relationship('NodeHeatStatModel', backref='icpe')
     powerstat = db.relationship('NodePowerStatModel', backref='icpe')
     notes = db.relationship('NodeNotesModel', backref='icpe')
-    notesticky = db.Column(db.String(150))
+    notesticky = db.relationship('NodeNoteStickyModel', uselist=False, backref='icpe')
 
     def __init__(self, mac, alias):
         self.mac = mac.upper()
@@ -442,6 +442,21 @@ class NodeNotesModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     parent_id = db.Column(db.Integer, db.ForeignKey('icpe.id'))
     parent = db.relationship('iCPEModel', backref='nodenotes')
+    author = db.Column(db.String(80))
+    note = db.Column(db.String(150))
+    created_on = db.Column(db.DateTime)
+
+    def __init__(self, author, note):
+        self.author = author
+        self.note = note
+        self.created_on = datetime.now()
+
+class NodeNoteStickyModel(db.Model):
+    __tablename__ = 'nodenotesticky'
+
+    id = db.Column(db.Integer, primary_key=True)
+    parent_id = db.Column(db.Integer, db.ForeignKey('icpe.id'))
+    parent = db.relationship('iCPEModel', backref='nodenotesticky')
     author = db.Column(db.String(80))
     note = db.Column(db.String(150))
     created_on = db.Column(db.DateTime)
