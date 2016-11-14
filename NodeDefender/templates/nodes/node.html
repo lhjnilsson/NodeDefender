@@ -28,12 +28,14 @@ socket.on('roomevent', function(msg) {
 				$(checkbox).removeClass('lightboxlight');
 			}
 		}	else {
-			$(checkbox).prop('checked', msg['value']);
+			$('#'+msg['nodeid']+msg['attribute']).bootstrapSwitch('state', msg['value'], false);
 		} 
 	} else {
 		$('#'+msg['nodeid']+msg['attribute']).text(msg['value'])
 	}
 });
+
+
 </script>
 
 <div class="row">
@@ -95,8 +97,8 @@ socket.on('roomevent', function(msg) {
 <div class="row">
 	{% if znodes|length > 0 %}
 	{% for znode in znodes %}
-	<div class="col-lg-2">
-		<h3 style="max-width: 80%;">
+	<div class="col-xl-2 col-lg-2 col-md-3">
+		<h3 style="max-width: 70%;">
 			{{ znode['Alias'] }}
 			<a href="#" data-toggle="modal" data-target="#PopCFG{{znode['nodeid']}}" style="position: absolute; right: 0; margin-right: 1vw;">
 				<i class="fa fa-cog" aria-hidden="true"></i>
@@ -107,17 +109,14 @@ socket.on('roomevent', function(msg) {
 			{% for field in znode['fields'] %}
 			{% if field['display'] == True %}
 			<div class="form-group">
-			<label class="col-sm-2 control-label">{{field['attribute']}}</label>
-			<div class="col-sm-5 col-sm-offset-5">
+			<label class="col-sm-5 control-label">{{field['attribute']}}</label>
+			<div class="col-sm-7">
 				{% if field['type'] == 'checkbox' %}
 					{% if field['readonly'] %}
-					<label class="lightbox {% if field['value'] %} lightboxlight {% endif %} asdf" id="{{znode['nodeid']}}{{field['attribute']}}">
+					<label class="lightbox {% if field['value'] %} lightboxlight {% endif %}" id="{{znode['nodeid']}}{{field['attribute']}}">
 					</label>
 					{% else %}
-					<label class="switch">
-						<input type="checkbox" id="{{znode['nodeid']}}{{field['attribute']}}" {% if field['value'] %} checked{% endif %} onclick="checkboxChange(this, '{{iCPE.mac}}', '{{znode['nodeid']}}','{{field['attribute']}}');">
-						<div class="slider"></div>
-					</label>
+					<input type="checkbox" value="{{field['value']}}" id="{{znode['nodeid']}}{{field['attribute']}}" size="10">	
 					{% endif %}
 				{% else %}
 				<p id="{{znode['nodeid']}}{{field['attribute']}}">{{field['value']}}</p>
@@ -157,7 +156,7 @@ socket.on('roomevent', function(msg) {
 		{% if iCPE.events %}
 		<div class="col-lg-4">
 			<h3>Events
-				<a href="{{url_for('DataPoweriCPE', mac = mac)}}" style="position: absolute; right: 0; margin-right: 1vw;"><i class="fa fa-bar-chart" aria-hidden="true"></i></a>
+				<a href="{{url_for('DataEventsiCPE', mac = mac)}}" style="position: absolute; right: 0; margin-right: 1vw;"><i class="fa fa-bar-chart" aria-hidden="true"></i></a>
 			</h3>
 			<div class="box" style="padding: 0;">
 				<table class="table table-striped">
@@ -383,6 +382,21 @@ $('input[name="city"]').val('{{iCPE.location.city}}');
 $('input[name="geolat"]').val('{{iCPE.location.geolat}}');
 $('input[name="geolong"]').val('{{iCPE.location.geolong}}');
 
+{% for znode in znodes %}
+	{% for field in znode['fields'] %}
+  {% if field['type'] == 'checkbox' %}
+		{% if field['readonly'] != True %}
+		$("#{{znode['nodeid']}}{{field['attribute']}}").bootstrapSwitch();
+	  $("#{{znode['nodeid']}}{{field['attribute']}}").bootstrapSwitch('size', 'normal');
+		$("#{{znode['nodeid']}}{{field['attribute']}}").bootstrapSwitch('state', 
+		{% if field['value'] %} true, true {% else %} false, false {% endif %});
+		$("#{{znode['nodeid']}}{{field['attribute']}}").on('switchChange.bootstrapSwitch', function(event, state) {
+		socket.emit('event', {mac : "{{iCPE.mac}}", nodeid : "{{znode['nodeid']}}", state : state, class : "{{field['attribute']}}"});
+	});
+	{% endif %}
+	{% endif %}
+	{% endfor %}
+{% endfor %}
 
 new Morris.Line({
 	  // ID of the element in which to draw the chart.

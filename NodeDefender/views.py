@@ -383,7 +383,6 @@ def CleanDuplicate(records):
 @app.route('/data/power')
 def DataPower():
     if request.method == 'GET':
-        stats = NodePowerStatModel.query.all()
         icpes = iCPEModel.query.all()
         return render_template('data/power.html', icpes = icpes)
 
@@ -404,8 +403,8 @@ def DataPoweriCPENode(mac, nodeid):
 @app.route('/data/heat')
 def DataHeat():
     if request.method == 'GET':
-        stats = NodeHeatStatModel.query.all()
-        return render_template('data/heat.html', stats = stats)
+        icpes = iCPEModel.query.all()
+        return render_template('data/heat.html', icpes = icpes)
 
 @app.route('/data/heat/<mac>')
 def DataHeatiCPE(mac):
@@ -418,6 +417,24 @@ def DataHeatiCPENode(mac, nodeid):
     if request.method == 'GET':
         icpe = iCPEModel.query.filter_by(mac = mac).first()
         return render_template('data/heaticpenode.html', icpe = icpe)
+
+@app.route('/data/events')
+def DataEvents():
+    if request.method == 'GET':
+        events = NodeEventModel.query.all()
+        return render_template('data/events.html', events = events)
+
+@app.route('/data/events/<mac>')
+def DataEventsiCPE(mac):
+    if request.method == 'GET':
+        events = iCPEModel.query.filter_by(mac = mac).first().events
+        return render_template('data/eventsicpe.html', events = events)
+
+@app.route('/data/events/<mac>/<nodeid>')
+def DataEventsiCPENode(mac, nodeid):
+    if request.method == 'GET':
+        icpe = iCPEModel.query.filter_by(mac = mac).first()
+        return render_template('data/eventsicpenode.html', icpe = icpe)
 
 
 #

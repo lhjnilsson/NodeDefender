@@ -5,17 +5,22 @@
         <h1 class="page-header">
             Data <small>Heat</small>
         </h1>
-             <ol class="breadcrumb">
-           <li class="active">
-            <i class="fa fa-sliders"></i> Data
+          <ol class="breadcrumb">
+           <li>
+            <i class="fa fa-database"></i> Data
           </li>
+					<li class="active">
+						Heat
+					</li>
        </ol>
     </div>
 </div>
 <div class="row">
 	<div class="col-lg-12">
 		<h1>Graph</h1>
-			
+			<div class="box" style="padding: 0;">
+				<div id="HeatChart" style="height: 400px;"></div>
+			</div>			
 	</div>
 </div>
 
@@ -60,5 +65,25 @@
 		</div>
 	</div>
 </div>
+<script>
+$(document).ready(function() {
+new Morris.Line({
+	element: 'HeatChart',
+
+	data: [
+	{% for iCPE in icpes %}
+	{% for heatstat in iCPE.heatstat[-30:] %}
+	{x: '{{heatstat.date}}', value: {{'%0.2f' % heatstat.heat|float }} },
+	{% endfor %}
+	{% endfor %}
+	],
+
+	xkey : 'x',
+	ykeys : ['value'],
+	labels : ['Celsius']
+});
+});
+</script>
+
 
 {% endblock %}
