@@ -24,8 +24,10 @@ socket.on('roomevent', function(msg) {
 		if ($(checkbox).hasClass('lightbox')) {
 			if (msg['value']) {
 				$(checkbox).addClass('lightboxlight');
+				$(checkbox).text('OPEN');
 			} else {
 				$(checkbox).removeClass('lightboxlight');
+				$(checkbox).text('CLOSED');
 			}
 		}	else {
 			$('#'+msg['nodeid']+msg['attribute']).bootstrapSwitch('state', msg['value'], false);
@@ -63,7 +65,7 @@ socket.on('roomevent', function(msg) {
 	<div class="col-lg-6">
 		<div id="map" style="height: 200px; width: 100%;"></div>
 	</div>
-	<div class="col-lg-3">
+	<div class="col-lg-3 col-md-6">
 		<div class="box" style="height: 200px;">
 			<p>{{iCPE.location.street}}<br>
 			{{iCPE.location.city}}</p>
@@ -74,7 +76,7 @@ socket.on('roomevent', function(msg) {
 			{% endif %}
 		</div>
 	</div>
-	<div class="col-lg-3">
+	<div class="col-lg-3 col-md-6">
 		<div class="box" style="height: 200px;">
       <div class="row">
 			  <a href="{{ url_for('NodesUpdate', mac=mac) }}" class="col-lg-4" data-toggle="tooltip" title="Update known Z-Wave devices">
@@ -97,13 +99,13 @@ socket.on('roomevent', function(msg) {
 <div class="row">
 	{% if znodes|length > 0 %}
 	{% for znode in znodes %}
-	<div class="col-xl-2 col-lg-2 col-md-3">
-		<h3 style="max-width: 70%;">
+	<div class="col-xl-2 col-lg-2 col-md-4">
+		<h4 style="max-width: 80%; margin-left: 1vw;">
 			{{ znode['Alias'] }}
-			<a href="#" data-toggle="modal" data-target="#PopCFG{{znode['nodeid']}}" style="position: absolute; right: 0; margin-right: 1vw;">
+			<a href="#" data-toggle="modal" data-target="#PopCFG{{znode['nodeid']}}" style="position: absolute; right: 0; margin-right: 1vw; top: 0; margin-top: 0.5vw;">
 				<i class="fa fa-cog" aria-hidden="true"></i>
 			</a>
-		</h3>
+		</h4>
     <div class="box">
 			<form name="#" class="form-horizontal" method="#">
 			{% for field in znode['fields'] %}
@@ -114,9 +116,10 @@ socket.on('roomevent', function(msg) {
 				{% if field['type'] == 'checkbox' %}
 					{% if field['readonly'] %}
 					<label class="lightbox {% if field['value'] %} lightboxlight {% endif %}" id="{{znode['nodeid']}}{{field['attribute']}}">
+						{% if field['value'] %} OPEN {% else %} CLOSED {% endif %}
 					</label>
 					{% else %}
-					<input type="checkbox" value="{{field['value']}}" id="{{znode['nodeid']}}{{field['attribute']}}" size="10">	
+					<input type="checkbox" value="{{field['value']}}" id="{{znode['nodeid']}}{{field['attribute']}}">	
 					{% endif %}
 				{% else %}
 				<p id="{{znode['nodeid']}}{{field['attribute']}}">{{field['value']}}</p>

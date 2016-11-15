@@ -7,7 +7,7 @@ body {
     background-color: #222;
     height: 100%;
 }
-h1, h2, h3, h4, h5, a, p {
+h1, h2, h3, h4, h5, a, p, label {
 	font-family: ubuntu, helvetica, sans-serif;
 }
 h1 {
@@ -30,6 +30,9 @@ p {
 }
 a {
 
+}
+label {
+	font-weight: 200;
 }
 @media(min-width:768px) {
     body {
@@ -259,11 +262,16 @@ ul.alert-dropdown {
 .lightbox {
   position: relative;
   display: inline-block;
-  width: 60px;
-  height: 34px;
+  width: 93px;
+  height: 30px;
   background-color: #ccc;
+	border-radius: 5px;
+	text-align: center;
+	padding: 0.2vw;
+	color: black;
 }
 
 .lightboxlight {
  background-color: #2196F3;
+ color: white;
 }
