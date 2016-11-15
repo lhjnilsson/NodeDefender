@@ -117,7 +117,7 @@ L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
 
 {% for node in nodelist %}
 var marker = L.marker([{{node.location.geolat}}, {{node.location.geolong}}]).addTo(map);
-marker.bindPopup("<a href=\"/nodes/list/{{node.mac}}\">{{node.alias}}</a>");
+marker.bindPopup("<a href=\"/nodes/list/{{node.mac}}\">{{node.alias}}<br>{{node.location.street}},<br>{{node.location.city}}</a>");
 {% endfor %}
 
 // Data for Heat
