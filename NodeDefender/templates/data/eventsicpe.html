@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header">
+            Data <small>Events</small>
+        </h1>
+             <ol class="breadcrumb">
+           <li>
+            <i class="fa fa-database"></i> Data
+          </li>
+					<li>
+					<a href="{{ url_for('DataEvents') }}">Events</a>
+					</li>
+       </ol>
+    </div>
+</div>
+<div class="row">
+		<div class="col-lg-12">
+			<h1>Events</h1>
+				<div class="box" style="padding: 0;">
+					<table class="table table-striped">
+						<thead>
+							<tr>
+								<th>Date</th>
+								<th>iCPE</th>
+								<th>Node</th>
+								<th>Event</th>
+							</tr>
+						</thead>
+						<tbody>
+					{% for event in events[-30:]|sort(attribute='created_on', reverse=True) %}
+					<tr>
+						<td>
+							{{ moment(event.created_on).format('Do MMM YYYY, HH:mm:ss') }}
+						<td>
+							<a href="{{url_for('DataEventsiCPE', mac = event.parent.mac)}}">
+									{{ event.parent.alias }}
+							</a>
+						</td>
+						<td>
+							{{ event.productname }}
+						</td>
+						<td>
+							<i class="fa fa-{{ event.fonticon}}" aria-hidden="true"></i>
+						</td>
+					</tr>
+					{% endfor %}
+					</tbody>
+				</table>
+		</div>
+	</div>
+</div>
+<script>
+</script>
+
+
+{% endblock %}

@@ -5,49 +5,85 @@
         <h1 class="page-header">
             Data <small>Heat</small>
         </h1>
-             <ol class="breadcrumb">
-           <li class="active">
-            <i class="fa fa-sliders"></i> Data
+          <ol class="breadcrumb">
+           <li>
+            <i class="fa fa-database"></i> Data
           </li>
+					<li class="active">
+						Heat
+					</li>
        </ol>
     </div>
 </div>
+<div class="row">
+	<div class="col-lg-12">
+		<h1>Graph</h1>
+			<div class="box" style="padding: 0;">
+				<div id="HeatChart" style="height: 400px;"></div>
+			</div>			
+	</div>
+</div>
 
 <div class="row">
-    <div class="col-lg-12">
-			<h1>Heat Stat</h1>
+		<div class="col-lg-12">
+			<h1>Nodes</h1>
 				<div class="box" style="padding: 0;">
 					<table class="table table-striped">
 						<thead>
 							<tr>
-								<th>Date</th>
 								<th>iCPE</th>
-								<th>Node ID</th>
-								<th>Heat</th>
+								<th>Current Power</th>
+								<th>Daily Avarage</th>
+								<th>Weekly Avarage</th>
+								<th>Monthly Avarage</th>
 							</tr>
 						</thead>
 						<tbody>
-					{% for stat in stats %}
+					{% for iCPE in icpes %}
 					<tr>
 						<td>
-							{{ stat.date }}
+							<a href="{{url_for('DataHeatiCPE', mac = iCPE.mac)}}">
+									{{ iCPE.alias }}
+							</a>
 						</td>
 						<td>
-							{{ stat.parent.alias }}
+							-	
 						</td>
 						<td>
-							{{ stat.nodeid }}
+							-
 						</td>
 						<td>
-							{{ stat.heat }}
+							-
+						</td>
+						<td>
+							-
 						</td>
 					</tr>
 					{% endfor %}
 					</tbody>
 				</table>
 		</div>
-    </div>
+	</div>
 </div>
+<script>
+$(document).ready(function() {
+new Morris.Line({
+	element: 'HeatChart',
+
+	data: [
+	{% for iCPE in icpes %}
+	{% for heatstat in iCPE.heatstat[-30:] %}
+	{x: '{{heatstat.date}}', value: {{'%0.2f' % heatstat.heat|float }} },
+	{% endfor %}
+	{% endfor %}
+	],
+
+	xkey : 'x',
+	ykeys : ['value'],
+	labels : ['Celsius']
+});
+});
+</script>
 
 
 {% endblock %}

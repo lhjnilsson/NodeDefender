@@ -68,14 +68,15 @@ def UpdateDaily():
     SetDailyLog(totalHeat, totalPower, NumEvents)
     stats = GetDailyStat()
     if type(stats) is not dict:
-        if len(totalHeat) > 0:
+        if stats.heat > 0:
             totalHeat = (totalHeat + stats.heat) / 2
         
-        if len(totalPower) > 0:
+        if stats.power > 0:
             totalPower = (totalPower + stats.power) / 2
         
-        if len(NumEvents):
+        if  stats.events > 0:
             NumEvents = (NumEvents + stats.events) / 2
+    
     SetDailyStat(totalHeat, totalPower, NumEvents)
     logger.info('Daily cronjob completed, heat {}, power {}, events\
                 {}'.format(totalHeat, totalPower, NumEvents))
@@ -127,14 +128,6 @@ def UpdateHourly():
         totalHeat = 0.0
 
     SetHourlyLog(totalHeat, totalPower, NumEvents)
-    
-    stats = GetHourlyStat()
-    if type(stats) is not dict:
-        if stats.heat > 0:
-            totalHeat = (totalHeat + stats.heat) / 2
-        
-        if stats.power > 0:
-            totalPower = (totalPower + stats.power) / 2
     SetHourlyStat(totalHeat, totalPower, NumEvents)
     logger.info('Hourly cronjob completed, heat {}, power {}, events\
                 {}'.format(totalHeat, totalPower, NumEvents))
@@ -151,7 +144,6 @@ def GetPowerEvents():
 def ProcessEvents(icpe, nodeid, events, datatype):
     EventDict = dict((k, list(g)) for k, g in \
                      groupby(events, lambda event: event.created_on.year))
-
     for year, events in EventDict.items():
         EventDict[year] = dict((k, list(g)) for k, g in \
                               groupby(events, lambda event:
@@ -184,7 +176,6 @@ def InsertHeat(icpe, nodeid, events):
         HeatStatModel.events += numEvents
     icpe = iCPEModel.query.filter_by(mac = icpe).first()
     if icpe is None:
-        print('NOT FOUND ICPE')
         return
     icpe.heatstat.append(HeatStatModel)
     db.session.add(icpe)
@@ -207,7 +198,6 @@ def InsertPower(icpe, nodeid, events):
         PowerStatModel.events += numEvents
     icpe = iCPEModel.query.filter_by(mac = icpe).first()
     if icpe is None:
-        print('NOT FOUND ICPE')
         return
     icpe.powerstat.append(PowerStatModel)
     db.session.add(icpe)

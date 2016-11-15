@@ -28,7 +28,7 @@ json
 from flask_login import login_required, login_user, current_user, logout_user
 from .models import UserModel, iCPEModel, NodeModel, MessageModel, LoginLogModel,\
 NodeEventModel, NodeHeatStatModel, NodePowerStatModel, NodeNotesModel,\
-        NodeClassModel, NodeHiddenFieldModel
+        NodeNoteStickyModel, NodeClassModel, NodeHiddenFieldModel
 from .forms import NodeForm, LoginForm, RegisterForm, AdminServerForm, \
         iCPEBasicForm, iCPEAddressForm, NodeBasicForm
 from datetime import datetime
@@ -305,7 +305,13 @@ def NodesNoteSticky(mac):
     if request.method == 'POST':
         note = request.form['note']
         icpe = iCPEModel.query.filter_by(mac = mac).first()
-        icpe.notesticky = note
+        if icpe.notesticky:
+            icpe.notesticky.author = current_user.email
+            icpe.notesticky.note = note
+            icpe.notesticky.created_on = datetime.now()
+        else:
+            StickyModel = NodeNoteStickyModel(current_user.email, note)
+            icpe.notesticky= StickyModel
         db.session.add(icpe)
         db.session.commit()
         return redirect(url_for('NodesNode', mac=mac))
@@ -377,7 +383,6 @@ def CleanDuplicate(records):
 @app.route('/data/power')
 def DataPower():
     if request.method == 'GET':
-        stats = NodePowerStatModel.query.all()
         icpes = iCPEModel.query.all()
         return render_template('data/power.html', icpes = icpes)
 
@@ -398,8 +403,8 @@ def DataPoweriCPENode(mac, nodeid):
 @app.route('/data/heat')
 def DataHeat():
     if request.method == 'GET':
-        stats = NodeHeatStatModel.query.all()
-        return render_template('data/heat.html', stats = stats)
+        icpes = iCPEModel.query.all()
+        return render_template('data/heat.html', icpes = icpes)
 
 @app.route('/data/heat/<mac>')
 def DataHeatiCPE(mac):
@@ -412,6 +417,24 @@ def DataHeatiCPENode(mac, nodeid):
     if request.method == 'GET':
         icpe = iCPEModel.query.filter_by(mac = mac).first()
         return render_template('data/heaticpenode.html', icpe = icpe)
+
+@app.route('/data/events')
+def DataEvents():
+    if request.method == 'GET':
+        events = NodeEventModel.query.all()
+        return render_template('data/events.html', events = events)
+
+@app.route('/data/events/<mac>')
+def DataEventsiCPE(mac):
+    if request.method == 'GET':
+        events = iCPEModel.query.filter_by(mac = mac).first().events
+        return render_template('data/eventsicpe.html', events = events)
+
+@app.route('/data/events/<mac>/<nodeid>')
+def DataEventsiCPENode(mac, nodeid):
+    if request.method == 'GET':
+        icpe = iCPEModel.query.filter_by(mac = mac).first()
+        return render_template('data/eventsicpenode.html', icpe = icpe)
 
 
 #

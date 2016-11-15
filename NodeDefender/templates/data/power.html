@@ -5,17 +5,22 @@
         <h1 class="page-header">
             Data <small>Power</small>
         </h1>
-             <ol class="breadcrumb">
-           <li class="active">
-            <i class="fa fa-sliders"></i> Data
-          </li>
+				<ol class="breadcrumb">
+					<li class="">
+						<i class="fa fa-database"></i> Data
+					</li>
+					<li class="active">
+						Power
+					</li>
        </ol>
     </div>
 </div>
 <div class="row">
 	<div class="col-lg-12">
 		<h1>Graph</h1>
-			
+			<div class="box" style="padding: 0;">
+				<div id="PowerChart" style="height: 400px;"></div>
+			</div>			
 	</div>
 </div>
 
@@ -35,10 +40,11 @@
 						</thead>
 						<tbody>
 					{% for iCPE in icpes %}
-					<a href="#">
 					<tr>
 						<td>
-							{{ iCPE.alias }}
+							<a href="{{url_for('DataPoweriCPE', mac = iCPE.mac)}}">
+									{{ iCPE.alias }}
+							</a>
 						</td>
 						<td>
 							-	
@@ -53,12 +59,30 @@
 							-
 						</td>
 					</tr>
-					</a>
 					{% endfor %}
 					</tbody>
 				</table>
 		</div>
 	</div>
 </div>
+<script>
+$(document).ready(function() {
+new Morris.Line({
+	element: 'PowerChart',
+
+	data: [
+	{% for iCPE in icpes %}
+	{% for powerstat in iCPE.powerstat[-30:] %}
+	{x: '{{powerstat.date}}', value: {{'%0.2f' % powerstat.power|float }} },
+	{% endfor %}
+	{% endfor %}
+	],
+
+	xkey : 'x',
+	ykeys : ['value'],
+	labels : ['Watt']
+});
+});
+</script>
 
 {% endblock %}

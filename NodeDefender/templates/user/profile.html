@@ -70,21 +70,23 @@
 				</thead>
 				<tbody>
 					{% for log in user.loginlog %}
-					<td>
-						{{ moment(log.date).format('Do MMM YYYY, HH:mm:ss') }}
-					</td>
-					<td>
-						{{ log.successful }} 
-					</td>
-					<td>
-						{{ log.ipaddr }} 
-					</td>
-					<td>
-						{{ log.browser }} 
-					</td>
-					<td>
-						{{ log.platform }}
-					</td>
+          <tr>
+            <td>
+						  {{ moment(log.date).format('Do MMM YYYY, HH:mm:ss') }}
+					  </td>
+					  <td>
+						  {{ log.successful }} 
+					  </td>
+					  <td>
+						  {{ log.ipaddr }} 
+					  </td>
+					  <td>
+					  	{{ log.browser }} 
+				  	</td>
+					  <td>
+						  {{ log.platform }}
+					  </td>
+          </tr>
 					{% endfor %}
 				</tbody>
 			</table>
