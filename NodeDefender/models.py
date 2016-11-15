@@ -345,9 +345,13 @@ class NodeHiddenFieldModel(db.Model):
 
 class NodeHeatStatModel(db.Model):
     __tablename__ = 'nodeheatstat'
+    
+    
+    
+    
     id = db.Column(db.Integer, primary_key=True)
     parent_id = db.Column(db.Integer, db.ForeignKey('icpe.id'))
-    parent = db.relationship('iCPEModel', backref='Heats')
+    parent = db.relationship('iCPEModel', backref='Heats', lazy='subquery')
     nodeid = db.Column(db.Integer)
     events = db.Column(db.Integer)
     heat = db.Column(db.Float)
@@ -363,7 +367,7 @@ class NodePowerStatModel(db.Model):
     __tablename__ = 'nodepowerstat'
     id = db.Column(db.Integer, primary_key=True)
     parent_id = db.Column(db.Integer, db.ForeignKey('icpe.id'))
-    parent = db.relationship('iCPEModel', backref='Powers')
+    parent = db.relationship('iCPEModel', backref='Powers', lazy='subquery')
     nodeid = db.Column(db.Integer)
     events = db.Column(db.Integer)
     power = db.Column(db.Float)

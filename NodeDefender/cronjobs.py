@@ -152,7 +152,6 @@ def GetPowerEvents():
 def ProcessEvents(icpe, nodeid, events, datatype):
     EventDict = dict((k, list(g)) for k, g in \
                      groupby(events, lambda event: event.created_on.year))
-
     for year, events in EventDict.items():
         EventDict[year] = dict((k, list(g)) for k, g in \
                               groupby(events, lambda event:
@@ -185,7 +184,6 @@ def InsertHeat(icpe, nodeid, events):
         HeatStatModel.events += numEvents
     icpe = iCPEModel.query.filter_by(mac = icpe).first()
     if icpe is None:
-        print('NOT FOUND ICPE')
         return
     icpe.heatstat.append(HeatStatModel)
     db.session.add(icpe)
@@ -208,7 +206,6 @@ def InsertPower(icpe, nodeid, events):
         PowerStatModel.events += numEvents
     icpe = iCPEModel.query.filter_by(mac = icpe).first()
     if icpe is None:
-        print('NOT FOUND ICPE')
         return
     icpe.powerstat.append(PowerStatModel)
     db.session.add(icpe)
