@@ -68,14 +68,15 @@ def UpdateDaily():
     SetDailyLog(totalHeat, totalPower, NumEvents)
     stats = GetDailyStat()
     if type(stats) is not dict:
-        if len(totalHeat) > 0:
+        if stats.heat > 0:
             totalHeat = (totalHeat + stats.heat) / 2
         
-        if len(totalPower) > 0:
+        if stats.power > 0:
             totalPower = (totalPower + stats.power) / 2
         
-        if len(NumEvents):
+        if  stats.events > 0:
             NumEvents = (NumEvents + stats.events) / 2
+    
     SetDailyStat(totalHeat, totalPower, NumEvents)
     logger.info('Daily cronjob completed, heat {}, power {}, events\
                 {}'.format(totalHeat, totalPower, NumEvents))
