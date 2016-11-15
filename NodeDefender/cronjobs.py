@@ -135,9 +135,19 @@ def UpdateHourly():
 
 def GetHeatEvents():
     events = NodeHeatModel.query.all()
+    for event in events:
+        if event.parent is None:
+            db.session.delete(event)
+    db.session.commit()
+    events = NodeHeatModel.query.all()
     return events
 
 def GetPowerEvents():
+    events = NodePowerModel.query.all()
+    for event in events:
+        if event.parent is None:
+            db.session.delete(event)
+    db.session.commit()
     events = NodePowerModel.query.all()
     return events
 
