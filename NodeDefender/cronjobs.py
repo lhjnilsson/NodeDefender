@@ -128,14 +128,6 @@ def UpdateHourly():
         totalHeat = 0.0
 
     SetHourlyLog(totalHeat, totalPower, NumEvents)
-    
-    stats = GetHourlyStat()
-    if type(stats) is not dict:
-        if stats.heat > 0:
-            totalHeat = (totalHeat + stats.heat) / 2
-        
-        if stats.power > 0:
-            totalPower = (totalPower + stats.power) / 2
     SetHourlyStat(totalHeat, totalPower, NumEvents)
     logger.info('Hourly cronjob completed, heat {}, power {}, events\
                 {}'.format(totalHeat, totalPower, NumEvents))

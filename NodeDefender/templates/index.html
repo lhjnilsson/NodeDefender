@@ -125,7 +125,7 @@ var HeatDaily = {{"%0.2f" % stats.daily['heat']|float }}
 // Data for Power
 var PowerDaily = {{"%0.2f" % stats.daily['power']|float }}
 // Data for Events
-var EventsDaily = {{stats.daily['events']}}
+var EventsDaily = {{"%0.2f" % stats.daily['events']|float}}
 
 $(document).ready(function() {
 	$("#heat-history").text("Daily average: " + HeatDaily + " °C");
