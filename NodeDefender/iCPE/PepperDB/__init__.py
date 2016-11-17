@@ -53,6 +53,8 @@ def GetBaseInfo(vid, ptype, pid):
     return ReturnDict
 
 def Classlist(vid, ptype, pid):
+    fulldict = None
+    ReturnList = []
     searchstring = vid[2:] + '-' + ptype[2:] + '-' + pid[2:]
     for xmlfile in listdir(thisdir):
         if searchstring in xmlfile:
@@ -61,7 +63,6 @@ def Classlist(vid, ptype, pid):
                 break
 
     if fulldict:
-        ReturnList = []
         try:
             for x in fulldict['ZWaveDevice']['commandClasses']['commandClass']:
                 ReturnList.append(x['@id'])
