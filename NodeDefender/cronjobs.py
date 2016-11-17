@@ -102,7 +102,7 @@ def UpdateHourly():
 
     saves the values in SQL
     '''
-    LastHour = datetime.now() - timedelta(hours=1)
+    LastHour = datetime.now() - timedelta(hours=1, minutes=5)
     HeatEvents = NodeHeatStatModel.query.filter(NodeHeatStatModel.date >
                                               LastHour).all()
     PowerEvents = NodePowerStatModel.query.filter(NodePowerStatModel.date >
@@ -113,15 +113,16 @@ def UpdateHourly():
     totalPower = 0.0
     for stat in PowerEvents:
         totalPower += stat.power
+    
     try:
         totalPower = totalPower / len(PowerEvents)
     except ZeroDivisionError:
         totalPower = 0.0
 
-    
     totalHeat = 0.0
     for stat in HeatEvents:
         totalHeat += stat.heat
+    
     try:
         totalHeat = totalHeat / len(HeatEvents)
     except ZeroDivisionError:
