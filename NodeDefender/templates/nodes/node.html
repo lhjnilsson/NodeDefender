@@ -72,7 +72,6 @@ socket.on('roomevent', function(msg) {
 			<h4><strong>Notes <a href="#" data-toggle="modal" data-target="#NoteBook"><i class="fa fa-book" aria-hidden="true" style="position: absolute; right: 0; margin-right: 2vw;"></i></a></strong></h4>
 			{% if iCPE.notesticky %}
 			<p><strong>Description</strong><br><div id="NodeDescription"></div></p>
-
 			{% endif %}
 		</div>
 	</div>
@@ -213,9 +212,12 @@ socket.on('roomevent', function(msg) {
 			</div>
 			<div class="modal-body">
 				<h4>Description</h4>
+				{% if iCPE.notesticky %}
 				<p>Last set {{moment(iCPE.notesticky.created_on).format('Do MMM YYYY, HH:mm:ss')}} by {{iCPE.notesticky.author}}</p>
+				{% endif %}
 				<form action="{{url_for('NodesNoteSticky', mac=mac)}}" method="post" class="form-horizontal">
-					<input type="text" max-length="150" class="form-control" name="note" value="{{iCPE.notesticky.note}}"></input>
+					<input type="text" max-length="150" class="form-control" name="note" value="{% if iCPE.notesticky %}{{iCPE.notesticky.note}}{% endif %}">
+					</input>
 					<button type="submit" class="btn btn-default">Update</button>
 				</form>
 				<h4>Notebook</h4>
@@ -376,6 +378,18 @@ var marker = L.marker([{{iCPE.location.geolat}}, {{iCPE.location.geolong}}]).add
 
 $('input[name="alias"]').val('Alias');
 
+function urlify(text) {
+	var urlRegex = /(https?:\/\/[^\s]+)/g;
+	return text.replace(urlRegex, function(url) {
+		return '<a rel="noopener noreferrer" target="_blank" href="' + url + '">' + url + '</a>';
+})
+}
+{% if iCPE.notesticky %}
+var description = "{{iCPE.notesticky.note}}";
+$("#NodeDescription").html(urlify(description));
+{% endif %}
+
+
 /*
 setting values for adddress- form
 */
@@ -428,17 +442,6 @@ new Morris.Line({
 		ykeys : ['value'],
 		labels : ['Celsius']
 });
-
-
-function urlify(text) {
-	var urlRegex = /(https?:\/\/[^\s]+)/g;
-	return text.replace(urlRegex, function(url) {
-		return '<a rel="noopener noreferrer" target="_blank" href="' + url + '">' + url + '</a>';
-})
-}
-
-var description = "{{iCPE.notesticky.note}}";
-$("#NodeDescription").html(urlify(description));
 
 });	
 	var map = L.map('map',{
