@@ -29,6 +29,7 @@ def GetInfo(vid, ptype, pid):
 def GetBaseInfo(vid, ptype, pid):
     searchstring = vid[2:] + '-' + ptype[2:] + '-' + pid[2:]
     fulldict = None
+    ReturnDict = {}
     for xmlfile in listdir(thisdir):
         if searchstring in xmlfile:
             with open(thisdir + '/' + xmlfile) as FP:
@@ -36,7 +37,6 @@ def GetBaseInfo(vid, ptype, pid):
                 break
     
     if fulldict:
-        ReturnDict = {}
         try:
             ReturnDict['BrandName'] = fulldict['ZWaveDevice']['deviceDescription']['brandName']
         except KeyError:
@@ -47,7 +47,7 @@ def GetBaseInfo(vid, ptype, pid):
         except KeyError:
             ReturnDict['ProductName'] = 'Unknown'
     else:
-        ReturnDict['BrandName'] = 'Unknon'
+        ReturnDict['BrandName'] = 'Unknown'
         ReturnDict['ProductName'] = 'Unknown'
 
     return ReturnDict
