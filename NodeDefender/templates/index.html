@@ -107,8 +107,8 @@
 <script>
 
 var map = L.map('map',{
-    center: [57.691, 11.936],
-    zoom: 9
+center: [{{mapcords.latitude}}, {{mapcords.longitude}}],
+zoom: {{mapcords.zoom}}
 });
 
 L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
