@@ -313,6 +313,11 @@ socket.on('roomevent', function(msg) {
 				{% endfor %}
 				</p>
 			</div>
+			<div class="modal-footer">
+				<a href="{{url_for('NodesNodeDelete', mac=mac, nodeid=znode['nodeid'])}}">
+					<button type="button" class="btn btn-danger">Delete Node</button>
+				</a>
+			</div>
 		</div>
 	</div>
 </div>
@@ -327,37 +332,37 @@ socket.on('roomevent', function(msg) {
       </div>
       <div class="modal-body">
         <h4 class="col-sm-offset-2">Basic Settings</h4>
-				<form method="POST" class="form-horizontal" action="{{url_for('NodesNode', mac=mac)}}" name="basic">
-					{{ iCPEBasicForm.csfr_token }}
-					{{ iCPEBasicForm.hidden_tag() }}
+				<form method="POST" class="form-horizontal" action="{{url_for('NodesNode', mac=mac)}}" name="iCPECofigForm">
+					{{ iCPEConfigForm.csfr_token }}
+					{{ iCPEConfigForm.hidden_tag() }}
 					<div class="form-group">
-						{{ iCPEBasicForm.alias.label(class="col-sm-2 control-label")}}
+						{{ iCPEConfigForm.alias.label(class="col-sm-2 control-label")}}
 						<div class="col-sm-10">
-							{{ iCPEBasicForm.alias(class="form-control")}}
+							{{ iCPEConfigForm.alias(class="form-control")}}
 						</div>
 					</div>
 					<div class="form-group">
-						{{ iCPEAddressForm.street.label(class="col-sm-2 control-label")}}
+						{{ iCPEConfigForm.street.label(class="col-sm-2 control-label")}}
 						<div class="col-sm-10">
-							{{ iCPEAddressForm.street(class="form-control")}}
+							{{ iCPEConfigForm.street(class="form-control")}}
 						</div>
 					</div>
 					<div class="form-group">
-						{{ iCPEAddressForm.city.label(class="col-sm-2 control-label")}}
+						{{ iCPEConfigForm.city.label(class="col-sm-2 control-label")}}
 						<div class="col-sm-10">
-							{{ iCPEAddressForm.city(class="form-control")}}
+							{{ iCPEConfigForm.city(class="form-control")}}
 						</div>
 					</div>
 					<div class="form-group">
-						{{ iCPEAddressForm.geolat.label(class="col-sm-2 control-label")}}
+						{{ iCPEConfigForm.geolat.label(class="col-sm-2 control-label")}}
 						<div class="col-sm-10">
-							{{ iCPEAddressForm.geolat(class="form-control")}}
+							{{ iCPEConfigForm.geolat(class="form-control")}}
 						</div>
 					</div>
 					<div class="form-group">
-						{{ iCPEAddressForm.geolong.label(class="col-sm-2 control-label")}}
+						{{ iCPEConfigForm.geolong.label(class="col-sm-2 control-label")}}
 						<div class="col-sm-10">
-							{{ iCPEAddressForm.geolong(class="form-control")}}
+							{{ iCPEConfigForm.geolong(class="form-control")}}
 						</div>
 					</div>
 					<div class="form-group">

@@ -30,7 +30,7 @@ from .models import UserModel, iCPEModel, NodeModel, MessageModel, LoginLogModel
 NodeEventModel, NodeHeatStatModel, NodePowerStatModel, NodeNotesModel,\
         NodeNoteStickyModel, NodeClassModel, NodeHiddenFieldModel
 from .forms import NodeForm, LoginForm, RegisterForm, AdminServerForm, \
-        iCPEBasicForm, iCPEAddressForm, NodeBasicForm
+        iCPEConfigForm, NodeBasicForm
 from datetime import datetime
 from sqlalchemy import desc
 
@@ -49,6 +49,7 @@ Login Page for Unauthorized users.
 When logged in the achive a cookie that is later used for RESTful API calls
 that load data to the webpage
 '''
+mapcords = chconf.ReadMap()
 
 @LoginMan.user_loader
 def load_user(id):      # Needed for Flask-login to work.
@@ -144,7 +145,7 @@ def index():
     stats = statistics.GetAllStats()
     nodeevents = NodeEventModel.query.order_by(desc(NodeEventModel.id)).limit(20)
     return render_template('index.html', nodelist=nodes, stats = stats,
-                           nodeevents = nodeevents)
+                           nodeevents = nodeevents, mapcords = mapcords)
 
 #
 # User specific profile-views
@@ -198,15 +199,14 @@ def NodesList():
 def NodesEvents():
     return render_template('nodes/events.html')
 
-@app.route('/nodes/list/<mac>', methods=['GET', 'POST'])
+@app.route('/nodes/list/<mac>', methods=['GET', 'POST', 'PUT'])
 @login_required
 def NodesNode(mac):
     iCPE = iCPEModel.query.filter_by(mac = mac).first()
     if not iCPE:
         raise ValueError('Cant find mac')
     form = NodeForm()
-    BasicForm = iCPEBasicForm()
-    AddressForm = iCPEAddressForm()
+    ConfigForm = iCPEConfigForm()
     NodeBasic = NodeBasicForm()
     if request.method == 'GET':
         znodes = icpe.WebForm(mac)
@@ -215,24 +215,24 @@ def NodesNode(mac):
                     groupby(iCPE.powerstat, lambda stat: stat.nodeid))
         '''
         return render_template('nodes/node.html', mac=mac, form=form, iCPE =
-                               iCPE, znodes = znodes, iCPEBasicForm =
-                               BasicForm, iCPEAddressForm = AddressForm,
-                               NodeBasicForm = NodeBasic)
+                               iCPE, znodes = znodes, iCPEConfigForm =
+                               ConfigForm, NodeBasicForm = NodeBasic)
     elif request.method == 'POST':
-        if BasicForm.validate_on_submit():
-            iCPE.alias = BasicForm.alias.data
-            iCPE.comment = BasicForm.comment.data
-        elif AddressForm.validate_on_submit():
-            iCPE.location.street = AddressForm.street.data
-            iCPE.location.city = AddressForm.city.data
-            iCPE.location.geolat = AddressForm.geolat.data
-            iCPE.location.geolong = AddressForm.geolong.data
+        if ConfigForm.validate_on_submit():
+            iCPE.alias = ConfigForm.alias.data
+            iCPE.location.street = ConfigForm.street.data
+            iCPE.location.city = ConfigForm.city.data
+            iCPE.location.geolat = ConfigForm.geolat.data
+            iCPE.location.geolong = ConfigForm.geolong.data
 
         db.session.add(iCPE)
         db.session.commit()
+        znodes = icpe.WebForm(mac)
         return render_template('nodes/node.html', mac=mac, form=form, iCPE = iCPE,
-                          iCPEAddressForm = AddressForm, iCPEBasicForm =
-                           BasicForm, NodeBasicForm = NodeBasic)
+                               znodes = znodes,
+                          iCPEConfigForm = ConfigForm, NodeBasicForm = NodeBasic)
+
+
 
 @app.route('/nodes/list/<mac>/<nodeid>', methods=['GET', 'POST'])
 @login_required
@@ -254,6 +254,17 @@ def NodesNodeConfigure(mac, nodeid):
         return redirect(url_for('NodesNode', mac=mac))
     return redirect(url_for('NodesNode', mac=mac))
 
+@app.route('/nodes/list/<mac>/<nodeid>/delete')
+@login_required
+def NodesNodeDelete(mac, nodeid):
+    try:
+        icpe.DeleteZNode(mac, nodeid)
+    except (ValueError, TypeError) as e:
+        flash(e, 'danger')
+        return redirect(url_for('NodesNode', mac=mac))
+   
+    flash('Successfully removed node ' + nodeid, 'success')
+    return redirect(url_for('NodesNode', mac=mac))
 
 @app.route('/nodes/<mac>/update')
 @login_required
