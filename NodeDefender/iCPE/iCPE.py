@@ -170,6 +170,13 @@ class iCPE(MQTTFunctions, WSFunctions):
         self.LoadNodes([AddNode])
         return True
 
+    def RemoveNode(self, nodeid):
+        node = self.__contains__(nodeid)
+        if not node:
+            pass
+        self.ZWaveNodes.remove(node)
+        return True
+
     def AddNodeClasses(self, nodemodel, vid = None, ptype = None, pid = None):
         if vid is None:
             vid = nodemodel.vid
@@ -284,6 +291,30 @@ class iCPEset:
         db.session.delete(node)
         db.session.commit()
         self.iCPEs.remove(icpe)
+        return True
+
+    def DeleteZNode(self, mac, nodeid):
+        icpe = self.__contains__(mac)
+        if not icpe:
+            raise TypeError('Not known iCPE')
+        
+        dbnode = db.session.query(iCPEModel, NodeModel).\
+                filter(iCPEModel.mac == mac).\
+                filter(NodeModel.nodeid == nodeid).all()
+        
+        if len(dbnode) > 1:
+            raise ValueError('Found more than 1 entery in Database')
+        elif not dbnode:
+            raise ValueError('Cannot find Mac in database')
+        else:
+            db.session.delete(dbnode[0].NodeModel)
+            db.session.commit()
+        
+        try:
+            icpe.callback.RemoveNode(nodeid)
+        except TypeError:
+            raise TypeError('Not a known NodeID')
+
         return True
 
     def Event(self, mac, event):

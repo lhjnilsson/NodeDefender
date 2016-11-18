@@ -83,7 +83,8 @@ class DatabaseServerForn(Form):
     SQL = StringField()
     TrackModifications = BooleanField()
 
-class iCPEAddressForm(FlaskForm):
+class iCPEConfigForm(FlaskForm):
+    alias = StringField("Alias", [validators.InputRequired()])
     street = StringField("Steet", [validators.DataRequired()])
     city = StringField("City", [validators.DataRequired()])
     geolat = StringField("Latitude", [validators.DataRequired()])

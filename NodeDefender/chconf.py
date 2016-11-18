@@ -69,3 +69,7 @@ def ReadUsers():
 def SetUsers():
     pass
 
+def ReadMap():
+    Setting = {}
+    Setting = {key: value for key, value in ReadConf('MAP')}
+    return Setting
