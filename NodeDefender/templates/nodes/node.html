@@ -259,6 +259,10 @@ socket.on('roomevent', function(msg) {
 							<td>Generic Class</td>
 							<td>{{ znode['Generic Class'] }}</td>
 						</tr>
+						<tr>
+							<td>Node ID</td>
+							<td>{{ znode['nodeid'] }}</td>
+						</tr>
 					</tbody>
 				</table>
 				<h4>Modify values</h4>
@@ -267,7 +271,7 @@ socket.on('roomevent', function(msg) {
 					{{ NodeBasicForm.hidden_tag() }}
 					<div class="form-group">
 						{{ NodeBasicForm.alias.label(class="col-sm-2 control-label")}}
-						<div class="col-sm-10">
+						<div class="col-sm-10" id="NodeAlias{{znode['nodeid']}}">
 							{{ NodeBasicForm.alias(class="form-control")}}
 						</div>
 					</div>
@@ -337,7 +341,7 @@ socket.on('roomevent', function(msg) {
 					{{ iCPEConfigForm.hidden_tag() }}
 					<div class="form-group">
 						{{ iCPEConfigForm.alias.label(class="col-sm-2 control-label")}}
-						<div class="col-sm-10">
+						<div class="col-sm-10", id="Form{{iCPE.alias}}">
 							{{ iCPEConfigForm.alias(class="form-control")}}
 						</div>
 					</div>
@@ -381,7 +385,9 @@ socket.on('roomevent', function(msg) {
 $(document).ready(function() {
 var marker = L.marker([{{iCPE.location.geolat}}, {{iCPE.location.geolong}}]).addTo(map);
 
-$('input[name="alias"]').val('Alias');
+//$('input[name="alias"]').val('Alias');
+$('#Form{{iCPE.alias}}').children().val('{{iCPE.alias}}');
+
 
 function urlify(text) {
 	var urlRegex = /(https?:\/\/[^\s]+)/g;
@@ -404,6 +410,7 @@ $('input[name="geolat"]').val('{{iCPE.location.geolat}}');
 $('input[name="geolong"]').val('{{iCPE.location.geolong}}');
 
 {% for znode in znodes %}
+$('#NodeAlias{{znode['nodeid']}}').children().val('{{znode['Alias']}}');
 	{% for field in znode['fields'] %}
   {% if field['type'] == 'checkbox' %}
 		{% if field['readonly'] != True %}
