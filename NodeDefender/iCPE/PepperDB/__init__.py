@@ -28,7 +28,8 @@ def GetInfo(vid, ptype, pid):
 
 def GetBaseInfo(vid, ptype, pid):
     searchstring = vid[2:] + '-' + ptype[2:] + '-' + pid[2:]
-    print(searchstring)
+    fulldict = None
+    ReturnDict = {}
     for xmlfile in listdir(thisdir):
         if searchstring in xmlfile:
             with open(thisdir + '/' + xmlfile) as FP:
@@ -36,16 +37,24 @@ def GetBaseInfo(vid, ptype, pid):
                 break
     
     if fulldict:
-        ReturnDict = {}
-        ReturnDict['BrandName'] =\
-        fulldict['ZWaveDevice']['deviceDescription']['brandName']
-        ReturnDict['ProductName'] =\
-        fulldict['ZWaveDevice']['deviceDescription']['productName']
+        try:
+            ReturnDict['BrandName'] = fulldict['ZWaveDevice']['deviceDescription']['brandName']
+        except KeyError:
+            ReturnDict['BrandName'] = 'Unknown'
 
-        return ReturnDict
-    return False
+        try:
+            ReturnDict['ProductName'] = fulldict['ZWaveDevice']['deviceDescription']['productName']
+        except KeyError:
+            ReturnDict['ProductName'] = 'Unknown'
+    else:
+        ReturnDict['BrandName'] = 'Unknown'
+        ReturnDict['ProductName'] = 'Unknown'
+
+    return ReturnDict
 
 def Classlist(vid, ptype, pid):
+    fulldict = None
+    ReturnList = []
     searchstring = vid[2:] + '-' + ptype[2:] + '-' + pid[2:]
     for xmlfile in listdir(thisdir):
         if searchstring in xmlfile:
@@ -54,7 +63,6 @@ def Classlist(vid, ptype, pid):
                 break
 
     if fulldict:
-        ReturnList = []
         try:
             for x in fulldict['ZWaveDevice']['commandClasses']['commandClass']:
                 ReturnList.append(x['@id'])
