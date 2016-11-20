@@ -4,15 +4,18 @@ class UserModel(db.Model):
     '''
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
+    parent_id = db.Column(db.Integer, db.foreignKey('group.id'))
+    group = db.relationship('GroupModel', backref='user')
+    registered_on = db.Column(db.DateTime)
+    last_login = db.Column(db.DateTime)
+    loginlog = db.relationship('LoginLogModel', backref='user')
+
+    messages = db.relationship('MessageModel', backref='user')
+ 
     firstname = db.Column(db.String(30))
     lastname = db.Column(db.String(40))
     email = db.Column(db.String(50), unique=True)
-    password = db.Column(db.String(20))
-    registered_on = db.Column(db.DateTime)
-    last_login = db.Column(db.DateTime)
-    messages = db.relationship('MessageModel', backref='user')
-    loginlog = db.relationship('LoginLogModel', backref='user')
-
+    password = db.Column(db.String(50))
     # Permission level
     is_moderator = db.Column(db.Boolean, default=False)
     is_admin = db.Column(db.Boolean, default=False)
@@ -48,21 +51,22 @@ class UserModel(db.Model):
     def __repr__(self):
         return '<Email: %r, Last Login: %r>' % (self.email, self.last_login)
 
-class MessageModel(db.Model):
+class UserMessageModel(db.Model):
     # Mailbox for User. 
-    __tablename__ = 'message'
+    __tablename__ = 'usermessage'
     '''
     Message Inbox for User
     '''
     id = db.Column(db.Integer, primary_key=True)
     parent_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+    author = db.relationship('UserModel', backref='usermessage')
     uuid = db.Column(db.String(40))
-    mailfrom = db.Column(db.String(50), default = "noreply@NodeDefender.com")
     subject = db.Column(db.String(50))
     body = db.Column(db.String(300))
-    created_on = db.Column(db.DateTime)
+    created_on = db.Column(db.DateTimeb)
 
-    def __init__(self, subject, body):
+    def __init__(self, author, subject, message):
         self.uuid = str(uuid4())
         self.subject = subject
         self.body = body
@@ -87,5 +91,3 @@ class LoginLogModel(db.Model):
         self.ipaddr = ipaddr
         self.browser = user_agent.browser
         self.platform = user_agent.platform
-
-
