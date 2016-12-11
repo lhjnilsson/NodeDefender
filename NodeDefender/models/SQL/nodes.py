@@ -1,6 +1,14 @@
 class NodeModel(db.Model):
     '''
     Nodes represent a place that can contain one or more iCPEs
+
+    Parent is the GroupModel that owns the Node
+    Alias is the Name of the Node
+    Location is stored in one-to-one Relation(LocationModel)
+    Notes is to enter notebook for the Node
+    NoteSticky is a sticky note for that node
+
+    iCPES is relationship to List of iCPEs in that Node
     '''
     __tablename__ = 'node'
     id = db.Column(db.Integer, primary_key=True)
@@ -14,7 +22,7 @@ class NodeModel(db.Model):
     notes = db.relationship('NodeNotesModel', backref='node')
     notesticky = db.Column(db.String(150))
 
-    iCPE = db.relationship('iCPEModel', backref='node')
+    iCPEs = db.relationship('iCPEModel', backref='node')
 
     def __init__(self):
         pass
@@ -37,7 +45,7 @@ class LocationModel(db.Model):
         geo = Nominatim()
         location = geo.geocode(city + ' ' + street, timeout = 10)
         if not location: # If city and street is not recognized
-            location = geo.geocode('Gothenburg') # change this later...
+            location = geo.geocode('Gothenburg', timeout = 10) # change this later...
         self.geolat = location.latitude
         self.geolong = location.longitude
 

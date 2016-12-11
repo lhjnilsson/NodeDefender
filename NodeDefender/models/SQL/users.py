@@ -1,6 +1,12 @@
 class UserModel(db.Model):
     '''
     Table of Users
+
+    Users is a part of a Group
+    Logins are logged with List- Relation(LoginLogModel)
+    Private messages are stored in List- relation(UserMessageModel)
+
+    Password is encrypted
     '''
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
@@ -10,7 +16,7 @@ class UserModel(db.Model):
     last_login = db.Column(db.DateTime)
     loginlog = db.relationship('LoginLogModel', backref='user')
 
-    messages = db.relationship('MessageModel', backref='user')
+    messages = db.relationship('UserMessageModel', backref='user')
  
     firstname = db.Column(db.String(30))
     lastname = db.Column(db.String(40))
@@ -56,6 +62,12 @@ class UserMessageModel(db.Model):
     __tablename__ = 'usermessage'
     '''
     Message Inbox for User
+
+    Author is who sent it
+    uuid is to be able to present the message in secure manners
+    subject is the topic of the message
+    body is the body.
+    created_on is when the message was sent from Author to User
     '''
     id = db.Column(db.Integer, primary_key=True)
     parent_id = db.Column(db.Integer, db.ForeignKey('user.id'))
@@ -76,6 +88,12 @@ class LoginLogModel(db.Model):
     __tablename__ = 'loginlog'
     '''
     Loggs login for user, successful and unsuccessful
+
+    Stores Date of when it was attempted
+    if it was successful or not
+    IP Address from where it was attempted
+    Browser Used
+    Platform, i.e Windows, iPhone, Android, Linux etc..
     '''
     id = db.Column(db.Integer, primary_key = True)
     parent_id = db.Column(db.Integer, db.ForeignKey('user.id'))

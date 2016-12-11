@@ -36,19 +36,13 @@ from apscheduler.schedulers.gevent import GeventScheduler
 from gevent import monkey, sleep
 monkey.patch_all()
 
-# Setup logging
-logghandler = logging.FileHandler('app.log')
-logghandler.setLevel(logging.INFO)
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-logghandler.setFormatter(formatter)
+from .factory import CreateApp, CreateLogging
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-logger.addHandler(logghandler)
+# Setup logging
+logger, handler = CreateLogging()
 
 # Initialize the Flask- Application
-app = Flask(__name__)
-app.config.from_object('config')
+app = CreateApp()
 
 # Initialize Api
 api = Api(app)

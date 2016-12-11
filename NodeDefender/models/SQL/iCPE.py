@@ -13,8 +13,8 @@ class iCPEModel(db.Model):
     events = db.relationship('NodeEventModel', backref='icpe')
     heat = db.relationship('NodeHeatModel', backref='icpe')
     power = db.relationship('NodePowerModel', backref='icpe')
-    heatstat = db.relationship('NodeHeatStatModel', backref='icpe')
-    powerstat = db.relationship('NodePowerStatModel', backref='icpe')
+    heatstats = db.relationship('NodeHeatStatModel', backref='icpe')
+    powerstats = db.relationship('NodePowerStatModel', backref='icpe')
     notes = db.relationship('NodeNotesModel', backref='icpe')
     notesticky = db.Column(db.String(150))
 

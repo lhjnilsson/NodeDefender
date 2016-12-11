@@ -27,13 +27,42 @@ from . import inMQTTQueue, outMQTTQueue, logghandler
 from threading import Thread
 import logging
 
-class MQTT:
+connections = set()
+
+def AddConnection(ip, port = 8883):
+    current = Listconnections(ip)
+    if current:
+        if current.port == port:
+            raise TypeError('Already Exisisting Connecton')
+
+    mqtt = _MQTT(ip, port)
+    connections.add(mqtt)
+    return True
+
+def ListConnections(ip = None):
+    if ip:
+        connection = [connection for connection in connections\
+                      if connection.ip == ip]
+        if connection:
+            return connection
+        else:
+            return False
+
+    return [connection for connection in connections]
+
+def DeleteConnection(ip, port):
+    pass
+
+def SendMessage(topic, payload, ip, port = None):
+    pass
+
+class _MQTT:
     '''
     MQTT Service,
     Start a thread listening for both incoming from MQTT Broker and also an
     internal Queue. Puts Messages from broker another internal queue
     '''
-    def __init__(self, ip, port, icpe):
+    def __init__(self, ip, port):
         self.ip = ip
         self.port = int(port)
         self.online = False
