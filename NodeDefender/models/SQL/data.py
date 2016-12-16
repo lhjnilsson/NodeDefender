@@ -1,25 +1,87 @@
 class Statistics(db.Model):
     __tablename__ = 'statistics'
     id = db.Column(db.Integer, primary_key=True)
-    parent_id = db.Column(db.Integer, db.ForeignKey('group.id'))
-
-    hourly = db.relationship('HourlyStatistics', uselist=False, backref="statistics")
-    daily = db.relationship('DailyStatistics', uselist=False, backref='statistics')
-    weekly = db.relationship('WeeklyStatistics', uselist=False,backref='statistics')
     
-    dailylog = db.relationship('DailylogStatistics', backref='statistics')
-    weeklylog = db.relationship('WeeklylogStatistics', backref='statistics')
+    group_id = db.Column(db.Integer, db.ForeignKey('group.id'))
+    group = db.relationship('GroupModel', backref='statistics')
+
+    hourly = db.relationship('HourlyStatistics', backref="statistics")
+    daily = db.relationship('DailyStatistics', backref='statistics')
+    weekly = db.relationship('WeeklyStatistics', backref='statistics')
+    
+    node = db.relationship('NodeStatistics', backref='statistics')
+    icpe = db.relationship('iCPEStatistics', backref='statistics')
+    ZWaveDevice = db.relationship('ZWaveDeviceStatistics', backref='statistics')
 
     def __init__(self):
         pass
+
+class NodeStatistics(db.Model):
+    __tablename__ = 'nodestatistics'
+    id = db.Column(db.Integer, primary_key=True)
+    parent_id = db.Column(db.Integer, db.ForeignKey('statistics.id'))
+    
+    node = db.relationship('NodeModel', backref='nodestatistics')
+
+    hourly = db.relationship('HourlyStatistics', backref='nodestatistics')
+    daily = db.relationship('DailyStatistics', backref='nodestatistics')
+    weekly = db.relationship('WeeklyStatistics', backref='nodestatistics')
+
+    def __init__(self):
+        pass
+
+class iCPEStatistics(db.Model):
+    __tablename__ = 'icpestatistics'
+    id = db.Column(db.Integer, primary_key=True)
+    parent_id = db.Column(db.Integer, db.ForeignKey('statistics.id'))
+
+    node = db.relationship('NodeModel', backref='nodestatistics')
+    icpe = db.relationship('iCPEModel', backref='icpestatisctics')
+
+    hourly = db.relationship('HourlyStatistics', backref='icpestatistics')
+    daily = db.relationship('DailyStatistics', backref='icpestatistics')
+    weekly = db.relationship('WeeklyStatistics', backref='icpestatistics')
+
+    def __init__(self):
+        pass
+
+class ZWaveDeviceStatistics(db.Model):
+    __tablename__ = 'zwavedevicestatistics'
+    id = db.Column(db.Integer, primary_key=True)
+    parent_id = db.Column(db.Integer, db.ForeignKey('statistics.id'))
+    
+    node = db.relationship('NodeModel', backref='nodestatistics')
+    icpe = db.relationship('iCPEModel', backref='icpestatisctics')
+    zwavedevice = db.relationship('ZWaveDeviceModel',
+                                  backref='zwavedevicestatistics')
+
+    hourly = db.relationship('HourlyStatistics',
+                             backref='zwavedevicestatistics')
+    daily = db.relationship('DailyStatistics', backref='zwavedevicestatistics')
+    weekly = db.relationship('WeeklyStatistics', backref='zwavedevicestatistics')
+
+    def __init__(self):
+        pass
+
+'''
+Hourly, Daily and Weekly container of Heat, Power and Events.
+
+
+'''
+
+GroupTags = db.Table('GroupTags',
+                     db.Column('NodestatisticsID', db.Integer,
+                               db.ForeignKey('NodeStatistics.id')),
+                     db.Column(
 
 class HourlyStatistics(db.Model):
     __tablename__ = 'hourlystatistics'
     id = db.Column(db.Integer, primary_key=True)
     parent_id = db.Column(db.Integer, db.ForeignKey('statistics.id'))
+    
     heat = db.relationship('heatstat', backref='hourlystatistics')
     power = db.relationship('powerstat', backref='hourlystatistics')
-    events = db.relationship('evntstat', backref='hourlystatistics')
+    events = db.relationship('eventstat', backref='hourlystatistics')
     
     last_updated = db.Column(db.DateTime)
 
@@ -54,52 +116,6 @@ class WeeklyStatistics(db.Model):
         self.power = power
         self.events = events
         self.last_updated = datetime.now()
-
-class HourlylogStatistics(db.Model):
-    __tablename__ = 'hourlylogstatistics'
-    id = db.Column(db.Integer, primary_key=True)
-    heat = db.Column(db.Float)
-    power = db.Column(db.Float)
-    events = db.Column(db.Integer)
-    last_updated = db.Column(db.DateTime)
-
-    def __init__(self, heat, power, events):
-        self.heat = heat
-        self.power = power
-        self.events = events
-        self.last_updated = datetime.now()
-
-
-class DailylogStatistics(db.Model):
-    __tablename__ = 'dailylogstatistics'
-    id = db.Column(db.Integer, primary_key=True)
-    parent_id = db.Column(db.Integer, db.ForeginKey('statistics.id'))
-    heat = db.Column(db.Float)
-    power = db.Column(db.Float)
-    events = db.Column(db.Integer)
-    last_updated = db.Column(db.DateTime)
-
-    def __init__(self, heat, power, events):
-        self.heat = heat
-        self.power = power
-        self.events = events
-        self.last_updated = datetime.now()
-
-class WeeklylogStatistics(db.Model):
-    __tablename__ = 'weeklylogstatistics'
-    id = db.Column(db.Integer, primary_key=True)
-    parent_id = db.Column(db.Integer, db.ForeginKey('statistics.id'))
-    heat = db.Column(db.Float)
-    power = db.Column(db.Float)
-    events = db.Column(db.Integer)
-    last_updated = db.Column(db.DateTime)
-
-    def __init__(self, heat, power, events):
-        self.heat = heat
-        self.power = power
-        self.events = events
-        self.last_updated = datetime.now()
-
 
 ### NOde specific models
 

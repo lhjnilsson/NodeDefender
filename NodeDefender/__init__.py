@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE
 SOFTWARE.
 '''
+
 from flask import Flask
 import flask_login as login_manager
 from flask_sqlalchemy import SQLAlchemy
@@ -29,14 +30,11 @@ from flask_restful import Api
 from flask_bcrypt import Bcrypt
 from flask_socketio import SocketIO
 from flask_moment import Moment
-from . import chconf
-import logging
-from queue import Queue
 from apscheduler.schedulers.gevent import GeventScheduler
 from gevent import monkey, sleep
-monkey.patch_all()
-
 from .factory import CreateApp, CreateLogging
+
+monkey.patch_all()
 
 # Setup logging
 logger, handler = CreateLogging()
@@ -56,6 +54,8 @@ socketio = SocketIO(app)
 db = SQLAlchemy(app)
 logger.info('Database started')
 
+# Initialize Celery
+celery = factory.CreateCelery()
 
 # For the Authentication
 LoginMan = login_manager.LoginManager()
@@ -69,47 +69,5 @@ bcrypt = Bcrypt(app)
 # Report that startup is successfull
 logger.info('NodeDefender Succesfully started')
 
-# Internal Message Queues
-inMQTTQueue = Queue()
-outMQTTQueue = Queue()
-
-# Internal Socket Queues
-outSocketQueue = Queue()
-
-# Logging Queue
-NodeLogQueue = Queue()
-
 # Flask moment
 moment = Moment(app)
-
-
-'''
-below is temporary solution, to prevent from not starting
-'''
-MQTTConf = {key: value for (key, value) in chconf.ReadConf('MQTT1')}
-
-try: # To make flask-script and DB init work if not present
-    from . import models
-    from .iCPE import iCPE
-    from .mqtt import MQTT
-
-    icpe = iCPE.iCPEset.FromDB()
-    mqtt = MQTT(MQTTConf['ip'], MQTTConf['port'], icpe)
-
-    from . import views, forms, sockets, mylogger, cronjobs
-except Exception as e:
-    print('Warning: Not able to start application, is Database updated?')
-    print('Msg: ', e)
-
-# Scheduled tasks
-from . import cronjobs
-StatTaskSched = GeventScheduler()
-StatTaskSched.add_job(cronjobs.StatTask, 'interval', minutes=15)
-HourlyCron = GeventScheduler()
-HourlyCron.add_job(cronjobs.UpdateHourly, 'cron', hour='*')
-DailyCron = GeventScheduler()
-DailyCron.add_job(cronjobs.UpdateDaily, 'cron', day='*')
-
-StatTaskSched.start()
-HourlyCron.start()
-DailyCron.start()

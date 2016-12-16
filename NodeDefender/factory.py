@@ -16,4 +16,7 @@ def CreateLogging():
     logger.addHandler(handler)
     return logger, handler
 
-
+def CreateCelery():
+    celery= Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
+    celery.conf.update(app.config)
+    return celery

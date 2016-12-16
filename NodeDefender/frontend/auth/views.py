@@ -1,9 +1,13 @@
+from . import AuthView
+from .models import *
+from .forms import *
+
 @LoginMan.user_loader
 def load_user(id):      # Needed for Flask-login to work.
     return UserModel.query.get(int(id))
 
 
-@app.route('/login', methods=['GET', 'POST'])
+@AuthView.route('/login', methods=['GET', 'POST'])
 def login():
     # If Method is GET is should display login-page
     if request.method == 'GET':
@@ -38,12 +42,12 @@ def login():
         flash("Please fill in correctly", "error")
         return redirect(url_for('index'))
 
-@app.route('/logout')
+@AuthView.route('/logout')
 def logout():
     logout_user()
     return redirect(url_for('index'))
 
-@app.route('/register', methods=['POST'])
+@AuthView.route('/register', methods=['POST'])
 def register():
     rform = RegisterForm(request.form)
     if rform.validate():
