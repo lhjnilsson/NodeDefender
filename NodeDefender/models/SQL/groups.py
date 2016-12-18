@@ -1,3 +1,5 @@
+from ... import db
+
 class GroupModel(db.Model):
     '''
     Representing one group containing iCPEs and Users
@@ -12,7 +14,7 @@ class GroupModel(db.Model):
     
     nodes = db.relationship('NodeModel')
     statistics = db.relationship('StatisticModel')
-    events = db.relatipship('EventModel')
+    events = db.relationship('EventModel')
 
     def __init__(self, name):
         self.name = name

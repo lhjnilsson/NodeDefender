@@ -15,3 +15,6 @@ if config['DATABASE']['SQL'] == 'local':
 
 SECRET_KEY = config['BASE']['key']
 WTF_CSRF_ENABLED = True
+
+CELERY_BROKER_URL = config['CELERY']['CELERY_BROKER_URL']
+CELERY_RESULT_BACKEND = config['CELERY']['CELERY_RESULT_BACKEND']

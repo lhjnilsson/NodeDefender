@@ -1,6 +1,7 @@
 from . import AdminView
 from .forms import AdminServerForm
 from flask_login import login_required
+from flask import Blueprint
 
 @AdminView.route('/admin/server')
 @login_required

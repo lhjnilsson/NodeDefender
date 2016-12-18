@@ -1,3 +1,5 @@
+from ... import db
+
 class NodeModel(db.Model):
     '''
     Nodes represent a place that can contain one or more iCPEs
@@ -13,7 +15,7 @@ class NodeModel(db.Model):
     __tablename__ = 'node'
     id = db.Column(db.Integer, primary_key=True)
     parent_id = db.Column(db.Integer, db.ForeignKey('group.id'))
-    parent = db.relationship('GroupModel', bakref='node')
+    parent = db.relationship('GroupModel', backref='node')
     
     alias = db.Column(db.String(20))
     location = db.relationship('LocationModel', uselist=False, backref='node')

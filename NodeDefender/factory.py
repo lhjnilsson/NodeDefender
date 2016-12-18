@@ -1,4 +1,6 @@
-
+import logging
+from flask import Flask
+from celery import Celery
 
 def CreateApp():
     app = Flask(__name__)
@@ -16,7 +18,7 @@ def CreateLogging():
     logger.addHandler(handler)
     return logger, handler
 
-def CreateCelery():
-    celery= Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
+def CreateCelery(app):
+    celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
     celery.conf.update(app.config)
     return celery

@@ -1,3 +1,5 @@
+from ... import db
+
 class UserModel(db.Model):
     '''
     Table of Users
@@ -10,7 +12,7 @@ class UserModel(db.Model):
     '''
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
-    parent_id = db.Column(db.Integer, db.foreignKey('group.id'))
+    parent_id = db.Column(db.Integer, db.ForeignKey('group.id'))
     group = db.relationship('GroupModel', backref='user')
     registered_on = db.Column(db.DateTime)
     last_login = db.Column(db.DateTime)
@@ -76,7 +78,7 @@ class UserMessageModel(db.Model):
     uuid = db.Column(db.String(40))
     subject = db.Column(db.String(50))
     body = db.Column(db.String(300))
-    created_on = db.Column(db.DateTimeb)
+    created_on = db.Column(db.DateTime)
 
     def __init__(self, author, subject, message):
         self.uuid = str(uuid4())

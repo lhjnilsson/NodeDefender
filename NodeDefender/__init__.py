@@ -33,7 +33,6 @@ from flask_moment import Moment
 from apscheduler.schedulers.gevent import GeventScheduler
 from gevent import monkey, sleep
 from .factory import CreateApp, CreateLogging
-
 monkey.patch_all()
 
 # Setup logging
@@ -55,7 +54,7 @@ db = SQLAlchemy(app)
 logger.info('Database started')
 
 # Initialize Celery
-celery = factory.CreateCelery()
+celery = factory.CreateCelery(app)
 
 # For the Authentication
 LoginMan = login_manager.LoginManager()
@@ -71,3 +70,5 @@ logger.info('NodeDefender Succesfully started')
 
 # Flask moment
 moment = Moment(app)
+from .models import SQL
+from . import frontend

@@ -1,11 +1,18 @@
 from .. import Celery, db
+from .decorators import XMLToDict
+from .zwave import Event as ZWaveEvent
 
 def Initialize():
     pass
 
 @celery.task()
+@XMLToDict
 def MQTTEvent(topic, payload):
-    pass
+    event = ZWaveEvent(payload['commandClass'], payload['value'],
+                       payload['evttype'])
+    q = Query(CeleryHost, topic['mac']+topic['nodeid'])
+    if not q:
+        return
 
 @celery.task()
 def JSONEvent(topic, payload):

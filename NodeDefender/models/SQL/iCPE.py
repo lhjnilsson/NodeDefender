@@ -1,3 +1,5 @@
+from ... import db
+
 class iCPEModel(db.Model):
     '''
     iCPE attached to a Node

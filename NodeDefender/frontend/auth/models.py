@@ -1,1 +1,1 @@
-from ...models.sql import UserModel, LoginLogModel, MessageModel
+from ...models.SQL import UserModel, LoginLogModel, UserMessageModel

@@ -1,9 +1,9 @@
 from .. import app
-from admin import AdminView
-from auth import AuthView
-from data import DataView
-from nodes import NodesView
-from user import UserView
+from .admin import AdminView
+from .auth import AuthView
+from .data import DataView
+from .nodes import NodesView
+from .user import UserView
 
 @app.context_processor
 def inject_user():      # Adds general data to base-template
