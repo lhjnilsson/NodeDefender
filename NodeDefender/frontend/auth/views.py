@@ -1,7 +1,10 @@
-from . import AuthView
+from .. import AuthView
 from .models import *
 from .forms import *
 from ... import LoginMan
+from flask import request, render_template
+from flask_login import login_user, current_user
+
 @LoginMan.user_loader
 def load_user(id):      # Needed for Flask-login to work.
     return UserModel.query.get(int(id))

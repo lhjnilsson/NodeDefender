@@ -59,7 +59,7 @@ celery = factory.CreateCelery(app)
 # For the Authentication
 LoginMan = login_manager.LoginManager()
 LoginMan.init_app(app)
-LoginMan.login_view = 'login'
+LoginMan.login_view = 'AuthView.login'
 LoginMan.login_message_category = "info"
 
 # Bcrypt for password- management
