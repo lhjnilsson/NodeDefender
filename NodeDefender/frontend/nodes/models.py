@@ -1,1 +1,1 @@
-from ...models.sql import NodeModel
+from ...models.SQL import iCPEModel, NodeModel

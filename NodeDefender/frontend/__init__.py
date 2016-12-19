@@ -2,8 +2,9 @@ from .. import app
 from .admin import AdminView
 from .auth import AuthView
 from .data import DataView
-from .nodes import NodesView
+from .nodes import NodeView
 from .user import UserView
+from flask_login import login_required
 
 @app.context_processor
 def inject_user():      # Adds general data to base-template
@@ -29,5 +30,5 @@ def index():
 app.register_blueprint(AdminView)
 app.register_blueprint(AuthView)
 app.register_blueprint(DataView)
-app.register_blueprint(NodesView)
+app.register_blueprint(NodeView)
 app.register_blueprint(UserView)

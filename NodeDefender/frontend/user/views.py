@@ -1,23 +1,27 @@
-@app.route('/user/profile')
+from . import UserView
+from flask_login import login_required
+from .models import UserModel, UserMessageModel
+
+@UserView.route('/user/profile')
 @login_required
 def UserProfile():
     Profile = UserModel.query.filter_by(email = current_user.email).first()
     Team =  UserModel.query.all()
     return render_template('user/profile.html', Team = Team, Profile = Profile)
 
-@app.route('/user/inbox')
+@UserView.route('/user/inbox')
 @login_required
 def UserInbox():
     return render_template('user/inbox.html')
 
-@app.route('/user/inbox/<mailid>', methods=['GET', 'POST'])
+@UserView.route('/user/inbox/<mailid>', methods=['GET', 'POST'])
 @login_required
 def UserInboxID(mailid):
-    message = MessageModel.query.filter_by(uuid=mailid).first()
+    message = UserMessageModel.query.filter_by(uuid=mailid).first()
     return render_template('user/inboxid.html', mailid=mailid, message =
                            message)
 
-@app.route('/user/settings')
+@UserView.route('/user/settings')
 @login_required
 def UserSettings():
     return render_template('user/settings.html')

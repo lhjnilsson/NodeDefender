@@ -1,5 +1,7 @@
+from . import NodeView
 from flask import render_template
-from .model import iCPEModel, NodeModel
+from .models import iCPEModel, NodeModel
+from flask_login import login_required
 
 @NodeView.route('/nodes/list', methods=['GET', 'POST'])
 @login_required

@@ -1,16 +1,16 @@
 from ... import db
 
 
-class Statistics(db.Model):
+class StatisticsModel(db.Model):
     __tablename__ = 'statistics'
     id = db.Column(db.Integer, primary_key=True)
     
     group_id = db.Column(db.Integer, db.ForeignKey('group.id'))
-    group = db.relationship('GroupModel', backref='statistics')
+    group = db.relationship('GroupModel', backref='statisticsgroup')
 
-    hourly = db.relationship('HourlyStatistics', backref="statistics")
-    daily = db.relationship('DailyStatistics', backref='statistics')
-    weekly = db.relationship('WeeklyStatistics', backref='statistics')
+    hourly = db.relationship('HourlyStatisticsModel', backref='statisticshourly')
+    daily = db.relationship('DailyStatisticsModel', backref='statisticsdaily')
+    weekly = db.relationship('WeeklyStatisticsModel', backref='statisticsweekly')
     
     def __init__(self):
         pass
@@ -18,19 +18,23 @@ class Statistics(db.Model):
 '''
 '''
 
-class HourlyStatistics(db.Model):
+class HourlyStatisticsModel(db.Model):
     __tablename__ = 'hourlystatistics'
     id = db.Column(db.Integer, primary_key=True)
     parent_id = db.Column(db.Integer, db.ForeignKey('statistics.id'))
-    
-    node = db.relationship('NodeModel', backref='hourlystatistics')
-    icpe = db.relationship('iCPEModel', backref='hourlystatistics')
-    zwavedevice = db.relationship('ZWaveDeviceModel',
-                                  backref='hourlystatistics')
 
-    heat = db.relationship('heatstat', backref='hourlystatistics')
-    power = db.relationship('powerstat', backref='hourlystatistics')
-    events = db.relationship('eventstat', backref='hourlystatistics')
+    node_id = db.Column(db.Integer, db.ForeignKey('node.id'))
+    icpe_id = db.Column(db.Integer, db.ForeignKey('icpe.id'))
+    zwavedevice_id = db.Column(db.Integer, db.ForeignKey('zwavedevice.id'))
+
+    node = db.relationship('NodeModel', backref='hourlystatisticsnode')
+    icpe = db.relationship('iCPEModel', backref='hourlystatisticsicpe')
+    zwavedevice = db.relationship('ZWaveDeviceModel',
+                                  backref='hourlystatisticszwave')
+
+    heat = db.relationship('HeatStatModel', backref='hourlystatisticsheat')
+    power = db.relationship('PowerStatModel', backref='hourlystatisticspower')
+    events = db.relationship('EventStatModel', backref='hourlystatisticsevents')
     
     last_updated = db.Column(db.DateTime)
 
@@ -40,21 +44,24 @@ class HourlyStatistics(db.Model):
         self.events = events
         last_updated = datetime.now()
 
-class DailyStatistics(db.Model):
+class DailyStatisticsModel(db.Model):
     __tablename__ = 'dailystatistics'
     id = db.Column(db.Integer, primary_key=True)
     parent_id = db.Column(db.Integer, db.ForeignKey('statistics.id'))
 
-    node = db.relationship('NodeModel', backref='hourlystatistics')
-    icpe = db.relationship('iCPEModel', backref='hourlystatistics')
+    node_id = db.Column(db.Integer, db.ForeignKey('node.id'))
+    icpe_id = db.Column(db.Integer, db.ForeignKey('icpe.id'))
+    zwavedevice_id = db.Column(db.Integer, db.ForeignKey('zwavedevice.id'))
+
+    node = db.relationship('NodeModel', backref='dailystatisticsnode')
+    icpe = db.relationship('iCPEModel', backref='dailystatisticsicpe')
     zwavedevice = db.relationship('ZWaveDeviceModel',
-                                  backref='hourlystatistics')
+                                  backref='dailystatisticszwave')
 
-    heat = db.relationship('heatstat', backref='hourlystatistics')
-    power = db.relationship('powerstat', backref='hourlystatistics')
-    events = db.relationship('eventstat', backref='hourlystatistics')
+    heat = db.relationship('HeatStatModel', backref='dailystatisticsheat')
+    power = db.relationship('PowerStatModel', backref='dailystatisticspower')
+    events = db.relationship('EventStatModel', backref='dailystatisticsevents')
  
-
     last_updated = db.Column(db.DateTime)
 
     def __init__(self, heat, power, events):
@@ -63,19 +70,23 @@ class DailyStatistics(db.Model):
         self.events = events
         last_updated = datetime.now()
 
-class WeeklyStatistics(db.Model):
+class WeeklyStatisticsModel(db.Model):
     __tablename__ = 'weeklystatistics'
     id = db.Column(db.Integer, primary_key=True)
     parent_id = db.Column(db.Integer, db.ForeignKey('statistics.id'))
-     
-    node = db.relationship('NodeModel', backref='hourlystatistics')
-    icpe = db.relationship('iCPEModel', backref='hourlystatistics')
+ 
+    node_id = db.Column(db.Integer, db.ForeignKey('node.id'))
+    icpe_id = db.Column(db.Integer, db.ForeignKey('icpe.id'))
+    zwavedevice_id = db.Column(db.Integer, db.ForeignKey('zwavedevice.id'))
+    
+    node = db.relationship('NodeModel', backref='weeklystatisticsnode')
+    icpe = db.relationship('iCPEModel', backref='weeklystatisticsicpe')
     zwavedevice = db.relationship('ZWaveDeviceModel',
-                                  backref='hourlystatistics')
+                                  backref='weeklystatisticszwave')
 
-    heat = db.relationship('heatstat', backref='hourlystatistics')
-    power = db.relationship('powerstat', backref='hourlystatistics')
-    events = db.relationship('eventstat', backref='hourlystatistics')
+    heat = db.relationship('HeatStatModel', backref='weeklystatisticsheat')
+    power = db.relationship('PowerStatModel', backref='weeklystatisticspower')
+    events = db.relationship('EventStatModel', backref='weeklystatisticsevents')
     
     last_updated = db.Column(db.DateTime)
 

@@ -18,13 +18,18 @@ class NodeModel(db.Model):
     parent = db.relationship('GroupModel', backref='node')
     
     alias = db.Column(db.String(20))
-    location = db.relationship('LocationModel', uselist=False, backref='node')
+    location = db.relationship('LocationModel', uselist=False,
+                               backref='nodelocation')
     created_on = db.Column(db.DateTime)
 
-    notes = db.relationship('NodeNotesModel', backref='node')
+    hourlystatistics = db.relationship('HourlyStatisticsModel', backref='nodehourly')
+    dailystatistics = db.relationship('DailyStatisticsModel', backref='nodedaily')
+    weeklystatistics = db.relationship('WeeklyStatisticsModel', backref='nodeweekly')
+
+    notes = db.relationship('NodeNotesModel', backref='nodenotes')
     notesticky = db.Column(db.String(150))
 
-    iCPEs = db.relationship('iCPEModel', backref='node')
+    icpes = db.relationship('iCPEModel', backref='nodeicpes')
 
     def __init__(self):
         pass
@@ -35,7 +40,7 @@ class LocationModel(db.Model):
     '''
     __tablename__ = 'location'
     id = db.Column(db.Integer, primary_key=True)
-    parent_id = db.Column(db.Integer, db.ForeignKey('icpe.id'))
+    node_id = db.Column(db.Integer, db.ForeignKey('node.id'))
     street = db.Column(db.String(30))
     city = db.Column(db.String(30))
     geolat = db.Column(db.String(10))
@@ -58,8 +63,8 @@ class NodeNotesModel(db.Model):
     __tablename__ = 'nodenotes'
 
     id = db.Column(db.Integer, primary_key=True)
-    parent_id = db.Column(db.Integer, db.ForeignKey('icpe.id'))
-    parent = db.relationship('iCPEModel', backref='nodenotes')
+    node_id = db.Column(db.Integer, db.ForeignKey('node.id'))
+    node = db.relationship('NodeModel', backref='nodenotesnode')
     author = db.Column(db.String(80))
     note = db.Column(db.String(150))
     created_on = db.Column(db.DateTime)

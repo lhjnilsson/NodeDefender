@@ -6,19 +6,21 @@ class iCPEModel(db.Model):
     '''
     __tablename__ = 'icpe'
     id = db.Column(db.Integer, primary_key=True)
+    node_id = db.Column(db.Integer, db.ForeignKey('node.id'))
+    node = db.relationship('NodeModel', backref='icpenode')
+    
     mac = db.Column(db.String(12), unique=True)
     alias = db.Column(db.String(20), unique=True)
     created_on = db.Column(db.DateTime)
     online =  db.Column(db.Boolean)
     last_online = db.Column(db.DateTime)
-    znodes = db.relationship('NodeModel', backref='icpe')
-    events = db.relationship('NodeEventModel', backref='icpe')
-    heat = db.relationship('NodeHeatModel', backref='icpe')
-    power = db.relationship('NodePowerModel', backref='icpe')
-    heatstats = db.relationship('NodeHeatStatModel', backref='icpe')
-    powerstats = db.relationship('NodePowerStatModel', backref='icpe')
-    notes = db.relationship('NodeNotesModel', backref='icpe')
+    znodes = db.relationship('NodeModel', backref='icpeznodes')
     notesticky = db.Column(db.String(150))
+
+    hourlystatistics = db.relationship('HourlyStatisticsModel', backref='icpehourly')
+    dailystatistics = db.relationship('DailyStatisticsModel', backref='icpedaily')
+    weeklystatistics = db.relationship('WeeklyStatisticsModel', backref='icpeweekly')
+
 
     def __init__(self, mac, alias):
         self.mac = mac.upper()
@@ -41,12 +43,21 @@ class ZWaveDeviceModel(db.Model):
     parent_id = db.Column(db.Integer, db.ForeignKey('icpe.id'))
     nodeid = db.Column(db.Integer)
     vid = db.Column(db.String(10))
-    ptype = db.Column(db.String(10))
+    roletype = db.Column(db.String(10))
+    devicetype = db.Column(db.String(10))
     pid = db.Column(db.String(10))
     generic_class = db.Column(db.String(10))
     productname = db.Column(db.String(30))
     brandname = db.Column(db.String(30))
-    nodeclasses = db.relationship('NodeClassModel', backref='node')
+    zwaveclasses = db.relationship('ZWaveClassModel', backref='zwavedeviceclasses')
+
+    hourlystatistics = db.relationship('HourlyStatisticsModel',
+                                       backref='zwavedevicehourly')
+    dailystatistics = db.relationship('DailyStatisticsModel',
+                                      backref='zwavedevicedaily')
+    weeklystatistics = db.relationship('WeeklyStatisticsModel',
+                                       backref='zwavedeviceweekly')
+
 
     def __init__(self, nodeid, vid, ptype, pid, generic_class, productname,
                  brandname):
@@ -60,21 +71,21 @@ class ZWaveDeviceModel(db.Model):
         self.brandname = brandname
 
 class ZWaveClassModel(db.Model):
-    __tablename__ = 'zwavelass'
+    __tablename__ = 'zwaveclass'
     id = db.Column(db.Integer, primary_key=True)
-    parent_id = db.Column(db.Integer, db.ForeignKey('node.id'))
-    parent = db.relationship('NodeModel', backref='NodeClasses')
+    device_id = db.Column(db.Integer, db.ForeignKey('zwavedevice.id'))
     commandclass = db.Column(db.String(10))
-    hiddenFields = db.relationship('NodeHiddenFieldModel', backref='NodeClasses')
+    types = db.relationship('ZWaveClassTypeModel', backref='zwaveclasstype')
 
     def __init__(self, commandclass):
         self.commandclass = commandclass
 
-class ZWaveHiddenFieldModel(db.Model):
-    __tablename__ = 'zwavehiddenfields'
+class ZWaveClassTypeModel(db.Model):
+    __tablename__ = 'zwaveclasstype'
     id = db.Column(db.Integer, primary_key=True)
-    parent_id = db.Column(db.Integer, db.ForeignKey('nodeclass.id'))
-    field = db.Column(db.String(10))
+    class_id = db.Column(db.Integer, db.ForeignKey('zwaveclass.id'))
+    classtype = db.Column(db.String(8))
 
-    def __init__(self, field):
-        self.field = field
+    def __init__(self, classtype):
+        self.classtype = classtype
+

@@ -1,5 +1,4 @@
-from . import models, forms, views
-
+from flask import Blueprint
 def CleanDuplicate(records):
     for icpe, node in records:
         if node.parent_id == None:
@@ -9,4 +8,4 @@ def CleanDuplicate(records):
 
 NodeView = Blueprint('NodeView', __name__, template_folder="templates",
                       static_folder="../static")
-
+from . import models, forms, views

@@ -9,13 +9,11 @@ class GroupModel(db.Model):
     name = db.Column(db.String(50))
     created_on = db.Column(db.DateTime)
    
-    users = db.relationship('UserModel')
-    messages = db.relationship('GroupMessageModel')
+    users = db.relationship('UserModel', backref='groupusers')
+    messages = db.relationship('GroupMessageModel', backref='groupmessages')
     
-    nodes = db.relationship('NodeModel')
-    statistics = db.relationship('StatisticModel')
-    events = db.relationship('EventModel')
-
+    nodes = db.relationship('NodeModel', backref='groupnodes')
+    statistics = db.relationship('StatisticsModel', backref='groupstatistics')
     def __init__(self, name):
         self.name = name
         self.created_on = datetime.now()
@@ -29,7 +27,8 @@ class GroupMessageModel(db.Model):
     parent_id = db.Column(db.Integer, db.ForeignKey('group.id'))
     created_on = db.Column(db.DateTime)
 
-    author = db.relationship('UserModel')
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    author = db.relationship('UserModel', backref='groupmessageauthor')
     subject = db.Column(db.String(50))
     message = db.Column(db.String(300))
 
