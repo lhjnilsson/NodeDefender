@@ -1,12 +1,13 @@
-from . import NodeView
-from flask import render_template
+from .. import NodeView
+from flask import render_template, request
 from .models import iCPEModel, NodeModel
-from flask_login import login_required
+from flask_security import login_required
 
 @NodeView.route('/nodes/list', methods=['GET', 'POST'])
 @login_required
 def NodesList():
     if request.method == 'GET':
+        return('OK')
         nodes = iCPEModel.query.all()
         return render_template('nodes/list.html', nodes = nodes)
     try:

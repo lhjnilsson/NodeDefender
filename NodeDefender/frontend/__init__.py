@@ -1,14 +1,20 @@
 from .. import app
-from .admin import AdminView
-from .data import DataView
-from .nodes import NodeView
-from .user import UserView
 from flask_login import login_required, current_user
 from flask import Blueprint
+from . import assets
 
 #Create Blueprint
-AuthView = Blueprint('AuthView', __name__, template_folder="auth/templates",
+AuthView = Blueprint('AuthView', __name__, template_folder="templates/auth")
+AdminView = Blueprint('AdminView', __name__, template_folder="templates/admin",
                       static_folder="static")
+DataView = Blueprint('DataView', __name__, template_folder="templates/data",
+                      static_folder="static")
+NodeView = Blueprint('NodeView', __name__, template_folder="templates/node",
+                      static_folder="static")
+UserView = Blueprint('UserView', __name__, template_folder="templates/user",
+                      static_folder="static")
+
+assets.init(app)
 
 @app.context_processor
 def inject_user():      # Adds general data to base-template
@@ -30,6 +36,11 @@ def index():
     return render_template('index.html', nodelist=nodes, stats = stats, nodeevents = nodeevents)
 
 from .auth import views
+from .admin import views
+from .data import views
+from .nodes import views
+from .user import views
+
 # Register Blueprints
 app.register_blueprint(AdminView)
 app.register_blueprint(AuthView)

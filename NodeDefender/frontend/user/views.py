@@ -1,4 +1,4 @@
-from . import UserView
+from .. import UserView
 from flask_login import login_required
 from .models import UserModel, UserMessageModel
 

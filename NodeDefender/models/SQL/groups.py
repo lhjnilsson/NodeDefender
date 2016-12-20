@@ -9,7 +9,6 @@ class GroupModel(db.Model):
     name = db.Column(db.String(50))
     created_on = db.Column(db.DateTime)
    
-    users = db.relationship('UserModel', backref='groupusers')
     messages = db.relationship('GroupMessageModel', backref='groupmessages')
     
     nodes = db.relationship('NodeModel', backref='groupnodes')

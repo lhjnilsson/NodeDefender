@@ -1,4 +1,4 @@
-from . import DataView
+from .. import DataView
 from .models import *
 
 @DataView.route('/data/power')

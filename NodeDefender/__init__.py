@@ -24,15 +24,14 @@ SOFTWARE.
 '''
 
 from flask import Flask
-import flask_login as login_manager
 from flask_sqlalchemy import SQLAlchemy
 from flask_restful import Api
-from flask_bcrypt import Bcrypt
 from flask_socketio import SocketIO
 from flask_moment import Moment
 from apscheduler.schedulers.gevent import GeventScheduler
 from gevent import monkey, sleep
 from .factory import CreateApp, CreateLogging
+from flask_security import Security, SQLAlchemyUserDatastore
 monkey.patch_all()
 
 # Setup logging
@@ -56,17 +55,25 @@ logger.info('Database started')
 # Initialize Celery
 celery = factory.CreateCelery(app)
 
+'''
 # For the Authentication
 LoginMan = login_manager.LoginManager()
 LoginMan.init_app(app)
 LoginMan.login_view = 'AuthView.login'
 LoginMan.login_message_category = "info"
 
+
 # Bcrypt for password- management
 bcrypt = Bcrypt(app)
+'''
 
 # Report that startup is successfull
 logger.info('NodeDefender Succesfully started')
+
+# Setup Flask-Security
+from .models.SQL import UserModel, UserRoleModel
+user_datastore = SQLAlchemyUserDatastore(db, UserModel, UserRoleModel)
+security = Security(app, user_datastore)
 
 # Flask moment
 moment = Moment(app)

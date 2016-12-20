@@ -1,6 +1,22 @@
 from ... import db
+from flask_security import UserMixin, RoleMixin
 
-class UserModel(db.Model):
+roles_users = db.Table('roles_users',
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
+    db.Column('role_id', db.Integer, db.ForeignKey('role.id')))
+
+class UserRoleModel(RoleMixin, db.Model):
+    __tablename__ = 'role'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(80), unique=True)
+    description = db.Column(db.String(255))
+
+    def __init__(self):
+        pass
+
+
+
+class UserModel(UserMixin, db.Model):
     '''
     Table of Users
 
@@ -12,52 +28,23 @@ class UserModel(db.Model):
     '''
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
-    parent_id = db.Column(db.Integer, db.ForeignKey('group.id'))
-    group = db.relationship('GroupModel', backref='user')
-    registered_on = db.Column(db.DateTime)
-    last_login = db.Column(db.DateTime)
-    loginlog = db.relationship('LoginLogModel', backref='user')
-
-    messages = db.relationship('UserMessageModel', backref='user')
- 
     firstname = db.Column(db.String(30))
     lastname = db.Column(db.String(40))
-    email = db.Column(db.String(50), unique=True)
-    password = db.Column(db.String(50))
-    # Permission level
-    is_moderator = db.Column(db.Boolean, default=False)
-    is_admin = db.Column(db.Boolean, default=False)
+    email = db.Column(db.String(255), unique=True)
+    password = db.Column(db.String(120))
+    active = db.Column(db.Boolean())
+    confirmed_at = db.Column(db.DateTime)
+    last_login_at = db.Column(db.DateTime)
+    current_login_at = db.Column(db.DateTime)
+    last_login_ip = db.Column(db.String(100))
+    current_login_ip = db.Column(db.String(100))
+    login_count = db.Column(db.Integer)
+    registered_at = db.Column(db.DateTime)
 
-    def __init__(self, firstname, lastname, email, password):
-        self.firstname = firstname
-        self.lastname = lastname
-        self.email = email
-        self.password = bcrypt.generate_password_hash(password)
-        self.registered_on = datetime.now()
-        logger.info('User {} added'.format(email))
+    roles = db.relationship('UserRoleModel', secondary=roles_users,
+                            backref=db.backref('usersrole', lazy='dynamic'))
+    messages = db.relationship('UserMessageModel', backref='user')
 
-    def is_authenticated(self):
-        return True
-
-    def verify_password(self, plaintext, ip):
-        if bcrypt.check_password_hash(self.password, plaintext):
-            logger.info('User: {} logged in from: {}'.format(self.email, ip))
-            return True
-        else:
-            logger.warning('Unauthorized attempt for: {} from: {}'.format(self.email, ip))
-            return False
-
-    def is_active(self):
-        return True
-
-    def is_anonymous(self):
-        return False
-
-    def get_id(self):
-        return str(self.id)
-
-    def __repr__(self):
-        return '<Email: %r, Last Login: %r>' % (self.email, self.last_login)
 
 class UserMessageModel(db.Model):
     # Mailbox for User. 
@@ -85,29 +72,3 @@ class UserMessageModel(db.Model):
         self.subject = subject
         self.body = body
         self.created_on = datetime.now()
-
-class LoginLogModel(db.Model):
-    __tablename__ = 'loginlog'
-    '''
-    Loggs login for user, successful and unsuccessful
-
-    Stores Date of when it was attempted
-    if it was successful or not
-    IP Address from where it was attempted
-    Browser Used
-    Platform, i.e Windows, iPhone, Android, Linux etc..
-    '''
-    id = db.Column(db.Integer, primary_key = True)
-    parent_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    date = db.Column(db.DateTime)
-    successful = db.Column(db.Boolean)
-    ipaddr = db.Column(db.String(48))
-    browser = db.Column(db.String(16))
-    platform = db.Column(db.String(16))
-
-    def __init__(self, successful, ipaddr, user_agent):
-        self.date = datetime.now()
-        self.successful = successful
-        self.ipaddr = ipaddr
-        self.browser = user_agent.browser
-        self.platform = user_agent.platform

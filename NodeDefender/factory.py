@@ -5,6 +5,8 @@ from celery import Celery
 def CreateApp():
     app = Flask(__name__)
     app.config.from_object('config')
+    app.template_folder = "frontend/templates"
+    app.static_folder = "frontend/static"
     return app
 
 def CreateLogging():
