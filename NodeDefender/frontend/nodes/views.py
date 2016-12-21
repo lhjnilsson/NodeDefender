@@ -7,7 +7,6 @@ from flask_security import login_required
 @login_required
 def NodesList():
     if request.method == 'GET':
-        return('OK')
         nodes = iCPEModel.query.all()
         return render_template('nodes/list.html', nodes = nodes)
     try:

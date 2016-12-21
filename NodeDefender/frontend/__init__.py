@@ -19,8 +19,7 @@ assets.init(app)
 def inject_user():      # Adds general data to base-template
     if current_user.is_authenticated:
         # Return Message- inbox for user if authenticated
-        messages = UserModel.query.get(current_user.id).messages
-        return dict(user = current_user, messages = messages)
+        return dict(user = current_user)
     else:
         # If not authenticated user get Guest- ID(That cant be used).
         return dict(user = current_user)

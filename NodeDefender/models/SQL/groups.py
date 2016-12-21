@@ -1,4 +1,12 @@
 from ... import db
+from datetime import datetime
+
+user_list = db.Table('user_list',
+                     db.Column('group_id', db.Integer,
+                               db.ForeignKey('group.id')),
+                     db.Column('user_id', db.Integer,
+                               db.ForeignKey('user.id'))
+                    )
 
 class GroupModel(db.Model):
     '''
@@ -8,7 +16,8 @@ class GroupModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50))
     created_on = db.Column(db.DateTime)
-   
+    users = db.relationship('UserModel', secondary=user_list,
+                            backref=db.backref('group', lazy='dynamic'))
     messages = db.relationship('GroupMessageModel', backref='groupmessages')
     
     nodes = db.relationship('NodeModel', backref='groupnodes')

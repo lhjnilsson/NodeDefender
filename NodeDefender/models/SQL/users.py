@@ -1,5 +1,6 @@
 from ... import db
 from flask_security import UserMixin, RoleMixin
+from .groups import user_list
 
 roles_users = db.Table('roles_users',
     db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
@@ -10,10 +11,6 @@ class UserRoleModel(RoleMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=True)
     description = db.Column(db.String(255))
-
-    def __init__(self):
-        pass
-
 
 
 class UserModel(UserMixin, db.Model):
@@ -42,9 +39,10 @@ class UserModel(UserMixin, db.Model):
     registered_at = db.Column(db.DateTime)
 
     roles = db.relationship('UserRoleModel', secondary=roles_users,
-                            backref=db.backref('usersrole', lazy='dynamic'))
+                            backref=db.backref('users', lazy='dynamic'))
     messages = db.relationship('UserMessageModel', backref='user')
-
+    groups = db.relationship('GroupModel', secondary=user_list,
+                             backref=db.backref('user', lazy='dynamic'))
 
 class UserMessageModel(db.Model):
     # Mailbox for User. 

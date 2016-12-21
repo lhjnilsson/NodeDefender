@@ -72,8 +72,8 @@ logger.info('NodeDefender Succesfully started')
 
 # Setup Flask-Security
 from .models.SQL import UserModel, UserRoleModel
-user_datastore = SQLAlchemyUserDatastore(db, UserModel, UserRoleModel)
-security = Security(app, user_datastore)
+UserDatastore = SQLAlchemyUserDatastore(db, UserModel, UserRoleModel)
+security = Security(app, UserDatastore)
 
 # Flask moment
 moment = Moment(app)
