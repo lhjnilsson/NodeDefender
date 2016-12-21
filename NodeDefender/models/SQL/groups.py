@@ -8,6 +8,13 @@ user_list = db.Table('user_list',
                                db.ForeignKey('user.id'))
                     )
 
+node_list = db.Table('node_list',
+                     db.Column('group_id', db.Integer,
+                               db.ForeignKey('group.id')),
+                     db.Column('node_id', db.Integer, 
+                               db.ForeignKey('node.id'))
+                    )
+
 class GroupModel(db.Model):
     '''
     Representing one group containing iCPEs and Users
@@ -20,7 +27,8 @@ class GroupModel(db.Model):
                             backref=db.backref('group', lazy='dynamic'))
     messages = db.relationship('GroupMessageModel', backref='groupmessages')
     
-    nodes = db.relationship('NodeModel', backref='groupnodes')
+    nodes = db.relationship('NodeModel', secondary=node_list,
+                            backref=db.backref('group', lazy='dynamic'))
     statistics = db.relationship('StatisticsModel', backref='groupstatistics')
     def __init__(self, name):
         self.name = name

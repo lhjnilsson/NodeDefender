@@ -1,4 +1,5 @@
 from ... import db
+from .nodes import icpe_list
 
 class iCPEModel(db.Model):
     '''
@@ -6,8 +7,8 @@ class iCPEModel(db.Model):
     '''
     __tablename__ = 'icpe'
     id = db.Column(db.Integer, primary_key=True)
-    node_id = db.Column(db.Integer, db.ForeignKey('node.id'))
-    node = db.relationship('NodeModel', backref='icpenode')
+    nodes = db.relationship('NodeModel', secondary=icpe_list,
+                           backref=db.backref('icpe', lazy='dynamic'))
     
     mac = db.Column(db.String(12), unique=True)
     alias = db.Column(db.String(20), unique=True)

@@ -2,7 +2,7 @@
 from flask_script import Manager, Command
 from NodeDefender import app, db
 from flask_migrate import Migrate, MigrateCommand
-from NodeDefender.manage import CreateUserCommand, DeleteUserCommand, \
+from NodeDefender.manage.user import CreateUserCommand, DeleteUserCommand, \
 ListUserCommand
 from NodeDefender.manage.role import AddRole, CreateRole
 from NodeDefender.manage.group import CreateGroupCommand, \

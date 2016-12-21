@@ -1,4 +1,12 @@
 from ... import db
+from .groups import node_list
+
+icpe_list = db.Table('icpe_list',
+                     db.Column('node_id', db.Integer,
+                               db.ForeignKey('node.id')),
+                     db.Column('icpe_id', db.Integer,
+                               db.ForeignKey('icpe.id'))
+                    )
 
 class NodeModel(db.Model):
     '''
@@ -14,9 +22,9 @@ class NodeModel(db.Model):
     '''
     __tablename__ = 'node'
     id = db.Column(db.Integer, primary_key=True)
-    parent_id = db.Column(db.Integer, db.ForeignKey('group.id'))
-    parent = db.relationship('GroupModel', backref='node')
-    
+    groups = db.relationship('GroupModel', secondary=node_list,
+                             backref=db.backref('node', lazy='dynamic'))
+
     alias = db.Column(db.String(20))
     location = db.relationship('LocationModel', uselist=False,
                                backref='nodelocation')
@@ -29,7 +37,8 @@ class NodeModel(db.Model):
     notes = db.relationship('NodeNotesModel', backref='nodenotes')
     notesticky = db.Column(db.String(150))
 
-    icpes = db.relationship('iCPEModel', backref='nodeicpes')
+    icpes = db.relationship('iCPEModel', secondary=icpe_list,
+                           backref=db.backref('node', lazy='dynamic'))
 
     def __init__(self):
         pass
