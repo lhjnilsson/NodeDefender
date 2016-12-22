@@ -2,24 +2,19 @@
 from flask_script import Manager, Command
 from NodeDefender import app, db
 from flask_migrate import Migrate, MigrateCommand
-from NodeDefender.manage.user import CreateUserCommand, DeleteUserCommand, \
-ListUserCommand
-from NodeDefender.manage.role import AddRole, CreateRole
-from NodeDefender.manage.group import CreateGroupCommand, \
-        AddUserCommand, ListGroupCommand, ListMemberCommand
+from NodeDefender.manage.user import manager as UserManager
+from NodeDefender.manage.role import manager as RoleManager
+from NodeDefender.manage.group import manager as GroupManager
+from NodeDefender.manage.node import manager as NodeManager
+from NodeDefender.manage.icpe import manager as iCPEManager
 
 manager = Manager(app)
-manager.add_command('create_user', CreateUserCommand())
-manager.add_command('delete_user', DeleteUserCommand())
-manager.add_command('list_users', ListUserCommand())
 
-manager.add_command('add_role', AddRole())
-manager.add_command('create_role', CreateRole())
-
-manager.add_command('create_group', CreateGroupCommand())
-manager.add_command('add_user', AddUserCommand())
-manager.add_command('list_groups', ListGroupCommand())
-manager.add_command('list_members', ListMemberCommand())
+manager.add_command('user', UserManager)
+manager.add_command('role', RoleManager)
+manager.add_command('group', GroupManager)
+manager.add_command('node', NodeManager)
+manager.add_command('iCPE', iCPEManager)
 
 migrate = Migrate(app, db)
 manager.add_command('db', MigrateCommand)

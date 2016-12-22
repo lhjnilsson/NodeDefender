@@ -1,53 +1,48 @@
-from .. import UserDatastore, db
-from flask_script import Command, prompt, prompt_pass
-from ..models.SQL import UserModel, GroupModel
+from flask_script import Manager, prompt
+from ..models.manage import group
 
-class CreateGroupCommand(Command):
-    def run(self):
-        groupname = prompt('Group name')
-        exists = GroupModel.query.filter_by(name=groupname).first()
-        if exists:
-            print("Group {} is already present.".format(groupname))
-            return
-        group = GroupModel(groupname)
-        db.session.add(group)
-        db.session.commit()
-        print("Group {} Successfully added!".format(groupname))
-        return
+manager = Manager(usage='Manage Groups')
 
-class AddUserCommand(Command):
-    def run(self):
-        groupname = prompt('Group name')
-        group = GroupModel.query.filter_by(name=groupname).first()
-        if group is None:
-            print("Unable to find Group {}".format(groupname))
-            return
+@manager.option('-name', '--name', dest='name', default=None)
+@manager.option('-desc', '--description', dest='description', default=None)
+def create(name, description):
+    'Create a Group'
+    if name is None:
+        name = prompt('Group Name')
+    
+    if description is None:
+        description = prompt('Description')
 
-        email = prompt('User email')
-        user = UserModel.query.filter_by(email=email).first()
-        if user is None:
-            print("Unable to find user {}".format(username))
-            return
+    group.Create(name, description)
+    print("Group {} successfully added".format(name))
 
-        group.users.append(user)
-        db.session.add(group)
-        db.session.commit()
-        print("Successfully added {} to {}".format(email, groupname))
-        return
+@manager.option('-name', '--name', dest='name', default=None)
+def delete(name):
+    'Delete a Group'
+    if name is None:
+        name = prompt('Group Name')
 
-class ListGroupCommand(Command):
-    def run(self):
-        for group in GroupModel.query.all():
-            print("ID: {}, Name: {}".format(group.id, group.name))
-        return
+    group.Delete(name)
+    print("Group {} successfully deleted".format(name))
 
-class ListMemberCommand(Command):
-    def run(self):
-        groupname = prompt("Group name")
-        group = GroupModel.query.filter_by(name = groupname).first()
-        for member in group.users:
-            print(member.email)
+@manager.command
+def list():
+    'List Groups'
+    for g in group.List():
+        print("ID: {}, Name: {}".format(g.id, g.name))
 
-        return
+@manager.option('-name', '--name', dest='name', default=None)
+def info(name):
+    'Show information about a Group'
+    if name is None:
+        name = prompt('Group Name')
 
-
+    g = group.Get(name)
+    print("ID: {}, Name: {}".format(g.id, g.name))
+    print("Description: {}".format(g.description))
+    print("User Members:")
+    for user in g.users:
+        print("ID: {}, Mail: {}".format(user.id, user.mail))
+    print("Nodes")
+    for node in g.nodes:
+        print("ID: {}, Name: {}".format(node.id, node.name))

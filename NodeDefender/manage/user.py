@@ -2,40 +2,55 @@ from .. import app, UserDatastore, db
 from flask_security import utils
 from sys import exit
 from flask_script import Command, prompt, prompt_pass
-from ..models.SQL import UserModel
+from ..models.manage import user
+from flask_script import Manager
 
+manager = Manager(usage="Preform User- operations in SQL Database")
 
-class CreateUserCommand(Command):
-    def run(self):
-        email = prompt("Email")
-        if UserDatastore.get_user(email):
-            print("Email already exists")
-            print("Closing. Pleaser try again")
-            return 
-        pw1 = prompt_pass("Password")
-        pw2 = prompt_pass("Password again");
-        if pw1 != pw1:
-            print("Passwords does not match!")
-            print("Closing. Please try again")
-            return
-        encrypted_password = utils.encrypt_password(pw1)
-        UserDatastore.create_user(email=email, password=encrypted_password)
-        db.session.commit()
+@manager.option('-n', '-e', '--email', dest='email', default=None)
+@manager.option('-pw', '--password', dest='password', default=None)
+def create(email, password):
+    if email is None:
+        email = prompt('Email')
 
-        print("Successfully added", email)
+    if password is None:
+        password = prompt_pass('Password')
+    
+    try:
+        user.Create(email, password)
+    except ValueError:
+        print("User already present")
+        return
 
-class DeleteUserCommand(Command):
-    def run(self):
-        email = prompt("Email")
-        user = UserModel.query.filter_by(email=email).first()
-        if not user:
-            print("Can't find user")
-            return
-        db.session.delete(user)
-        db.session.commit()
-        print("User Successfully deleted")
+    print("User {} Successfully added!".format(email))
 
-class ListUserCommand(Command):
-    def run(self):
-        for user in UserModel.query.all():
-            print("ID: {}, Email: {}".format(user.id, user.email))
+@manager.command
+def list():
+    "List Users"
+    for u in user.List():
+        print("ID: {}, Email: {}".format(u.id, u.email))
+
+@manager.option('-n', '-e', '--email', dest='email', default=None)
+def delete(email):
+    "Deltes User"
+    if email is None:
+        email = prompt('Email')
+
+    user.Delete(email)
+    print("User {} Successfully Deleted!".format(email))
+
+@manager.option('-n', '-e', '--email', dest='email', default=None)
+def groups(email):
+    "List User Groups"
+    if email is None:
+        email = prompt('Email')
+    for user in user.Groups:
+        print("ID: {}, Email: {}".format(user.id, user.email))
+
+@manager.option('-n', '-e', '--email', dest='email', default=None)
+def roles(email):
+    "List User Roles"
+    if email is None:
+        email = promot('Email')
+    for role in user.Roles(email):
+        print("ID: {}, Role: {}".format(role.id, role.name))

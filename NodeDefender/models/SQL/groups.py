@@ -22,6 +22,7 @@ class GroupModel(db.Model):
     __tablename__ = 'group'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50))
+    description = db.Column(db.String(250))
     created_on = db.Column(db.DateTime)
     users = db.relationship('UserModel', secondary=user_list,
                             backref=db.backref('group', lazy='dynamic'))
@@ -30,8 +31,10 @@ class GroupModel(db.Model):
     nodes = db.relationship('NodeModel', secondary=node_list,
                             backref=db.backref('group', lazy='dynamic'))
     statistics = db.relationship('StatisticsModel', backref='groupstatistics')
-    def __init__(self, name):
+   
+    def __init__(self, name, description):
         self.name = name
+        self.description = description
         self.created_on = datetime.now()
 
 class GroupMessageModel(db.Model):

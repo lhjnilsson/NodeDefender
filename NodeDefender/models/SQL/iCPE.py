@@ -15,12 +15,12 @@ class iCPEModel(db.Model):
     created_on = db.Column(db.DateTime)
     online =  db.Column(db.Boolean)
     last_online = db.Column(db.DateTime)
-    znodes = db.relationship('NodeModel', backref='icpeznodes')
+    sensors = db.relationship('SensorModel', backref='icpe')
     notesticky = db.Column(db.String(150))
 
-    hourlystatistics = db.relationship('HourlyStatisticsModel', backref='icpehourly')
-    dailystatistics = db.relationship('DailyStatisticsModel', backref='icpedaily')
-    weeklystatistics = db.relationship('WeeklyStatisticsModel', backref='icpeweekly')
+    hourlystatistics = db.relationship('HourlyStatisticsModel', backref='icpe')
+    dailystatistics = db.relationship('DailyStatisticsModel', backref='icpe')
+    weeklystatistics = db.relationship('WeeklyStatisticsModel', backref='icpe')
 
 
     def __init__(self, mac, alias):
@@ -33,15 +33,14 @@ class iCPEModel(db.Model):
         return '<Node %r, Mac %r>' % (self.alias, self.mac)
 
 
-class ZWaveDeviceModel(db.Model):
+class SensorModel(db.Model):
     '''
-    ZWave Node, child of iCPE
+    ZWave Sensor, child of iCPE
     '''
-    # Table storing Zwave nodes on iCPE Nodes
-    __tablename__ = 'zwavedevice'
+    __tablename__ = 'sensor'
     id = db.Column(db.Integer, primary_key=True)
     alias = db.Column(db.String(20))
-    parent_id = db.Column(db.Integer, db.ForeignKey('icpe.id'))
+    icpe_id = db.Column(db.Integer, db.ForeignKey('icpe.id'))
     nodeid = db.Column(db.Integer)
     vid = db.Column(db.String(10))
     roletype = db.Column(db.String(10))
@@ -50,14 +49,15 @@ class ZWaveDeviceModel(db.Model):
     generic_class = db.Column(db.String(10))
     productname = db.Column(db.String(30))
     brandname = db.Column(db.String(30))
-    zwaveclasses = db.relationship('ZWaveClassModel', backref='zwavedeviceclasses')
-
+    sensorclasses = db.relationship('SensorClassModel', backref='sensor')
+    sensortype = db.relationship('SensorTypeModel', backref='sensor',
+                                 uselist=False)
     hourlystatistics = db.relationship('HourlyStatisticsModel',
-                                       backref='zwavedevicehourly')
+                                       backref='sensor')
     dailystatistics = db.relationship('DailyStatisticsModel',
-                                      backref='zwavedevicedaily')
+                                      backref='sensor')
     weeklystatistics = db.relationship('WeeklyStatisticsModel',
-                                       backref='zwavedeviceweekly')
+                                       backref='sensor')
 
 
     def __init__(self, nodeid, vid, ptype, pid, generic_class, productname,
@@ -71,22 +71,20 @@ class ZWaveDeviceModel(db.Model):
         self.productname = productname
         self.brandname = brandname
 
-class ZWaveClassModel(db.Model):
-    __tablename__ = 'zwaveclass'
+class SensorClassModel(db.Model):
+    __tablename__ = 'sensorclass'
     id = db.Column(db.Integer, primary_key=True)
-    device_id = db.Column(db.Integer, db.ForeignKey('zwavedevice.id'))
+    sensor_id = db.Column(db.Integer, db.ForeignKey('sensor.id'))
     commandclass = db.Column(db.String(10))
-    types = db.relationship('ZWaveClassTypeModel', backref='zwaveclasstype')
 
     def __init__(self, commandclass):
         self.commandclass = commandclass
 
-class ZWaveClassTypeModel(db.Model):
-    __tablename__ = 'zwaveclasstype'
+class SensorTypeModel(db.Model):
+    __tablename__ = 'sensortype'
     id = db.Column(db.Integer, primary_key=True)
-    class_id = db.Column(db.Integer, db.ForeignKey('zwaveclass.id'))
+    class_id = db.Column(db.Integer, db.ForeignKey('sensor.id'))
     classtype = db.Column(db.String(8))
 
     def __init__(self, classtype):
         self.classtype = classtype
-

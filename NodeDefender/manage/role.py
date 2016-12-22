@@ -1,32 +1,59 @@
-from .. import app, UserDatastore, db
+from .. import UserDatastore, db
 from flask_script import Command, prompt, prompt_pass
+from ..models.SQL import UserModel, GroupModel
+from ..models.manage import role
+from flask_script import Manager
 
-class AddRole(Command):
-    def run(self):
-        email = prompt("User Email")
-        user = UserDatastore.get_user(email)
-        if not user:
-            print("Unable to find user")
-            return
-        role = prompt("Role")
-        UserDatastore.add_role_to_user(user, role)
-        db.session.commit()
-        print("Successfully added role {} to {}".format(role, email))
+manager = Manager(usage="Administrate Roles")
 
-class CreateRole(Command):
-    def run(self):
+@manager.option('-n', '--name', dest='name', default=None)
+def create(name):
+    if name is None:
+        name = prompt('Role Name')
+
+    try:
+        role.Create(name)
+    except DuplicateError:
+        print("Role already present")
+        return
+
+    print("Role {} Successfully added!".format(role))
+
+@manager.command
+def list():
+    "List Avalible Roles"
+    for role in role.List():
+        print("ID: {}, Role: {}".format(role.id, role.name))
+
+@manager.option('-n', '--name', dest='name', default=None)
+def delete(name):
+    "Delete Role"
+    if name is None:
         name = prompt("Role name")
-        description = prompt("Role Description")
-        UserDatastore.create_role(name=name, description=description)
-        db.session.commit()
-        print("Successfully added role: {}".format(name))
+    
+    try:
+        role.Delete(name)
+    except LookupError:
+        print("Unable to find Role")
 
-class DeleteRole(Command):
-    def run(self):
-        pass
+    print("Role {} Succesfully Removed".format(name))
 
-class ListRole(Command):
-    def run(self):
-        pass
+@manager.option('-n', '--name', dest='name', default=None)
+def members(name):
+    "List users that are member of a group"
+    for users in role.Members(name):
+        print("ID: {}, Email: {}".format(user.id, user.email))
 
+@manager.option('-n', '--role', dest='role', default=None)
+@manager.option('-u', '--user', dest='user', default=None)
+def add(role, user):
+    "Adds user to a Role"
+    role.Add(user, role)
+    print("User {} Added to Role {}".format(user, role))
 
+@manager.option('-n', '--role', dest='role', default=None)
+@manager.option('-u', '--user', dest='user', default=None)
+def remove(role, user):
+    "Remove user from Role"
+    role.Remove(user, role)
+    print("User {} Added to Role {}".format(user, role))

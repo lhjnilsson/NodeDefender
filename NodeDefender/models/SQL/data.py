@@ -6,7 +6,6 @@ class StatisticsModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     
     group_id = db.Column(db.Integer, db.ForeignKey('group.id'))
-    group = db.relationship('GroupModel', backref='statisticsgroup')
 
     hourly = db.relationship('HourlyStatisticsModel', backref='statisticshourly')
     daily = db.relationship('DailyStatisticsModel', backref='statisticsdaily')
@@ -25,12 +24,7 @@ class HourlyStatisticsModel(db.Model):
 
     node_id = db.Column(db.Integer, db.ForeignKey('node.id'))
     icpe_id = db.Column(db.Integer, db.ForeignKey('icpe.id'))
-    zwavedevice_id = db.Column(db.Integer, db.ForeignKey('zwavedevice.id'))
-
-    node = db.relationship('NodeModel', backref='hourlystatisticsnode')
-    icpe = db.relationship('iCPEModel', backref='hourlystatisticsicpe')
-    zwavedevice = db.relationship('ZWaveDeviceModel',
-                                  backref='hourlystatisticszwave')
+    sensor_id = db.Column(db.Integer, db.ForeignKey('sensor.id'))
 
     heat = db.relationship('HeatStatModel', backref='hourlystatisticsheat')
     power = db.relationship('PowerStatModel', backref='hourlystatisticspower')
@@ -51,12 +45,7 @@ class DailyStatisticsModel(db.Model):
 
     node_id = db.Column(db.Integer, db.ForeignKey('node.id'))
     icpe_id = db.Column(db.Integer, db.ForeignKey('icpe.id'))
-    zwavedevice_id = db.Column(db.Integer, db.ForeignKey('zwavedevice.id'))
-
-    node = db.relationship('NodeModel', backref='dailystatisticsnode')
-    icpe = db.relationship('iCPEModel', backref='dailystatisticsicpe')
-    zwavedevice = db.relationship('ZWaveDeviceModel',
-                                  backref='dailystatisticszwave')
+    sensor_id = db.Column(db.Integer, db.ForeignKey('sensor.id'))
 
     heat = db.relationship('HeatStatModel', backref='dailystatisticsheat')
     power = db.relationship('PowerStatModel', backref='dailystatisticspower')
@@ -77,13 +66,8 @@ class WeeklyStatisticsModel(db.Model):
  
     node_id = db.Column(db.Integer, db.ForeignKey('node.id'))
     icpe_id = db.Column(db.Integer, db.ForeignKey('icpe.id'))
-    zwavedevice_id = db.Column(db.Integer, db.ForeignKey('zwavedevice.id'))
+    sensor_id = db.Column(db.Integer, db.ForeignKey('sensor.id'))
     
-    node = db.relationship('NodeModel', backref='weeklystatisticsnode')
-    icpe = db.relationship('iCPEModel', backref='weeklystatisticsicpe')
-    zwavedevice = db.relationship('ZWaveDeviceModel',
-                                  backref='weeklystatisticszwave')
-
     heat = db.relationship('HeatStatModel', backref='weeklystatisticsheat')
     power = db.relationship('PowerStatModel', backref='weeklystatisticspower')
     events = db.relationship('EventStatModel', backref='weeklystatisticsevents')
