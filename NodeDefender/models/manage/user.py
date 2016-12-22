@@ -40,3 +40,9 @@ def Roles(user):
             raise LookupError('User not found')
     
     return [role for role in user.roles]
+
+def Add(user, role):
+    return UserDatastore.add_role_user(user, role)
+
+def Remove(user, role):
+    return UserDatastore.remove_role_from_user(user, role)

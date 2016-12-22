@@ -1,4 +1,4 @@
-from flask_script import Manager
+from flask_script import Manager, prompt
 from ..models.manage import node, icpe, node
 
 manager = Manager(usage='Manage Nodes')
@@ -51,8 +51,40 @@ def leave(node, group):
 
     node.leave(node, group)
 
+@manager.option('-name', '--name', dest='name', default=None)
+def get(name):
+    'Get a specific Node'
+    if name is None:
+        name = prompt("Node Name")
+    
+    node = node.Get(name)
+    if node is None:
+        print("Unable to find Node")
+    
+    print("ID: {}, Name: {}".format(node.id, node.name))
+    
+
 @manager.command
 def list():
     'List avalible Nodes'
     for node in node.list():
         print("ID: {}, Alias: {}".format(node.id, node.alias))
+
+@manager.option('-name', '--name', dest='name', default=None)
+def groups(name):
+    'Get Groups that a Node belongs to'
+    if name is None:
+        name = prompt("Node Name")
+
+    for n in node.Groups(name):
+        print("ID: {}, Name: {}".format(n.id, n.name))
+
+
+@manager.option('-name', '--name', dest='name', default=None)
+def icpes(name):
+    'Get iCPEs that belong to Node'
+    if name is None:
+        name = prompt("Node Name")
+
+    for n in node.iCPEs(name):
+        print("ID: {}, Name: {}".format(n.id, n.name))

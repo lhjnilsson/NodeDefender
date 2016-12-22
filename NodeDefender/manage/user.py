@@ -54,3 +54,25 @@ def roles(email):
         email = promot('Email')
     for role in user.Roles(email):
         print("ID: {}, Role: {}".format(role.id, role.name))
+
+@manager.option('-n', '-e', '--email', dest='email', default=None)
+@manager.option('-r', '--role', dest='role', default=None)
+def add(email, role):
+    if email is None:
+        email = prompt('Email')
+    if role is None:
+        email = prompt('Role')
+
+    user.Add(email, role)
+    print("User {}, Successfully added to {}".format(email, role))
+
+@manager.option('-n', '-e', '--email', dest='email', default=None)
+@manager.option('-r', '--role', dest='role', default=None)
+def remove(email, role):
+    if email is None:
+        email = prompt('Email')
+    if role is None:
+        email = prompt('Role')
+
+    user.Remove(email, role)
+    print("User {}, Successfully removed from {}".format(email, role))
