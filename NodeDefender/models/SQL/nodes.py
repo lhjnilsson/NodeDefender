@@ -1,5 +1,4 @@
 from ... import db
-from .groups import node_list
 
 icpe_list = db.Table('icpe_list',
                      db.Column('node_id', db.Integer,
@@ -22,9 +21,6 @@ class NodeModel(db.Model):
     '''
     __tablename__ = 'node'
     id = db.Column(db.Integer, primary_key=True)
-    groups = db.relationship('GroupModel', secondary=node_list,
-                             backref=db.backref('node', lazy='dynamic'))
-
     alias = db.Column(db.String(20))
     location = db.relationship('LocationModel', uselist=False,
                                backref='nodelocation')

@@ -13,7 +13,11 @@ def create(name, description):
     if description is None:
         description = prompt('Description')
 
-    group.Create(name, description)
+    try:
+        group.Create(name, description)
+    except ValueError:
+        print("Error: ", e)
+
     print("Group {} successfully added".format(name))
 
 @manager.option('-name', '--name', dest='name', default=None)
@@ -22,7 +26,11 @@ def delete(name):
     if name is None:
         name = prompt('Group Name')
 
-    group.Delete(name)
+    try:
+        group.Delete(name)
+    except ValueError:
+        print("Error: ", e)
+
     print("Group {} successfully deleted".format(name))
 
 @manager.command
@@ -31,18 +39,22 @@ def list():
     for g in group.List():
         print("ID: {}, Name: {}".format(g.id, g.name))
 
-@manager.option('-name', '--name', dest='name', default=None)
+@manager.option('-n', '-g', '--group', '--name', dest='name', default=None)
 def info(name):
     'Show information about a Group'
     if name is None:
         name = prompt('Group Name')
 
     g = group.Get(name)
+    if g is None:
+        print("Cant find group ", name)
+        return
+
     print("ID: {}, Name: {}".format(g.id, g.name))
     print("Description: {}".format(g.description))
     print("User Members:")
     for user in g.users:
-        print("ID: {}, Mail: {}".format(user.id, user.mail))
+        print("ID: {}, Mail: {}".format(user.id, user.email))
     print("Nodes")
     for node in g.nodes:
         print("ID: {}, Name: {}".format(node.id, node.name))
