@@ -1,7 +1,10 @@
 from .. import app
 from flask_login import login_required, current_user
-from flask import Blueprint
+from flask import Blueprint, render_template
 from . import assets
+from ..models.manage import node as NodeManage
+from ..models.manage import data as DataManage
+
 
 #Create Blueprint
 AdminView = Blueprint('AdminView', __name__, template_folder="templates/admin",
@@ -28,10 +31,9 @@ def inject_user():      # Adds general data to base-template
 @app.route('/index')
 @login_required
 def index():
-    nodes = iCPEModel.query.all()
-    stats = statistics.GetAllStats()
-    nodeevents = NodeEventModel.query.order_by(desc(NodeEventModel.id)).limit(20)
-    return render_template('index.html', nodelist=nodes, stats = stats, nodeevents = nodeevents)
+    nodes = NodeManage.List()
+    stats = DataManage.Get(current_user.email)
+    return render_template('index.html', nodelist=nodes, stats = stats)
 
 from .admin import views
 from .data import views

@@ -7,21 +7,14 @@ class iCPEModel(db.Model):
     '''
     __tablename__ = 'icpe'
     id = db.Column(db.Integer, primary_key=True)
-    nodes = db.relationship('NodeModel', secondary=icpe_list,
-                           backref=db.backref('icpe', lazy='dynamic'))
-    
     mac = db.Column(db.String(12), unique=True)
-    alias = db.Column(db.String(20), unique=True)
+    name = db.Column(db.String(40), unique=True)
     created_on = db.Column(db.DateTime)
     online =  db.Column(db.Boolean)
     last_online = db.Column(db.DateTime)
     sensors = db.relationship('SensorModel', backref='icpe')
     notesticky = db.Column(db.String(150))
-
-    hourlystatistics = db.relationship('HourlyStatisticsModel', backref='icpe')
-    dailystatistics = db.relationship('DailyStatisticsModel', backref='icpe')
-    weeklystatistics = db.relationship('WeeklyStatisticsModel', backref='icpe')
-
+    statistics = db.relationship('StatisticsModel', backref='icpe', uselist=False)
 
     def __init__(self, mac, alias):
         self.mac = mac.upper()
@@ -52,13 +45,8 @@ class SensorModel(db.Model):
     sensorclasses = db.relationship('SensorClassModel', backref='sensor')
     sensortype = db.relationship('SensorTypeModel', backref='sensor',
                                  uselist=False)
-    hourlystatistics = db.relationship('HourlyStatisticsModel',
-                                       backref='sensor')
-    dailystatistics = db.relationship('DailyStatisticsModel',
-                                      backref='sensor')
-    weeklystatistics = db.relationship('WeeklyStatisticsModel',
-                                       backref='sensor')
-
+    statistics = db.relationship('StatisticsModel', backref="sensor",
+                                 uselist=False)
 
     def __init__(self, nodeid, vid, ptype, pid, generic_class, productname,
                  brandname):

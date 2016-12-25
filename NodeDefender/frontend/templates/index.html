@@ -26,7 +26,7 @@
 	<div class="col-lg-4">
 		<div class="box">
 			<h2 style="display: inline;">Average node heat</h2>
-			<h3 style="display: inline;"> : {{"%0.2f" % stats.hourly['heat']|float }}°C</h3>
+			<h3 style="display: inline;"> : N/A</h3>
 			<br><br>
 			<h4 style="display: inline" id="heat-history"></h4>
 		</div>
@@ -34,7 +34,7 @@
  	<div class="col-lg-4">
 		<div class="box">
 			<h2 style="display: inline;">Power Consumption</h2>
-			<h3 style="display: inline;"> : {{"%0.2f" % stats.hourly['power']|float}} W</h3>
+			<h3 style="display: inline;"> : N/A</h3>
 			<br><br>
 			<h4 style="display: inline" id="power-history"></h4>
 		</div>
@@ -42,7 +42,7 @@
 	<div class="col-lg-4">
 		<div class="box">
 			<h2 style="display: inline;">Events last hour</h2>
-			<h3 style="display: inline;"> : {{stats.hourly['events']}}</h3>
+			<h3 style="display: inline;"> : N/A</h3>
 			<br><br>
 			<h4 style="display: inline" id="events-history"></h4>
 		</div>
@@ -83,23 +83,6 @@
 								<th>Date</th>
 							</tr>
 						</thead>
-						<tbody>
-					{% for event in nodeevents %}
-					<tr>
-						<td>
-							<i class="fa fa-{{event.fonticon}}" aria-hidden="true"></i>
-						</td>
-						<td>
-							{{ event.parent.alias }}
-						</td>
-						<td>
-							{{ event.productname }}
-						</td>
-						<td>
-							{{ moment(event.created_on).format('Do MMM YYYY, HH:mm:ss') }}
-						</td>
-					</tr>
-					{% endfor %}
 						</tbody>
 					</table>
 		</div>
@@ -121,11 +104,11 @@ marker.bindPopup("<a href=\"/nodes/list/{{node.mac}}\">{{node.alias}}</a>");
 {% endfor %}
 
 // Data for Heat
-var HeatDaily = {{"%0.2f" % stats.daily['heat']|float }}
+var HeatDaily = N/A
 // Data for Power
-var PowerDaily = {{"%0.2f" % stats.daily['power']|float }}
+var PowerDaily = N/A
 // Data for Events
-var EventsDaily = {{stats.daily['events']}}
+var EventsDaily = N/A
 
 $(document).ready(function() {
 	$("#heat-history").text("Daily average: " + HeatDaily + " °C");

@@ -1,80 +1,81 @@
-from ..SQL import GroupModel, NodeModel
+from ..SQL import GroupModel, NodeModel, LocationModel
+from geopy.geocoders import Nominatim
+from collections import namedtuple
+from ... import db
 
-def Create(node, group):
-    if type(group) is str:
-        group = GroupModel.query.filter_by(name = group).first()
-        if group is None:
-            raise LookupError('Cant find group')
+location = namedtuple('location', 'street city latitude longitude')
 
-    node = NodeModel(node, group)
+def Location(street, city):
+    geo = Nominatim()
+    coord = geo.geocode(city + ' ' + street, timeout = 10)
+    if coord is None:
+        raise LookupError('Cant find location')
+    return location(street, city, coord.latitude, coord.longitude)
+
+def Create(name, group, location):
+    group = GroupModel.query.filter_by(name = group).first()
+    if group is None:
+        raise LookupError('Cant find group')
+    node = NodeModel(name, LocationModel(*location))
+    group.nodes.append(node)
+    db.session.add(node, group)
     db.session.commit()
     return node
 
 def Delete(node):
-    if type(node) is str:
-        node = NodeModel.query.filter_by(name = node).first()
-        if node is None:
-            raise LookupError('Cant find node')
-
+    node = NodeModel.query.filter_by(name = node).first()
+    if node is None:
+        raise LookupError('Cant find node')
+    
     db.session.delete(node)
     db.session.commit()
     return node
 
 def Join(node, group):
-    if type(node) is str:
-        node = NodeModel.query.filter_by(alias = node).first()
-        if node is None:
-            raise LookupError('Cant find node')
+    node = NodeModel.query.filter_by(name = node).first()
+    if node is None:
+        raise LookupError('Cant find node')
 
-    if type(group) is str:
-        group = GroupModel.query.filter_by(name = group).first()
-        if group is None:
-            raise LookupError('Cant find group')
+    group = GroupModel.query.filter_by(name = group).first()
+    if group is None:
+        raise LookupError('Cant find group')
 
-    node.groups.append(group)
-    db.session.add(node)
+    group.nodes.append(node)
+    db.session.add(group)
     db.session.commit()
     return node
 
 def Leave(node, group):
-    if type(node) is str:
-        node = NodeModel.query.filter_by(alias = node).first()
-        if node is None:
-            raise LookupError('Cant find node')
+    node = NodeModel.query.filter_by(alias = node).first()
+    if node is None:
+        raise LookupError('Cant find node')
 
-    if type(group) is str:
-        group = GroupModel.query.filter_by(name = group).first()
-        if group is None:
-            raise LookupError('Cant find group')
+    group = GroupModel.query.filter_by(name = group).first()
+    if group is None:
+        raise LookupError('Cant find group')
 
-    node.nodes.remove(group)
+    group.nodes.remove(node)
     db.session.add(node)
     db.session.commit()
     return node
 
 def Get(node):
-    if type(node) is str:
-        node = NodeModel.query.filter_by(name = node).first()
-        if node is None:
-            raise LookupError('cant find node')
-    return node
+    return NodeModel.query.filter_by(name = node).first()
 
 def List():
     return [node for node in NodeModel.query.all()]
 
 
 def Groups(node):
-    if type(node) is str:
-        node = NodeModel.query.filter_by(name = node).first()
-        if node is None:
-            raise LookupError('Cant find node')
-    
-    return [group for group in node.groups]
+    node = NodeModel.query.filter_by(name = node).first()
+    if node is None:
+        raise LookupError('Cant find node')
+
+    return [group for group in group.nodes]
 
 def iCPEs(node):
-    if type(node) is str:
-        node = NodeModel.query.filter_by(name = node).first()
-        if node is None:
-            raise LookupError('Cant fine node')
+    node = NodeModel.query.filter_by(name = node).first()
+    if node is None:
+        raise LookupError('Cant fine node')
 
     return [icpe for icpe in node.icpes]

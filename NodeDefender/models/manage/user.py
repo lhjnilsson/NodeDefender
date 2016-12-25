@@ -29,7 +29,7 @@ def Groups(user):
         if user is None:
             raise LookupError('User not found')
 
-    return [group for group in user.groups]
+    return [group for group in user.group]
 
 def Join(email, groupname):
     user = UserDatastore.get_user(email)
@@ -40,8 +40,8 @@ def Join(email, groupname):
     if group is None:
         raise LookupError('Cant find Group')
 
-    user.groups.append(group)
-    db.session.add(user)
+    group.users.append(user)
+    db.session.add(group)
     db.session.commit()
     return user
 
@@ -54,7 +54,7 @@ def Leave(email, groupname):
     if group is None:
         raise LookupError('Cant find Group')
 
-    user.groups.remove(group)
+    group.users.remove(user)
     db.session.add(user)
     db.session.commit()
     return user

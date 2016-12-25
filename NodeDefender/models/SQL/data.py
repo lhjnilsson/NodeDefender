@@ -6,6 +6,9 @@ class StatisticsModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     
     group_id = db.Column(db.Integer, db.ForeignKey('group.id'))
+    node_id = db.Column(db.Integer, db.ForeignKey('node.id'))
+    icpe_id = db.Column(db.Integer, db.ForeignKey('icpe.id'))
+    sensor_id = db.Column(db.Integer, db.ForeignKey('sensor.id'))
 
     hourly = db.relationship('HourlyStatisticsModel', backref='statisticshourly')
     daily = db.relationship('DailyStatisticsModel', backref='statisticsdaily')
@@ -14,17 +17,12 @@ class StatisticsModel(db.Model):
     def __init__(self):
         pass
 
-'''
-'''
+
 
 class HourlyStatisticsModel(db.Model):
     __tablename__ = 'hourlystatistics'
     id = db.Column(db.Integer, primary_key=True)
     parent_id = db.Column(db.Integer, db.ForeignKey('statistics.id'))
-
-    node_id = db.Column(db.Integer, db.ForeignKey('node.id'))
-    icpe_id = db.Column(db.Integer, db.ForeignKey('icpe.id'))
-    sensor_id = db.Column(db.Integer, db.ForeignKey('sensor.id'))
 
     heat = db.relationship('HeatStatModel', backref='hourlystatisticsheat')
     power = db.relationship('PowerStatModel', backref='hourlystatisticspower')
@@ -32,10 +30,7 @@ class HourlyStatisticsModel(db.Model):
     
     last_updated = db.Column(db.DateTime)
 
-    def __init__(self, heat, power, events):
-        self.heat = heat
-        self.power = power
-        self.events = events
+    def __init__(self):
         last_updated = datetime.now()
 
 class DailyStatisticsModel(db.Model):
@@ -43,30 +38,19 @@ class DailyStatisticsModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     parent_id = db.Column(db.Integer, db.ForeignKey('statistics.id'))
 
-    node_id = db.Column(db.Integer, db.ForeignKey('node.id'))
-    icpe_id = db.Column(db.Integer, db.ForeignKey('icpe.id'))
-    sensor_id = db.Column(db.Integer, db.ForeignKey('sensor.id'))
-
     heat = db.relationship('HeatStatModel', backref='dailystatisticsheat')
     power = db.relationship('PowerStatModel', backref='dailystatisticspower')
     events = db.relationship('EventStatModel', backref='dailystatisticsevents')
  
     last_updated = db.Column(db.DateTime)
 
-    def __init__(self, heat, power, events):
-        self.heat = heat
-        self.power = power
-        self.events = events
+    def __init__(self):
         last_updated = datetime.now()
 
 class WeeklyStatisticsModel(db.Model):
     __tablename__ = 'weeklystatistics'
     id = db.Column(db.Integer, primary_key=True)
     parent_id = db.Column(db.Integer, db.ForeignKey('statistics.id'))
- 
-    node_id = db.Column(db.Integer, db.ForeignKey('node.id'))
-    icpe_id = db.Column(db.Integer, db.ForeignKey('icpe.id'))
-    sensor_id = db.Column(db.Integer, db.ForeignKey('sensor.id'))
     
     heat = db.relationship('HeatStatModel', backref='weeklystatisticsheat')
     power = db.relationship('PowerStatModel', backref='weeklystatisticspower')
@@ -74,10 +58,7 @@ class WeeklyStatisticsModel(db.Model):
     
     last_updated = db.Column(db.DateTime)
 
-    def __init__(self, heat, power, events):
-        self.heat = heat
-        self.power = power
-        self.events = events
+    def __init__(self):
         self.last_updated = datetime.now()
 
 '''

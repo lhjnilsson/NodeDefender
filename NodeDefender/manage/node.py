@@ -3,72 +3,115 @@ from ..models.manage import node, icpe, node
 
 manager = Manager(usage='Manage Nodes')
 
-@manager.option('-name', '--name', dest='node', default=None)
-@manager.option('-group', '--group', dest='group', default=None)
-def create(node, group):
+@manager.option('-n', '-name', '--name', dest='name', default=None)
+@manager.option('-g', '-group', '--group', dest='group', default=None)
+@manager.option('-s', '-street', '--street', dest='street', default=None)
+@manager.option('-c', '-city', '--city', dest='city', default=None)
+def create(name, group, street, city):
     'Create Node and Assign to Group'
-    if node is None:
-        node = prompt('Node Name')
+    if name is None:
+        name = prompt('Node Name')
     
     if group is None:
         group = prompt('Group Name')
-
-    node.create(node, group)
     
-    print("Node {} Successfully created".format(node))
+    if street is None:
+        street = prompt('Street')
+    
+    if city is None:
+        city = prompt('City')
+    
+    try:
+        location = node.Location(street, city)
+    except LookupError as e:
+        print("Error: ", e)
+        return
+
+    try:
+        node.Create(name, group, location)
+    except (LookupError, ValueError) as e:
+        print("Error: ", e)
+        return
+        
+
+    print("Node {} Successfully created".format(name))
 
 
-@manager.option('-name', '--name', dest='node', default=None)
-def delete(node):
+@manager.option('-n', '--name', dest='name', default=None)
+def delete(name):
     'Delete Node'
-    if node is None:
-        node = prompt('Node Name')
+    if name is None:
+        name = prompt('Node Name')
+    
+    try:
+         node.Delete(name)
+    except LookupError as e:
+        print("Error: ", e)
+        return
 
-    node.delete(node)
-    print("Node {} Successfully deleted".format(node))
+    print("Node {} Successfully deleted".format(name))
 
-@manager.option('-name', '--name', dest='node', default=None)
-@manager.option('-group', '--group', dest='group', default=None)
-def join(node, group):
+@manager.option('-n', '--name', dest='name', default=None)
+@manager.option('-g', '--group', dest='group', default=None)
+def join(name, group):
     'Let a Node join a Group'
-    if node is None:
-        node = prompt("Node Name")
+    if name is None:
+        name = prompt("Node Name")
 
     if group is None:
         group = prompt("Group Name")
 
-    node.join(node, group)
+    try:
+        node.Join(name, group)
+    except LookupError as e:
+        print("Error: ", e)
+        return
 
-@manager.option('-name', '--name', dest='node', default=None)
+    print("Node {}, Successfully joined Group: {}".format(name, group))
+
+@manager.option('-n', '--name', dest='name', default=None)
 @manager.option('-group', '--group', dest='group', default=None)
-def leave(node, group):
+def leave(name, group):
     'Let a Node leave a Group'
-    if node is None:
-        node = prompt("Node Name")
+    if name is None:
+        name = prompt("Node Name")
 
     if group is None:
         group = prompt("Group Name")
+    try:
+        node.Leave(name, group)
+    except LookupError as e:
+        print("Error: ", e)
 
-    node.leave(node, group)
+    print("Node {} Successfully left Group: {}".format(name, group))
 
-@manager.option('-name', '--name', dest='name', default=None)
+@manager.option('-n', '--name', dest='name', default=None)
 def get(name):
     'Get a specific Node'
     if name is None:
         name = prompt("Node Name")
     
-    node = node.Get(name)
-    if node is None:
+    n = node.Get(name)
+    if n is None:
         print("Unable to find Node")
+        return
     
-    print("ID: {}, Name: {}".format(node.id, node.name))
-    
+    print("ID: {}, Name: {}".format(n.id, n.name))
+    print("Location: {}, {}".format(n.location.street, n.location.city))
+    print("Lat: {}, Long: {}".format(n.location.longitude,
+                                     n.location.latitude))
+    print("Groups: ")
+    for g in n.group:
+        print("ID: {}, Name: {}".format(g.id, g.name))
+    print("iCPEs: ")
+    for i in n.icpes:
+        print("ID: {}, Name: {}".format(i.id, i.name))
 
 @manager.command
 def list():
     'List avalible Nodes'
-    for node in node.list():
-        print("ID: {}, Alias: {}".format(node.id, node.alias))
+    for n in node.List():
+        print("ID: {}, Alias: {}".format(n.id, n.name))
 
 @manager.option('-name', '--name', dest='name', default=None)
 def groups(name):

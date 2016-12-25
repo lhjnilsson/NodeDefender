@@ -21,23 +21,17 @@ class NodeModel(db.Model):
     '''
     __tablename__ = 'node'
     id = db.Column(db.Integer, primary_key=True)
-    alias = db.Column(db.String(20))
-    location = db.relationship('LocationModel', uselist=False,
-                               backref='nodelocation')
+    name = db.Column(db.String(40), unique=True)
+    location = db.relationship('LocationModel', uselist=False, backref='node')
     created_on = db.Column(db.DateTime)
-
-    hourlystatistics = db.relationship('HourlyStatisticsModel', backref='nodehourly')
-    dailystatistics = db.relationship('DailyStatisticsModel', backref='nodedaily')
-    weeklystatistics = db.relationship('WeeklyStatisticsModel', backref='nodeweekly')
-
-    notes = db.relationship('NodeNotesModel', backref='nodenotes')
+    statistics = db.relationship('StatisticsModel', backref='node', uselist=False)
+    notes = db.relationship('NodeNotesModel', backref='node')
     notesticky = db.Column(db.String(150))
+    icpes = db.relationship('iCPEModel', secondary=icpe_list, backref=db.backref('node', lazy='dynamic'))
 
-    icpes = db.relationship('iCPEModel', secondary=icpe_list,
-                           backref=db.backref('node', lazy='dynamic'))
-
-    def __init__(self):
-        pass
+    def __init__(self, name, location):
+        self.name = name
+        self.location = location
 
 class LocationModel(db.Model):
     '''
@@ -48,28 +42,23 @@ class LocationModel(db.Model):
     node_id = db.Column(db.Integer, db.ForeignKey('node.id'))
     street = db.Column(db.String(30))
     city = db.Column(db.String(30))
-    geolat = db.Column(db.String(10))
-    geolong = db.Column(db.String(10))
+    latitude = db.Column(db.String(10))
+    longitude = db.Column(db.String(10))
     
-    def __init__(self, street, city):
+    def __init__(self, street, city, latitude, longitude):
         self.street = street
         self.city = city
-        geo = Nominatim()
-        location = geo.geocode(city + ' ' + street, timeout = 10)
-        if not location: # If city and street is not recognized
-            location = geo.geocode('Gothenburg', timeout = 10) # change this later...
-        self.geolat = location.latitude
-        self.geolong = location.longitude
+        self.latitude = latitude
+        self.longitude = longitude
 
     def __repr__(self):
-        return '<Alias %r. %r, %r>' % (self.alias, self.street, self.city)
+        return '<%r, %r>' % (self.street, self.city)
 
 class NodeNotesModel(db.Model):
     __tablename__ = 'nodenotes'
 
     id = db.Column(db.Integer, primary_key=True)
     node_id = db.Column(db.Integer, db.ForeignKey('node.id'))
-    node = db.relationship('NodeModel', backref='nodenotesnode')
     author = db.Column(db.String(80))
     note = db.Column(db.String(150))
     created_on = db.Column(db.DateTime)
