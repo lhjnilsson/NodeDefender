@@ -59,10 +59,15 @@ def Leave(node, group):
     db.session.commit()
     return node
 
-def Get(node):
-    return NodeModel.query.filter_by(name = node).first()
+def Get(name = None, Mac = None):
+    if name:
+        return NodeModel.query.filter_by(name = node).first()
+    else:
+        return NodeModel.query.filter_by(mac = mac).first()
 
-def List():
+def List(user = None):
+    if user:
+        return [node for node in NodeModel.query.all()]
     return [node for node in NodeModel.query.all()]
 
 

@@ -45,11 +45,11 @@
 				<tbody>
 					<tr>
 						<td>Registered at:</td>
-						<td>{{ moment(user.registered_on).format('Do MMM YYYY, HH:mm:ss') }}
+						<td>{{ moment(user.registered_at).format('Do MMM YYYY, HH:mm:ss') }}
 					</tr>
 					<tr>
 						<td>Last Login:</td>
-						<td>{{ moment(user.last_login).format('Do MMM YYYY, HH:mm:ss') }}
+						<td>{{ moment(user.last_login_at).format('Do MMM YYYY, HH:mm:ss') }}
 					</tr>
 				</tbody>
 			</table>
@@ -69,25 +69,6 @@
 					</tr>
 				</thead>
 				<tbody>
-					{% for log in user.loginlog %}
-          <tr>
-            <td>
-						  {{ moment(log.date).format('Do MMM YYYY, HH:mm:ss') }}
-					  </td>
-					  <td>
-						  {{ log.successful }} 
-					  </td>
-					  <td>
-						  {{ log.ipaddr }} 
-					  </td>
-					  <td>
-					  	{{ log.browser }} 
-				  	</td>
-					  <td>
-						  {{ log.platform }}
-					  </td>
-          </tr>
-					{% endfor %}
 				</tbody>
 			</table>
 		</div>
@@ -103,23 +84,7 @@
 					<th>Level</th>
 				</thead>
 				<tbody>	
-					{% for member  in Team %}
-					<td>
-						{{ member.firstname}} {{ member.lastname }}
-					</td>
-					<td>
-						{{ member.email }}
-					</td>
-					<td>
-						{% if user.is_admin %}
-						Admin
-						{% elif user.is_moderator %}
-						Moderator
-						{% else %}
-						User
-						{% endif %}
-					</td>
-				{% endfor %}
+					
 				</tbody>
 			</table>
 		</div>

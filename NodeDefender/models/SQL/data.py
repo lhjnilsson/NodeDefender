@@ -7,7 +7,6 @@ class StatisticsModel(db.Model):
     
     group_id = db.Column(db.Integer, db.ForeignKey('group.id'))
     node_id = db.Column(db.Integer, db.ForeignKey('node.id'))
-    icpe_id = db.Column(db.Integer, db.ForeignKey('icpe.id'))
     sensor_id = db.Column(db.Integer, db.ForeignKey('sensor.id'))
 
     hourly = db.relationship('HourlyStatisticsModel', backref='statisticshourly')

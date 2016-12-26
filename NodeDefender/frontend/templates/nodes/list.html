@@ -19,11 +19,11 @@
 			<div class="box" style="padding: 0;">
 				<div class="list-group">
 					{% for node in nodes %}
-                    <a href="/nodes/list/{{node.mac}}" class="list-group-item">
-                        <p class="col-sm-3"><b>Alias:</b> {{ node.alias }}</p>
-                        <p class="col-sm-3"><b>City:</b> {{ node.location.city }}</p>
-                        <p class="col-sm-3"><b>Mac:</b> {{ node.mac }}</p>
-                        <p class="col-sm-2"><b>Online</b> : {{node.online}}</p>
+                    <a href="/nodes/list/{{node.name}}" class="list-group-item">
+                        <p class="col-sm-2"><b>Name:</b> {{ node.name }}</p>
+                        <p class="col-sm-2"><b>Group:</b> {{ node.group.name }}</p>
+                        <p class="col-sm-2"><b>Street:</b> {{ node.location.street }}</p>
+                        <p class="col-sm-2"><b>City:</b> : {{node.location.city}}</p>
                         -
                     </a>
 					{% endfor %}

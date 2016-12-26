@@ -1,41 +1,55 @@
 from .. import NodeView
-from flask import render_template, request
-from .models import iCPEModel, NodeModel
+from flask import render_template, request, flash, redirect, url_for
 from flask_security import login_required
+from ...models.manage import node as NodeManage
+from .forms import (SensorForm, NodeLocationForm, iCPEForm, NodeForm,
+NodeCreateForm)
 
 @NodeView.route('/nodes/list', methods=['GET', 'POST'])
 @login_required
 def NodesList():
+    CreateForm = NodeCreateForm()
+
     if request.method == 'GET':
-        nodes = iCPEModel.query.all()
-        return render_template('nodes/list.html', nodes = nodes)
-    try:
-        icpe.AddiCPE(request.form['mac'], request.form['alias'],
-              request.form['street'], request.form['city'])
-        flash('Succesfully added node: ' + request.form['mac'], 'success')
-        return redirect(url_for('NodesList'))
-    except Exception as e:
-        flash('Error in adding node: ' + request.form['mac'] + '. ' + str(e), 'danger')
-        return redirect(url_for('NodesList'))
+        nodes = NodeManage.List()
+        return render_template('nodes/list.html', nodes = nodes, NodeCreateForm =
+                               CreateForm)
+    else:
+        CreateForm.validate_on_submit()
+        try:
+            location = NodeManage.Location(
+                CreateForm.Street.data,
+                CreateForm.City.data)
+        except LookupError as e:
+            flash("Error Creating Node: " + str(e), 'danger')
+            return redirect(url_for('NodeView.NodesList'))
+       
+        try:
+            node = NodeManage.Create(
+                CreateForm.Name.data,
+                CreateForm.Group.data,
+                location)
+        except LookupError as e:
+            flash("Error Creating Node: " + str(e), 'danger')
+            return redirect(url_for('NodeView.NodesList'))
+        
+        flash('Succesfully added node: ' + node.name, 'success')
+        return redirect(url_for('NodeView.NodesList'))
 
 @NodeView.route('/nodes/list/<mac>', methods=['GET', 'POST'])
 @login_required
 def NodesNode(mac):
-    iCPE = iCPEModel.query.filter_by(mac = mac).first()
-    if not iCPE:
+    iCPE = NodeManage.get(mac = mac)
+    if iCPE is None:
         raise ValueError('Cant find mac')
     form = NodeForm()
-    BasicForm = iCPEBasicForm()
-    AddressForm = iCPEAddressForm()
+    BasicForm = iCPEForm()
+    AddressForm = NodeAddressForm()
     NodeBasic = NodeBasicForm()
     if request.method == 'GET':
         znodes = icpe.WebForm(mac)
-        '''
-        powerstat = dict((nodeid, list(events)) for nodeid, events in
-                    groupby(iCPE.powerstat, lambda stat: stat.nodeid))
-        '''
-        return render_template('nodes/node.html', mac=mac, form=form, iCPE =
-                               iCPE, znodes = znodes, iCPEBasicForm =
+        return render_template('nodes/node.html', mac=mac, form=form,
+                               iCPE = iCPE, znodes = znodes, iCPEBasicForm =
                                BasicForm, iCPEAddressForm = AddressForm,
                                NodeBasicForm = NodeBasic)
     elif request.method == 'POST':

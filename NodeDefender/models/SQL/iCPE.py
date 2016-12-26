@@ -7,14 +7,12 @@ class iCPEModel(db.Model):
     '''
     __tablename__ = 'icpe'
     id = db.Column(db.Integer, primary_key=True)
+    node_id = db.Column(db.Integer, db.ForeignKey('node.id'))
     mac = db.Column(db.String(12), unique=True)
-    name = db.Column(db.String(40), unique=True)
-    created_on = db.Column(db.DateTime)
     online =  db.Column(db.Boolean)
     last_online = db.Column(db.DateTime)
     sensors = db.relationship('SensorModel', backref='icpe')
     notesticky = db.Column(db.String(150))
-    statistics = db.relationship('StatisticsModel', backref='icpe', uselist=False)
 
     def __init__(self, mac, alias):
         self.mac = mac.upper()
