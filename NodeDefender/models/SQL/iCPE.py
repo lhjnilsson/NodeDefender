@@ -1,5 +1,5 @@
 from ... import db
-from .nodes import icpe_list
+from datetime import datetime
 
 class iCPEModel(db.Model):
     '''
@@ -14,11 +14,10 @@ class iCPEModel(db.Model):
     sensors = db.relationship('SensorModel', backref='icpe')
     notesticky = db.Column(db.String(150))
 
-    def __init__(self, mac, alias):
+    def __init__(self, mac):
         self.mac = mac.upper()
-        self.alias = alias.capitalize()
         self.created_on = datetime.now()
-        logger.info('iCPE {} succesfully added'.format(self.mac))
+        #logger.info('iCPE {} succesfully added'.format(self.mac))
 
     def __repr__(self):
         return '<Node %r, Mac %r>' % (self.alias, self.mac)

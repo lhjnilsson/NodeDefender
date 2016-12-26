@@ -3,26 +3,40 @@ from ..models.manage import node, icpe
 
 manager = Manager(usage='Manage iCPE Devices')
 
-@manager.option('-mac', '--mac', dest='mac', default=None)
-@manager.option('-node', '--node', dest='node', default=None)
+@manager.option('-m', '--mac', dest='mac', default=None)
+@manager.option('-n', '--node', dest='node', default=None)
 def create(mac, node):
     'Create iCPE'
     if mac is None:
         mac = prompt('Mac')
 
-    icpe.Create(mac, node)
+    if node is None:
+        node = prompt('Node')
+
+    try:
+        icpe.Create(mac, node)
+    except (LookupError, ValueError) as e:
+        print("Error: ", str(e))
+        return
 
     print('iCPE {} Successfully Created'.format(mac))
     return
 
-@manager.option('-mac', '--mac', dest='mac', default=None)
+@manager.option('-m', '--mac', dest='mac', default=None)
 def delete(mac):
     'Remove iCPE'
     if mac is None:
         mac = prompt('Mac')
-        
-    icpe.Demove(mac)
 
+    try:
+        icpe.Delete(mac)
+    except LookupError as e:
+        print("Error: ", str(e))
+        return
+
+    print("Successfully Deleted: ", mac)
+
+'''
 @manager.option('-mac', '--mac', dest='mac', default=None)
 def join(icpe, group):
     'Let iCPE Join a Group'
@@ -44,6 +58,8 @@ def leave(icpe, group):
         node = prompt('Group')
 
     icpe.Leave(mac, group)
+'''
+
 
 @manager.command
 def list():
@@ -64,9 +80,6 @@ def info(mac):
 
     print('ID: {}, MAC: {}'.format(icpe.id, icpe.mac))
     print('Alias {}, Node: {}'.format(icpe.alias, icpe.node.name))
-    print('Member of Groups: ')
-    for group in icpe.groups:
-        print("Group {}".format(group.name))
     print('ZWave Sensors: ')
     for sensor in iCPE.sensors:
         print('Alias: {}, Type: {}'.format(sensor.alias, sensor.type))

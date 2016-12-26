@@ -28,7 +28,8 @@ def NodesList():
             node = NodeManage.Create(
                 CreateForm.Name.data,
                 CreateForm.Group.data,
-                location)
+                location,
+                CreateForm.Mac.data)
         except LookupError as e:
             flash("Error Creating Node: " + str(e), 'danger')
             return redirect(url_for('NodeView.NodesList'))
@@ -39,7 +40,7 @@ def NodesList():
 @NodeView.route('/nodes/list/<mac>', methods=['GET', 'POST'])
 @login_required
 def NodesNode(mac):
-    iCPE = NodeManage.get(mac = mac)
+    iCPE = NodeManage.Get(mac = mac)
     if iCPE is None:
         raise ValueError('Cant find mac')
     form = NodeForm()

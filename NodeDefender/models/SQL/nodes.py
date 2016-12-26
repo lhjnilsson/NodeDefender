@@ -1,11 +1,5 @@
 from ... import db
-
-icpe_list = db.Table('icpe_list',
-                     db.Column('node_id', db.Integer,
-                               db.ForeignKey('node.id')),
-                     db.Column('icpe_id', db.Integer,
-                               db.ForeignKey('icpe.id'))
-                    )
+from datetime import datetime
 
 class NodeModel(db.Model):
     '''
@@ -21,17 +15,20 @@ class NodeModel(db.Model):
     '''
     __tablename__ = 'node'
     id = db.Column(db.Integer, primary_key=True)
+    group_id = db.Column(db.Integer, db.ForeignKey('group.id'))
     name = db.Column(db.String(40), unique=True)
     location = db.relationship('LocationModel', uselist=False, backref='node')
     created_on = db.Column(db.DateTime)
     statistics = db.relationship('StatisticsModel', backref='node', uselist=False)
     notes = db.relationship('NodeNotesModel', backref='node')
     notesticky = db.Column(db.String(150))
-    icpes = db.relationship('iCPEModel', secondary=icpe_list, backref=db.backref('node', lazy='dynamic'))
+    icpe = db.relationship('iCPEModel', backref='node', uselist=False)
 
-    def __init__(self, name, location):
+    def __init__(self, name, location, icpe):
         self.name = name
         self.location = location
+        self.icpe = icpe
+        self.created_on = datetime.now()
 
 class LocationModel(db.Model):
     '''

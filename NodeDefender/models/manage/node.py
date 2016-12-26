@@ -1,4 +1,4 @@
-from ..SQL import GroupModel, NodeModel, LocationModel
+from ..SQL import GroupModel, NodeModel, LocationModel, iCPEModel
 from geopy.geocoders import Nominatim
 from collections import namedtuple
 from ... import db
@@ -12,11 +12,11 @@ def Location(street, city):
         raise LookupError('Cant find location')
     return location(street, city, coord.latitude, coord.longitude)
 
-def Create(name, group, location):
+def Create(name, group, location, mac):
     group = GroupModel.query.filter_by(name = group).first()
     if group is None:
         raise LookupError('Cant find group')
-    node = NodeModel(name, LocationModel(*location))
+    node = NodeModel(name, LocationModel(*location), iCPEModel(mac))
     group.nodes.append(node)
     db.session.add(node, group)
     db.session.commit()
@@ -59,28 +59,31 @@ def Leave(node, group):
     db.session.commit()
     return node
 
-def Get(name = None, Mac = None):
+def Get(name = None, mac = None):
     if name:
         return NodeModel.query.filter_by(name = node).first()
     else:
-        return NodeModel.query.filter_by(mac = mac).first()
+        return iCPEModel.query.filter_by(mac = mac).first().node
 
 def List(user = None):
     if user:
         return [node for node in NodeModel.query.all()]
     return [node for node in NodeModel.query.all()]
 
-
+'''
 def Groups(node):
     node = NodeModel.query.filter_by(name = node).first()
     if node is None:
         raise LookupError('Cant find node')
 
     return [group for group in group.nodes]
+'''
 
-def iCPEs(node):
+def iCPE(node):
     node = NodeModel.query.filter_by(name = node).first()
     if node is None:
         raise LookupError('Cant fine node')
+    if node.icpe is None:
+        raise LookupError('iCPE not initialized')
 
-    return [icpe for icpe in node.icpes]
+    return node.icpe

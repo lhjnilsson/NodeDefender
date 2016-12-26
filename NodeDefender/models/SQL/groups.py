@@ -8,13 +8,6 @@ user_list = db.Table('user_list',
                                db.ForeignKey('user.id'))
                     )
 
-node_list = db.Table('node_list',
-                     db.Column('group_id', db.Integer,
-                               db.ForeignKey('group.id')),
-                     db.Column('node_id', db.Integer, 
-                               db.ForeignKey('node.id'))
-                    )
-
 class GroupModel(db.Model):
     '''
     Representing one group containing iCPEs and Users

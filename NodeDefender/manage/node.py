@@ -51,6 +51,7 @@ def delete(name):
 
     print("Node {} Successfully deleted".format(name))
 
+'''
 @manager.option('-n', '--name', dest='name', default=None)
 @manager.option('-g', '--group', dest='group', default=None)
 def join(name, group):
@@ -84,6 +85,7 @@ def leave(name, group):
         print("Error: ", e)
 
     print("Node {} Successfully left Group: {}".format(name, group))
+'''
 
 @manager.option('-n', '--name', dest='name', default=None)
 def get(name):
@@ -100,12 +102,9 @@ def get(name):
     print("Location: {}, {}".format(n.location.street, n.location.city))
     print("Lat: {}, Long: {}".format(n.location.longitude,
                                      n.location.latitude))
-    print("Groups: ")
-    for g in n.group:
-        print("ID: {}, Name: {}".format(g.id, g.name))
-    print("iCPEs: ")
-    for i in n.icpes:
-        print("ID: {}, Name: {}".format(i.id, i.name))
+    print("Group: ", n.group.name)
+    if n.icpe:
+        print("iCPE: ", n.icpe.name)
 
 @manager.command
 def list():
@@ -113,6 +112,7 @@ def list():
     for n in node.List():
         print("ID: {}, Alias: {}".format(n.id, n.name))
 
+'''
 @manager.option('-name', '--name', dest='name', default=None)
 def groups(name):
     'Get Groups that a Node belongs to'
@@ -131,3 +131,4 @@ def icpes(name):
 
     for n in node.iCPEs(name):
         print("ID: {}, Name: {}".format(n.id, n.name))
+'''
