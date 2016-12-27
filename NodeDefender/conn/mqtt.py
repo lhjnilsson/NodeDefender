@@ -34,6 +34,7 @@ def AddConnection(ip, port = 8883):
     if current:
         if current.port == port:
             raise TypeError('Already Exisisting Connecton')
+            return
 
     mqtt = _MQTT(ip, port)
     connections.add(mqtt)
@@ -66,18 +67,15 @@ class _MQTT:
         self.ip = ip
         self.port = int(port)
         self.online = False
-        self.icpe = icpe
         self.client = PahoMQTT.Client()
-        self.client.on_message = self._on_message
-        self.client.on_connect = self._on_connect
+        self.client.on_message = self.on_message
+        self.client.on_connect = self.on_connect
         self.logger = logging.getLogger('MQTT')
         self.logger.setLevel(logging.INFO)
         self.logger.addHandler(logghandler)
         try:
             self.client.connect(self.ip, self.port, 60)
-            t1 = Thread(target=self._subscribeOut).start()
             self.online = True
-            self.logger.info('MQTT {}:{} active'.format(self.ip, self.port))
             self.client.loop_start()
         except ConnectionRefusedError:
             pass #log this later
@@ -88,19 +86,11 @@ class _MQTT:
         else:
             return False
 
-    def _subscribeOut(self):
-        while True:
-            topic, payload = outMQTTQueue.get()
-            self.client.publish(topic, payload)
-            self.logger.debug('MQTT Message. Topic: {}, Payload: {}'.format(topic, payload))
-
     def publish(self, event):
         self.client.publish(event)
 
-    def _on_connect(self, client, userdata, flags, rc):
+    def on_connect(self, client, userdata, flags, rc):
         client.subscribe('icpe/#')
 
-    def _on_message(self, client, userdata, msg):
-        topic = msg.topic.split('/')
-        if topic[1][2:] in self.icpe:
-            self.icpe(topic[1][2:], topic, msg.payload)
+    def on_message(self, client, userdata, msg):
+        icpe.msg.MQTT.apply_async(args=[msg.topic, msg.payload])

@@ -1,21 +1,26 @@
 from .. import Celery, db
-from .decorators import XMLToDict
+from .decorators import TopicToTuple
 from .zwave import Event as ZWaveEvent
+from . import db
 
 def Initialize():
     pass
 
 @celery.task()
-@XMLToDict
-def MQTTEvent(topic, payload):
-    event = ZWaveEvent(payload['commandClass'], payload['value'],
-                       payload['evttype'])
-    q = Query(CeleryHost, topic['mac']+topic['nodeid'])
+@TopicToTuple
+def MQTT(topic, payload):
+    q = db.Get(CeleryHost, topic['mac']+topic['nodeid'])
     if not q:
         return
 
+    try:
+        int(topic.nodeid)
+        ZWaveEvent(topic, payload)
+    except ValueError:
+        sys.event(topic, payload)
+
 @celery.task()
-def JSONEvent(topic, payload):
+def JSON(topic, payload):
     pass
 
 def Query(hostname, key):
@@ -28,4 +33,3 @@ def Query(hostname, key):
 
 def Set(hostname, key, **kwargs):
     pass
-
