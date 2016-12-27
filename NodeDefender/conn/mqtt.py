@@ -23,14 +23,11 @@ THE
 SOFTWARE.
 '''
 import paho.mqtt.client as PahoMQTT
-from . import inMQTTQueue, outMQTTQueue, logghandler
-from threading import Thread
-import logging
 
 connections = set()
 
-def AddConnection(ip, port = 8883):
-    current = Listconnections(ip)
+def Add(ip, port = 8883, username = None, password = None):
+    current = List(ip)
     if current:
         if current.port == port:
             raise TypeError('Already Exisisting Connecton')
@@ -40,7 +37,7 @@ def AddConnection(ip, port = 8883):
     connections.add(mqtt)
     return True
 
-def ListConnections(ip = None):
+def List(ip = None):
     if ip:
         connection = [connection for connection in connections\
                       if connection.ip == ip]
@@ -51,7 +48,7 @@ def ListConnections(ip = None):
 
     return [connection for connection in connections]
 
-def DeleteConnection(ip, port):
+def Delete(ip, port):
     pass
 
 def SendMessage(topic, payload, ip, port = None):
@@ -70,9 +67,6 @@ class _MQTT:
         self.client = PahoMQTT.Client()
         self.client.on_message = self.on_message
         self.client.on_connect = self.on_connect
-        self.logger = logging.getLogger('MQTT')
-        self.logger.setLevel(logging.INFO)
-        self.logger.addHandler(logghandler)
         try:
             self.client.connect(self.ip, self.port, 60)
             self.online = True

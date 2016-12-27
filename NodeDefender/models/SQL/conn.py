@@ -1,6 +1,7 @@
+from ... import db
 
 class MQTTModel(db.Model):
-    __tablename_ = 'mqtt'
+    __tablename__ = 'mqtt'
     id = db.Column(db.Integer, primary_key=True)
     ipaddr = db.Column(db.String(20))
     port = db.Column(db.String(10))

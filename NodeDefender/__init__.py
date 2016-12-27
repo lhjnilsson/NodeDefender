@@ -75,6 +75,13 @@ from .models.SQL import UserModel, UserRoleModel
 UserDatastore = SQLAlchemyUserDatastore(db, UserModel, UserRoleModel)
 security = Security(app, UserDatastore)
 
+# Initialize MQTT
+from .models.SQL import MQTTModel
+from .conn import mqtt as MQTTConn
+for mqtt in MQTTModel.query.all():
+    MQTTConn.Add(mqtt.ipaddr, mqtt.port, mqtt.username, mqtt.password)
+
+
 # Flask moment
 moment = Moment(app)
 from .models import SQL

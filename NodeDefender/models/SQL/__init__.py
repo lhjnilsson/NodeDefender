@@ -3,3 +3,4 @@ from .users import *
 from .nodes import *
 from .iCPE import *
 from .data import *
+from .conn import *
