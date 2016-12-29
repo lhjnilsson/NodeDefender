@@ -23,6 +23,7 @@ THE
 SOFTWARE.
 '''
 import paho.mqtt.client as PahoMQTT
+from ..iCPE import msg as iCPEMsg
 
 connections = set()
 
@@ -87,4 +88,5 @@ class _MQTT:
         client.subscribe('icpe/#')
 
     def on_message(self, client, userdata, msg):
-        icpe.msg.MQTT.apply_async(args=[msg.topic, msg.payload])
+        iCPEMsg.MQTT.apply_async(args=[
+            msg.topic, msg.payload.decode('utf-8')])

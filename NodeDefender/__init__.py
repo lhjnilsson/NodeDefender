@@ -30,7 +30,7 @@ from flask_socketio import SocketIO
 from flask_moment import Moment
 from apscheduler.schedulers.gevent import GeventScheduler
 from gevent import monkey, sleep
-from .factory import CreateApp, CreateLogging
+from .factory import CreateApp, CreateLogging, CreateCelery
 from flask_security import Security, SQLAlchemyUserDatastore
 monkey.patch_all()
 
@@ -53,7 +53,7 @@ db = SQLAlchemy(app)
 logger.info('Database started')
 
 # Initialize Celery
-celery = factory.CreateCelery(app)
+celery = CreateCelery(app)
 
 '''
 # For the Authentication
@@ -75,14 +75,7 @@ from .models.SQL import UserModel, UserRoleModel
 UserDatastore = SQLAlchemyUserDatastore(db, UserModel, UserRoleModel)
 security = Security(app, UserDatastore)
 
-# Initialize MQTT
-from .models.SQL import MQTTModel
-from .conn import mqtt as MQTTConn
-for mqtt in MQTTModel.query.all():
-    MQTTConn.Add(mqtt.ipaddr, mqtt.port, mqtt.username, mqtt.password)
-
-
 # Flask moment
 moment = Moment(app)
 from .models import SQL
-from . import frontend
+from . import frontend, conn

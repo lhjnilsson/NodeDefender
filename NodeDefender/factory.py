@@ -20,7 +20,15 @@ def CreateLogging():
     logger.addHandler(handler)
     return logger, handler
 
-def CreateCelery(app):
-    celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
+def CreateCelery(app = None):
+    app = app or CreateApp()
+    celery = Celery(app.name, broker="redis://localhost:6379/0")
     celery.conf.update(app.config)
+    TaskBase = celery.Task
+    class ContextTask(TaskBase):
+        abstract = True
+        def __call__(self, *args, **kwargs):
+            with app.app_context():
+                return TaskBase.__call__(self, *args, **kwargs)
+    celery.Task = ContextTask
     return celery
