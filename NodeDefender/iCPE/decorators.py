@@ -1,7 +1,7 @@
 from collections import namedtuple
 from functools import wraps
 
-topic = namedtuple("topic", "mac msgtype nodeid cmdclass action")
+topic = namedtuple("topic", "mac type sensor class action")
 
 def TopicToTuple(func):
     '''
@@ -12,11 +12,11 @@ def TopicToTuple(func):
     def zipper(*args, **kwargs):
         try:
             splitted = args[0].split('/')
-            return func(topic(splitted[1][2:], # Mac, minus the 0x
-                           splitted[2], # Msgtype
-                           splitted[4], # NodeID
-                           splitted[6], # CommandClass
-                           splitted[8]), # Action
+            return func(topic(splitted[1][2:], # mac
+                           splitted[2], # type
+                           splitted[4], # sensor
+                           splitted[6], # class
+                           splitted[8]), # action
                     args[1])
         except IndexError:
             return func(*args)
