@@ -17,9 +17,6 @@ def add(topic, payload):
     # ZWave Sensor has been Added
     pass
 
-def del(topic, payload):
-    # ZWave Sensor has been Deleted
-    pass
 
 def list(topic, payload):
     # List of ZWave Sensors

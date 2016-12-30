@@ -1,3 +1,5 @@
+def Load():
+    pass
 
 
 HexToName = {}

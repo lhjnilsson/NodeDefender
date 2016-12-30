@@ -14,16 +14,15 @@ Common Redis Format
     For Sensor:
         {
         Node ID
-        Classes
         Unsupported
         Role Type
         Device Type
-        data [
-            {
+        cmdclass = {
+            basic {
                 e.g. Status: On
                 e.g. Rules: False
             }
-            {
+            msensor {
                 e.g. Status: Open
                 e.g. Rules: {
 
@@ -43,14 +42,15 @@ def Load(icpe, sensor = None):
              'data' :  []}
         conn.hmset(icpe.mac + str(sensor.sensor_id), s)
         return
-
+        
+    # If No Sensor, Load the whole iCPE and all registered sensors
     d = {'mac' : icpe.mac, 'ipaddr' : icpe.ipaddr, 'online' : False, 'loaded' :
          datetime.now(), 'lastonline' : None}
     conn.hmset(icpe.mac, d)
     
     for sensor in icpe.sensors:
         s = {'id': sensor.sensor_id,
-             'classes' : [],
+             'classes' : {},
              'unsupported' : [cls for cls in sensor.classes.class_id],
              'name' : sensor.name,
              'roletype' : sensor.roletype,
@@ -58,6 +58,9 @@ def Load(icpe, sensor = None):
              'data' :  []}
         conn.hmset(icpe.mac + str(sensor.sensor_id), s)
     return
+
+
+def LoadCmdclass(sensor, data = {}):
 
 def Save(data, icpe, nodeid = None):
     pass 

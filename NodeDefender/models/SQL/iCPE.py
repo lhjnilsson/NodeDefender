@@ -40,8 +40,6 @@ class SensorModel(db.Model):
     productname = db.Column(db.String(30))
     brandname = db.Column(db.String(30))
     sensorclasses = db.relationship('SensorClassModel', backref='sensor')
-    sensortype = db.relationship('SensorTypeModel', backref='sensor',
-                                 uselist=False)
     statistics = db.relationship('StatisticsModel', backref="sensor",
                                  uselist=False)
 
@@ -60,16 +58,8 @@ class SensorClassModel(db.Model):
     __tablename__ = 'sensorclass'
     id = db.Column(db.Integer, primary_key=True)
     sensor_id = db.Column(db.Integer, db.ForeignKey('sensor.id'))
-    commandclass = db.Column(db.String(10))
+    cmdclass = db.Column(db.String(10))
+    types = db.Column(db.String(200))
 
     def __init__(self, commandclass):
         self.commandclass = commandclass
-
-class SensorTypeModel(db.Model):
-    __tablename__ = 'sensortype'
-    id = db.Column(db.Integer, primary_key=True)
-    class_id = db.Column(db.Integer, db.ForeignKey('sensor.id'))
-    classtype = db.Column(db.String(8))
-
-    def __init__(self, classtype):
-        self.classtype = classtype
