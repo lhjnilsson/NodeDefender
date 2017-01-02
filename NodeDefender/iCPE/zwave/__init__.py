@@ -1,10 +1,10 @@
-import classes
+from cmdclass import *
 
-def event(commandclass, value, evttype):
+@ToDict
+def event(event):
     classname = HexToName(commandclass)
     if evttype:
         evetname = HexToName(evttype)
-        return eval('classes.'+classname+eventname)(value)
+        return eval(classname + '.' + eventname)(value)
     else:
-        return eval('classes.'+classname)(value)
-
+        return eval(classname)(value)

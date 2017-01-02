@@ -17,7 +17,6 @@ class iCPEModel(db.Model):
     def __init__(self, mac):
         self.mac = mac.upper()
         self.created_on = datetime.now()
-        #logger.info('iCPE {} succesfully added'.format(self.mac))
 
     def __repr__(self):
         return '<Node %r, Mac %r>' % (self.alias, self.mac)
@@ -29,9 +28,8 @@ class SensorModel(db.Model):
     '''
     __tablename__ = 'sensor'
     id = db.Column(db.Integer, primary_key=True)
-    alias = db.Column(db.String(20))
+    name = db.Column(db.String(20))
     icpe_id = db.Column(db.Integer, db.ForeignKey('icpe.id'))
-    nodeid = db.Column(db.Integer)
     vid = db.Column(db.String(10))
     roletype = db.Column(db.String(10))
     devicetype = db.Column(db.String(10))
@@ -39,13 +37,13 @@ class SensorModel(db.Model):
     generic_class = db.Column(db.String(10))
     productname = db.Column(db.String(30))
     brandname = db.Column(db.String(30))
-    sensorclasses = db.relationship('SensorClassModel', backref='sensor')
+    cmdclasses = db.relationship('SensorClassModel', backref='sensor')
     statistics = db.relationship('StatisticsModel', backref="sensor",
                                  uselist=False)
 
     def __init__(self, nodeid, vid, ptype, pid, generic_class, productname,
                  brandname):
-        self.alias = productname
+        self.name = productname
         self.nodeid = nodeid
         self.vid = vid
         self.ptype = ptype
@@ -62,4 +60,4 @@ class SensorClassModel(db.Model):
     types = db.Column(db.String(200))
 
     def __init__(self, commandclass):
-        self.commandclass = commandclass
+        self.cmdclass = cmdclass

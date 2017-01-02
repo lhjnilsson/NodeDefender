@@ -1,3 +1,4 @@
+from .decorators import SensorRules
 '''
 Common Redis Format
 
@@ -59,10 +60,16 @@ def Load(icpe, sensor = None):
         conn.hmset(icpe.mac + str(sensor.sensor_id), s)
     return
 
+@SensorRules
+def UpdateSensor(topic, sensor, evt):
+    sensor[evt.cmdclass] = evt
+    Save(sensor, topic.mac, topic.sensorid)
+    return True
 
 def LoadCmdclass(sensor, data = {}):
+    pass
 
-def Save(data, icpe, nodeid = None):
+def Save(data, icpe, sensorid = None):
     pass 
 
 def Get(mac, sensorid = None):

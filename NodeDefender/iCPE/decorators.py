@@ -24,3 +24,9 @@ def TopicToTuple(func):
 
 def JSONToDict(func):
     pass
+
+def SensorRules(func):
+    @wraps(func)
+    def zipper(*args, **kwargs):
+        return func(*args, **kwargs)
+    return zipper
