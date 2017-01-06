@@ -1,38 +1,10 @@
 from .decorators import SensorRules
-'''
-Common Redis Format
+import redis
 
-    For iCPE:
-        {
-        MAC
-        IP Address
-        Online
-        Battery
-        Loaded At
-        Last Online
-        }
 
-    For Sensor:
-        {
-        Node ID
-        Unsupported
-        Role Type
-        Device Type
-        cmdclass = {
-            basic {
-                e.g. Status: On
-                e.g. Rules: False
-            }
-            msensor {
-                e.g. Status: Open
-                e.g. Rules: {
+pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
 
-                }
-            }
-        ]
-'''
-
-def Load(icpe, sensor = None):
+def LoadSensor(icpe, sensor):
     if sensor:
         s = {'id' : sensor.sensor_id,
              'classes' : [],
@@ -72,5 +44,10 @@ def LoadCmdclass(sensor, data = {}):
 def Save(data, icpe, sensorid = None):
     pass 
 
-def Get(mac, sensorid = None):
-    return conn.hgetall(mac + sensorid)
+def Get(mac, sensorid = ""):
+    conn = redis.Redis(connection_pool=pool)
+    data = conn.hgetall(mac + sensorid)
+    if len(data):
+        return data
+    else:
+        return None

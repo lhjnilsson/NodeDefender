@@ -1,8 +1,11 @@
+from .. import db
+
 def status(topic, payload):
+    print("Status")
     sensor = db.Get(topic.macaddr, topic.sensorid)
     if sensor is None:
         try:
-            sensor = sensor.Load(topic.macaddr, topic.sensorid)
+            sensor = db.Load(topic.macaddr, topic.sensorid)
         except LookupError as e:
             print("Sensor not found, ", topic.macaddr, topic.sensorid)
 

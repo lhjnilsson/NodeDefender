@@ -12,7 +12,7 @@ def Create(ipaddr, port, username = None, password = None):
     return mqtt
 
 def Delete(ipaddr, port = None):
-    mqtt = MQTTModel.query.filter_by(ipadd = ipaddr).first()
+    mqtt = MQTTModel.query.filter_by(ipaddr = ipaddr).first()
     if mqtt is None:
         raise LookupError('MQTT Connection does not exist')
     

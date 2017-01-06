@@ -13,8 +13,10 @@ def Create(icpe, sensorid, vid, ptype, pid):
 
 def Delete(sensor, icpe = None):
     if type(sensor) is str and icpe:
-        sensor = SensorModel.query.filter_by(sensorid = sensor, icpe.mac =
-                                             icpe).first()
+        sensor = SensorModel.query.join(iCPEModel).\
+                filter(SensorModel.sensorid == sensor).\
+                filter(iCPEModel.mac == icpe).first()
+
         if sensor is None:
             raise LookupError('Sensor not found')
 
@@ -36,6 +38,6 @@ def List(icpe = None):
     return [sensor for sensor in icpe.sensors]
 
 def Get(icpe, sensor):
-    return SensorModel.query.filter_by(sensorid = sensor, icpe.mac =
-                                       icpe).first()
-
+    return SensorModel.query.join(iCPEModel).\
+                filter(SensorModel.sensorid == sensor).\
+                filter(iCPEModel.mac == icpe).first()
