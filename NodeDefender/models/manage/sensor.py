@@ -27,6 +27,7 @@ def Delete(sensor, icpe = None):
 def Save(sensor):
     db.session.add(sensor)
     db.session.commit()
+    return sensor
 
 def List(icpe = None):
     if icpe is None:
@@ -41,3 +42,13 @@ def Get(icpe, sensor):
     return SensorModel.query.join(iCPEModel).\
                 filter(SensorModel.sensorid == sensor).\
                 filter(iCPEModel.mac == icpe).first()
+
+def AddClass(mac, sensorid, **classes):
+    sensor = Get(mac, sensorid)
+    for cmdclass, types in classes:
+        sensor.cmdclasses.append(
+            SensorClassModel(cmdclass, types)
+        )
+    db.session.add(sensor)
+    db.session.commit()
+    return True

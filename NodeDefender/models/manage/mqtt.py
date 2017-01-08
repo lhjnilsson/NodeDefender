@@ -20,6 +20,38 @@ def Delete(ipaddr, port = None):
     db.session.commit()
     return mqtt
 
+def Include(ipaddr, mac):
+    mqtt = MQTTModel.query.filter_by(ipaddr = ipaddr).first()
+    if mqtt is None:
+        raise LookupError('MQTT Connection does not exist')
+
+    icpe = iCPEModel.query.filter_by(mac = mac).first()
+    if icpe is None:
+        raise LookupError('iCPE not found')
+
+    mqtt.icpes.append(icpe)
+    db.session.add(mqtt)
+    db.session.commit()
+    return mqtt
+
+def Exclude(ipaddr, mac):
+    mqtt = MQTTModel.query.filter_by(ipaddr = ipaddr).first()
+    if mqtt is None:
+        raise LookupError('MQTT Connection does not exist')
+
+    icpe = iCPEModel.query.filter_by(mac = mac).first()
+    if icpe is None:
+        raise LookupError('iCPE not found')
+
+    mqtt.icpes.remove(icpe)
+    db.session.add(mqtt)
+    db.session.commit()
+    return mqtt
+
+def Query(ipaddr, mac):
+    pass
+
+
 def List():
     return [mqtt for mqtt in MQTTModel.query.all()]
 

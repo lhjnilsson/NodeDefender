@@ -1,4 +1,6 @@
 from ....models.manage import sensor as SensorSQL
+from . import redisconn
+from .. import mqtt
 
 '''
     For Sensor:
@@ -20,17 +22,32 @@ from ....models.manage import sensor as SensorSQL
             }
         ]
 '''
-def Create(mac, sensorid):
+@redisconn
+def Create(mqtt, mac, sensorid, conn):
     if SensorSQL.Get(mac, sensorid):
         raise ValueError('Already exists')
     return SensorSQL.Create(mac, sensorid)
 
-def Load(mac, sensorid):
+@redisconn
+def Get(mac, sensorid, conn):
+    pass
+
+def CreateLoadQuery(mqtt, mac, sensorid):
+    if Load(mac, sensorid) is not None:
+        raise ValueError('Already exists')
+    
+    Create(mac, sensorid)
+    Load(mac, sendorid)
+    mqtt.sensor.Query(mac, sensorid, conn)
+    return True
+
+
+@redisconn
+def Load(mac, sensorid, conn):
     sensor = SensorSQL.load(mac, sensorid)
     if sensor is None:
         return None
     
-    conn = StrictRedis(connection_pool=pool)
     s = {
         'alias' : sensor.alias,
         'sensorid' : sensor.sensorid,
@@ -44,7 +61,8 @@ def Load(mac, sensorid):
     conn.hmset(icpe.mac + sensor_id, s)
     return s
 
-def Save(mac, sensorid, **kwargs):
+@redisconn
+def Save(mac, sensorid, conn, **kwargs):
     conn = StrictRedis(connection_pool=pool)
     s = conn.hmgetall(mac + sensorid)
     for key, value in kwargs:

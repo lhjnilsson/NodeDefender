@@ -1,7 +1,5 @@
-from . import pool
+from . import redisconn
 from ...models.manage import icpe as iCPESQL
-from redis import StrictRedis
-
 '''
 Common Redis Format
 
@@ -20,12 +18,12 @@ def Create(mac):
         raise ValueError('Already exists')
     return iCPESQL.Create(mac)
 
-def Load(mac):
+@redisconn
+def Load(mac, conn):
     icpe = iCPESQL.Get(mac)
     if icpe is None:
         return None
 
-    conn = StrictRedis(connection_pool=pool)
     i = {
         'alias' : icpe.alias,
         'mac' : icpe.mac,
@@ -38,11 +36,20 @@ def Load(mac):
     conn.hmset(mac, i)
     return i
 
-def Save(mac, **kwargs):
-    conn = StrictRedis(connection_pool=pool)
-    i = conn.hmgetall(mac)
+@redisconn
+def Save(mac, conn, **kwargs):
+    icpe = conn.hmgetall(mac)
     for key, value in kwargs:
-        i[key] = value
+        icpe[key] = value
 
-    conn.hmset(mac, i)
-    return i
+    conn.hmset(mac, icpe)
+    return icpe
+
+def CreateLoadQuery(mqtt, mac, sensorid):
+    if Load(mac, sensorid) is not None:
+        raise ValueError('Already exists')
+    
+    Create(mac)
+    Load(mac)
+    mqtt.icpe.Query(mac, mqtt)
+    return True

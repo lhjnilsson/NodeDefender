@@ -23,7 +23,11 @@ THE
 SOFTWARE.
 '''
 import paho.mqtt.client as PahoMQTT
-from ..iCPE import msg as iCPEMsg
+from ..iCPE import MQTTEvent
+from collections import namedtuple
+from ..models.manage import mqtt as MQTTSQL
+
+conninfo = namedtuple('conninfo', 'ipaddr, port')
 
 connections = set()
 
@@ -55,6 +59,16 @@ def Delete(ip, port):
 def SendMessage(topic, payload, ip, port = None):
     pass
 
+def Load(mqttlist = None):
+    if mqttlist is None:
+        mqttlist = MQTTSQL.List()
+
+    for m in mqttlist:
+        Add(m.ip, m.port, m.username, m.password)
+
+    return len(mqttlist)
+
+
 class _MQTT:
     '''
     MQTT Service,
@@ -71,6 +85,7 @@ class _MQTT:
         try:
             self.client.connect(self.ip, self.port, 60)
             self.online = True
+            self.info = conninfo(self.ip, self.port)
             self.client.loop_start()
         except ConnectionRefusedError:
             pass #log this later
@@ -88,5 +103,5 @@ class _MQTT:
         client.subscribe('icpe/#')
 
     def on_message(self, client, userdata, msg):
-        iCPEMsg.MQTT.apply_async(args=[
-            msg.topic, msg.payload.decode('utf-8')])
+        MQTTEvent.apply_async(args=[
+            msg.topic, msg.payload.decode('utf-8'), self.info])

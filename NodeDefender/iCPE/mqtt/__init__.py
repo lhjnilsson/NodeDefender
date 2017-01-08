@@ -1,6 +1,15 @@
 from paho.mqtt import client as mqtt
+from collections import namedtuple
 
 msg = 'icpe/0x{}/cmd/node/{}/class/{}/act/{}'
+
+def mqttconn(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        if type(args[-1]) is not conninfo:
+            return func(*args, MQTTSQL.Get(args[0]), **kwargs)
+        return func(*args, **kwargs)
+    return wrapper
 
 
 def Fire(address, port, topic, payload = None):
@@ -15,15 +24,15 @@ def Fire(address, port, topic, payload = None):
     return True
 
 def Check(address, port):
-    m = MQTTSQL.Get(address, port)
-    if m is None:
+    mqtt = MQTTSQL.Get(address, port)
+    if mqtt is None:
         raise LookupError('MQTT not found')
 
     client = mqtt.Client()
     try:
         client.connect(address, port)
-        m.online = True
+        mqtt.online = True
     except TimeoutError:
-        m.online = False
+        mqtt.online = False
 
-    return MQTTSQL.Save(m)
+    return MQTTSQL.Save(mqtt)

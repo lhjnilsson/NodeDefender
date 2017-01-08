@@ -56,8 +56,11 @@ class SensorClassModel(db.Model):
     __tablename__ = 'sensorclass'
     id = db.Column(db.Integer, primary_key=True)
     sensor_id = db.Column(db.Integer, db.ForeignKey('sensor.id'))
-    cmdclass = db.Column(db.String(10))
+    cmdclass = db.Column(db.String(20))
     types = db.Column(db.String(200))
 
-    def __init__(self, commandclass):
+    def __init__(self, cmdclass, types):
         self.cmdclass = cmdclass
+        if type(types) is list:
+            types = str(types)[1:-1]
+        self.types = types

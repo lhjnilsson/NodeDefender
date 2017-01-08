@@ -1,23 +1,30 @@
-from .import msg, Fire
+from .import msg, Fire, mqttconn
 from ...models.manage import mqtt as MQTTSQL
 
-def SensorList(mac):
-    i = iCPESQL.get(mac)
-    if i is None:
-        raise LookupError('Not able to find iCPE')
+@mqttconn
+def SensorList(mac, mqtt):
+    return Fire(mqtt.ipaddr, mqtt.port, msg.format(mac, '0', 'node', 'list'))
 
-    if i.mqtt is None:
-        raise ValueError('iCPE does not have any MQTT')
+@mqttconn
+def Network(mac, mqtt):
+    return Fire(mqtt.ipaddr, mqtt.port, msg.format(mac, 'sys', 'net', 'info'))
 
-    return True
+@mqttconn
+def Normal(mac, mqtt):
+    return Fire(mqtt.ipaddr, mqtt.port, msg.format(mac, '0', 'mode', 'normal'))
 
-def Network(mac):
-    pass
+@mqttconn
+def Include(mac, mqtt):
+    return Fire(mqtt.ipaddr, mqtt.port, msg.format(mac, '0', 'mode', 'include'))
 
-def Include(mac):
-    pass
+@mqttconn
+def Exclude(mac, mqtt):
+    return Fire(mqtt.ipaddr, mqtt.port, msg.format(mac, '0', 'mode', 'exclude'))
 
-def SensorList(mac):
-    m = MQTTSQL(mac)
-    Fire(m.ipaddr, m.port, msg.format(mac, '0', 'act', 'list'))
+@mqttconn
+def Query(mac, mqtt):
+    if not SensorList(mac, mqtt):
+        return False
+    if not Network(mac, mqtt):
+        return False
     return True

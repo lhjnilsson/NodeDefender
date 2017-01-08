@@ -1,14 +1,36 @@
-from ..SQL import iCPEModel, NodeModel
+from ..SQL import iCPEModel, NodeModel, MQTTModel
+from .. import db
 
-def Create(mac, node):
-    if type(node) is str:
-        node = NodeModel.query.filter_by(name = Node).first()
-        if node is None:
-            raise LookupError('Node not found')
+def list():
+    return [icpe for icpe in iCPEModel.query.all()]
+
+def Get(icpe):
+    return iCPEModel.query.filter_by(mac = icpe).first()
+
+def Create(mac, node = None, mqtt = None):
+    if Get(mac) is not None:
+        raise ValueError('iCPE Already exists')
 
     icpe = iCPEModel(mac)
-    node.icpes.append(icpe)
-    db.session.add(node)
+
+    if mqtt:
+        if type(mqtt) is str:
+            mqtt = MQTTModel.query.filter_by(ipaddr = mqtt).first()
+            if mqtt is None:
+                raise LookupError('MQTT not found')
+        mqtt.icpes.append(icpe)
+        db.session.add(mqtt)
+    
+    if node:
+        if type(node) is str:
+            node = NodeModel.query.filter_by(name = Node).first()
+            if node is None:
+                raise LookupError('Node not found')
+        node.icpes.append(icpe)
+        db.session.add(node)
+
+
+    db.session.add(icpe)
     db.session.commit()
     return icpe
 
@@ -48,9 +70,3 @@ def Leave(icpe, node):
     group.icpes.remove(icpe)
     db.session.add(group)
     db.session.commit()
-
-def list():
-    return [icpe for icpe in iCPEModel.query.all()]
-
-def Get(icpe):
-    return iCPEModel.query.filter_by(mac = icpe).first()
