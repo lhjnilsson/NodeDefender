@@ -3,6 +3,7 @@ from functools import wraps
 
 pool = ConnectionPool(host='localhost', port=6379, db=0)
 
+
 def redisconn(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
@@ -11,24 +12,23 @@ def redisconn(func):
     return wrapper
 
 
-def Load(mqtt, mac, sensorid = None):
+def Load(mqttsrc, mac, sensorid = None):
     if sensorid:
         if sensor.Load(mac, sensorid):
             pass
         else:
             if icpe.Load(mac):
-                sensor.CreateLoadQuery(mqtt, mac, sensorid)
+                sensor.CreateLoadQuery(mac, sensorid)
             else:
-                icpe.CreateLoadQuery(mqtt, mac)
-                sensor.CreateLoadQuery(mqtt, mac, sensorid)
+                icpe.CreateLoadQuery(mac, **mqtsrc)
+                sensor.CreateLoadQuery(mac, sensorid, **mqttsrc)
 
     else:
         if icpe.Load(mac):
             pass
         else:
-            icpe.CreateLoadQuery(mqtt, mac)
+            icpe.CreateLoadQuery(mac, **mqttsrc)
 
     return True
-
 
 from . import sensor, icpe

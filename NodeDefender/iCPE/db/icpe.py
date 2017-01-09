@@ -14,10 +14,10 @@ Common Redis Format
         Last Online
         }
 '''
-def Create(mac, mqtt = None):
+def Create(mac, mqttip = None):
     if iCPESQL.Get(mac):
         raise ValueError('Already exists')
-    return iCPESQL.Create(mac, mqtt = mqtt)
+    return iCPESQL.Create(mac, mqttip = mqttip)
 
 @redisconn
 def Load(mac, conn):
@@ -46,12 +46,11 @@ def Save(mac, conn, **kwargs):
     conn.hmset(mac, icpe)
     return icpe
 
-def CreateLoadQuery(mqtt, mac):
+def CreateLoadQuery(mac, mqttip, mqttport):
     if Load(mac) is not None:
         raise ValueError('Already exists')
 
-    print(mqtt)
-    Create(mac, mqtt.ip)
+    Create(mac, mqttip)
     Load(mac)
-    mqtt.icpe.Query(mqtt, mac)
+    mqtt.icpe.Query(mac, mqttip, mqttport)
     return True

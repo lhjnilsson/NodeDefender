@@ -1,28 +1,28 @@
 from .import msg, Fire, mqttconn
 
 @mqttconn
-def SensorList(mqtt, mac):
-    return Fire(mqtt.ipaddr, mqtt.port, msg.format(mac, '0', 'node', 'list'))
+def SensorList(mac, ipaddr = '127.0.0.1', port = 1883):
+    return Fire(ipaddr, port, msg.format(mac, '0', 'node', 'list'))
 
 @mqttconn
-def Network(mqtt, mac):
-    return Fire(mqtt.ipaddr, mqtt.port, msg.format(mac, 'sys', 'net', 'info'))
+def Network(mac, ipaddr = '127.0.0.1', port = 1883):
+    return Fire(ipaddr, port, msg.format(mac, 'sys', 'net', 'info'))
 
 @mqttconn
-def Normal(mqtt, mac):
-    return Fire(mqtt.ipaddr, mqtt.port, msg.format(mac, '0', 'mode', 'normal'))
+def Normal(mac, ipaddr = '127.0.0.1', port = 1883):
+    return Fire(ipaddr, port, msg.format(mac, '0', 'mode', 'normal'))
 
 @mqttconn
-def Include(mqtt, mac):
-    return Fire(mqtt.ipaddr, mqtt.port, msg.format(mac, '0', 'mode', 'include'))
+def Include(mac, ipaddr = '127.0.0.1', port = 1883):
+    return Fire(ipaddr, port, msg.format(mac, '0', 'mode', 'include'))
 
 @mqttconn
-def Exclude(mqtt, mac):
-    return Fire(mqtt.ipaddr, mqtt.port, msg.format(mac, '0', 'mode', 'exclude'))
+def Exclude(mac, ipaddr = '127.0.0.1', port = 1883):
+    return Fire(ipaddr, port, msg.format(mac, '0', 'mode', 'exclude'))
 
 @mqttconn
-def Query(mqtt, mac):
-    if not SensorList(mac, mqtt):
+def Query(mac, ipaddr = '127.0.0.1', port = 1883):
+    if not SensorList(mac, ipaddr, port):
         return False
     if not Network(mac, mqtt):
         return False

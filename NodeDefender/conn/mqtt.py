@@ -84,6 +84,7 @@ class _MQTT:
         self.client.on_connect = self.on_connect
         try:
             self.client.connect(self.ip, self.port, 60)
+            self.info = {'ip' : self.ip, 'port' : self.port}
             self.online = True
             self.client.loop_start()
         except ConnectionRefusedError:
@@ -102,5 +103,5 @@ class _MQTT:
         client.subscribe('icpe/#')
 
     def on_message(self, client, userdata, msg):
-        MQTTEvent.apply_async(args=[self.ip,
-            msg.topic, msg.payload.decode('utf-8')])
+        MQTTEvent.apply_async(args=[self.info,
+                                    msg.topic, msg.payload.decode('utf-8')])
