@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header">
+					User Profile <small>{{ user.firstname }} {{ user.lastname }}</small>
+        </h1>
+        <ol class="breadcrumb">
+          <li>
+						 <i class="fa fa-map-marker"></i> <a href={{ url_for('index') }}>Dashboard</a>
+          </li>
+					<li class="active">User Profile</li>
+       </ol>
+    </div>
+</div>
+
+
+<div class="row">
+	<div class="col-lg-6">
+	<div class="col-lg-6">
+		<h3>User information</h3>
+		<div class="box" style="padding: 0;">
+			<table class="table">
+				<thead>
+				</thead>
+				<tbody>
+					<tr>
+						<td>Name: </td>
+						<td>{{user.firstname}} {{user.lastname}}</td>
+					</tr>
+					<tr>
+						<td>Email: </td>
+						<td>{{user.email}}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<div class="col-lg-6">
+		<h3>User Stats</h3>
+		<div class="box" style="padding: 0;">
+			<table class="table">
+				<thead>
+				</thead>
+				<tbody>
+					<tr>
+						<td>Registered at:</td>
+						<td>{{ moment(user.registered_at).format('Do MMM YYYY, HH:mm:ss') }}
+					</tr>
+					<tr>
+						<td>Last Login:</td>
+						<td>{{ moment(user.last_login_at).format('Do MMM YYYY, HH:mm:ss') }}
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<div class="col-lg-12">
+		<h3>Login Log</h3>
+		<div class="box" style="padding: 0;">
+			<table class="table">
+				<thead>
+					<tr>
+						<th>Date</th>
+						<th>Successful</th>
+						<th>IP Address</th>
+						<th>Platform</th>
+						<th>Browser</th>
+					</tr>
+				</thead>
+				<tbody>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	</div>
+	<div class="col-lg-6">
+		<h3>Team members </h3>
+		<div class="box" style="padding: 0;">
+			<table class="table">
+				<thead>
+					<th>Name</th>
+					<th>Email</th>
+					<th>Level</th>
+				</thead>
+				<tbody>	
+					
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+<div class="row">
+{% for member in Team %}
+<div class="modal fade" id="{{member.id}}" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h2 class="modal-title">User: {{ member.firstname }}</h2>
+			</div>
+			<div class="modal-body">
+			</div>
+		</div>
+	</div>
+</div>	
+{% endfor %}
+
+{% endblock %}

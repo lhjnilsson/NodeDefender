@@ -22,36 +22,29 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE
 SOFTWARE.
 '''
+
 from flask import Flask
-import flask_login as login_manager
 from flask_sqlalchemy import SQLAlchemy
 from flask_restful import Api
-from flask_bcrypt import Bcrypt
 from flask_socketio import SocketIO
-from . import chconf
-import logging
-from queue import Queue
+from flask_moment import Moment
+from apscheduler.schedulers.gevent import GeventScheduler
 from gevent import monkey, sleep
+from .factory import CreateApp, CreateLogging, CreateCelery
+from flask_security import Security, SQLAlchemyUserDatastore
 monkey.patch_all()
 
 # Setup logging
-handler = logging.FileHandler('app.log')
-handler.setLevel(logging.INFO)
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-handler.setFormatter(formatter)
-
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-logger.addHandler(handler)
+logger, handler = CreateLogging()
 
 # Initialize the Flask- Application
-app = Flask(__name__)
-app.config.from_object('config')
+app = CreateApp()
 
 # Initialize Api
 api = Api(app)
 
 # Config-file 
+
 
 # Initialize SocketIO
 socketio = SocketIO(app)
@@ -60,43 +53,33 @@ socketio = SocketIO(app)
 db = SQLAlchemy(app)
 logger.info('Database started')
 
+# Initialize Celery
+celery = CreateCelery(app)
 
+'''
 # For the Authentication
 LoginMan = login_manager.LoginManager()
 LoginMan.init_app(app)
-LoginMan.login_view = 'login'
+LoginMan.login_view = 'AuthView.login'
 LoginMan.login_message_category = "info"
+
 
 # Bcrypt for password- management
 bcrypt = Bcrypt(app)
+'''
 
 # Report that startup is successfull
 logger.info('NodeDefender Succesfully started')
 
-# Internal Message Queues
-inMQTTQueue = Queue()
-outMQTTQueue = Queue()
+# Setup Flask-Security
+from .models.SQL import UserModel, UserRoleModel
+UserDatastore = SQLAlchemyUserDatastore(db, UserModel, UserRoleModel)
+security = Security(app, UserDatastore)
 
-# Internal Socket Queues
-outSocketQueue = Queue()
+# MQTT
+from . import conn
 
-# Logging Queue
-NodeLogQueue = Queue()
-
-'''
-below is temporary solution, to prevent from not starting
-'''
-MQTTConf = {key: value for (key, value) in chconf.ReadConf('MQTT1')}
-
-try: # To make flask-script and DB init work if not present
-    from . import models
-    from .iCPE import iCPE
-    from .mqtt import MQTT
-
-    icpe = iCPE.iCPEset.FromDB()
-    mqtt = MQTT(MQTTConf['ip'], MQTTConf['port'], icpe)
-
-    from . import views, forms, sockets, mylogger
-except Exception as e:
-    print('Warning: Not able to start application, is Database updated?')
-    print('Msg: ', e)
+# Frontend
+moment = Moment(app)
+from .models import SQL
+from . import frontend

@@ -10,8 +10,14 @@ WTForms
 SQLAlchemy
 Flask-SQLAlchemy
 Flask-migrate
+Flask-moment
 geopy
 flask-wtf
 paho-mqtt
 requests
 xmltodict
+apscheduler
+Celery
+Redis
+flask_assets
+flask_security

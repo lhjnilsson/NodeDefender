@@ -24,3 +24,5 @@ dbupgrade:
 	./py/bin/python manage.py db upgrade
 
 install: env upgradepip deps db dbmigrate dbupgrade
+
+update: deps dbmigrate dbupgrade
