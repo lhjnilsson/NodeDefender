@@ -1,5 +1,5 @@
-from . import msg, Fire
-from ...models.manage import mqtt as MQTTSQL
+from . import msg, Fire, mqttconn
 
-def Query(mac, sensorid, mqtt = None):
+@mqttconn
+def Query(mqtt, mac, sensorid):
     return Fire(mqtt.ipaddr, mqtt.port, msg.format(mac, sensorid, 'node', 'qry'))

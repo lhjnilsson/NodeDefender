@@ -64,9 +64,9 @@ def leave(icpe, group):
 @manager.command
 def list():
     'List iCPEs'
-    for icpe in icpe.List():
-        print("ID: {}, Alias: {}, MAC: {}".format(icpe.id, icpe.alias,
-                                                  icpe.mac))
+    for i in icpe.List():
+        print("ID: {}, Name: {}, MAC: {}".format(i.id, i.name,
+                                                  i.mac))
 
 @manager.option('-mac', '--mac', dest='mac', default=None)
 def info(mac):

@@ -14,13 +14,14 @@ def TopicToTuple(func):
     @wraps(func)
     def zipper(*args, **kwargs):
         try:
-            splitted = args[0].split('/')
-            return func(topic(splitted[1][2:], # macaddr
+            splitted = args[1].split('/')
+            return func(args[0],
+                        topic(splitted[1][2:], # macaddr
                            splitted[2], # msgtype
                            splitted[4], # sensorid
                            splitted[6], # cmdclass
                            splitted[8]), # action
-                    args[1])
+                        args[2])
         except IndexError:
             return func(*args)
     return zipper
@@ -37,6 +38,7 @@ def SensorRules(func):
 @celery.task
 @TopicToTuple
 def MQTTEvent(conninfo, topic, payload):
+    print('...', conninfo)
     try:
         eval(topic.msgtype + '.' + topic.action)(conninfo, topic, payload)
     except (AttributeError, NameError) as e:

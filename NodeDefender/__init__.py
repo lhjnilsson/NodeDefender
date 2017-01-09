@@ -45,6 +45,7 @@ api = Api(app)
 
 # Config-file 
 
+
 # Initialize SocketIO
 socketio = SocketIO(app)
 
@@ -75,9 +76,8 @@ from .models.SQL import UserModel, UserRoleModel
 UserDatastore = SQLAlchemyUserDatastore(db, UserModel, UserRoleModel)
 security = Security(app, UserDatastore)
 
-# Start MQTT
+# MQTT
 from . import conn
-conn.mqtt.Load()
 
 # Frontend
 moment = Moment(app)

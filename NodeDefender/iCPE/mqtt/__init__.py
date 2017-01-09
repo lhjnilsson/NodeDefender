@@ -1,13 +1,14 @@
 from paho.mqtt import client as mqtt
 from collections import namedtuple
+from ...models.manage import mqtt as MQTTSQL
 
 msg = 'icpe/0x{}/cmd/node/{}/class/{}/act/{}'
 
 def mqttconn(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        if type(args[-1]) is not conninfo:
-            return func(*args, MQTTSQL.Get(args[0]), **kwargs)
+        if type(args[0]) is not conninfo:
+            return func(MQTTSQL.Get(args[0]),*args, **kwargs)
         return func(*args, **kwargs)
     return wrapper
 

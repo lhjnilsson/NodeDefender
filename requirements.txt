@@ -18,5 +18,6 @@ requests
 xmltodict
 apscheduler
 Celery
+Redis
 flask_assets
 flask_security

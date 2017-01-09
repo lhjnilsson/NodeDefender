@@ -64,7 +64,7 @@ def Load(mqttlist = None):
         mqttlist = MQTTSQL.List()
 
     for m in mqttlist:
-        Add(m.ip, m.port, m.username, m.password)
+        Add(m.ipaddr, m.port, m.username, m.password)
 
     return len(mqttlist)
 
@@ -85,7 +85,6 @@ class _MQTT:
         try:
             self.client.connect(self.ip, self.port, 60)
             self.online = True
-            self.info = conninfo(self.ip, self.port)
             self.client.loop_start()
         except ConnectionRefusedError:
             pass #log this later
@@ -103,5 +102,5 @@ class _MQTT:
         client.subscribe('icpe/#')
 
     def on_message(self, client, userdata, msg):
-        MQTTEvent.apply_async(args=[
-            msg.topic, msg.payload.decode('utf-8'), self.info])
+        MQTTEvent.apply_async(args=[self.ip,
+            msg.topic, msg.payload.decode('utf-8')])

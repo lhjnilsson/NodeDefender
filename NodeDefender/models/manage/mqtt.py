@@ -56,4 +56,4 @@ def List():
     return [mqtt for mqtt in MQTTModel.query.all()]
 
 def Get(ipaddr):
-    return MQTTModel.query.filter_by(ipaddr = ipaddr).first()
+    return MQTTModel.query.first()

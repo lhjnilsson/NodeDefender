@@ -8,7 +8,9 @@ class iCPEModel(db.Model):
     __tablename__ = 'icpe'
     id = db.Column(db.Integer, primary_key=True)
     node_id = db.Column(db.Integer, db.ForeignKey('node.id'))
+    name = db.Column(db.String(64))
     mac = db.Column(db.String(12), unique=True)
+    ipaddr = db.Column(db.String(32))
     online =  db.Column(db.Boolean)
     last_online = db.Column(db.DateTime)
     sensors = db.relationship('SensorModel', backref='icpe')
@@ -28,29 +30,26 @@ class SensorModel(db.Model):
     '''
     __tablename__ = 'sensor'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(20))
     icpe_id = db.Column(db.Integer, db.ForeignKey('icpe.id'))
-    vid = db.Column(db.String(10))
-    roletype = db.Column(db.String(10))
-    devicetype = db.Column(db.String(10))
-    pid = db.Column(db.String(10))
-    generic_class = db.Column(db.String(10))
-    productname = db.Column(db.String(30))
-    brandname = db.Column(db.String(30))
+    
+    name = db.Column(db.String(32))
+    sensorid = db.Column(db.Integer)
+    
+    vendorid = db.Column(db.String(16))
+    productid = db.Column(db.String(16))
+    brandname = db.Column(db.String(32))
+    productname = db.Column(db.String(32))
+       
+    roletype = db.Column(db.String(32))
+    devicetype = db.Column(db.String(32))
+    generic_class = db.Column(db.String(16))
+   
     cmdclasses = db.relationship('SensorClassModel', backref='sensor')
-    statistics = db.relationship('StatisticsModel', backref="sensor",
-                                 uselist=False)
 
-    def __init__(self, nodeid, vid, ptype, pid, generic_class, productname,
-                 brandname):
-        self.name = productname
-        self.nodeid = nodeid
-        self.vid = vid
-        self.ptype = ptype
-        self.pid = pid
-        self.generic_class = generic_class
-        self.productname = productname
-        self.brandname = brandname
+    def __init__(self, sensorid):
+        self.sensorid = int(sensorid)
+
+        self.name = "None"
 
 class SensorClassModel(db.Model):
     __tablename__ = 'sensorclass'

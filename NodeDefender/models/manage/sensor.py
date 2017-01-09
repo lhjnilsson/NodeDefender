@@ -1,13 +1,13 @@
 from ..SQL import iCPEModel, SensorModel
 
-def Create(icpe, sensorid, vid, ptype, pid):
+def Create(icpe, sensorid):
     if type(icpe) is str:
         icpe = iCPEModel.query.filter_by(mac = icpe).first()
         if icpe is None:
             raise LookupError('iCPE not found')
-    sensor = SensorModel(senorid, vid, ptype, pid)
+    sensor = SensorModel(senorid)
     icpe.sensors.add(sensor)
-    db.session.add(icpe)
+    db.session.add(icpe, sensor)
     db.session.commit()
     return sensor
 
@@ -45,7 +45,7 @@ def Get(icpe, sensor):
 
 def AddClass(mac, sensorid, **classes):
     sensor = Get(mac, sensorid)
-    for cmdclass, types in classes:
+    for cmdclass, types in classes.items():
         sensor.cmdclasses.append(
             SensorClassModel(cmdclass, types)
         )

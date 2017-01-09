@@ -1,4 +1,4 @@
-from ....models.manage import sensor as SensorSQL
+from ...models.manage import sensor as SensorSQL
 from . import redisconn
 from .. import mqtt
 
@@ -30,7 +30,11 @@ def Create(mqtt, mac, sensorid, conn):
 
 @redisconn
 def Get(mac, sensorid, conn):
-    pass
+    sensor = conn.hgetall(mac + sensorid)
+    if len(sensor):
+        return sensor
+    else:
+        return None
 
 def CreateLoadQuery(mqtt, mac, sensorid):
     if Load(mac, sensorid) is not None:
@@ -44,7 +48,7 @@ def CreateLoadQuery(mqtt, mac, sensorid):
 
 @redisconn
 def Load(mac, sensorid, conn):
-    sensor = SensorSQL.load(mac, sensorid)
+    sensor = SensorSQL.Get(mac, sensorid)
     if sensor is None:
         return None
     
@@ -63,8 +67,7 @@ def Load(mac, sensorid, conn):
 
 @redisconn
 def Save(mac, sensorid, conn, **kwargs):
-    conn = StrictRedis(connection_pool=pool)
-    s = conn.hmgetall(mac + sensorid)
+    s = conn.hgetall(mac + sensorid)
     for key, value in kwargs:
         s[key] = value
 

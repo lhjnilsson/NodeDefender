@@ -1,7 +1,7 @@
 from ..SQL import iCPEModel, NodeModel, MQTTModel
-from .. import db
+from ... import db
 
-def list():
+def List():
     return [icpe for icpe in iCPEModel.query.all()]
 
 def Get(icpe):
