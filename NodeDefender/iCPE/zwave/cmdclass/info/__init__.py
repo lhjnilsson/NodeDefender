@@ -1,5 +1,5 @@
 def Load():
-    pass
+    return {'notification': None}
 
 
 HexToName = {}

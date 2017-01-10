@@ -1,4 +1,4 @@
-
+from .cmdclass import *
 
 def Event(event):
     classname = HexToName(commandclass)
@@ -9,4 +9,16 @@ def Event(event):
         return eval(classname)(value)
 
 def Load(*classlist):
-    return [], [cls for cls in classlist]
+    supported = []
+    unsupported = []
+    for cmdclass in classlist:
+        cmdname = ClassToName(cmdclass)
+        if cmdname:
+            try:
+                supported.append(eval(cmdclass + '.Load')())
+            except NameError:
+                print("Unable to load ", cmdname)
+        else:
+            unsupported.append(cmdclass)
+
+    return supported, unsupported
