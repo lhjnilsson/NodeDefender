@@ -38,11 +38,10 @@ def SensorRules(func):
 @celery.task
 @TopicToTuple
 def MQTTEvent(mqttsrc, topic, payload):
-    print('...', conninfo)
-    try:
-        eval(topic.msgtype + '.' + topic.action)(mqttsrc, topic, payload)
-    except (AttributeError, NameError) as e:
-        print("ERROR", e, topic)
+    if topic.msgtype == 'cmd':
+        return
+
+    eval(topic.msgtype + '.' + topic.action)(mqttsrc, topic, payload)
     
     return
     

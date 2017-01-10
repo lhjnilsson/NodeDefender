@@ -18,16 +18,16 @@ def Load(mqttsrc, mac, sensorid = None):
             pass
         else:
             if icpe.Load(mac):
-                sensor.CreateLoadQuery(mac, sensorid)
+                sensor.CreateLoadQuery(mqttsrc, mac, sensorid)
             else:
-                icpe.CreateLoadQuery(mac, **mqtsrc)
-                sensor.CreateLoadQuery(mac, sensorid, **mqttsrc)
+                icpe.CreateLoadQuery(mqttsrc, mac)
+                sensor.CreateLoadQuery(mqttsrc, mac, sensorid)
 
     else:
         if icpe.Load(mac):
             pass
         else:
-            icpe.CreateLoadQuery(mac, **mqttsrc)
+            icpe.CreateLoadQuery(mqttsrc, mac)
 
     return True
 

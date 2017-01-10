@@ -1,6 +1,5 @@
-from cmdclass import *
 
-@ToDict
+
 def Event(event):
     classname = HexToName(commandclass)
     if evttype:
@@ -9,5 +8,5 @@ def Event(event):
     else:
         return eval(classname)(value)
 
-def Load(cmdclass, classtypes):
-    return {'NO' : True}
+def Load(*classlist):
+    return [], [cls for cls in classlist]

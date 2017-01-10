@@ -1,36 +1,30 @@
-def normal(topic, payload):
+from .. import db, mqtt
+
+def normal(mqttsrc, topic, payload):
     # iCPE Enters Normal Mode
-    logg.iCPE('Enter Normal Mode')
-    return
+    return True
 
-def include(topic, payload):
+def include(mqttsrc, topic, payload):
     # iCPE Enters Inclusion Mode
-    logg.iCPE('Enter Include Mode')
-    return
+    return True
 
-def exclude(topic, payload):
+def exclude(mqttsrc, topic, payload):
     # iCPE Enters Exclusion Mode
-    logg.iCPE('Enter Exclude Mode')
-    return
+    return True
 
-def add(topic, payload):
+def add(mqttsrc, topic, payload):
     # ZWave Sensor has been Added
-    pass
+    return True
 
-
-def list(topic, payload):
+def list(mqttsrc, topic, payload):
     # List of ZWave Sensors
     for sensor in payload.split(','):
-        if db.get(topic.mac + sensor) is None:
-            sensor.qry(topic.mac, sensor)
+        if db.sensor.Get(topic.macaddr, sensor) is None:
+            mqtt.sensor.Query(topic.macaddr, sensor, **mqttsrc)
 
-def qry(topic, payload):
+def qry(mqttsrc, topic, payload):
     # Specific Information about a ZWave Sensor
-    if db.get(topic.mac + topic.sensor):
-        return # It's Known
+    if db.sensor.Get(topic.macaddr, topic.sensorid):
+        return True # It's Known
     
-    i = icpe.Get(topic.mac)
-    if i is None:
-        return # iCPE is yet not registered
-
-    sensor.Create(i) # To be added
+    return True

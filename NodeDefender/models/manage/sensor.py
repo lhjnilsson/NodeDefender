@@ -1,12 +1,13 @@
 from ..SQL import iCPEModel, SensorModel
+from ... import db
 
 def Create(icpe, sensorid):
     if type(icpe) is str:
         icpe = iCPEModel.query.filter_by(mac = icpe).first()
         if icpe is None:
             raise LookupError('iCPE not found')
-    sensor = SensorModel(senorid)
-    icpe.sensors.add(sensor)
+    sensor = SensorModel(sensorid)
+    icpe.sensors.append(sensor)
     db.session.add(icpe, sensor)
     db.session.commit()
     return sensor

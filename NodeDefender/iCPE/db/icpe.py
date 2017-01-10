@@ -1,6 +1,7 @@
 from . import redisconn
 from .. import mqtt
 from ...models.manage import icpe as iCPESQL
+from datetime import datetime
 '''
 Common Redis Format
 
@@ -14,10 +15,10 @@ Common Redis Format
         Last Online
         }
 '''
-def Create(mac, mqttip = None):
+def Create(mac, ipaddr = None, port = None):
     if iCPESQL.Get(mac):
         raise ValueError('Already exists')
-    return iCPESQL.Create(mac, mqttip = mqttip)
+    return iCPESQL.Create(mac, ipaddr = ipaddr, port = port)
 
 @redisconn
 def Load(mac, conn):
@@ -46,11 +47,11 @@ def Save(mac, conn, **kwargs):
     conn.hmset(mac, icpe)
     return icpe
 
-def CreateLoadQuery(mac, mqttip, mqttport):
+def CreateLoadQuery(mqttsrc, mac):
     if Load(mac) is not None:
         raise ValueError('Already exists')
 
-    Create(mac, mqttip)
+    Create(mac, **mqttsrc)
     Load(mac)
-    mqtt.icpe.Query(mac, mqttip, mqttport)
+    mqtt.icpe.Query(mac, **mqttsrc)
     return True

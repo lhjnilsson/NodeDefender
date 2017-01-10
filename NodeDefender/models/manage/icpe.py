@@ -7,15 +7,15 @@ def List():
 def Get(icpe):
     return iCPEModel.query.filter_by(mac = icpe).first()
 
-def Create(mac, node = None, mqtt = None):
+def Create(mac, node = None, ipaddr = None, port = None):
     if Get(mac) is not None:
         raise ValueError('iCPE Already exists')
 
     icpe = iCPEModel(mac)
 
-    if mqtt:
-        if type(mqtt) is str:
-            mqtt = MQTTModel.query.filter_by(ipaddr = mqtt).first()
+    if ipaddr:
+        if type(ipaddr) is str:
+            mqtt = MQTTModel.query.filter_by(ipaddr = ipaddr).first()
             if mqtt is None:
                 raise LookupError('MQTT not found')
         mqtt.icpes.append(icpe)

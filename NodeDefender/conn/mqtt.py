@@ -84,7 +84,7 @@ class _MQTT:
         self.client.on_connect = self.on_connect
         try:
             self.client.connect(self.ip, self.port, 60)
-            self.info = {'ip' : self.ip, 'port' : self.port}
+            self.info = {'ipaddr' : self.ip, 'port' : self.port}
             self.online = True
             self.client.loop_start()
         except ConnectionRefusedError:

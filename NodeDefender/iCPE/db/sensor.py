@@ -1,7 +1,7 @@
 from ...models.manage import sensor as SensorSQL
 from . import redisconn
-from .. import mqtt
-
+from .. import mqtt, zwave
+from datetime import datetime
 '''
     For Sensor:
         {
@@ -23,7 +23,7 @@ from .. import mqtt
         ]
 '''
 @redisconn
-def Create(mqtt, mac, sensorid, conn):
+def Create(mac, sensorid, conn):
     if SensorSQL.Get(mac, sensorid):
         raise ValueError('Already exists')
     return SensorSQL.Create(mac, sensorid)
@@ -36,13 +36,13 @@ def Get(mac, sensorid, conn):
     else:
         return None
 
-def CreateLoadQuery(mqtt, mac, sensorid):
+def CreateLoadQuery(mqttsrc, mac, sensorid):
     if Load(mac, sensorid) is not None:
         raise ValueError('Already exists')
     
     Create(mac, sensorid)
-    Load(mac, sendorid)
-    mqtt.sensor.Query(mac, sensorid, conn)
+    Load(mac, sensorid)
+    mqtt.sensor.Query(mac, sensorid, **mqttsrc)
     return True
 
 
@@ -51,18 +51,18 @@ def Load(mac, sensorid, conn):
     sensor = SensorSQL.Get(mac, sensorid)
     if sensor is None:
         return None
-    
+    supported, unsupported = zwave.Load([cmdclass for cmdclass in
+                                         sensor.cmdclasses])
     s = {
-        'alias' : sensor.alias,
+        'name' : sensor.name,
         'sensorid' : sensor.sensorid,
         'roletype' : sensor.roletype,
         'devicetype' : sensor.devicetype,
-        'unsupported' : [cmdclass for cmdclass in sensor.unsupported],
-        'cmdclass' : {cmdclass : zwave.Load(cmdclass, classtypes)\
-                      for cmdclass in sensor.cmdclasses}
+        'unsupported' : unsupported,
+        'cmdclass' : supported
     }
 
-    conn.hmset(icpe.mac + sensor_id, s)
+    conn.hmset(mac + sensorid, s)
     return s
 
 @redisconn

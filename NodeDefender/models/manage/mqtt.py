@@ -55,5 +55,5 @@ def Query(ipaddr, mac):
 def List():
     return [mqtt for mqtt in MQTTModel.query.all()]
 
-def Get(ipaddr):
+def Get(ipaddr, port):
     return MQTTModel.query.first()

@@ -24,6 +24,6 @@ def Exclude(mac, ipaddr = '127.0.0.1', port = 1883):
 def Query(mac, ipaddr = '127.0.0.1', port = 1883):
     if not SensorList(mac, ipaddr, port):
         return False
-    if not Network(mac, mqtt):
+    if not Network(mac, ipaddr, port):
         return False
     return True
