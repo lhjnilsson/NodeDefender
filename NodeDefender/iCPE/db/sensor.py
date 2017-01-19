@@ -45,6 +45,12 @@ def CreateLoadQuery(mqttsrc, mac, sensorid):
     mqtt.sensor.Query(mac, sensorid, **mqttsrc)
     return True
 
+def AddClass(mac, sensorid, *classes):
+    sensor = SensorSQL.Get(mac, sensorid)
+    if sensor is None:
+        raise LookupError('Sensor not found')
+    for cls in classes:
+       pass 
 
 @redisconn
 def Load(mac, sensorid, conn):

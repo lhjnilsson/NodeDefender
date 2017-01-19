@@ -29,6 +29,6 @@ def Load(mqttsrc, mac, sensorid = None):
         else:
             icpe.CreateLoadQuery(mqttsrc, mac)
 
-    return True
+    return sensor.Get(mac, sensorid) if sensorid else icpe.Get(mac)
 
 from . import sensor, icpe

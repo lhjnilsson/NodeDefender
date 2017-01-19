@@ -40,7 +40,7 @@ def SensorRules(func):
 def MQTTEvent(mqttsrc, topic, payload):
     if topic.msgtype == 'cmd':
         return
-
+    print("Event!")
     eval(topic.msgtype + '.' + topic.action)(mqttsrc, topic, payload)
     
     return

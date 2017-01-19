@@ -1,6 +1,7 @@
 from .cmdclass import *
 
-def Event(event):
+def Event(sensor, payload):
+    return True
     classname = HexToName(commandclass)
     if evttype:
         evetname = HexToName(evttype)
@@ -12,13 +13,10 @@ def Load(*classlist):
     supported = []
     unsupported = []
     for cmdclass in classlist:
-        cmdname = ClassToName(cmdclass)
-        if cmdname:
-            try:
-                supported.append(eval(cmdclass + '.Load')())
-            except NameError:
-                print("Unable to load ", cmdname)
-        else:
+        try:
+            supported.append(eval(cmdclass + '.Load')(cmdclass.classtypes))
+        except NameError:
+            print("Unable to load ", cmdname)
             unsupported.append(cmdclass)
 
     return supported, unsupported
