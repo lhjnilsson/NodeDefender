@@ -57,3 +57,17 @@ def AddClass(mac, sensorid, classnumber, classname):
     db.session.add(cmdclass, sensor)
     db.session.commit()
     return sensor
+
+def AddClassTypes(mac, sensorid, classname, classtypes):
+    cmdclass = SensorClassModel.query.join(Sensor).join(iCPEModel).\
+       filter(SensorClassModel.number == number).\
+       filter(SensorModel.sensorid == sensorid).\
+       filter(iCPEModel.mac == mac).first()
+
+    if cmdclass is None:
+        return False
+
+    cmdclass.classtypes = classtypes
+    db.session.add(cmdclass)
+    db.session.commit()
+    return cmdclass

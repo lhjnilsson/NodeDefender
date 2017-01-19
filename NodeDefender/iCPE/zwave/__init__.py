@@ -8,15 +8,11 @@ def Classname(classnum):
     except KeyError:
         return None
 
-def Event(sensor, payload):
-    print("ZWave Event")
-    return True
-    classname = HexToName(commandclass)
-    if evttype:
-        evetname = HexToName(evttype)
-        return eval(classname + '.' + eventname)(value)
-    else:
-        return eval(classname)(value)
+def Event(**kwargs):
+    try:
+        return eval(kwargs['desc'].'Event')(**kwargs)
+    except NameError:
+        print(kwargs['desc'], " Not implemented")
 
 def Load(*classlist):
     supported = []

@@ -15,6 +15,7 @@ Common Redis Format
         Last Online
         }
 '''
+
 def Create(mac, ipaddr = None, port = None):
     if iCPESQL.Get(mac):
         raise ValueError('Already exists')
@@ -39,11 +40,20 @@ def Load(mac, conn):
     return i
 
 @redisconn
+def Get(mac, conn):
+    s = conn.hgetall(mac)
+
+    if len(s):
+        return s
+    else:
+        return None
+
+@redisconn
 def Save(mac, conn, **kwargs):
     icpe = conn.hgetall(mac)
     for key, value in kwargs:
         icpe[key] = value
-
+        
     conn.hmset(mac, icpe)
     return icpe
 

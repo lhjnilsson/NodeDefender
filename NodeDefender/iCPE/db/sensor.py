@@ -29,35 +29,6 @@ def Create(mac, sensorid, conn):
     return SensorSQL.Create(mac, sensorid)
 
 @redisconn
-def Get(mac, sensorid, conn):
-    sensor = conn.hgetall(mac + sensorid)
-    if len(sensor):
-        return sensor
-    else:
-        return None
-
-def CreateLoadQuery(mqttsrc, mac, sensorid):
-    if Load(mac, sensorid) is not None:
-        raise ValueError('Already exists')
-    
-    Create(mac, sensorid)
-    Load(mac, sensorid)
-    mqtt.sensor.Query(mac, sensorid, **mqttsrc)
-    return True
-
-def AddClass(mac, sensorid, *classes):
-    if SensorSQL.Get(mac, sensorid) is None:
-        raise LookupError('Sensor not found')
-    
-    for cls in classes:
-        if (classname == zwave.Classname(cls)) is None:
-            pass
-
-        SensorSQL.AddClass(mac, sensorid, cls, classname)
-    
-    return True
-
-@redisconn
 def Load(mac, sensorid, conn):
     sensor = SensorSQL.Get(mac, sensorid)
     if sensor is None:
@@ -76,6 +47,15 @@ def Load(mac, sensorid, conn):
     conn.hmset(mac + sensorid, s)
     return s
 
+
+@redisconn
+def Get(mac, sensorid, conn):
+    sensor = conn.hgetall(mac + sensorid)
+    if len(sensor):
+        return sensor
+    else:
+        return None
+
 @redisconn
 def Save(mac, sensorid, conn, **kwargs):
     s = conn.hgetall(mac + sensorid)
@@ -83,3 +63,31 @@ def Save(mac, sensorid, conn, **kwargs):
         s[key] = value
 
     conn.hmset(mac + sensorid, s)
+
+def CreateLoadQuery(mqttsrc, mac, sensorid):
+    if Load(mac, sensorid) is not None:
+        raise ValueError('Already exists')
+    
+    Create(mac, sensorid)
+    Load(mac, sensorid)
+    mqtt.sensor.Query(mac, sensorid, **mqttsrc)
+    return True
+
+def AddClass(mac, sensorid, *classes):
+    if SensorSQL.Get(mac, sensorid) is None:
+        raise LookupError('Sensor not found')
+    
+    for cls in classes:
+        classname = zwave.Classname(cls)
+        if classname is None:
+            pass
+
+        SensorSQL.AddClass(mac, sensorid, cls, classname)
+    
+    return True
+
+def AddClassTypes(mac, sensorid, cmdclass, classtypes):
+    if SensorSQL.Get(mac, sensorid) is None:
+        raise LookupError('Sensor not found')
+
+    SensorSQL.AddClassTypes(mac, sensorid, classname, classtypes)
