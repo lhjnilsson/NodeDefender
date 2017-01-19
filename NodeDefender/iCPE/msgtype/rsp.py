@@ -24,9 +24,8 @@ def list(mqttsrc, topic, payload):
 
 def qry(mqttsrc, topic, payload):
     # Specific Information about a ZWave Sensor
-    if db.sensor.Get(topic.macaddr, topic.sensorid):
-        return True # It's Known
-    for cls in payload['clslist_0']:
-        db.sensor.AddClass(cls)
+    if not db.sensor.Get(topic.macaddr, topic.sensorid):
+        db.Load(mqttsrc, topic.macaddr, topic.sensorid)
     
+    db.sensor.AddClass(topic.macaddr, topic.sensorid, *payload['clslist_0'])
     return True

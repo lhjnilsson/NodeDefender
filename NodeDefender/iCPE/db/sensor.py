@@ -46,18 +46,23 @@ def CreateLoadQuery(mqttsrc, mac, sensorid):
     return True
 
 def AddClass(mac, sensorid, *classes):
-    sensor = SensorSQL.Get(mac, sensorid)
-    if sensor is None:
+    if SensorSQL.Get(mac, sensorid) is None:
         raise LookupError('Sensor not found')
+    
     for cls in classes:
-       pass 
+        if (classname == zwave.Classname(cls)) is None:
+            pass
+
+        SensorSQL.AddClass(mac, sensorid, cls, classname)
+    
+    return True
 
 @redisconn
 def Load(mac, sensorid, conn):
     sensor = SensorSQL.Get(mac, sensorid)
     if sensor is None:
         return None
-    supported, unsupported = zwave.Load([cmdclass for cmdclass in
+    supported, unsupported = zwave.Load(*[cmdclass for cmdclass in
                                          sensor.cmdclasses])
     s = {
         'name' : sensor.name,

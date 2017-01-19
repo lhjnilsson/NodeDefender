@@ -44,12 +44,16 @@ def Get(icpe, sensor):
                 filter(SensorModel.sensorid == sensor).\
                 filter(iCPEModel.mac == icpe).first()
 
-def AddClass(mac, sensorid, **classes):
+def AddClass(mac, sensorid, classnumber, classname):
+    if SensorClassModel.query.join(Sensor).join(iCPEModel).\
+       filter(SensorClassModel.number == number).\
+       filter(SensorModel.sensorid == sensorid).\
+       filter(iCPEModel.mac == mac).first():
+        return True
+
     sensor = Get(mac, sensorid)
-    for cmdclass, types in classes.items():
-        sensor.cmdclasses.append(
-            SensorClassModel(cmdclass, types)
-        )
-    db.session.add(sensor)
+    cmdclass = SensorClassModel(classnumber, classname)
+    sensor.append(cmdclass)
+    db.session.add(cmdclass, sensor)
     db.session.commit()
-    return True
+    return sensor

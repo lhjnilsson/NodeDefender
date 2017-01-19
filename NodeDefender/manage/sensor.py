@@ -33,6 +33,8 @@ def list():
     'List Sensors'
     for s in sensor.List():
         print("ID: {}, Name: {}".format(s.id, s.name))
+        print("MAC: {}, Sensor ID: {}".format(s.icpe.mac, s.sensorid))
+        print("-------------")
 
 @manager.option('-m', '--mac', dest='mac', default=None)
 @manager.option('-i', '--index', dest='index', default=None)
