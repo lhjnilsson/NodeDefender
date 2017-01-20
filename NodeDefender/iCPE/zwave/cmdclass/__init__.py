@@ -1,7 +1,3 @@
-HexToName = {'0071' : 'Notification'}
-
-def Load(cmdclass, types = None):
-    pass
-
-
-from . import *
+from . import alarm
+from . import basic
+from . import meter

@@ -1,7 +1,5 @@
 from .cmdclass import *
 
-numname = {'71' : 'alarm', '20' : 'basic'}
-
 def Classname(classnum):
     try:
         return numname[classnum]
@@ -10,9 +8,12 @@ def Classname(classnum):
 
 def Event(**kwargs):
     try:
-        return eval(kwargs['desc'].'Event')(**kwargs)
+        return eval(kwargs['descr'] + '.Event')(**kwargs)
     except NameError:
-        print(kwargs['desc'], " Not implemented")
+        print(kwargs['descr'], " Not implemented")
+    except KeyError:
+        print("Descr not found")
+
 
 def Load(*classlist):
     supported = []

@@ -5,8 +5,7 @@ def status(mqttsrc, topic, payload):
     if sensor is None:
         sensor = db.Load(mqttsrc, topic.macaddr, topic.sensorid)
 
-    sensor = zwave.Event(sensor, payload)
-    return True
+    return zwave.Event(**payload)
 
 def event(mqttsrc, topic, payload):
     return True

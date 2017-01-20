@@ -33,8 +33,12 @@ def Load(mac, sensorid, conn):
     sensor = SensorSQL.Get(mac, sensorid)
     if sensor is None:
         return None
-    supported, unsupported = zwave.Load(*[cmdclass for cmdclass in
-                                         sensor.cmdclasses])
+    try:
+        supported, unsupported = zwave.Load(*[cmdclass for cmdclass in sensor.cmdclasses])
+    except TypeError:
+        supported = []
+        unsupported = []
+
     s = {
         'name' : sensor.name,
         'sensorid' : sensor.sensorid,
@@ -58,11 +62,7 @@ def Get(mac, sensorid, conn):
 
 @redisconn
 def Save(mac, sensorid, conn, **kwargs):
-    s = conn.hgetall(mac + sensorid)
-    for key, value in kwargs:
-        s[key] = value
-
-    conn.hmset(mac + sensorid, s)
+    return conn.hmset(mac + sensorid, kwargs)
 
 def CreateLoadQuery(mqttsrc, mac, sensorid):
     if Load(mac, sensorid) is not None:

@@ -26,6 +26,20 @@ def TopicToTuple(func):
             return func(*args)
     return zipper
 
+def PayloadToDict(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        newdict = {}
+        payload = str(args[2]).split(' ')
+        for x in payload:
+            y = x.split('=')
+            try:
+                newdict[y[0]] = y[1]
+            except IndexError:
+                pass
+        return func(args[0], args[1], newdict)
+    return wrapper
+
 def JSONToDict(func):
     pass
 
@@ -37,14 +51,21 @@ def SensorRules(func):
 
 @celery.task
 @TopicToTuple
+@PayloadToDict
 def MQTTEvent(mqttsrc, topic, payload):
     if topic.msgtype == 'cmd':
         return
-    print("Event!")
-    eval(topic.msgtype + '.' + topic.action)(mqttsrc, topic, payload)
+    sensor = db.sensor.Get(topic.macaddr, topic.sensorid)
+    if sensor is None:
+        sensor = db.Load(mqttsrc, topic.macaddr, topic.sensorid)
+
+    evt = eval(topic.msgtype + '.' + topic.action)(mqttsrc, topic, payload)
     
-    return
-    
+    if evt:
+        return db.sensor.Save(topic.macaddr, topic.sensorid, **evt)
+    else:
+        return None
+
 @celery.task
 def JSON(topic, payload):
     pass
