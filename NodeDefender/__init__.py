@@ -32,6 +32,7 @@ from apscheduler.schedulers.gevent import GeventScheduler
 from gevent import monkey, sleep
 from .factory import CreateApp, CreateLogging, CreateCelery
 from flask_security import Security, SQLAlchemyUserDatastore
+from .security.forms import LoginForm
 monkey.patch_all()
 
 # Setup logging
@@ -74,7 +75,8 @@ logger.info('NodeDefender Succesfully started')
 # Setup Flask-Security
 from .models.SQL import UserModel, UserRoleModel
 UserDatastore = SQLAlchemyUserDatastore(db, UserModel, UserRoleModel)
-security = Security(app, UserDatastore)
+security = Security(app, UserDatastore,\
+                   login_form=LoginForm)
 
 # MQTT
 from . import conn
