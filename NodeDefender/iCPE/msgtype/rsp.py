@@ -24,8 +24,8 @@ def list(mqttsrc, topic, payload):
 
 def qry(mqttsrc, topic, payload):
     # Specific Information about a ZWave Sensor
-    if not db.sensor.Get(topic.macaddr, topic.sensorid):
-        db.Load(mqttsrc, topic.macaddr, topic.sensorid)
-    
-    db.sensor.AddClass(topic.macaddr, topic.sensorid, *payload['clslist_0'])
-    return True
+    try:
+        return db.sensor.AddClass(topic.macaddr, topic.sensorid, *payload['clslist_0'])
+    except LookupError:
+        db.Load(topic.macaddr, topic.sensorid)
+        return db.sesnor.AddClass(topic.macaddr, topic.sensorid, *payload['clslist_0'])

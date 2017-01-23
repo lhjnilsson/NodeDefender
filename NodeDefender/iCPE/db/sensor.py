@@ -1,6 +1,7 @@
 from ...models.manage import sensor as SensorSQL
 from . import redisconn
 from .. import mqtt, zwave
+from ... import celery
 from datetime import datetime
 '''
     For Sensor:
@@ -96,17 +97,22 @@ def AddClass(mac, sensorid, *classes):
     if SensorSQL.Get(mac, sensorid) is None:
         raise LookupError('Sensor not found')
     
-    for cls in classes:
-        classname = zwave.Classname(cls)
+    for classnum in classes:
+        classname, types = zwave.Classname(classnum)
+        
         if classname is None:
             pass
 
-        SensorSQL.AddClass(mac, sensorid, cls, classname)
+        if classname and types:
+            mqtt.sensor.Sup(mac, sensorid, classname, **mqttsrc)
+
+        SensorSQL.AddClass(mac, sensorid, classnum, classname)
     
-    return True
+    return Load(mac, sensorid)
 
 def AddClassTypes(mac, sensorid, cmdclass, classtypes):
     if SensorSQL.Get(mac, sensorid) is None:
         raise LookupError('Sensor not found')
 
     SensorSQL.AddClassTypes(mac, sensorid, classname, classtypes)
+    return Load(mac, sensorid)

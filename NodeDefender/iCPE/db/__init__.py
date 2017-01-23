@@ -11,7 +11,7 @@ def redisconn(func):
         return func(*args, conn = conn, **kwargs)
     return wrapper
 
-
+@celery.task
 def Load(mqttsrc, mac, sensorid = None):
     if sensorid:
         if sensor.Load(mac, sensorid):

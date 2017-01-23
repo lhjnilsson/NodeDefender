@@ -1,3 +1,6 @@
+def Info():
+    return 'basic', False
+
 def Load(classtypes):
     return {'basic' : None}
 

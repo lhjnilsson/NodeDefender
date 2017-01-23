@@ -1,8 +1,9 @@
 from .cmdclass import *
 
-def AddClass(classnum):
+def Info(classnum):
+    classname = numtoname(classnum)
     try:
-        return info, supported
+        return eval(classname + '.Info')
     except KeyError:
         return None
 
