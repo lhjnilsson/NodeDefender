@@ -51,6 +51,25 @@ def Load(mac, sensorid, conn):
     conn.hmset(mac + sensorid, s)
     return s
 
+@redisconn
+def LoadFromObject(sensor, conn):
+    try:
+        supported, unsupported = zwave.Load(*[cmdclass for cmdclass in sensor.cmdclasses])
+    except TypeError:
+        supported = []
+        unsupported = []
+
+    s = {
+        'name' : sensor.name,
+        'sensorid' : sensor.sensorid,
+        'roletype' : sensor.roletype,
+        'devicetype' : sensor.devicetype,
+        'unsupported' : unsupported,
+        'cmdclass' : supported
+    }
+
+    conn.hmset(sensor.icpe.mac + str(sensor.sensorid), s)
+    return s
 
 @redisconn
 def Get(mac, sensorid, conn):

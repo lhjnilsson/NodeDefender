@@ -3,6 +3,7 @@ from functools import wraps
 from .. import celery
 from . import db
 from .msgtype import cmd, err, rpt, rsp
+from ..models.manage import icpe as iCPESQL
 
 topic = namedtuple("topic", "macaddr msgtype sensorid cmdclass action")
 
@@ -62,6 +63,7 @@ def MQTTEvent(mqttsrc, topic, payload):
     evt = eval(topic.msgtype + '.' + topic.action)(mqttsrc, topic, payload)
     
     if evt:
+        print('evt', evt)
         return db.sensor.Save(topic.macaddr, topic.sensorid, **evt)
     else:
         return None
@@ -69,3 +71,12 @@ def MQTTEvent(mqttsrc, topic, payload):
 @celery.task
 def JSON(topic, payload):
     pass
+
+def Load():
+    icpes = iCPESQL.List()
+    for icpe in icpes:
+        db.icpe.LoadFromObject(icpe)
+        for sensor in icpe.sensors:
+            db.sensor.LoadFromObject(sensor)
+    return True
+

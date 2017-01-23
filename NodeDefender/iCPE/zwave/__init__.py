@@ -1,8 +1,14 @@
 from .cmdclass import *
 
-def Classname(classnum):
+def AddClass(classnum):
     try:
-        return numname[classnum]
+        return info, supported
+    except KeyError:
+        return None
+
+def ExtendClass(classnum, supported):
+    try:
+        return info
     except KeyError:
         return None
 
@@ -14,12 +20,13 @@ def Event(**kwargs):
     except KeyError:
         print("Descr not found")
 
+    return False
+
 
 def Load(*classlist):
     supported = []
     unsupported = []
-    print(classlist)
-    return
+    print('classlist ', classlist)
     for cmdclass in classlist:
         try:
             supported.append(eval(cmdclass.classname + '.Load')(cmdclass.classtypes))

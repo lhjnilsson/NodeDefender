@@ -40,6 +40,20 @@ def Load(mac, conn):
     return i
 
 @redisconn
+def LoadFromObject(icpe, conn):
+    i = {
+        'name' : icpe.name,
+        'mac' : icpe.mac,
+        'ipaddr' : icpe.ipaddr,
+        'online' : False,
+        'battery' : None,
+        'loaded_at' : datetime.now(),
+        'last_online' : False
+    }
+    conn.hmset(icpe.mac, i)
+    return i
+
+@redisconn
 def Get(mac, conn):
     s = conn.hgetall(mac)
 
