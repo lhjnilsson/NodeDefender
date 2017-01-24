@@ -1,5 +1,8 @@
 mtype = {'1' : 'Electric'}
 
+def Info():
+    return 'meter', True
+
 def Load(classtypes):
     return {'meter' : 0}
 

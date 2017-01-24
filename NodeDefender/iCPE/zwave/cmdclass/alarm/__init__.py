@@ -1,5 +1,8 @@
 zalm = {'06' : 'AccessControl'}
 
+def Info():
+    return 'alarm', True
+
 def Load():
     return {'notification': None}
 

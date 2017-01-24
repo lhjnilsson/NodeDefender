@@ -1,11 +1,15 @@
 from .cmdclass import *
 
+numtoname = {'20' : 'basic', '71' : 'alarm', '80' : 'battery'}
+
 def Info(classnum):
-    classname = numtoname(classnum)
     try:
-        return eval(classname + '.Info')
+        classname = numtoname[str(classnum)]
     except KeyError:
-        return None
+        print('classnum: ' + str(classnum))
+        return None, None
+    
+    return eval(classname + '.Info')
 
 def ExtendClass(classnum, supported):
     try:
@@ -27,14 +31,13 @@ def Event(**kwargs):
 def Load(*classlist):
     supported = []
     unsupported = []
-    print('classlist ', classlist)
     for cmdclass in classlist:
         try:
             supported.append(eval(cmdclass.classname + '.Load')(cmdclass.classtypes))
+            print('Appended: ' + cmdclass.classname)
         except NameError:
-            print("Unable to load ")
             unsupported.append(cmdclass)
         except TypeError:
-            print("Not translated ")
+            pass
 
     return supported, unsupported

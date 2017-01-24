@@ -13,7 +13,8 @@ class iCPEModel(db.Model):
     ipaddr = db.Column(db.String(32))
     online =  db.Column(db.Boolean)
     last_online = db.Column(db.DateTime)
-    sensors = db.relationship('SensorModel', backref='icpe')
+    sensors = db.relationship('SensorModel', backref='icpe',
+                              cascade='save-update, merge, delete')
     notesticky = db.Column(db.String(150))
 
     def __init__(self, mac):
@@ -21,7 +22,7 @@ class iCPEModel(db.Model):
         self.created_on = datetime.now()
 
     def __repr__(self):
-        return '<Node %r, Mac %r>' % (self.alias, self.mac)
+        return '<Name %r, Mac %r>' % (self.name, self.mac)
 
 
 class SensorModel(db.Model):
@@ -44,7 +45,8 @@ class SensorModel(db.Model):
     devicetype = db.Column(db.String(32))
     generic_class = db.Column(db.String(16))
    
-    cmdclasses = db.relationship('SensorClassModel', backref='sensor')
+    cmdclasses = db.relationship('SensorClassModel', backref='sensor',
+                                cascade='save-update, merge, delete')
 
     def __init__(self, sensorid):
         self.sensorid = int(sensorid)

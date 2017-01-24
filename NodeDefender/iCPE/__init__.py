@@ -32,12 +32,15 @@ def PayloadToDict(func):
     def wrapper(*args, **kwargs):
         newdict = {}
         payload = str(args[2]).split(' ')
+        if len(payload) < 2:
+            return func(*args)
+
         for x in payload:
             y = x.split('=')
             try:
                 newdict[y[0]] = y[1]
             except IndexError:
-                pass
+               pass
         return func(args[0], args[1], newdict)
     return wrapper
 
@@ -62,8 +65,8 @@ def MQTTEvent(mqttsrc, topic, payload):
 
     evt = eval(topic.msgtype + '.' + topic.action)(mqttsrc, topic, payload)
     
-    if evt:
-        print('evt', evt)
+    if type(evt) is dict:
+        print('evt: '+ str(evt))
         return db.sensor.Save(topic.macaddr, topic.sensorid, **evt)
     else:
         return None

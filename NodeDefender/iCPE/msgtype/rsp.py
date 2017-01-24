@@ -18,14 +18,20 @@ def add(mqttsrc, topic, payload):
 
 def list(mqttsrc, topic, payload):
     # List of ZWave Sensors
+    print(payload)
     for sensor in payload.split(','):
         if db.sensor.Get(topic.macaddr, sensor) is None:
             mqtt.sensor.Query(topic.macaddr, sensor, **mqttsrc)
 
 def qry(mqttsrc, topic, payload):
     # Specific Information about a ZWave Sensor
+    if topic.sensorid == '0':
+        return True
+
     try:
-        return db.sensor.AddClass(topic.macaddr, topic.sensorid, *payload['clslist_0'])
+        return db.sensor.AddClass(topic.macaddr, topic.sensorid,
+                                  payload['clslist_0'].split(','))
     except LookupError:
-        db.Load(topic.macaddr, topic.sensorid)
-        return db.sesnor.AddClass(topic.macaddr, topic.sensorid, *payload['clslist_0'])
+        db.Load(mqttsrc, topic.macaddr, topic.sensorid)
+        return db.sensor.AddClass(topic.macaddr, topic.sensorid,
+                                  *payload['clslist_0'].split(','))

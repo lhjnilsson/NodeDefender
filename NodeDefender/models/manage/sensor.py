@@ -1,4 +1,4 @@
-from ..SQL import iCPEModel, SensorModel
+from ..SQL import iCPEModel, SensorModel, SensorClassModel
 from ... import db
 
 def Create(icpe, sensorid):
@@ -41,26 +41,26 @@ def List(icpe = None):
 
 def Get(icpe, sensor):
     return SensorModel.query.join(iCPEModel).\
-                filter(SensorModel.sensorid == sensor).\
+                filter(SensorModel.sensorid == int(sensor)).\
                 filter(iCPEModel.mac == icpe).first()
 
 def AddClass(mac, sensorid, classnumber, classname):
-    if SensorClassModel.query.join(Sensor).join(iCPEModel).\
-       filter(SensorClassModel.number == number).\
-       filter(SensorModel.sensorid == sensorid).\
-       filter(iCPEModel.mac == mac).first():
-        return True
+    print('Add Class: ' + mac + str(sensorid))
+    s = SensorClassModel.query.join(SensorModel).join(iCPEModel).\
+       filter(SensorClassModel.classnumber == str(classnumber)).\
+       filter(SensorModel.sensorid == int(sensorid)).\
+       filter(iCPEModel.mac == str(mac)).first()
 
     sensor = Get(mac, sensorid)
     cmdclass = SensorClassModel(classnumber, classname)
-    sensor.append(cmdclass)
-    db.session.add(cmdclass, sensor)
+    sensor.cmdclasses.append(sensor, cmdclass)
+    db.session.add(sensor)
     db.session.commit()
     return sensor
 
 def AddClassTypes(mac, sensorid, classname, classtypes):
-    cmdclass = SensorClassModel.query.join(Sensor).join(iCPEModel).\
-       filter(SensorClassModel.number == number).\
+    cmdclass = SensorClassModel.query.join(SensorModel).join(iCPEModel).\
+       filter(SensorClassModel.classname == classname).\
        filter(SensorModel.sensorid == sensorid).\
        filter(iCPEModel.mac == mac).first()
 

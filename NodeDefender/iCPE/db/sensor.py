@@ -62,12 +62,14 @@ def LoadFromObject(sensor, conn):
 
     s = {
         'name' : sensor.name,
-        'sensorid' : sensor.sensorid,
+        'sensorid' : str(sensor.sensorid),
         'roletype' : sensor.roletype,
         'devicetype' : sensor.devicetype,
         'unsupported' : unsupported,
         'cmdclass' : supported
     }
+    if not len(supported):
+        mqtt.sensor.Query(sensor.icpe.mac, str(sensor.sensorid))
 
     conn.hmset(sensor.icpe.mac + str(sensor.sensorid), s)
     return s
@@ -81,8 +83,8 @@ def Get(mac, sensorid, conn):
         return None
 
 @redisconn
-def Save(mac, sensorid, conn, **kwargs):
-    return conn.hmset(mac + sensorid, kwargs)
+def Save(mac, sid, conn, **kwargs):
+    return conn.hmset(mac + str(sid), kwargs)
 
 def CreateLoadQuery(mqttsrc, mac, sensorid):
     if Load(mac, sensorid) is not None:
@@ -98,12 +100,12 @@ def AddClass(mac, sensorid, *classes):
         raise LookupError('Sensor not found')
     
     for classnum in classes:
-        classname, types = zwave.Classname(classnum)
+        classname, types = zwave.Info(classnum)
         
         if classname is None:
             pass
 
-        if classname and types:
+        if types:
             mqtt.sensor.Sup(mac, sensorid, classname, **mqttsrc)
 
         SensorSQL.AddClass(mac, sensorid, classnum, classname)
