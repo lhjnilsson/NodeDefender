@@ -2,6 +2,7 @@ from ... import UserDatastore, db
 from flask_security import utils
 from flask_script import Command, prompt, prompt_pass
 from ..SQL import UserModel, GroupModel
+from . import logger
 
 def Create(name, password):
     if UserDatastore.get_user(name):
@@ -10,6 +11,7 @@ def Create(name, password):
     encrypted_password = utils.encrypt_password(password)
     user = UserDatastore.create_user(email=name, password=encrypted_password)
     db.session.commit()
+    logger.info("Created user: {}".format(user.email))
     return user
 
 def Delete(email):
@@ -18,6 +20,7 @@ def Delete(email):
         raise LookupError('Cant find user')
     UserDatastore.delete_user(user)
     db.session.commit()
+    logger.info("Deleted user: {}".format(user.email))
     return user
 
 def List():
@@ -43,6 +46,7 @@ def Join(email, groupname):
     group.users.append(user)
     db.session.add(group)
     db.session.commit()
+    logger.info("User {} Joined Group {}".format(user.email, group.name))
     return user
 
 def Leave(email, groupname):
@@ -57,6 +61,7 @@ def Leave(email, groupname):
     group.users.remove(user)
     db.session.add(user)
     db.session.commit()
+    logger.info("User {} Left Group {}".format(user.email, group.name))
     return user
 
 def Roles(user):
@@ -80,6 +85,7 @@ def Add(user, role):
 
     user = UserDatastore.add_role_to_user(user, role)
     db.session.commit()
+    logger.info("Added Role {} to User {}".format(role.name, user.email))
     return user
 
 def Remove(user, role):
@@ -95,4 +101,5 @@ def Remove(user, role):
 
     user = UserDatastore.remove_role_from_user(user, role)
     db.session.commit()
+    logger.info("Removed Role {} from User {}".format(role.name, user.email))
     return user

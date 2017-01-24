@@ -1,5 +1,6 @@
 from ... import UserDatastore, db
 from ..SQL import UserModel, UserRoleModel
+from . import logger
 
 def Create(name, description):
     role = UserRoleModel.query.filter_by(name = name).first()
@@ -8,6 +9,8 @@ def Create(name, description):
 
     UserDatastore.create_role(name=name, description=description)
     db.session.commit()
+    logger.info("Created Role: {}".format(name))
+    return True
 
 def Delete(name):
     if type(name) is str:
@@ -22,6 +25,7 @@ def Delete(name):
     
     db.session.delete(role)
     db.session.commit()
+    logger.info("Deleted Role: {}".format(role.name))
     return role
 
 def Get(name):

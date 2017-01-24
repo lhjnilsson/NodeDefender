@@ -10,6 +10,7 @@ def Create(icpe, sensorid):
     icpe.sensors.append(sensor)
     db.session.add(icpe, sensor)
     db.session.commit()
+    logger.info("Created Sensor {}:{}".format(icpe.mac, sensor.sensorid))
     return sensor
 
 def Delete(sensor, icpe = None):
@@ -23,6 +24,7 @@ def Delete(sensor, icpe = None):
 
     db.session.delete(sensor)
     db.session.commit()
+    logger.info("Deleted Sensor {}:{}".format(icpe.mac, sensor.sensorid))
     return sensor
 
 def Save(sensor):
@@ -56,6 +58,8 @@ def AddClass(mac, sensorid, classnumber, classname):
     sensor.cmdclasses.append(sensor, cmdclass)
     db.session.add(sensor)
     db.session.commit()
+    logger.info("Added Class {} to Sensor {}:{}".format(classname, mac,
+                                                        sensorid))
     return sensor
 
 def AddClassTypes(mac, sensorid, classname, classtypes):
@@ -70,4 +74,6 @@ def AddClassTypes(mac, sensorid, classname, classtypes):
     cmdclass.classtypes = classtypes
     db.session.add(cmdclass)
     db.session.commit()
+    logger.info("Added Classtypes {}:{} to Sensor {}:{}".\
+                format(classname, classtypes, mac, sensorid))
     return cmdclass

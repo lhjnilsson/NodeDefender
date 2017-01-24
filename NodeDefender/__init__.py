@@ -36,7 +36,7 @@ from .security.forms import LoginForm
 monkey.patch_all()
 
 # Setup logging
-logger, handler = CreateLogging()
+logger, loggHandler = CreateLogging()
 
 # Initialize the Flask- Application
 app = CreateApp()

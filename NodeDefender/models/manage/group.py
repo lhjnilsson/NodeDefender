@@ -1,5 +1,6 @@
 from ... import db
 from ...models.SQL import GroupModel
+from . import logger
 
 def Create(name, description = None):
     group = GroupModel.query.filter_by(name=name).first()
@@ -9,6 +10,7 @@ def Create(name, description = None):
     group = GroupModel(name, description)
     db.session.add(group)
     db.session.commit()
+    logger.info("Created Group: {}".format(group.name))
     return group
 
 def Delete(group):
@@ -18,6 +20,7 @@ def Delete(group):
 
     db.session.delete(group)
     db.session.commit()
+    logger.info("Deleted Group: {}".format(group.name))
     return group
 
 def Get(group):

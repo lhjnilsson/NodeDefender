@@ -1,5 +1,6 @@
 from redis import ConnectionPool, StrictRedis
 from functools import wraps
+from ... import logger
 
 pool = ConnectionPool(host='localhost', port=6379, db=0)
 

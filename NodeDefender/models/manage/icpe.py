@@ -1,5 +1,6 @@
 from ..SQL import iCPEModel, NodeModel, MQTTModel
 from ... import db
+from . import logger
 
 def List():
     return [icpe for icpe in iCPEModel.query.all()]
@@ -32,6 +33,7 @@ def Create(mac, node = None, ipaddr = None, port = None):
 
     db.session.add(icpe)
     db.session.commit()
+    logger.info("Added iCPE: {}".format(icpe.mac))
     return icpe
 
 def Delete(icpe):
@@ -40,6 +42,8 @@ def Delete(icpe):
 
     db.session.delete(icpe)
     db.session.commit()
+    logger.info("Deleted iCPE: {}".format(icpe.mac))
+    return True
 
 def Join(icpe, node):
     if type(icpe) is str:
@@ -55,6 +59,7 @@ def Join(icpe, node):
     group.icpes.append(icpe)
     db.session.add(group)
     db.session.commit()
+    logger.info("Added iCPE: {} to Node: {}".format(icpe.mac, node.name))
 
 def Leave(icpe, node):
     if type(icpe) is str:
@@ -70,3 +75,4 @@ def Leave(icpe, node):
     group.icpes.remove(icpe)
     db.session.add(group)
     db.session.commit()
+    logger.info("Removed iCPE: {} from Node: {}".format(icpe.mac, node.name))

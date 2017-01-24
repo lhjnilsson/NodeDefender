@@ -3,6 +3,7 @@ from . import redisconn
 from .. import mqtt, zwave
 from ... import celery
 from datetime import datetime
+from .. import logger
 '''
     For Sensor:
         {
@@ -27,7 +28,14 @@ from datetime import datetime
 def Create(mac, sensorid, conn):
     if SensorSQL.Get(mac, sensorid):
         raise ValueError('Already exists')
-    return SensorSQL.Create(mac, sensorid)
+    try:
+        SensorSQL.Create(mac, sensorid)
+        logger.info("Created Sensor {}:{}".format(mac. sensorid))
+        return True
+    except LookupError:
+        logger.error("iCPE {} not found when trying to create sensor {}".\
+                     format(mac, sensorid))
+        return False
 
 @redisconn
 def Load(mac, sensorid, conn):
@@ -49,6 +57,7 @@ def Load(mac, sensorid, conn):
         'cmdclass' : supported
     }
 
+    logger.info("Loaded Sensor {}:{} from Event".format(mac, sensorid))
     conn.hmset(mac + sensorid, s)
     return s
 
@@ -71,6 +80,7 @@ def LoadFromObject(sensor, conn):
     if not len(supported):
         mqtt.sensor.Query(sensor.icpe.mac, str(sensor.sensorid))
 
+    logger.info("Loaded Sensor {}:{} from Object".format(mac, sensorid))
     conn.hmset(sensor.icpe.mac + str(sensor.sensorid), s)
     return s
 
@@ -84,6 +94,8 @@ def Get(mac, sensorid, conn):
 
 @redisconn
 def Save(mac, sid, conn, **kwargs):
+    logger.info("Save data for sensor {}:{}. Data: {}".\
+                format(mac, sid, kwargs))
     return conn.hmset(mac + str(sid), kwargs)
 
 def CreateLoadQuery(mqttsrc, mac, sensorid):

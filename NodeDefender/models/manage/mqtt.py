@@ -1,5 +1,6 @@
 from ... import db
 from ..SQL import MQTTModel
+from . import logger
 
 def Create(ipaddr, port, username = None, password = None):
     mqtt = MQTTModel.query.filter_by(ipaddr = ipaddr).first()
@@ -9,6 +10,7 @@ def Create(ipaddr, port, username = None, password = None):
     mqtt = MQTTModel(ipaddr, port, username, password)
     db.session.add(mqtt)
     db.session.commit()
+    logger.info("Created MQTT: {}:{}".format(ipaddr, str(port)))
     return mqtt
 
 def Delete(ipaddr, port = None):
@@ -18,6 +20,7 @@ def Delete(ipaddr, port = None):
     
     db.session.delete(mqtt)
     db.session.commit()
+    logger.info("Delted MQTT: {}:{}".format(ipaddr, str(port)))
     return mqtt
 
 def Include(ipaddr, mac):
@@ -32,6 +35,8 @@ def Include(ipaddr, mac):
     mqtt.icpes.append(icpe)
     db.session.add(mqtt)
     db.session.commit()
+    logger.info("Included iCPE {} to MQTT {}:{}".format(icpe.mac, mqtt.ipaddr,
+                                                        str(mqtt.port)))
     return mqtt
 
 def Exclude(ipaddr, mac):
@@ -46,6 +51,8 @@ def Exclude(ipaddr, mac):
     mqtt.icpes.remove(icpe)
     db.session.add(mqtt)
     db.session.commit()
+    logger.info("Removed iCPE {} from MQTT {}:{}".fomrat(icpe.mac, mqtt.ipaddr,
+                                                         str(mqtt.port)))
     return mqtt
 
 def Query(ipaddr, mac):

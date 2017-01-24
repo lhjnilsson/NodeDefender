@@ -34,7 +34,7 @@ class SensorModel(db.Model):
     icpe_id = db.Column(db.Integer, db.ForeignKey('icpe.id'))
     
     name = db.Column(db.String(32))
-    sensorid = db.Column(db.Integer)
+    sensorid = db.Column(db.String(4))
     
     vendorid = db.Column(db.String(16))
     productid = db.Column(db.String(16))
@@ -49,7 +49,7 @@ class SensorModel(db.Model):
                                 cascade='save-update, merge, delete')
 
     def __init__(self, sensorid):
-        self.sensorid = int(sensorid)
+        self.sensorid = str(sensorid)
 
         self.name = "None"
 
