@@ -30,7 +30,7 @@ def Create(mac, sensorid, conn):
         raise ValueError('Already exists')
     try:
         SensorSQL.Create(mac, sensorid)
-        logger.info("Created Sensor {}:{}".format(mac. sensorid))
+        logger.info("Created Sensor {}:{}".format(mac, sensorid))
         return True
     except LookupError:
         logger.error("iCPE {} not found when trying to create sensor {}".\
@@ -80,7 +80,8 @@ def LoadFromObject(sensor, conn):
     if not len(supported):
         mqtt.sensor.Query(sensor.icpe.mac, str(sensor.sensorid))
 
-    logger.info("Loaded Sensor {}:{} from Object".format(mac, sensorid))
+    logger.info("Loaded Sensor {}:{} from Object".format(sensor.icpe.mac,
+                                                         sensor.sensorid))
     conn.hmset(sensor.icpe.mac + str(sensor.sensorid), s)
     return s
 
@@ -110,15 +111,18 @@ def CreateLoadQuery(mqttsrc, mac, sensorid):
 def AddClass(mac, sensorid, *classes):
     if SensorSQL.Get(mac, sensorid) is None:
         raise LookupError('Sensor not found')
-    
     for classnum in classes:
-        classname, types = zwave.Info(classnum)
-        
+        try:
+            classname, types = zwave.Info(classnum)
+        except TypeError:
+            print("Error adding class ", classnum)
+            return
+
         if classname is None:
             pass
 
         if types:
-            mqtt.sensor.Sup(mac, sensorid, classname, **mqttsrc)
+            mqtt.sensor.Sup(mac, sensorid, classname)
 
         SensorSQL.AddClass(mac, sensorid, classnum, classname)
     

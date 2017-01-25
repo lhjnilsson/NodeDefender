@@ -1,6 +1,6 @@
 from .cmdclass import *
 
-numtoname = {'20' : 'basic', '71' : 'alarm', '80' : 'battery'}
+numtoname = {'20' : 'basic', '71' : 'alarm'}
 
 def Info(classnum):
     try:
@@ -9,7 +9,7 @@ def Info(classnum):
         print('classnum: ' + str(classnum))
         return None, None
     
-    return eval(classname + '.Info')
+    return eval(classname + '.Info')()
 
 def ExtendClass(classnum, supported):
     try:

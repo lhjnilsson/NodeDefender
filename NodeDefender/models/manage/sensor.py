@@ -1,5 +1,6 @@
 from ..SQL import iCPEModel, SensorModel, SensorClassModel
 from ... import db
+from . import logger
 
 def Create(icpe, sensorid):
     if type(icpe) is str:
@@ -55,8 +56,8 @@ def AddClass(mac, sensorid, classnumber, classname):
 
     sensor = Get(mac, sensorid)
     cmdclass = SensorClassModel(classnumber, classname)
-    sensor.cmdclasses.append(sensor, cmdclass)
-    db.session.add(sensor)
+    sensor.cmdclasses.append(cmdclass)
+    db.session.add(sensor, cmdclass)
     db.session.commit()
     logger.info("Added Class {} to Sensor {}:{}".format(classname, mac,
                                                         sensorid))

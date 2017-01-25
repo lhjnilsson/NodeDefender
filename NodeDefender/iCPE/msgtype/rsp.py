@@ -30,7 +30,7 @@ def qry(mqttsrc, topic, payload):
 
     try:
         return db.sensor.AddClass(topic.macaddr, topic.sensorid,
-                                  payload['clslist_0'].split(','))
+                                  *payload['clslist_0'].split(','))
     except LookupError:
         db.Load(mqttsrc, topic.macaddr, topic.sensorid)
         return db.sensor.AddClass(topic.macaddr, topic.sensorid,
