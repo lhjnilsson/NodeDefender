@@ -120,11 +120,11 @@ def remove(email, role):
     if email is None:
         email = prompt('Email')
     if role is None:
-        email = prompt('Role')
+        role = prompt('Role')
 
     try:
         user.Remove(email, role)
-    except LookupError:
+    except LookupError as e:
         print("Error: ", e)
         return
 

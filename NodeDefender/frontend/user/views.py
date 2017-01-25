@@ -10,6 +10,14 @@ def UserProfile():
     Team =  UserModel.query.all()
     return render_template('user/profile.html', Team = Team, Profile = Profile)
 
+@UserView.route('/user/groups')
+@login_required
+def UserGroups():
+    Profile = UserModel.query.filter_by(email = current_user.email).first()
+    Team =  UserModel.query.all()
+    return render_template('user/groups.html', Team = Team, Profile = Profile)
+
+
 @UserView.route('/user/inbox')
 @login_required
 def UserInbox():

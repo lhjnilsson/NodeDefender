@@ -97,7 +97,7 @@
 							<a href="/user/profile"><i class="fa fa-fw fa-user"></i> User</a>
             </li>
 						<li>
-							<a href="/groups"><i class="fa fa-fw fa-users"></i> Groups</a>
+							<a href="/user/groups"><i class="fa fa-fw fa-users"></i> Groups</a>
 						</li>
 						<li>
 							<a href="/user/inbox"><i class="fa fa-fw fa-envelope"></i> Messages</a>
@@ -133,7 +133,8 @@
               </li>
             </ul>
           </li>
-          <li>
+					{% if current_user.has_role('admin') %}
+					<li>
 						<a href="javascript:;" data-toggle="collapse" data-target="#settingsMenu"><i class="fa fa-fw fa-sliders"></i> Admin <i class="fa fa-fw fa-caret-down"></i></a>
 						<ul id="settingsMenu" class="collapse">
 							<li>
@@ -150,6 +151,7 @@
 							</li>
 						</ul>
 					</li>
+					{% endif %}
 					<li>
 						<a href="#"><i class="fa fa-fw fa-info"></i> About </a>
 					</li>

@@ -83,7 +83,7 @@ def Add(user, role):
         if role is None:
             raise LookupError('Cant find Role')
 
-    user = UserDatastore.add_role_to_user(user, role)
+    UserDatastore.add_role_to_user(user, role)
     db.session.commit()
     logger.info("Added Role {} to User {}".format(role.name, user.email))
     return user
@@ -99,7 +99,7 @@ def Remove(user, role):
         if role is None:
             raise LookupError('Cant find Role')
 
-    user = UserDatastore.remove_role_from_user(user, role)
+    UserDatastore.remove_role_from_user(user, role)
     db.session.commit()
     logger.info("Removed Role {} from User {}".format(role.name, user.email))
     return user
