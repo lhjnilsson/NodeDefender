@@ -3,6 +3,7 @@ from .. import mqtt
 from ...models.manage import icpe as iCPESQL
 from ... import celery
 from datetime import datetime
+from . import logger
 '''
 Common Redis Format
 
@@ -38,6 +39,7 @@ def Load(mac, conn):
         'last_online' : False
     }
     conn.hmset(mac, i)
+    logger.info("Loaded iCPE: {} from Event".format(mac))
     return i
 
 @redisconn
@@ -52,6 +54,7 @@ def LoadFromObject(icpe, conn):
         'last_online' : False
     }
     conn.hmset(icpe.mac, i)
+    logger.info("Loaded iCPE: {} from Object".format(icpe.mac))
     return i
 
 @redisconn

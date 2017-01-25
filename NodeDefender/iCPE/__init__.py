@@ -1,12 +1,15 @@
 from collections import namedtuple
 from functools import wraps
-from .. import celery
+from .. import celery, loggHandler
 from ..models.manage import icpe as iCPESQL
 from celery.utils.log import get_task_logger
+import logging
 
 topic = namedtuple("topic", "macaddr msgtype sensorid cmdclass action")
 
-logger = get_task_logger(__name__)
+logger = logging.getLogger('iCPE')
+logger.setLevel('INFO')
+logger.addHandler(loggHandler)
 
 def TopicToTuple(func):
     '''
@@ -75,11 +78,8 @@ def Load():
     icpes = iCPESQL.List()
     for icpe in icpes:
         db.icpe.LoadFromObject(icpe)
-        logger.info("Loading iCPE {}".format(icpe.mac))
         for sensor in icpe.sensors:
             db.sensor.LoadFromObject(sensor)
-            logger.info("Loading Sensor {}:{}".format(icpe.mac,
-                                                      sensor.sensorid))
     return True
 
 from . import db
