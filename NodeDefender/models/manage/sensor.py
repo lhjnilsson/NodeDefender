@@ -47,6 +47,12 @@ def Get(icpe, sensor):
                 filter(SensorModel.sensorid == int(sensor)).\
                 filter(iCPEModel.mac == icpe).first()
 
+def GetClass(mac, sensorid, classname):
+    return SensorClassModel.query.join(SensorModel).join(iCPEModel).\
+       filter(SensorClassModel.classname == str(classname)).\
+       filter(SensorModel.sensorid == int(sensorid)).\
+       filter(iCPEModel.mac == str(mac)).first()
+
 def AddClass(mac, sensorid, classnumber, classname):
     print('Add Class: ' + mac + str(sensorid))
     s = SensorClassModel.query.join(SensorModel).join(iCPEModel).\

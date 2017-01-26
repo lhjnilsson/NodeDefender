@@ -28,6 +28,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_restful import Api
 from flask_socketio import SocketIO
 from flask_moment import Moment
+from flask_mail import Mail
 from apscheduler.schedulers.gevent import GeventScheduler
 from gevent import monkey, sleep
 from .factory import CreateApp, CreateLogging, CreateCelery
@@ -77,6 +78,9 @@ from .models.SQL import UserModel, UserRoleModel
 UserDatastore = SQLAlchemyUserDatastore(db, UserModel, UserRoleModel)
 security = Security(app, UserDatastore,\
                    login_form=LoginForm)
+
+# Initialize Mail
+mail = Mail(app)
 
 # MQTT
 from . import conn

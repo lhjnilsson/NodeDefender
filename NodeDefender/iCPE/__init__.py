@@ -2,8 +2,12 @@ from collections import namedtuple
 from functools import wraps
 from .. import celery, loggHandler
 from ..models.manage import icpe as iCPESQL
+from ..models.redis import icpe as iCPERedis
+from ..models.redis import sensor as SensorRedis
+from ..models.redis import cmdclass as CmdclassRedis
 from celery.utils.log import get_task_logger
 import logging
+
 
 topic = namedtuple("topic", "macaddr msgtype sensorid cmdclass action")
 
@@ -61,25 +65,32 @@ def SensorRules(func):
 def MQTTEvent(mqttsrc, topic, payload):
     if topic.msgtype == 'cmd':
         return
-    sensor = db.sensor.Get(topic.macaddr, topic.sensorid)
-    if sensor is None:
-        sensor = db.Load(mqttsrc, topic.macaddr, topic.sensorid)
+    sensor = SensorRedis.Get(topic.macaddr, topic.sensorid)
+    if not len(sensor):
+        sensor = db.sensor.Check(mqttsrc, topic.macaddr, topic.sensorid)
 
     evt = eval(topic.msgtype + '.' + topic.action)(mqttsrc, topic, payload)
     
     if type(evt) is dict:
         logger.info("Updating info for: {}:{}. Event: {}".\
                     format(topic.macaddr, topic.sensorid, evt))
-        return db.sensor.Save(topic.macaddr, topic.sensorid, **evt)
+        return CmdclassRedis.Save(topic.macaddr, topic.sensorid,
+                                  topic.cmdclass, **evt)
     else:
         return None
 
-def Load():
-    icpes = iCPESQL.List()
+def Load(icpes = None):
+    if icpes is None:
+        icpes = iCPESQL.List()
+    
     for icpe in icpes:
-        db.icpe.LoadFromObject(icpe)
+        iCPERedis.Load(icpe)
         for sensor in icpe.sensors:
-            db.sensor.LoadFromObject(sensor)
+            SensorRedis.Load(sensor)
+            for cmdclass in sensor.cmdclasses:
+                CmdclassRedis.Load(cmdclass)
+            else:
+                mqtt.sensor.Query(icpe.mac, sensor.sensorid)
     return True
 
 from . import db
