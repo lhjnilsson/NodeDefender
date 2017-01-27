@@ -17,7 +17,8 @@ Common Format
 def Load(cmdclass, conn):
     if cmdclass is None:
         return None
-
+    conn.sadd(cmdclass.sensor.icpe.mac + cmdclass.sensor.sensorid +\
+              ":classes", cmdclass.classname)
     return conn.hmset(cmdclass.sensor.icpe.mac + \
                       cmdclass.sensor.sensorid + \
                       cmdclass.classname, \

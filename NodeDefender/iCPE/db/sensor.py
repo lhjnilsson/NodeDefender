@@ -1,6 +1,6 @@
 from ...models.manage import sensor as SensorSQL
 from ...models.redis import sensor as SensorRedis
-from . import redisconn
+from . import redisconn, icpe
 from .. import mqtt, zwave
 from ... import celery
 from datetime import datetime
@@ -13,7 +13,7 @@ def Verify(mac, sensorid, ipaddr = None, port = None):
         if SensorSQL.Get(mac, sensorid):
             return SensorRedis.Load(SensorSQL.Get(mac, sensorid))
         else:
-            iCPE.Verify(mac, ipaddr, port)
+            icpe.Verify(mac, ipaddr, port)
             SensorSQL.Create(mac, sensorid)
             SensorRedis.Load(SensorSQL.Get(mac, sensorid))
     

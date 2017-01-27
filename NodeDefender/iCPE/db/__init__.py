@@ -31,4 +31,4 @@ def Load(mqttsrc, mac, sensorid = None):
 
     return sensor.Get(mac, sensorid) if sensorid else icpe.Get(mac)
 
-from . import sensor, icpe
+from . import sensor, icpe, cmdclass

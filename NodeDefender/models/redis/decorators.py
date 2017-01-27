@@ -1,7 +1,7 @@
 from functools import wraps
 from ..manage import icpe as iCPESQL
 from ..manage import sensor as SensorSQL
-from ..manage.sensor import GetClass as CmdclassSQL
+from ..manage import cmdclass as CmdclassSQL
 
 def LookupiCPE(func):
     @wraps(func)

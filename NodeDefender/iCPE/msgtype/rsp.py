@@ -28,10 +28,5 @@ def qry(mqttsrc, topic, payload):
     if topic.sensorid == '0':
         return True
 
-    try:
-        return db.sensor.AddClass(topic.macaddr, topic.sensorid,
-                                  *payload['clslist_0'].split(','))
-    except LookupError:
-        db.Load(mqttsrc, topic.macaddr, topic.sensorid)
-        return db.sensor.AddClass(topic.macaddr, topic.sensorid,
+    return db.cmdclass.Add(topic.macaddr, topic.sensorid,
                                   *payload['clslist_0'].split(','))

@@ -24,35 +24,26 @@ from .decorators import LookupSensor
             }
         ]
 '''
-@redisconn
 @LookupSensor
+@redisconn
 def Load(sensor, conn):
-    try:
-        supported, unsupported = zwave.Load(*[cmdclass for cmdclass in sensor.cmdclasses])
-    except TypeError:
-        supported = []
-        unsupported = []
-
+    if sensor is None:
+        return None
     s = {
         'name' : sensor.name,
-        'sensorid' : str(sensor.sensorid),
+        'sensorid' : sensor.sensorid,
         'roletype' : sensor.roletype,
-        'devicetype' : sensor.devicetype,
-        'unsupported' : unsupported,
-        'cmdclass' : supported
+        'devicetype' : sensor.devicetype
     }
-    logger.info("Loaded Sensor {}:{} from Object".format(mac, sensorid))
-    conn.sadd(sensor.icpe.mac + sensor.sensorid, \
-              [cmdclass.cmdname for cmdclass in sensor.cmdclasses])
+    logger.info("Loaded Sensor {}:{} from Object".format(sensor.icpe.mac,
+                                                         sensor.sensorid))
+    conn.sadd(sensor.icpe.mac + sensor.sensorid + ':classes', \
+              [cmdclass.classname for cmdclass in sensor.cmdclasses])
     return conn.hmset(sensor.icpe.mac + sensor.sensorid, s)
 
 @redisconn
 def Get(mac, sensorid, conn):
-    sensor = conn.hgetall(mac + sensorid)
-    if len(sensor):
-        return sensor
-    else:
-        return None
+    return conn.hgetall(mac + sensorid)
 
 @redisconn
 def Save(mac, sid, conn, **kwargs):
@@ -62,4 +53,4 @@ def Save(mac, sid, conn, **kwargs):
 
 @redisconn
 def Cmdclasses(mac, sensorid, conn):
-    return conn.smembers(mac + sensorid)
+    return conn.smembers(mac + sensorid + ':classes')

@@ -87,5 +87,5 @@ from . import conn
 
 # Frontend
 moment = Moment(app)
-from .models import SQL
+from .models import SQL, redis
 from . import frontend

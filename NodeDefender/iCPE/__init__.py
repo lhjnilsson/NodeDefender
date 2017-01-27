@@ -9,7 +9,7 @@ from celery.utils.log import get_task_logger
 import logging
 
 
-topic = namedtuple("topic", "macaddr msgtype sensorid cmdclass action")
+topic = namedtuple("topic", "macaddr msgtype sensorid endpoint cmdclass subfunc action")
 
 logger = logging.getLogger('iCPE')
 logger.setLevel('INFO')
@@ -26,10 +26,12 @@ def TopicToTuple(func):
             splitted = args[1].split('/')
             return func(args[0],
                         topic(splitted[1][2:], # macaddr
-                           splitted[2], # msgtype
-                           splitted[4], # sensorid
-                           splitted[6], # cmdclass
-                           splitted[8]), # action
+                        splitted[2], # msgtype
+                        splitted[4].split(":")[0], #Sensorid
+                        splitted[4].split(":")[1], # Endpoint
+                        splitted[6].split(":")[0], # cmdclass
+                        splitted[6].split(":")[1], # Sunfunc
+                        splitted[8]), # action
                         args[2])
         except IndexError:
             return func(*args)
@@ -67,7 +69,7 @@ def MQTTEvent(mqttsrc, topic, payload):
         return
     sensor = SensorRedis.Get(topic.macaddr, topic.sensorid)
     if not len(sensor):
-        sensor = db.sensor.Check(mqttsrc, topic.macaddr, topic.sensorid)
+        sensor = db.sensor.Verify(topic.macaddr, topic.sensorid, **mqttsrc)
 
     evt = eval(topic.msgtype + '.' + topic.action)(mqttsrc, topic, payload)
     

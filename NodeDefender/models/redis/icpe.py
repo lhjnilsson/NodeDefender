@@ -17,12 +17,11 @@ Common Format
         Last Online
         }
 '''
-@redisconn
 @LookupiCPE
+@redisconn
 def Load(icpe, conn):
     if icpe is None:
         return None
-
     i = {
         'name' : icpe.name,
         'mac' : icpe.mac,
