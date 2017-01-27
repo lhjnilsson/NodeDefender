@@ -18,15 +18,12 @@ def add(mqttsrc, topic, payload):
 
 def list(mqttsrc, topic, payload):
     # List of ZWave Sensors
-    print(payload)
     for sensor in payload.split(','):
-        if db.sensor.Get(topic.macaddr, sensor) is None:
-            mqtt.sensor.Query(topic.macaddr, sensor, **mqttsrc)
+        db.sensor.Verify.delay(topic.macaddr, sensor, **mqttsrc)
 
 def qry(mqttsrc, topic, payload):
     # Specific Information about a ZWave Sensor
-    if topic.sensorid == '0':
+    if topic.sensorid < 2:
         return True
-
-    return db.cmdclass.Add(topic.macaddr, topic.sensorid,
-                                  *payload['clslist_0'].split(','))
+    for cls in payload['clslist_0']:
+        db.cmdclass.Add.delay(topic.macaddr, topic.sensorid, cls)

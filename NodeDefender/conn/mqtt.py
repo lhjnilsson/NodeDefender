@@ -23,7 +23,7 @@ THE
 SOFTWARE.
 '''
 import paho.mqtt.client as PahoMQTT
-from ..iCPE import MQTTEvent
+from ..iCPE.event import MQTT as MQTTEvent
 from collections import namedtuple
 from ..models.manage import mqtt as MQTTSQL
 

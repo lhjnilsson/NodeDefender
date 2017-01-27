@@ -6,6 +6,7 @@ from ... import celery
 from datetime import datetime
 from . import logger, Load
 
+@celery.task
 def Verify(mac, ipaddr = None, port = None):
     if len(iCPERedis.Get(mac)):
         return iCPERedis.Get(mac)

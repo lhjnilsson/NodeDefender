@@ -6,7 +6,7 @@ from ... import celery
 from datetime import datetime
 from .. import logger
 
-
+@celery.task
 def Add(mac, sensorid, *classes):
     sensor.Verify(mac, sensorid)
     for classnum in classes:
@@ -23,6 +23,7 @@ def Add(mac, sensorid, *classes):
     
     return CmdclassRedis.Load(mac, sensorid, classname)
 
+@celery.task
 def AddTypes(mac, sensorid, cmdclass, classtypes):
     sensor.Verify(mac, sensorid)
     SensorSQL.AddClassTypes(mac, sensorid, classname, classtypes)

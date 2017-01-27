@@ -1,5 +1,3 @@
-from collections import namedtuple
-from functools import wraps
 from .. import celery, loggHandler
 from ..models.manage import icpe as iCPESQL
 from ..models.redis import icpe as iCPERedis
@@ -8,78 +6,9 @@ from ..models.redis import cmdclass as CmdclassRedis
 from celery.utils.log import get_task_logger
 import logging
 
-
-topic = namedtuple("topic", "macaddr msgtype sensorid endpoint cmdclass subfunc action")
-
 logger = logging.getLogger('iCPE')
 logger.setLevel('INFO')
 logger.addHandler(loggHandler)
-
-def TopicToTuple(func):
-    '''
-    Takes a XML from MQTT and zips it into a Dictonary following the Common
-    Message Format for iCPE
-    '''
-    @wraps(func)
-    def zipper(*args, **kwargs):
-        try:
-            splitted = args[1].split('/')
-            return func(args[0],
-                        topic(splitted[1][2:], # macaddr
-                        splitted[2], # msgtype
-                        splitted[4].split(":")[0], #Sensorid
-                        splitted[4].split(":")[1], # Endpoint
-                        splitted[6].split(":")[0], # cmdclass
-                        splitted[6].split(":")[1], # Sunfunc
-                        splitted[8]), # action
-                        args[2])
-        except IndexError:
-            return func(*args)
-    return zipper
-
-def PayloadToDict(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        newdict = {}
-        payload = str(args[2]).split(' ')
-        
-        if len(payload) < 2: # String Response like "0xFF, or NodeList"
-            return func(*args)
-
-        for x in payload: # XML- based response
-            y = x.split('=')
-            try:
-                newdict[y[0]] = y[1]
-            except IndexError:
-               pass
-        return func(args[0], args[1], newdict)
-    return wrapper
-
-def SensorRules(func):
-    @wraps(func)
-    def zipper(*args, **kwargs):
-        return func(*args, **kwargs)
-    return zipper
-
-@celery.task
-@TopicToTuple
-@PayloadToDict
-def MQTTEvent(mqttsrc, topic, payload):
-    if topic.msgtype == 'cmd':
-        return
-    sensor = SensorRedis.Get(topic.macaddr, topic.sensorid)
-    if not len(sensor):
-        sensor = db.sensor.Verify(topic.macaddr, topic.sensorid, **mqttsrc)
-
-    evt = eval(topic.msgtype + '.' + topic.action)(mqttsrc, topic, payload)
-    
-    if type(evt) is dict:
-        logger.info("Updating info for: {}:{}. Event: {}".\
-                    format(topic.macaddr, topic.sensorid, evt))
-        return CmdclassRedis.Save(topic.macaddr, topic.sensorid,
-                                  topic.cmdclass, **evt)
-    else:
-        return None
 
 def Load(icpes = None):
     if icpes is None:
@@ -95,5 +24,41 @@ def Load(icpes = None):
                 mqtt.sensor.Query(icpe.mac, sensor.sensorid)
     return True
 
-from . import db
+
+class TopicDescriptor:
+    def __init__(self, name):
+        self.name = name
+
+    def __get__(self, instance, cls):
+        if instance is None:
+            return self
+        else:
+            return instance.__dict__[self.name]
+
+    def __set__(self, instance, value):
+        if not isinstance(value, str):
+            raise TypeError("Must be a string")
+        instance.__dict__[self.name] = value
+
+    def __delete__(self, instance):
+        raise AttributeError("Can't delete me")
+
+class Topic:
+    macaddr = TopicDescriptor("macaddr")
+    msgtype = TopicDescriptor("msgtype")
+    sensorid = TopicDescriptor("sensorid")
+    endpoint = TopicDescriptor("endpoint")
+    cmdclass = TopicDescriptor("cmdclass")
+    subfunc = TopicDescriptor("subfunc")
+    action = TopicDescriptor("action")
+    def __init__(self):
+        self.macaddr = None
+        self.msgtype = None
+        self.sensorid = None
+        self.endpoint = None
+        self.cmdclass = None
+        self.subfunc = None
+        self.action = None
+
+from . import db, event, decorators
 from .msgtype import cmd, err, rpt, rsp
