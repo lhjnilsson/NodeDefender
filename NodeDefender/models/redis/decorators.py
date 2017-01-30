@@ -15,7 +15,7 @@ def LookupiCPE(func):
 def LookupSensor(func):
     @wraps(func)
     def wrapper(icpe, sensor = None):
-        if type(icpe) is str and sensor:
+        if type(icpe) is str:
             return func(SensorSQL.Get(icpe, sensor))
         else:
             return func(icpe)
@@ -24,7 +24,7 @@ def LookupSensor(func):
 def LookupCmdclass(func):
     @wraps(func)
     def wrapper(icpe, sensor = None, cmdclass = None):
-        if type(icpe) is str and sensor and cmdclass:
+        if type(icpe) is str:
             return func(CmdclassSQL.Get(icpe, sensor, cmdclass))
         else:
             return func(icpe)
