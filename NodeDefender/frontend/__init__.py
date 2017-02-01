@@ -31,9 +31,11 @@ def inject_user():      # Adds general data to base-template
 @app.route('/index')
 @login_required
 def index():
-    nodes = NodeManage.List()
-    stats = DataManage.Get(current_user.email)
-    return render_template('index.html', nodelist=nodes, stats = stats)
+    nodes = NodeManage.List(current_user.email)
+    data = DataManage.Get(current_user.email)
+    events = [] 
+    return render_template('dashboard/index.html', node=nodes, data = data, messages =
+                          [], events = [])
 
 from .admin import views
 from .data import views

@@ -1,5 +1,5 @@
-from wtforms import StringField, BooleanField, SelectField, validators
-from flask_wtf import Form
+from wtforms import StringField, BooleanField, SelectField, SubmitField, validators
+from flask_wtf import FlaskForm as Form
 
 class SensorForm(Form):
     NodeField = StringField([validators.DataRequired()]);
@@ -23,3 +23,4 @@ class NodeCreateForm(Form):
     Mac = StringField('Mac', [validators.DataRequired()])
     Street = StringField('Street', [validators.DataRequired()])
     City = StringField('City', [validators.DataRequired()])
+    Submit = SubmitField('Add')

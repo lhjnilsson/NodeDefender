@@ -140,6 +140,11 @@
 							<li>
 								<a href="/admin/server">Server</a>
 							</li>
+							{% if current_user.has_role('superuser') %}
+							<li>
+								<a href="/admin/groups">Groups</a>
+							</li>
+							{% endif %}
 							<li>
 								<a href="/admin/users">Users</a>
 							</li>

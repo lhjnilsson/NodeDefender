@@ -1,6 +1,6 @@
-from wtforms import Form, StringField, BooleanField, SelectField, validators
+from wtforms import StringField, BooleanField, SelectField, SubmitField, validators
 from ...settings import ReadServer
-
+from flask_wtf import FlaskForm as Form
 def loggingchoices():
     '''
     utility for AdminServerForm
@@ -20,24 +20,32 @@ def confparser(section, parameter):
     conf = ReadServer()
     return conf[section][parameter]
 
-class AdminServerForm(Form):
-    port = StringField('Server Port',[validators.DataRequired(message='port')], default = confparser('BASE', 'port')
-                       )
-    debug = BooleanField('Debug Mode',[validators.DataRequired(message='debug')], default = eval(confparser('BASE',
-                                                                 'debug'))
-                         )
-    logging = SelectField('Log Level',[validators.DataRequired(message='logging')], default = confparser('BASE', 'logging'),\
-                          choices = [(key, value) for key, value in
-                                     loggingchoices()]
-                          )
-    sqldriver = SelectField('SQL Driver',[validators.DataRequired(message='sqldriver')], default = confparser('BASE',
-                                                               'sqldriver'),
-                            choices = [(key, value) for key, value in
-                                       sqlchoices()]
-                            )
+class GeneralForm(Form):
+    Port = StringField('Server Port', [validators.DataRequired(
+                        message='port')], default = confparser('BASE', 'port'))
+    Debug = BooleanField('Debug Mode',[validators.DataRequired(\
+                        message='debug')], default = eval(confparser('BASE', 'debug')))
+    Logging = SelectField('Log Level',[validators.DataRequired(message='logging')]\
+                          , default = confparser('BASE', 'logging'), \
+                          choices = [(key, value) for key, value in loggingchoices()])
+    SQLDriver = SelectField('SQL Driver',[validators.DataRequired(message='sqldriver')],\
+                            default = confparser('BASE', 'sqldriver'),
+                            choices = [(key, value) for key, value in sqlchoices()])
+    Submit = SubmitField('Update')
 
 class DatabaseServerForn(Form):
     SQL = StringField()
     TrackModifications = BooleanField()
 
 
+class CreateUserForm(Form):
+    Firstname = StringField('First name')
+    Lastname = StringField('Last name')
+    Email = StringField('Email')
+    Submit = SubmitField('Create')
+
+class CreateGroupForm(Form):
+    Name = StringField('Group Name')
+    Email = StringField('Email')
+    Description = StringField('Description')
+    Submit = SubmitField('Create')

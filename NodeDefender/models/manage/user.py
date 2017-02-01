@@ -4,12 +4,14 @@ from flask_script import Command, prompt, prompt_pass
 from ..SQL import UserModel, GroupModel
 from . import logger
 
-def Create(name, password):
+def Create(name, password = None):
     if UserDatastore.get_user(name):
         raise ValueError('User already present')
-
-    encrypted_password = utils.encrypt_password(password)
-    user = UserDatastore.create_user(email=name, password=encrypted_password)
+    if password:
+        encrypted_password = utils.encrypt_password(password)
+        user = UserDatastore.create_user(email=name, password=encrypted_password)
+    else:
+        user = UserDatastore.create_user(email=name, password=None)
     db.session.commit()
     logger.info("Created user: {}".format(user.email))
     return user
@@ -23,8 +25,22 @@ def Delete(email):
     logger.info("Deleted user: {}".format(user.email))
     return user
 
+def Get(email):
+    return UserModel.query.filter_by(email = user).first()
+
 def List():
     return [user for user in UserModel.query.all()]
+
+def Friends(user):
+    user = UserModel.query.filter_by(email=user).first()
+    if user is None:
+        raise KeyError('User does not exists')
+    
+    if user.has_role('superuser'):
+        return List()
+
+    groupnames = [g.name for g in user.group] 
+    return UserModel.query.filter(UserModel.group.any(GroupModel.name.in_(groupnames)))
 
 def Groups(user):
     if type(user) is str:

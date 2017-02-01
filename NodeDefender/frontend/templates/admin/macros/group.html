@@ -1,0 +1,22 @@
+{% macro ListGroups(groups) %}
+<div class="list-group">
+	{% for group in groups %}
+	<a href="/admin/groups/{{group.name}}" class="list-group-item">
+		<p class="col-sm-2"><b>Name:</b> {{ group.name }}</p>
+		-
+	</a>
+	{% endfor %}
+</div>
+{% endmacro %}
+
+{% macro CreateGroup(Form) %}
+{% from "macros/form.html" import render_field_with_errors, render_field %}
+<form action="{{url_for('AdminView.AdminGroups')}}" method="POST" class="form-horizontal">
+	{{ Form.csfr_token }}
+	{{ Form.hidden_tag() }}
+	{{ render_field_with_errors(Form.Name) }}
+	{{ render_field_with_errors(Form.Description) }}
+	{{ render_field_with_errors(Form.Email) }}
+	{{ render_field(Form.Submit) }}
+</form>
+{% endmacro %}

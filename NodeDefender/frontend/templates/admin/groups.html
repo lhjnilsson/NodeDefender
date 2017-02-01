@@ -3,9 +3,9 @@
 <div class="row">
     <div class="col-lg-12">
         <h1 class="page-header">
-            Nodes <small>Node List</small>
+            Admin <small>Group List</small>
 						{% if current_user.has_role('admin') %}
-						<a href="#" data-toggle="modal" data-target="#AddNew" style="position: absolute; right: 0; margin-right: 1vw;">
+						<a href="#" data-toggle="modal" data-target="#CreateNew" style="position: absolute; right: 0; margin-right: 1vw;">
 							<i class="fa fa-plus" aria-hidden="true"></i>
 						</a>
 						{% endif %}
@@ -19,18 +19,15 @@
     </div>
 </div>
 {% include "flash.html" %}
-{% from "nodes/macros/nodegroup.html" import NodeGroup %}
-{% from "nodes/macros/addnode.html" import AddNode %}
+{% from "admin/macros/group.html" import ListGroups, CreateGroup %}
 <div class="row">
 	 <div class="col-lg-12">
-			{% for nodegrp in nodes %}
-			{{ NodeGroup(nodegrp) }}
-			{% endfor %}
+			{{ ListGroups(groups) }}
 			<div class="box" style="padding: 0;">
 		</div>
   </div>
 </div>
-<div class="modal fade" id="AddNew" role="dialog">
+<div class="modal fade" id="CreateNew" role="dialog">
 	<div class="modal-dialog">
 		
 		<div class="modal-content">
@@ -38,7 +35,7 @@
 				<h2 class="modal-title">Add new node</h2>
 			</div>
 			<div class="modal-body">
-				{{ AddNode(NodeCreateForm, unassigned) }}
+				{{ CreateGroup(CreateGroupForm) }}
 		</div>
 	</div>
 </div>	

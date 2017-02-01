@@ -1,0 +1,23 @@
+{% macro ListUsers(users) %}
+<div class="list-group">
+	{% for user in users %}
+	<a href="/admin/users/{{user.email}}" class="list-group-item">
+		<p class="col-sm-2"><b>Name:</b> {{ user.lastname }}, {{ user.firstname }} </p>
+		<p class="col-sm-2"><b>Mail: </b> {{ user.email }} </p>
+		-
+	</a>
+	{% endfor %}
+</div>
+{% endmacro %}
+
+{% macro CreateUser(Form) %}
+{% from "macros/form.html" import render_field_with_errors, render_field %}
+<form action="{{url_for('AdminView.AdminUsers')}}" method="post" class="form-horizontal">
+	{{ Form.csfr_token }}
+	{{ Form.hidden_tag() }}
+	{{ render_field_with_errors(Form.Firstname) }}
+	{{ render_field_with_errors(Form.Lastname) }}
+	{{ render_field_with_errors(Form.Email) }}
+	{{ render_field(Form.Submit) }}
+</form>
+{% endmacro %}

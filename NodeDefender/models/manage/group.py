@@ -1,6 +1,7 @@
 from ... import db
-from ...models.SQL import GroupModel
+from ...models.SQL import GroupModel, UserModel
 from . import logger
+from . import user as UserSQL
 
 def Create(name, description = None):
     group = GroupModel.query.filter_by(name=name).first()
