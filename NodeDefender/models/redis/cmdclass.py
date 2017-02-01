@@ -12,19 +12,22 @@ Common Format
     }
 
 '''
-@redisconn
 @LookupCmdclass
+@redisconn
 def Load(cmdclass, conn):
     if cmdclass is None:
         return None
+    if cmdclass.classname is None:
+        raise NotImplementedError('Classname undefined')
+
     conn.sadd(cmdclass.sensor.icpe.mac + cmdclass.sensor.sensorid +\
               ":classes", cmdclass.classname)
     return conn.hmset(cmdclass.sensor.icpe.mac + \
                       cmdclass.sensor.sensorid + \
                       cmdclass.classname, \
                         {
-                            'cmdclass' : cmdclass.cmdclass,
-                           'cmdname' : cmdclass.cmdname,
+                            'cmdclass' : cmdclass.classnumber,
+                           'cmdname' : cmdclass.classname,
                            'last_updated' : datetime.now,
                            'loaded_at' : datetime.now,
                        })
