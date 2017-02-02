@@ -6,7 +6,6 @@ from ... import celery
 from datetime import datetime
 from .. import logger
 
-@celery.task
 def Verify(mac, sensorid, ipaddr = None, port = None):
     if len(SensorRedis.Get(mac, sensorid)):
         return SensorRedis.Get(mac, sensorid)

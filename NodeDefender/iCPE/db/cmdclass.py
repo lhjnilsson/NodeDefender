@@ -7,7 +7,6 @@ from datetime import datetime
 from .. import logger
 
 
-@celery.task
 def Verify(mac, sensorid, classname, ipaddr = None, port = None):
     if len(CmdclassRedis.Get(mac, sensorid, classname)):
         return CmdclassRedis.Get(mac, sensorid, classname)
@@ -22,9 +21,8 @@ def Verify(mac, sensorid, classname, ipaddr = None, port = None):
     mqtt.sensor.Query(mac, sensorid, ipaddr, port)
     return CmdclassSQL.Get(mac, sensorid, classname)
 
-@celery.task
 def Add(mac, sensorid, *classes):
-    sensor.Verify.delay(mac, sensorid)
+    sensor.Verify(mac, sensorid)
     for classnum in classes:
         try:
             classname, types = zwave.Info(classnum)
@@ -39,7 +37,6 @@ def Add(mac, sensorid, *classes):
         return CmdclassRedis.Load(mac, sensorid, classname)
     return False
 
-@celery.task
 def AddTypes(mac, sensorid, cmdclass, classtypes):
     sensor.Verify(mac, sensorid)
     SensorSQL.AddClassTypes(mac, sensorid, classname, classtypes)

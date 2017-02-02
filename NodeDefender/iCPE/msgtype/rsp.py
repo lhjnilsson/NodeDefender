@@ -20,8 +20,8 @@ def add(mqttsrc, topic, payload):
 def list(mqttsrc, topic, payload):
     # List of ZWave Sensors
     for sensor in payload.split(','):
-        db.sensor.Verify.delay(topic.macaddr, sensor, **mqttsrc)
-    return None, None, None, None
+        db.sensor.Verify(topic.macaddr, sensor, **mqttsrc)
+    return None, None
 
 @CommonPayload
 def qry(mqttsrc, topic, payload):
@@ -30,6 +30,7 @@ def qry(mqttsrc, topic, payload):
         pass
     else:
         for cls in payload.clslist_0.split(','):
-            db.cmdclass.Add.delay(topic.macaddr, topic.sensorid, cls)
+            db.cmdclass.Add(topic.macaddr, topic.sensorid, cls)
 
-    return None, None, None, None
+    return None, None
+

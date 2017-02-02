@@ -1,12 +1,41 @@
 {% macro ListGroups(groups) %}
-<div class="list-group">
-	{% for group in groups %}
-	<a href="/admin/groups/{{group.name}}" class="list-group-item">
-		<p class="col-sm-2"><b>Name:</b> {{ group.name }}</p>
-		-
-	</a>
-	{% endfor %}
-</div>
+<table class="table table-hover">
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>Description</th>
+			<th>Users</th>
+			<th>Nodes</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for group in groups %}
+		<tr>
+			<td>
+				<a href="{{url_for('AdminView.AdminGroup', id = group.id)}}">
+				{{group.name}}
+				</a>
+			</td>
+			<td>
+				<a href="{{url_for('AdminView.AdminGroup', id = group.id)}}">
+					{{group.description}}
+				</a>
+			</td>
+			<td>
+				<a href="{{url_for('AdminView.AdminGroup', id = group.id)}}">
+				{{group.users|count}}
+				</a>
+			</td>
+			<td>
+				<a href="{{url_for('AdminView.AdminUser', id = group.id)}}">
+					{{group.nodes|count}}
+				</a>
+			</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+
 {% endmacro %}
 
 {% macro CreateGroup(Form) %}

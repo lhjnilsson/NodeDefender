@@ -4,13 +4,18 @@ from flask_login import login_required, current_user
 from flask import Blueprint, request, render_template
 from ...models.manage import user as UserSQL
 from ...models.manage import group as GroupSQL
+from ...models.manage import mqtt as MQTTSQL
+from ...models.SQL import GroupModel, UserModel
+
 
 @AdminView.route('/admin/server', methods=['GET', 'POST'])
 @login_required
 def AdminServer():
     General = GeneralForm()
+    MQTTList = MQTTSQL.List()
     if request.method == 'GET':
-        return render_template('admin/server.html', GeneralForm = GForm)
+        return render_template('admin/server.html', GeneralForm = General,
+                               MQTTList = MQTTList)
     
     if sform.validate():
         flash('Successfully updated General Settings', 'success')
@@ -35,12 +40,12 @@ def AdminGroups():
         flash('Successfully Created Group: {}'.format(Group.Name), 'success')
         return redirect(url_for('AdminView.AdminGroups'))
 
-@AdminView.route('/admin/groups/<name>')
+@AdminView.route('/admin/groups/<id>')
 @login_required
-def AdminGroupsGroup(name):
-    Group = GroupSQL.Get(name)
+def AdminGroup(id):
+    Group = GroupModel.query.filter_by(id = id).first()
     if Group is None:
-        flash('Group {} not found'.format(name), 'danger')
+        flash('Group {} not found'.format(id), 'danger')
         return redirect(url_for('AdminView.AdminGroups'))
     return render_template('admin/group.html', Group = Group)
 
@@ -61,6 +66,15 @@ def AdminUsers():
     UserSQL.Save(user)
     flash('Successfully added user {}'.format(user.firstname), 'danger')
     return redirect(url_for('AdminView.AdminUsers'))
+
+@AdminView.route('/admin/users/<id>')
+@login_required
+def AdminUser(id):
+    User = UserModel.query.filter_by(id = id).first()
+    if User is None:
+        flash('User {} not found'.format(id), 'danger')
+        return redirect(url_for('AdminView.AdminGroups'))
+    return render_template('admin/user.html', User = User)
 
 @AdminView.route('/admin/mqtt')
 @login_required

@@ -1,13 +1,35 @@
 {% macro ListUsers(users) %}
-<div class="list-group">
-	{% for user in users %}
-	<a href="/admin/users/{{user.email}}" class="list-group-item">
-		<p class="col-sm-2"><b>Name:</b> {{ user.lastname }}, {{ user.firstname }} </p>
-		<p class="col-sm-2"><b>Mail: </b> {{ user.email }} </p>
-		-
-	</a>
-	{% endfor %}
-</div>
+<table class="table table-hover">
+	<thead>
+		<tr>
+			<th>Firstname</th>
+			<th>Lastname</th>
+			<th>Email</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for user in users %}
+		<tr>
+			<td>
+				<a href="{{url_for('AdminView.AdminUser', id = user.id)}}">
+				{{user.firstname}}
+				</a>
+			</td>
+			<td>
+				<a href="{{url_for('AdminView.AdminUser', id = user.id)}}">
+					{{user.lastname}}
+				</a>
+			</td>
+			<td>
+				<a href="{{url_for('AdminView.AdminUser', id = user.id)}}">
+				{{user.email}}
+				</a>
+			</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+
 {% endmacro %}
 
 {% macro CreateUser(Form) %}

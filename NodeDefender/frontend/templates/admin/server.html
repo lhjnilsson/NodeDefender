@@ -15,6 +15,7 @@
 </div>
 {% include "flash.html" %}
 {% from "admin/macros/general.html" import GeneralSettings %}
+{% from "admin/macros/mqtt.html" import ListMQTT %}
 <div class="row">
 	<div class="col-lg-4">
 		{{ GeneralSettings(GeneralForm) }}
@@ -41,17 +42,7 @@
       </div>
 	</div>	
 	<div class="col-lg-4">
-		<h3>SNMP Settings</h3>
-		<div class="box">
-			<form class="form-horizontal">
-        <div class="form-group">
-					<label for="#" class="col-sm-2 control-label">First</label>
-					<div class="col-sm-10">
-						<input type="text" class="form-control" id="#" placeholder"Email" value="First">
-          </div>
-        </div>
-			</form>
-    </div>
+		{{ ListMQTT(MQTTList) }}
 	</div>
 </div>
 <script>

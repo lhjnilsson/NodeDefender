@@ -1,14 +1,20 @@
 from .. import db, zwave
-from ..event import ZWave
+from ..decorators import CommonPayload
 
 def status(mqttsrc, topic, payload):
-    sensor = db.cmdclass.Verify.delay(topic.macaddr, topic.sensorid,
-                                      topic.cmdclass, **mqttsrc)
+    sensor = db.cmdclass.Verify(topic.macaddr, topic.sensorid,
+                                topic.cmdclass, **mqttsrc)
     event = zwave.Event(topic, payload)
-    return cmdclass.sensor.icpe, cmdclass.sensor, cmdclass, event
+    return cmdclass, event
 
 def event(mqttsrc, topic, payload):
-    sensor = db.cmdclass.Verify.delay(topic.macaddr, topic.sensorid,
+    cmdclass = db.cmdclass.Verify(topic.macaddr, topic.sensorid,
                                       topic.cmdclass, **mqttsrc)
     event = zwave.Event(topic, payload)
-    return cmdclass.sensor.icpe, cmdclass.sensor, cmdclass, event
+    return cmdclass, event
+
+@CommonPayload
+def sup(mqttsrc, topic, payload):
+    db.cmdclass.AddTypes(topic.mac, topic.sensorid, topic.cmdclass,
+                         payload.types)
+    return None, None
