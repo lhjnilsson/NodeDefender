@@ -29,22 +29,22 @@ def TopicToTuple(func):
             return func(*args)
     return zipper
 
-def PayloadToDict(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        newdict = {}
-        payload = str(args[2]).split(' ')
-        
-        if len(payload) < 2: # String Response like "0xFF, or NodeList"
-            return func(*args)
+class Test:
+    def __init__(self):
+        pass
 
-        for x in payload: # XML- based response
-            y = x.split('=')
+def CommonPayload(func):
+    @wraps(func)
+    def wrapper(mqttsrc, topic, payload):
+        p = Test()
+        print(type(payload))
+        for part in payload.split(' '):
             try:
-                newdict[y[0]] = y[1]
-            except IndexError:
-               pass
-        return func(args[0], args[1], newdict)
+                key, value = part.split('=')
+                setattr(p, key, value)
+            except ValueError:
+                print(part)
+        return func(mqttsrc, topic, p)
     return wrapper
 
 def SensorRules(func):

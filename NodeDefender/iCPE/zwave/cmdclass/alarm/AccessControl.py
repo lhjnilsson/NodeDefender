@@ -1,10 +1,12 @@
 
 
-def Event(**kwargs):
-    if kwargs['evt'] == '16':
-        return {'door' : 'open'}
-    elif kwargs['evt'] == '17':
-        return {'door' : 'closed'}
+def Event(payload):
+    if payload.evt == '16':
+        payload.data['door'] = 'Open'
+    elif payload.evt == '17':
+        payload.data['door'] = 'Closed'
+
+    return payload
 
 def Load():
     return {}

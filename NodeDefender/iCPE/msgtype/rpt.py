@@ -1,15 +1,14 @@
 from .. import db, zwave
+from ..event import ZWave
 
 def status(mqttsrc, topic, payload):
-    sensor = db.sensor.Verify.delay(topic.macaddr, topic.sensorid, **mqttsrc)
-    event = event.ZWave.delay(**payload)
-    sensor.get()
-    event.get()
-    return sensor, event
+    sensor = db.cmdclass.Verify.delay(topic.macaddr, topic.sensorid,
+                                      topic.cmdclass, **mqttsrc)
+    event = zwave.Event(topic, payload)
+    return cmdclass.sensor.icpe, cmdclass.sensor, cmdclass, event
 
 def event(mqttsrc, topic, payload):
-    sensor = db.sensor.Verify.delay(topic.macaddr, topic.sensorid, **mqttsrc)
-    event.Zwave.delay(**payload)
-    sensor.get()
-    event.get()
-    return sensor, event
+    sensor = db.cmdclass.Verify.delay(topic.macaddr, topic.sensorid,
+                                      topic.cmdclass, **mqttsrc)
+    event = zwave.Event(topic, payload)
+    return cmdclass.sensor.icpe, cmdclass.sensor, cmdclass, event

@@ -19,7 +19,12 @@ def Load(icpes = None):
         for sensor in icpe.sensors:
             SensorRedis.Load(sensor)
             for cmdclass in sensor.cmdclasses:
-                CmdclassRedis.Load(cmdclass)
+                try:
+                    print(cmdclass)
+                    CmdclassRedis.Load(cmdclass)
+                except NotImplementedError:
+                    db.cmdclass.Add.delay(icpe.mac, sensor.sensorid,
+                                          cmdclass.classnumber)
             else:
                 mqtt.sensor.Query(icpe.mac, sensor.sensorid)
     return True
@@ -36,8 +41,6 @@ class TopicDescriptor:
             return instance.__dict__[self.name]
 
     def __set__(self, instance, value):
-        if not isinstance(value, str):
-            raise TypeError("Must be a string")
         instance.__dict__[self.name] = value
 
     def __delete__(self, instance):
