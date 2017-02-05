@@ -19,8 +19,8 @@ class NodeForm(Form):
 
 class NodeCreateForm(Form):
     Name = StringField('Name', [validators.DataRequired()])
-    Group = StringField('Group', [validators.DataRequired()])
-    Mac = StringField('Mac', [validators.DataRequired()])
+    Group = StringField('Group')
+    Mac = StringField('Mac')
     Street = StringField('Street', [validators.DataRequired()])
     City = StringField('City', [validators.DataRequired()])
     Submit = SubmitField('Add')

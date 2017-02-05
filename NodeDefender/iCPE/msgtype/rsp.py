@@ -34,3 +34,16 @@ def qry(mqttsrc, topic, payload):
 
     return None, None
 
+@CommonPayload
+def sup(mqttsrc, topic, payload):
+    try:
+        db.cmdclass.AddTypes(topic.macaddr, topic.sensorid, topic.cmdclass,
+                         payload.typelist)
+    except AttributeError:
+        pass
+
+    return None, None
+
+def get(mqttsrc, topic, payload):
+    if topic.subfunc:
+        return eval(topic.subfunc)(mqttsrc, topic, payload)

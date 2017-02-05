@@ -2,14 +2,27 @@ from functools import wraps
 
 numtoname = {'20' : 'basic', '71' : 'alarm'}
 
+def Supported(classname):
+    try: 
+        eval(classname + '.Info')()
+        return True
+    except NameError:
+        return False
+
 def Info(classnum):
     try:
         classname = numtoname[str(classnum)]
     except KeyError:
         print('classnum: ' + str(classnum))
-        return None, None
+        return None, None, None
     
     return eval(classname + '.Info')()
+
+def InfoTypes(classname, classtypes):
+    try:
+        return eval(classname + '.InfoTypes')(classtypes)
+    except KeyError:
+        return None
 
 def ExtendClass(classnum, supported):
     try:
@@ -19,11 +32,10 @@ def ExtendClass(classnum, supported):
 
 def Event(topic, payload):
     print("TOPIC: " + topic.cmdclass)
-    return
     try:
-        return eval(topic.cmdclass + '.Event')(**kwargs)
-    except NameError:
-        print(topic.cmdclass, " Not implemented")
+        return eval(topic.cmdclass + '.Event')(payload)
+    except NameError as e:
+        print(topic.cmdclass + str(e))
     except KeyError:
         print("Descr not found")
 
@@ -89,10 +101,14 @@ def PayloadSplitter(model=BaseModel):
         def wrapper(payload):
             m = model()
             for part in payload.split(' '):
-                for key, value in part.split('='):
+                try:
+                    key, value =  part.split('=')
                     setattr(m, key, value)
+                except ValueError:
+                    pass
+
             return func(m)
         return wrapper
     return decorate
 
-from .cmdclass import *
+from .cmdclass import alarm, basic

@@ -25,7 +25,15 @@ class AlarmModel(BaseModel):
 
 
 def Info():
-    return 'alarm', True
+    return 'alarm', True, False
+
+def InfoTypes(classtypes):
+    ret = []
+    print("--------------- " + classtypes)
+    for t in classtypes.split(','):
+        ret.append(eval(zalm[t] + '.Info')())
+    print(ret)
+    return ret
 
 def Load():
     return {'notification': None}
@@ -35,6 +43,6 @@ def Event(payload):
     try:
         return eval(zalm[payload.zalm] + '.Event')(payload)
     except NameError as e:
-        print(kwargs['zalm'], e)
+        print(str(e))
 
 from . import AccessControl

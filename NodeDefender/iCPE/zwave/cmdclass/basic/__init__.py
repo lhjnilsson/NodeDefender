@@ -1,5 +1,6 @@
 def Info():
-    return 'basic', False
+    return 'basic', False, {'type' : 'checkbox', 'readonly' : False, 'name' :
+                            'Basic'}
 
 def Load(classtypes):
     return {'basic' : None}

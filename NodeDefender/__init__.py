@@ -34,6 +34,8 @@ from gevent import monkey, sleep
 from .factory import CreateApp, CreateLogging, CreateCelery
 from flask_security import Security, SQLAlchemyUserDatastore
 from .security.forms import LoginForm
+from redis import ConnectionPool
+from redlock import RedLock
 monkey.patch_all()
 
 # Setup logging
@@ -47,6 +49,7 @@ api = Api(app)
 
 # Config-file 
 
+RedisPool = ConnectionPool()
 
 # Initialize SocketIO
 socketio = SocketIO(app)

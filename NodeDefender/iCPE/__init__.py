@@ -9,6 +9,8 @@ import logging
 logger = logging.getLogger('iCPE')
 logger.setLevel('INFO')
 logger.addHandler(loggHandler)
+log = get_task_logger(__name__)
+log.addHandler(loggHandler)
 
 def Load(icpes = None):
     if icpes is None:
@@ -20,10 +22,9 @@ def Load(icpes = None):
             SensorRedis.Load(sensor)
             for cmdclass in sensor.cmdclasses:
                 try:
-                    print(cmdclass)
                     CmdclassRedis.Load(cmdclass)
                 except NotImplementedError:
-                    db.cmdclass.Add.delay(icpe.mac, sensor.sensorid,
+                    db.cmdclass.Add(icpe.mac, sensor.sensorid,
                                           cmdclass.classnumber)
             else:
                 mqtt.sensor.Query(icpe.mac, sensor.sensorid)

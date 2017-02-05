@@ -1,4 +1,4 @@
-from ..SQL import iCPEModel, SensorModel, SensorClassModel
+from ..SQL import iCPEModel, SensorModel, SensorClassModel, WebField
 from ... import db
 from . import logger, sensor
 
@@ -22,7 +22,7 @@ def Add(mac, sensorid, classnumber, classname):
     s.cmdclasses.append(cmdclass)
     db.session.add(s, cmdclass)
     db.session.commit()
-    logger.info("Added Class {} to Sensor {}:{}".format(classname, mac,
+    logger.info("Added Class {}/{} to Sensor {}:{}".format(classnumber, classname, mac,
                                                         sensorid))
     return sensor
 
@@ -41,3 +41,20 @@ def AddTypes(mac, sensorid, classname, classtypes):
     logger.info("Added Classtypes {}:{} to Sensor {}:{}".\
                 format(classname, classtypes, mac, sensorid))
     return cmdclass
+
+def AddField(icpe, sensor, cmdclass, name, type, readonly):
+    cmdclass = \
+    SensorClassModel.query.join(SensorModel).join(iCPEModel).\
+            filter(SensorClassModel.classname == cmdclass).\
+            filter(SensorModel.sensorid == sensor).\
+            filter(iCPEModel.mac == icpe).first()
+
+    sensor = cmdclass.sensor
+    icpe = sensor.icpe
+    
+    field = WebField(name, type, readonly)
+    icpe.webfields.append(field)
+    sensor.webfields.append(field)
+    cmdclass.webfields.append(field)
+    db.session.add(cmdclass)
+    return db.session.commit()

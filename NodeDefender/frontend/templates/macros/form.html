@@ -26,3 +26,13 @@
 	</div>
 </div>
 {% endmacro %}
+
+{% macro render_submit(field) %}
+<div class="form-group">
+	<div class="col-sm-offset-10 col-sm-2">
+		<div class="control">
+			{{ field(class="form-control")|safe }}
+		</div>
+	</div>
+</div>
+{% endmacro %}

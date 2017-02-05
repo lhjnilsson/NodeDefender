@@ -11,9 +11,8 @@ def Verify(mac, ipaddr = None, port = None):
         return iCPERedis.Get(mac)
     else:
         if iCPESQL.Get(mac):
-            return Load(iCPESQL.Get(mac))
+            return iCPERedis.Load(mac)
         else:
             iCPESQL.Create(mac, ipaddr = ipaddr, port = port)
-            mqtt.icpe.Query(mac, ipaddr, port)
-
-    return iCPERedis.Load(mac)
+            iCPERedis.Load(mac)
+    return mqtt.icpe.Query(mac, ipaddr, port)

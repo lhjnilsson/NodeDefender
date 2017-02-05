@@ -26,6 +26,7 @@ import paho.mqtt.client as PahoMQTT
 from ..iCPE.event import MQTT as MQTTEvent
 from collections import namedtuple
 from ..models.manage import mqtt as MQTTSQL
+from threading import Thread
 
 conninfo = namedtuple('conninfo', 'ipaddr, port')
 
@@ -64,7 +65,9 @@ def Load(mqttlist = None):
         mqttlist = MQTTSQL.List()
 
     for m in mqttlist:
-        Add(m.ipaddr, m.port, m.username, m.password)
+        print(m.ipaddr)
+        Thread(target = Add, args=[m.ipaddr, m.port, m.username,
+                                   m.password]).start()
 
     return len(mqttlist)
 

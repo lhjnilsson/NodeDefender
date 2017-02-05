@@ -28,8 +28,8 @@ def Load(cmdclass, conn):
                         {
                             'cmdclass' : cmdclass.classnumber,
                            'cmdname' : cmdclass.classname,
-                           'last_updated' : datetime.now,
-                           'loaded_at' : datetime.now,
+                           'last_updated' : str(datetime.now),
+                           'loaded_at' : str(datetime.now),
                        })
 
 @redisconn

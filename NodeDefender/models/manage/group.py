@@ -27,6 +27,10 @@ def Delete(group):
 def Get(group):
     return GroupModel.query.filter_by(name=group).first()
 
+def Save(group):
+    db.session.add(group)
+    return db.session.commit()
+
 def List():
     return [group for group in GroupModel.query.all()]
     
@@ -37,3 +41,5 @@ def Members(group):
 def Nodes(group):
     group = GroupModel.query.filter_by(name = group).first()
     return [node for node in group.nodes]
+
+

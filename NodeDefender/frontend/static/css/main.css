@@ -296,3 +296,13 @@ input:checked + .slider:before {
   -ms-transform: translateX(26px);
   transform: translateX(26px);
 }
+
+.modal-header {
+	background-color: #f5f5f5
+}
+
+.modal-footer {
+	background-color: #f5f5f5
+}
+
+

@@ -43,7 +43,8 @@ def CommonPayload(func):
                 key, value = part.split('=')
                 setattr(p, key, value)
             except ValueError:
-                print(part)
+                pass
+
         return func(mqttsrc, topic, p)
     return wrapper
 

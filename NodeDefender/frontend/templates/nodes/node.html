@@ -38,396 +38,66 @@ socket.on('roomevent', function(msg) {
 </script>
 
 <div class="row">
-    <div class="col-lg-12">
-        <h1 class="page-header">
-					Nodes <small> {{iCPE.alias}} </small>
-          <a href="#" data-toggle="modal" data-target="#NodeSettings"
-                                          style="position: absolute; right: 0; margin-right: 1vw;">
-            <i class="fa fa-cog" aria-hidden="true"></i>
-          </a>
-        </h1>
-             <ol class="breadcrumb">
-           <li>
-						 <i class="fa fa-map-marker"></i><a href="{{url_for('index')}}"> Dashboard</a>
-					 </li>
-					 <li>
-						 <a href="{{url_for('NodesList')}}"> Node List</a>
-					 </li>
-					 <li class="active">{{iCPE.mac}}</li>
-       </ol>
-    </div>
+	<div class="col-lg-12">
+		<h1 class="page-header">
+			Nodes <small> {{iCPE.alias}} </small>
+      <a href="#" data-toggle="modal" data-target="#NodeSettings" style="position: absolute; right: 0; margin-right: 1vw;">
+				<i class="fa fa-cog" aria-hidden="true"></i>
+      </a>
+    </h1>
+    <ol class="breadcrumb">
+			<li>
+				<i class="fa fa-map-marker"></i><a href="{{url_for('index')}}"> Dashboard</a>
+			</li>
+			<li>
+				<a href="{{url_for('NodesList')}}"> Node List</a>
+			</li>
+			<li class="active">{{iCPE.mac}}</li>
+    </ol>
+  </div>
 </div>
 {% include "flash.html" %}
+{% import "nodes/macro/info.html" %}
 <div class="row">
 	<div class="col-lg-6">
-		<div id="map" style="height: 200px; width: 100%;"></div>
+		{{ Map(latitude, longitude) }}
+	</div>	
+	<div class="col-lg-3">
+		{{ info.General(iCPE) }}	
 	</div>
 	<div class="col-lg-3">
-		<div class="box" style="height: 200px;">
-			<h4><strong>Information <a href="#" data-toggle="modal" data-target="#iCPEInfo"><i class="fa fa-info" aria-hidden="true" style="position: absolute; right: 0; margin-right: 2vw"></i></a></strong></h4>
-			<br>
-			<h4><strong>Notebook <a href="#" data-toggle="modal" data-target="#NoteBook"><i class="fa fa-book" aria-hidden="true" style="position: absolute; right: 0; margin-right: 2vw;"></i></a></strong></h4>
-			<h4><strong>Sticky Note: <a href="#" data-toggle="modal" data-target="#StickyNote"><i class="fa fa-pencil" aria-hidden="true" style="position: absolute; right: 0; margin-right: 2vw"></i></a></strong></h4>
-			<p>{{iCPE.notesticky}}</p>
-		</div>
-	</div>
-	<div class="col-lg-3">
-		<div class="box" style="height: 200px;">
-      <div class="row">
-			  <a href="{{ url_for('NodesUpdate', mac=mac) }}" class="col-lg-4" data-toggle="tooltip" title="Update known Z-Wave devices">
-          <i class="fa fa-refresh fa-3x" aria-hidden="true"></i>
-        </a>
-			  <a href="{{ url_for('NodesInclude', mac=mac) }}" class="col-lg-4" data-toggle="tooltip" title="Include Z-Wave device">
-          <i class="fa fa-sign-in fa-3x" aria-hidden="true"></i>
-        </a>
-				<a href="{{ url_for('NodesExclude', mac=mac) }}" class="col-lg-4" data-toggle="tooltip" title="Exclude Z-Wave device">
-          <i class="fa fa-sign-out fa-3x" aria-hidden="true"></i>
-        </a>
-      </div>
-      <br>
-      <h4><strong>Connection:</strong> <small> - </small></h3>
-      <br>
-      <h4><strong>Battery:</strong> <small> - </small></h3>
-    </div>
+		{{ info.Technical(iCPE) }}		
 	</div>
 </div>
 <div class="row">
-	{% if znodes|length > 0 %}
-	{% for znode in znodes %}
-	<div class="col-lg-2">
-		<h3 style="max-width: 80%;">
-			{{ znode['Alias'] }}
-			<a href="#" data-toggle="modal" data-target="#PopCFG{{znode['nodeid']}}" style="position: absolute; right: 0; margin-right: 1vw;">
-				<i class="fa fa-cog" aria-hidden="true"></i>
-			</a>
-		</h3>
-    <div class="box">
-			<form name="#" class="form-horizontal" method="#">
-			{% for field in znode['fields'] %}
-			{% if field['display'] == True %}
-			<div class="form-group">
-			<label class="col-sm-2 control-label">{{field['attribute']}}</label>
-			<div class="col-sm-5 col-sm-offset-5">
-				{% if field['type'] == 'checkbox' %}
-					{% if field['readonly'] %}
-					<label class="lightbox {% if field['value'] %} lightboxlight {% endif %} asdf" id="{{znode['nodeid']}}{{field['attribute']}}">
-					</label>
-					{% else %}
-					<label class="switch">
-						<input type="checkbox" id="{{znode['nodeid']}}{{field['attribute']}}" {% if field['value'] %} checked{% endif %} onclick="checkboxChange(this, '{{iCPE.mac}}', '{{znode['nodeid']}}','{{field['attribute']}}');">
-						<div class="slider"></div>
-					</label>
-					{% endif %}
-				{% else %}
-				<p id="{{znode['nodeid']}}{{field['attribute']}}">{{field['value']}}</p>
-				{% endif %}
-			</div>
-			</div>
-			{% endif %}
-			{% endfor %}
-			</form>
-		</div>
-  </div>
+	{% if iCPE.sensors|length > 0 %}
+	{% for sensor in iCPE.sensors %}
+		{{ sensor(sensor) }}
 	{% endfor %}
 	{% endif %}
 </div>
+{% import "nodes/macro/stats.html" %}
 <div class="row">
 	<div class="col-lg-12">
     {% if iCPE.powerstat %}
     <div class="col-lg-4">
-			<h3>Power Usage</h3>
-			<div class="box" style="padding: 0;">
-				<div id="PowerChart" style="height: 250px;"></div>
-			</div>
+			{{ stats.Power() }}
 		</div>
     {% endif %}
     {% if iCPE.heatstat %}
 		<div class="col-lg-4">
-			<h3>Heat</h3>
-			<div class="box" style="padding: 0;">
-				<div id="HeatChart" style="height: 250px;"></div
-			></div>
+			{{ stats.Heat() }}	
 		</div>
     {% endif %}
 		{% if iCPE.events %}
 		<div class="col-lg-4">
-			<h3>Events</h3>
-			<div class="box" style="padding: 0;">
-				<table class="table table-striped">
-					<thead>
-						<tr>
-							<th>Event</th>
-							<th>ZWave</th>
-							<th>Date</th>
-						</tr>
-					</thead>
-					<tbody>
-					{% for event in iCPE.events[-6:]|sort(attribute='created_on', reverse=True) %}
-						<tr>
-							<td>
-								<i class="fa fa-{{event.fonticon}}" aria-hidden="true"></i>
-							</td>
-							<td>
-								{{ event.productname }}
-							</td>
-							<td>
-								{{ moment(event.created_on).format('Do MMM YYYY, HH:mm:ss') }}
-							</td>
-						</tr>
-					{% endfor %}
-					</tbody>
-				</table>		
-			</div>
+			{{ stats.Events() }}			
 		</div>
 		{% endif %}
 	</div>
 </div>
-<div class="modal fade" id="DeleteNode" role="dialog">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal">&times;</button>
-				<h2 class="modal-title">Confirm Delete</h2>
-			</div>
-			<div class="modal-body">
-				<a href="{{ url_for('DeleteNode', mac=mac) }}"><button class="btn btn-danger">I Confirm</button></a>
-			</div>
-		</div>
-	</div>
-</div>
-<div class="modal fade" id="iCPEInfo" role="dialog">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal">&times;</button>
-				<h2 class="modal-title">Information</h2>
-			</div>
-			<div class="modal-body">
-				<table class="table">
-					<thead>
-					</thead>
-					<tbody>
-						<tr>
-							<td>Alias</td>
-							<td>{{iCPE.alias}}</td>
-						</tr>
-						<tr>
-							<td>Mac</td>
-							<td>{{iCPE.mac}}</td>
-						</tr>
-						<tr>
-							<td>Street</td>
-							<td>{{iCPE.location.street}}</td>
-						</tr>
-						<tr>
-							<td>City</td>
-							<td>{{iCPE.location.city}}</td>
-						</tr>
-						<tr>
-							<td>Created</td>
-							<td>{{moment(iCPE.created_on).format('Do MMM YYYY, HH:mm:ss')}}</td>
-						<tr>
-							<td>Last Online</td>
-							<td>{{moment(iCPE.last_online).format('Do MMM YYYY, HH:mm:ss')}}</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-		</div>
-	</div>
-</div>
-<div class="modal fade" id="NoteBook" role="dialog">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal">&times;</button>
-				<h2 class="modal-title">Notebook</h2>
-			</div>
-			<div class="modal-body">
-				{% for note in iCPE.notes|sort(attribute='created_on', reverse=True) %}
-				<p style="width: 100%">{{note.author}} <span style="position: absolute; right: 0; margin-right: 1vw;">{{moment(note.created_on).format('Do MMM YYYY, HH:mm:ss')}}</span></p>
-				<p style="width: 100%;padding: 0.2vw; background-color: #f5f5f5">{{note.note}}</p>
-				{% endfor %}
-				<form action="{{url_for('NodesNotesAdd', mac=mac)}}" method="post" class="form-horizontal">
-					<div class="form-group" style="margin: 1vw;">
-						<label for="notes">Enter note</label>
-						<input type="text" max-length="150" class="form-control" name="note"></input>
-						<button type="submit" class="btn btn-default">Submit</button>
-					</div>
-				</form>
-			</div>
-		</div>
-	</div>
-</div>
-<div class="modal fade" id="StickyNote" role="dialog">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal">&times;</button>
-				<h2 class="modal-title">Modify Note</h2>
-			</div>
-			<div class="modal-body">
-				<form action="{{url_for('NodesNoteSticky', mac=mac)}}" method="post" class="form-horizontal">
-					<input type="text" max-length="150" class="form-control" name="note" value="{{iCPE.notesticky}}"></input>
-					<button type="submit" class="btn btn-default">update</button>
-				</form>
-			</div>
-		</div>
-	</div>
-</div>
-{% for znode in znodes %}
-<div class="modal fade" id="PopCFG{{znode['nodeid']}}" role="dialog">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal">&times;</button>
-				<h4 class="modal-title">{{znode['Alias']}}</h4>
-			</div>
-			<div class="modal-body">
-				<h3>Static values</h3>
-				<table class="table">
-					<thead>
-					</thead>
-					<tbody>
-						<tr>
-							<td>Brandname</td>
-							<td>{{ znode['Brandname'] }}</td>
-						</tr>
-						<tr>
-							<td>Productname</td>
-							<td>{{ znode['Productname'] }}</td>
-						</tr>
-						<tr>
-							<td>Generic Class</td>
-							<td>{{ znode['Generic Class'] }}</td>
-						</tr>
-					</tbody>
-				</table>
-				<h3>Modify values</h3>
-				<form method="POST" action="{{url_for('NodesNodeConfigure', mac=mac, nodeid=znode.nodeid)}}">
-					{{ NodeBasicForm.csfr_token }}
-					{{ NodeBasicForm.hidden_tag() }}
-					<div class="form-group">
-						{{ NodeBasicForm.alias.label(class="col-sm-2 control-label")}}
-						<div class="col-sm-10">
-							{{ NodeBasicForm.alias(class="form-control")}}
-						</div>
-					</div>
-					<div class="form-group">
-						<div class="col-sm-offset-2 col-sm-10">
-							<button type="submit" class="btn btn-default">Update</button>
-						</div>
-					</div>
-				</form>
-				<h3>Supported classes</h3>
-				<table class="table table-striped">
-					<thead>
-						<tr>
-							<th>Class</th>
-							<th>Attribute</th>
-							<th>Display</th>
-						</tr>
-					</thead>
-					<tbody>
-						{% for field in znode['fields'] %}
-						<tr>
-							<td>
-								{{ field['class'] }}
-							</td>
-							<td>
-								{{ field['attribute'] }}
-							</td>
-							<td>
-								{% if field['display'] %}
-								<a href="{{url_for('NodesNodeClassHide', mac=mac, nodeid=znode['nodeid'], cls=field['class'], field = field['attribute'])}}"><button class="btn btn-default">Hide</button></a>
-								{% else %}
-								<a href="{{url_for('NodesNodeClassDisplay', mac=mac, nodeid=znode['nodeid'], cls=field['class'], field = field['attribute'])}}"><button class="btn btn-default">Display</button></a>
-								{% endif %}
-							</td>
-						</tr>
-						{% endfor %}
-					</tbody>
-				</table>	
-				<h4>Unsupported Classses</h4>
-				<p>
-				{% for class in znode['unsupported'] %}
-					{{class.commandclass}} 
-				{% endfor %}
-				</p>
-			</div>
-		</div>
-	</div>
-</div>
-</div>
-{% endfor %}
-<div class="modal fade" id="NodeSettings" role="dialog">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h3>{{iCPE.alias}}</h3>
-      </div>
-      <div class="modal-body">
-        <h4 class="col-sm-offset-2">Basic Settings</h4>
-				<form method="POST" action="{{url_for('NodesNode', mac=mac)}}" name="basic">
-					{{ iCPEBasicForm.csfr_token }}
-					{{ iCPEBasicForm.hidden_tag() }}
-					<div class="form-group">
-						{{ iCPEBasicForm.alias.label(class="col-sm-2 control-label")}}
-						<div class="col-sm-10">
-							{{ iCPEBasicForm.alias(class="form-control")}}
-						</div>
-					</div>
-					<div class="form-group">
-						<div class="col-sm-offset-2 col-sm-10">
-							<button type="submit" class="btn btn-default">Update</button>
-						</div>
-					</div>
-				</form>
-				<h4 class="col-sm-offset-2">Node Address</h4>
-				<form method="POST" action="{{url_for('NodesNode', mac=mac)}}" name="address">
-					{{ iCPEAddressForm.csfr_token }}
-					{{ iCPEAddressForm.hidden_tag() }}
-					<div class="form-group">
-						{{ iCPEAddressForm.street.label(class="col-sm-2 control-label")}}
-						<div class="col-sm-10">
-							{{ iCPEAddressForm.street(class="form-control")}}
-						</div>
-					</div>
-					<div class="form-group">
-						{{ iCPEAddressForm.city.label(class="col-sm-2 control-label")}}
-						<div class="col-sm-10">
-							{{ iCPEAddressForm.city(class="form-control")}}
-						</div>
-					</div>
-					<div class="form-group">
-						{{ iCPEAddressForm.geolat.label(class="col-sm-2 control-label")}}
-						<div class="col-sm-10">
-							{{ iCPEAddressForm.geolat(class="form-control")}}
-						</div>
-					</div>
-					<div class="form-group">
-						{{ iCPEAddressForm.geolong.label(class="col-sm-2 control-label")}}
-						<div class="col-sm-10">
-							{{ iCPEAddressForm.geolong(class="form-control")}}
-						</div>
-					</div>
-					<div class="form-group">
-						<div class="col-sm-offset-2 col-sm-10">
-							<button type="submit" class="btn btn-default">Update</button>
-						</div>
-					</div>
-				</form>
-				<button type="#" class="btn btn-default" data-toggle="modal" data-target="#DeleteNode">Delete Node</button>
-				<button type="#" class="btn btn-default">Exit</button>
-      </div>
-    </div>
-  </div>
-</div>
 <script>
 $(document).ready(function() {
-var marker = L.marker([{{iCPE.location.geolat}}, {{iCPE.location.geolong}}]).addTo(map);
-
 $('input[name="alias"]').val('Alias');
 
 /*
@@ -439,46 +109,8 @@ $('input[name="geolat"]').val('{{iCPE.location.geolat}}');
 $('input[name="geolong"]').val('{{iCPE.location.geolong}}');
 
 
-new Morris.Line({
-	  // ID of the element in which to draw the chart.
-	  element: 'PowerChart',
-
-		data: [
-		{% for powerstat in iCPE.powerstat[-10:] %}
-		{ x: '{{powerstat.date}}', value: {{'%0.2f' % powerstat.power|float }} },
-		{% endfor %}
-		],
-
-		xkey : 'x',
-		ykeys : ['value'],
-		labels : ['Watt']
-
-});
-new Morris.Line({
-	  // ID of the element in which to draw the chart.
-	  element: 'HeatChart',
-
-		data : [
-		{% for heatstat in iCPE.heatstat[-10:] %}
-		{ x: '{{heatstat.date}}', value : {{'%0.2f' % heatstat.heat|float }} },
-		{% endfor %}
-		],
-		xkey : 'x',
-		ykeys : ['value'],
-		labels : ['Celsius']
-});
-
 
 });	
-	var map = L.map('map',{
-		center: [{{iCPE.location.geolat}}, {{iCPE.location.geolong}}],
-    zoom: 12
-});
-
-L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-}).addTo(map);
-
 </script>
 
 {% endblock %}

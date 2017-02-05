@@ -1,6 +1,7 @@
 from .. import celery
 from . import zwave, db
 from .decorators import TopicToTuple
+from ..models.redis import cmdclass as CmdclassRedis
 
 @celery.task
 @TopicToTuple
@@ -10,7 +11,7 @@ def MQTT(mqttsrc, topic, payload):
     cmdclass, event = eval(topic.msgtype + '.' + topic.action)(mqttsrc, topic, payload)
     
     if event:
-        CmdclassRedis.Save(icpe.mac, sensor.sensorid, cmdclass.classname,
+        CmdclassRedis.Save(topic.macaddr, topic.sensorid, topic.cmdclass,
                            **event.data)
     
     return True

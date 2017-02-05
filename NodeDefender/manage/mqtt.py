@@ -50,4 +50,8 @@ def delete(ipaddr):
 
     print("Node {} Successfully deleted".format(name))
 
+@manager.command
+def list():
+    for m in mqtt.List():
+        print("ID: {}, IP: {}:{}".format(m.id, m.ipaddr, m.port))
 

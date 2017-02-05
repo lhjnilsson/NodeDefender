@@ -51,13 +51,13 @@ def Join(icpe, node):
         if icpe is None:
             raise LookupError('iCPE not found')
 
-    if type(Node) is str:
-        node = GroupModel.query.filter_by(name = node).first()
+    if type(node) is str:
+        node = NodeModel.query.filter_by(name = node).first()
         if node is None:
             raise LookupError('Node not found')
 
-    group.icpes.append(icpe)
-    db.session.add(group)
+    node.icpe = icpe
+    db.session.add(node)
     db.session.commit()
     logger.info("Added iCPE: {} to Node: {}".format(icpe.mac, node.name))
 

@@ -1,4 +1,4 @@
-from ..SQL import iCPEModel, SensorModel, SensorClassModel
+from ..SQL import iCPEModel, SensorModel, SensorClassModel, WebField
 from ... import db
 from . import logger
 
@@ -41,6 +41,7 @@ def List(icpe = None):
         if icpe is None:
             raise LookupError('iCPE not found')
     return [sensor for sensor in icpe.sensors]
+
 
 def Get(icpe, sensor):
     return SensorModel.query.join(iCPEModel).\

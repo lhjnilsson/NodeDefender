@@ -28,7 +28,7 @@ def Load(icpe, conn):
         'ipaddr' : icpe.ipaddr,
         'online' : False,
         'battery' : None,
-        'loaded_at' : datetime.now(),
+        'loaded_at' : str(datetime.now()),
         'last_online' : False
     }
 

@@ -1,7 +1,8 @@
 from .. import NodeView
 from flask import render_template, request, flash, redirect, url_for
 from flask_security import login_required
-from ...models.manage import node as NodeManage
+from ...models.manage import node as NodeSQL
+from ...models.manage import icpe as iCPESQL
 from .forms import (SensorForm, NodeLocationForm, iCPEForm, NodeForm,
 NodeCreateForm)
 
@@ -11,13 +12,13 @@ def NodesList():
     CreateForm = NodeCreateForm()
 
     if request.method == 'GET':
-        nodes = NodeManage.List()
+        nodes = NodeSQL.List()
         return render_template('nodes/list.html', nodes = nodes, NodeCreateForm =
                                CreateForm)
     else:
         CreateForm.validate_on_submit()
         try:
-            location = NodeManage.Location(
+            location = NodeSQL.Location(
                 CreateForm.Street.data,
                 CreateForm.City.data)
         except LookupError as e:
@@ -25,22 +26,26 @@ def NodesList():
             return redirect(url_for('NodeView.NodesList'))
        
         try:
-            node = NodeManage.Create(
+            Node = NodeSQL.Create(
                 CreateForm.Name.data,
-                CreateForm.Group.data,
-                location,
-                CreateForm.Mac.data)
+                location)
+            iCPE = iCPESQL.Get(CreateForm.Mac.data)
+            if iCPE is None:
+                iCPE = iCPESQL.Create(CreateForm.Mac.data)
+            iCPESQL.Join(iCPE, Node)
+            if CreateForm.Group.data:
+                NodeSQL.Join(Node.name, CreateForm.Group.data)
         except LookupError as e:
             flash("Error Creating Node: " + str(e), 'danger')
             return redirect(url_for('NodeView.NodesList'))
         
-        flash('Succesfully added node: ' + node.name, 'success')
+        flash('Succesfully added node: ' + Node.name, 'success')
         return redirect(url_for('NodeView.NodesList'))
 
 @NodeView.route('/nodes/list/<mac>', methods=['GET', 'POST'])
 @login_required
 def NodesNode(mac):
-    iCPE = NodeManage.Get(mac = mac)
+    iCPE = NodeSQL.Get(mac = mac)
     if iCPE is None:
         raise ValueError('Cant find mac')
     form = NodeForm()

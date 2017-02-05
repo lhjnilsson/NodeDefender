@@ -31,6 +31,10 @@ def Get(email):
 def List():
     return [user for user in UserModel.query.all()]
 
+def Save(user):
+    db.session.add(user)
+    return db.session.commit()
+
 def Friends(user):
     user = UserModel.query.filter_by(email=user).first()
     if user is None:

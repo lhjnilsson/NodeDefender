@@ -49,3 +49,11 @@ class CreateGroupForm(Form):
     Email = StringField('Email')
     Description = StringField('Description')
     Submit = SubmitField('Create')
+
+class CreateMQTTForm(Form):
+    IPAddr = StringField("IP Address")
+    Port = StringField("Port Number")
+    Username = StringField("Username")
+    Password = StringField("Password")
+    Submit = SubmitField("Create")
+

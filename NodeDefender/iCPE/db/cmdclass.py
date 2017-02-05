@@ -14,6 +14,8 @@ def Verify(mac, sensorid, classname, ipaddr = None, port = None):
         if CmdclassSQL.Get(mac, sensorid, classname):
             return SensorRedis.Load(mac, sensorid, classname)
         else:
+            if not zwave.Supported(classname):
+                return False
             icpe.Verify(mac, ipaddr, port)
             sensor.Verify(mac, sensorid, ipaddr, port)
             Add(mac, sensorid)
@@ -25,7 +27,7 @@ def Add(mac, sensorid, *classes):
     sensor.Verify(mac, sensorid)
     for classnum in classes:
         try:
-            classname, types = zwave.Info(classnum)
+            classname, types, fields = zwave.Info(classnum)
         except TypeError:
             print("Error adding class ", classnum)
             return
@@ -34,10 +36,17 @@ def Add(mac, sensorid, *classes):
             mqtt.sensor.Sup(mac, sensorid, classname)
 
         CmdclassSQL.Add(mac, sensorid, classnum, classname)
+        if fields:
+            CmdclassSQL.AddField(mac, sensorid, classname, **fields)
         return CmdclassRedis.Load(mac, sensorid, classname)
     return False
 
-def AddTypes(mac, sensorid, cmdclass, classtypes):
+def AddTypes(mac, sensorid, classname, classtypes):
     sensor.Verify(mac, sensorid)
-    SensorSQL.AddClassTypes(mac, sensorid, classname, classtypes)
-    return Load(mac, sensorid)
+    CmdclassSQL.AddTypes(mac, sensorid, classname, classtypes)
+    fields = zwave.InfoTypes(classname, classtypes)
+    if fields:
+        print(fields)
+        for field in fields:
+            CmdclassSQL.AddField(mac, sensorid, classname, **field)
+    return CmdclassRedis.Load(mac, sensorid, classname)

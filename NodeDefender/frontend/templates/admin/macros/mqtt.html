@@ -1,12 +1,24 @@
-{% macro CreateNew() %}
+{% macro CreateNew(Form) %}
+{% from "macros/form.html" import render_field_with_errors, render_field, render_submit %}
 <div class="modal fade" id="AddMQTT" role="dialog">
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h2 class="modal-title">Add MQTT Connection</h2>
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h3 class="modal-title">Add MQTT Connection</h3>
 			</div>
 			<div class="modal-body">
-				MQTT
+				<form action="{{url_for('AdminView.AdminServer')}}" method="post" class="form-horizontal">
+					{{ Form.csfw_token }}
+					{{ Form.hidden_tag() }}
+					{{ render_field_with_errors(Form.IPAddr) }}
+					{{ render_field_with_errors(Form.Port) }}
+					{{ render_field_with_errors(Form.Username) }}
+					{{ render_field_with_errors(Form.Password) }}
+			</div>
+			<div class="modal-footer">
+					{{ render_submit(Form.Submit) }}
+				</form>
 			</div>
 		</div>
 	</div>
@@ -28,14 +40,14 @@
 </div>
 {% endmacro %}
 
-{% macro ListMQTT(mqtts) %}
+{% macro ListMQTT(mqtts, Form) %}
 {% from "admin/macros/mqtt.html" import CreateNew, Settings %}
 <h3>MQTT Connections
 	<a href="#" data-toggle="modal" data-target="#AddMQTT" style="position: absolute; right: 0; margin-right: 1vw;">
 		<i class="fa fa-plus" aria-hidden="true"></i>
 	</a>
 </h3>
-{{ CreateNew() }}
+{{ CreateNew(Form) }}
 <table class="table table-hover">
 	<thead>
 		<tr>

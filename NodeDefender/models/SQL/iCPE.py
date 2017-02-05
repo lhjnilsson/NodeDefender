@@ -16,6 +16,8 @@ class iCPEModel(db.Model):
     sensors = db.relationship('SensorModel', backref='icpe',
                               cascade='save-update, merge, delete')
     notesticky = db.Column(db.String(150))
+    webfields = db.relationship('WebField', backref='icpe',
+                                cascade='save-update, merge, delete')
 
     def __init__(self, mac):
         self.mac = mac.upper()
@@ -24,6 +26,22 @@ class iCPEModel(db.Model):
     def __repr__(self):
         return '<Name %r, Mac %r>' % (self.name, self.mac)
 
+class WebField(db.Model):
+    __tablename__ = 'webfield'
+    id = db.Column(db.Integer, primary_key=True)
+    
+    icpe_id = db.Column(db.Integer, db.ForeignKey('icpe.id'))
+    sensor_id = db.Column(db.Integer, db.ForeignKey('sensor.id'))
+    cmdclass_id = db.Column(db.Integer, db.ForeignKey('sensorclass.id'))
+
+    name = db.Column(db.String(16))
+    type = db.Column(db.String(16))
+    readonly = db.Column(db.Boolean)
+
+    def __init__(self, name, type, readonly):
+        self.name = str(name)
+        self.type = str(type)
+        self.readonly = bool(readonly)
 
 class SensorModel(db.Model):
     '''
@@ -47,6 +65,8 @@ class SensorModel(db.Model):
    
     cmdclasses = db.relationship('SensorClassModel', backref='sensor',
                                 cascade='save-update, merge, delete')
+    webfields = db.relationship('WebField', backref='sensor',
+                                cascade='save-update, merge, delete')
 
     def __init__(self, sensorid):
         self.sensorid = str(sensorid)
@@ -60,6 +80,8 @@ class SensorClassModel(db.Model):
     classnumber = db.Column(db.String(20))
     classname = db.Column(db.String(20))
     classtypes = db.Column(db.String(200))
+    webfields = db.relationship('WebField', backref='sensorclass',
+                                cascade='save-update, merge, delete')
 
     def __init__(self, classnumber, classname):
         self.classnumber = classnumber
