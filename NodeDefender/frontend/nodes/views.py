@@ -3,7 +3,7 @@ from flask import render_template, request, flash, redirect, url_for
 from flask_security import login_required
 from ...models.manage import node as NodeSQL
 from ...models.manage import icpe as iCPESQL
-from .forms import (SensorForm, NodeLocationForm, iCPEForm, NodeForm,
+from .forms import (NodeLocationForm, iCPEForm, SensorForm,
 NodeCreateForm)
 
 @NodeView.route('/nodes/list', methods=['GET', 'POST'])
@@ -45,13 +45,14 @@ def NodesList():
 @NodeView.route('/nodes/list/<mac>', methods=['GET', 'POST'])
 @login_required
 def NodesNode(mac):
-    iCPE = NodeSQL.Get(mac = mac)
+    iCPE = iCPESQL.Get(mac = mac)
     if iCPE is None:
         raise ValueError('Cant find mac')
-    form = NodeForm()
-    BasicForm = iCPEForm()
-    AddressForm = NodeAddressForm()
-    NodeBasic = NodeBasicForm()
+    Node = iCPE.node
+    sensorform = NodeForm()
+    icpeform = iCPEForm()
+    addressform = AddressForm()
+    nodeform = NodeForm()
     if request.method == 'GET':
         znodes = icpe.WebForm(mac)
         return render_template('nodes/node.html', mac=mac, form=form,

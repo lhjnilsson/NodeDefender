@@ -33,6 +33,7 @@
 {% endmacro %}
 
 {% macro ModalSettings(BasicForm, AddressForm) %}
+{% from "macros/form.html" import render_field_with_errors, render_field %}
 <div class="modal fade" id="NodeSettings" role="dialog">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -45,51 +46,18 @@
 				<form method="POST" action="{{url_for('NodesNode', mac=mac)}}" name="basic">
 					{{ iCPEBasicForm.csfr_token }}
 					{{ iCPEBasicForm.hidden_tag() }}
-					<div class="form-group">
-						{{ iCPEBasicForm.alias.label(class="col-sm-2 control-label")}}
-						<div class="col-sm-10">
-							{{ iCPEBasicForm.alias(class="form-control")}}
-						</div>
-					</div>
-					<div class="form-group">
-						<div class="col-sm-offset-2 col-sm-10">
-							<button type="submit" class="btn btn-default">Update</button>
-						</div>
-					</div>
+					{{ render_field_with_errors(BasicForm.Alias) }}
+					{{ render_field(Basicform.Submit) }}
 				</form>
 				<h4 class="col-sm-offset-2">Node Address</h4>
 				<form method="POST" action="{{url_for('NodesNode', mac=mac)}}" name="address">
 					{{ iCPEAddressForm.csfr_token }}
 					{{ iCPEAddressForm.hidden_tag() }}
-					<div class="form-group">
-						{{ iCPEAddressForm.street.label(class="col-sm-2 control-label")}}
-						<div class="col-sm-10">
-							{{ iCPEAddressForm.street(class="form-control")}}
-						</div>
-					</div>
-					<div class="form-group">
-						{{ iCPEAddressForm.city.label(class="col-sm-2 control-label")}}
-						<div class="col-sm-10">
-							{{ iCPEAddressForm.city(class="form-control")}}
-						</div>
-					</div>
-					<div class="form-group">
-						{{ iCPEAddressForm.geolat.label(class="col-sm-2 control-label")}}
-						<div class="col-sm-10">
-							{{ iCPEAddressForm.geolat(class="form-control")}}
-						</div>
-					</div>
-					<div class="form-group">
-						{{ iCPEAddressForm.geolong.label(class="col-sm-2 control-label")}}
-						<div class="col-sm-10">
-							{{ iCPEAddressForm.geolong(class="form-control")}}
-						</div>
-					</div>
-					<div class="form-group">
-						<div class="col-sm-offset-2 col-sm-10">
-							<button type="submit" class="btn btn-default">Update</button>
-						</div>
-					</div>
+					{{ render_field_with_errors(AddressForm.Street) }}
+					{{ render_field_with_errors(AddressForm.City) }}
+					{{ render_field_with_errors(AddressForm.Geolat) }}
+					{{ render_field_with_errors(AddressForm.Geolong) }}
+					{{ render_field(AddressForm.Submit) }}
 				</form>
 				<button type="#" class="btn btn-default" data-toggle="modal" data-target="#DeleteNode">Delete Node</button>
 				<button type="#" class="btn btn-default">Exit</button>

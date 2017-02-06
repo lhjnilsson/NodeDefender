@@ -72,7 +72,8 @@ socket.on('roomevent', function(msg) {
 <div class="row">
 	{% if iCPE.sensors|length > 0 %}
 	{% for sensor in iCPE.sensors %}
-		{{ sensor(sensor) }}
+		{{ SensorBox(sensor) }}
+		{{ SensorModal(sensor) }}
 	{% endfor %}
 	{% endif %}
 </div>
