@@ -12,7 +12,7 @@ def MQTT(mqttsrc, topic, payload):
     
     if event:
         CmdclassRedis.Save(topic.macaddr, topic.sensorid, topic.cmdclass,
-                           **event.data)
+                           **event())
     
     return True
 

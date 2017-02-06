@@ -26,8 +26,7 @@ def Load(icpes = None):
                 except NotImplementedError:
                     db.cmdclass.Add(icpe.mac, sensor.sensorid,
                                           cmdclass.classnumber)
-            else:
-                mqtt.sensor.Query(icpe.mac, sensor.sensorid)
+            
     return True
 
 

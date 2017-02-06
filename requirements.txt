@@ -21,3 +21,4 @@ Celery
 Redis
 flask_assets
 flask_security
+redlock

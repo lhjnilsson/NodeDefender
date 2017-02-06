@@ -29,10 +29,8 @@ def Info():
 
 def InfoTypes(classtypes):
     ret = []
-    print("--------------- " + classtypes)
     for t in classtypes.split(','):
         ret.append(eval(zalm[t] + '.Info')())
-    print(ret)
     return ret
 
 def Load():

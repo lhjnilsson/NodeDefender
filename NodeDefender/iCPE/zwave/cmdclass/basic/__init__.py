@@ -1,12 +1,25 @@
+from ... import BaseModel, PayloadSplitter, DataDescriptor
+
+class BasicModel(BaseModel):
+    value = DataDescriptor('value')
+
+    def __init__(self):
+        self.value = None
+        super().__init__()
+
+
 def Info():
     return 'basic', False, {'type' : 'checkbox', 'readonly' : False, 'name' :
-                            'Basic'}
+                            'basic'}
 
 def Load(classtypes):
     return {'basic' : None}
 
-def Event(**kwargs):
-    if kwargs['value'] == '0x00':
-        return {'state' : 'off'}
+@PayloadSplitter(model=BasicModel)
+def Event(payload):
+    if payload.value == '0x00':
+        payload._retdata['basic'] = False
     else:
-        return {'state' : 'on'}
+        payload._retdata['basic'] = True
+
+    return payload

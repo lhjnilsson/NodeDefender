@@ -24,12 +24,6 @@ def InfoTypes(classname, classtypes):
     except KeyError:
         return None
 
-def ExtendClass(classnum, supported):
-    try:
-        return info
-    except KeyError:
-        return None
-
 def Event(topic, payload):
     print("TOPIC: " + topic.cmdclass)
     try:
@@ -93,7 +87,10 @@ class BaseModel:
         self.classnumber = None
         self.classname = None
         self.subfunc = None
-        self.data = {}
+        self._retdata = {}
+    
+    def __call__(self):
+        return self._retdata
 
 def PayloadSplitter(model=BaseModel):
     def decorate(func):
@@ -111,4 +108,4 @@ def PayloadSplitter(model=BaseModel):
         return wrapper
     return decorate
 
-from .cmdclass import alarm, basic
+from .cmdclass import alarm, basic, meter

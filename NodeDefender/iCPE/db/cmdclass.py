@@ -12,7 +12,7 @@ def Verify(mac, sensorid, classname, ipaddr = None, port = None):
         return CmdclassRedis.Get(mac, sensorid, classname)
     else:
         if CmdclassSQL.Get(mac, sensorid, classname):
-            return SensorRedis.Load(mac, sensorid, classname)
+            return CmdclassRedis.Load(mac, sensorid, classname)
         else:
             if not zwave.Supported(classname):
                 return False

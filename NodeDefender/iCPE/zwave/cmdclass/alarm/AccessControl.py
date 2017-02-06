@@ -1,13 +1,12 @@
 def Info():
-    return {'type' : 'checkbox', 'readonly' : True, 'name' : 'Door'}
+    return {'type' : 'checkbox', 'readonly' : True, 'name' : 'door'}
 
 def Event(payload):
     if payload.evt == '16':
-        payload.data['door'] = 'Open'
-        print('Door Open')
+        payload._retdata['door'] = True
+    
     elif payload.evt == '17':
-        payload.data['door'] = 'Closed'
-        print('Door Closed')
+        payload._retdata['door'] = False
 
     return payload
 
