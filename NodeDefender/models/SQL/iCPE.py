@@ -12,6 +12,7 @@ class iCPEModel(db.Model):
     mac = db.Column(db.String(12), unique=True)
     ipaddr = db.Column(db.String(32))
     online =  db.Column(db.Boolean)
+    created_on = db.Column(db.DateTime)
     last_online = db.Column(db.DateTime)
     sensors = db.relationship('SensorModel', backref='icpe',
                               cascade='save-update, merge, delete')
@@ -35,11 +36,13 @@ class WebField(db.Model):
     cmdclass_id = db.Column(db.Integer, db.ForeignKey('sensorclass.id'))
 
     name = db.Column(db.String(16))
+    display = db.Column(db.Boolean)
     type = db.Column(db.String(16))
     readonly = db.Column(db.Boolean)
 
     def __init__(self, name, type, readonly):
         self.name = str(name)
+        self.display = True
         self.type = str(type)
         self.readonly = bool(readonly)
 

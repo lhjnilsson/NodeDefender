@@ -3,7 +3,7 @@ from flask import render_template, request, flash, redirect, url_for
 from flask_security import login_required
 from ...models.manage import node as NodeSQL
 from ...models.manage import icpe as iCPESQL
-from .forms import (NodeLocationForm, iCPEForm, SensorForm,
+from .forms import (LocationForm, iCPEForm, SensorForm,
 NodeCreateForm)
 
 @NodeView.route('/nodes/list', methods=['GET', 'POST'])
@@ -45,33 +45,30 @@ def NodesList():
 @NodeView.route('/nodes/list/<mac>', methods=['GET', 'POST'])
 @login_required
 def NodesNode(mac):
-    iCPE = iCPESQL.Get(mac = mac)
+    iCPE = iCPESQL.Get(mac)
     if iCPE is None:
         raise ValueError('Cant find mac')
     Node = iCPE.node
-    sensorform = NodeForm()
+    sensorform = SensorForm()
     icpeform = iCPEForm()
-    addressform = AddressForm()
-    nodeform = NodeForm()
+    locationform = LocationForm()
     if request.method == 'GET':
-        znodes = icpe.WebForm(mac)
-        return render_template('nodes/node.html', mac=mac, form=form,
-                               iCPE = iCPE, znodes = znodes, iCPEBasicForm =
-                               BasicForm, iCPEAddressForm = AddressForm,
-                               NodeBasicForm = NodeBasic)
-    elif request.method == 'POST':
-        if BasicForm.validate_on_submit():
-            iCPE.alias = BasicForm.alias.data
-            iCPE.comment = BasicForm.comment.data
-        elif AddressForm.validate_on_submit():
-            iCPE.location.street = AddressForm.street.data
-            iCPE.location.city = AddressForm.city.data
-            iCPE.location.geolat = AddressForm.geolat.data
-            iCPE.location.geolong = AddressForm.geolong.data
-        
-        db.session.add(iCPE)
-        db.session.commit()
-        return render_template('nodes/node.html', mac=mac, form=form, iCPE = iCPE,
+        return render_template('nodes/node.html', iCPE = iCPE, Node = Node,
+                               iCPEForm = icpeform, LocationForm = locationform,
+                               SensorForm = sensorform)
+    
+    if icpeform.Submit.data and icpeform.validate_on_submit():
+        iCPE.alias = BasicForm.alias.data
+        iCPE.comment = BasicForm.comment.data
+    elif locationform.Submit.data and locationform.validate_on_submit():
+        iCPE.location.street = AddressForm.street.data
+        iCPE.location.city = AddressForm.city.data
+        iCPE.location.geolat = AddressForm.geolat.data
+        iCPE.location.geolong = AddressForm.geolong.data
+
+    db.session.add(iCPE)
+    db.session.commit()
+    return render_template('nodes/node.html', mac=mac, form=form, iCPE = iCPE,
                                 iCPEAddressForm = AddressForm, iCPEBasicForm =
                                 BasicForm, NodeBasicForm = NodeBasic)
 

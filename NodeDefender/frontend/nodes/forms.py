@@ -1,7 +1,7 @@
 from wtforms import StringField, BooleanField, SelectField, SubmitField, validators
 from flask_wtf import FlaskForm as Form
 
-class NodeLocationForm(Form):
+class LocationForm(Form):
     Street = StringField("Steet", [validators.DataRequired()])
     City = StringField("City", [validators.DataRequired()])
     Geolat = StringField("Latitude", [validators.DataRequired()])

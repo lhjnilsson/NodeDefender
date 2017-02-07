@@ -32,32 +32,32 @@
 </div>
 {% endmacro %}
 
-{% macro ModalSettings(BasicForm, AddressForm) %}
+{% macro ModalSettings(Node, BasicForm, LocationForm) %}
 {% from "macros/form.html" import render_field_with_errors, render_field %}
 <div class="modal fade" id="NodeSettings" role="dialog">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h3>{{iCPE.alias}}</h3>
+        <h3>{{Node.name}}</h3>
       </div>
       <div class="modal-body">
         <h4 class="col-sm-offset-2">Basic Settings</h4>
-				<form method="POST" action="{{url_for('NodesNode', mac=mac)}}" name="basic">
-					{{ iCPEBasicForm.csfr_token }}
-					{{ iCPEBasicForm.hidden_tag() }}
+				<form method="POST" action="{{url_for('NodeView.NodesNode', mac=mac)}}" name="basic">
+					{{ BasicForm.csfr_token }}
+					{{ BasicForm.hidden_tag() }}
 					{{ render_field_with_errors(BasicForm.Alias) }}
-					{{ render_field(Basicform.Submit) }}
+					{{ render_field(BasicForm.Submit) }}
 				</form>
 				<h4 class="col-sm-offset-2">Node Address</h4>
-				<form method="POST" action="{{url_for('NodesNode', mac=mac)}}" name="address">
-					{{ iCPEAddressForm.csfr_token }}
-					{{ iCPEAddressForm.hidden_tag() }}
-					{{ render_field_with_errors(AddressForm.Street) }}
-					{{ render_field_with_errors(AddressForm.City) }}
-					{{ render_field_with_errors(AddressForm.Geolat) }}
-					{{ render_field_with_errors(AddressForm.Geolong) }}
-					{{ render_field(AddressForm.Submit) }}
+				<form method="POST" action="{{url_for('NodeView.NodesNode', mac=mac)}}" name="address">
+					{{ LocationForm.csfr_token }}
+					{{ LocationForm.hidden_tag() }}
+					{{ render_field_with_errors(LocationForm.Street) }}
+					{{ render_field_with_errors(LocationForm.City) }}
+					{{ render_field_with_errors(LocationForm.Geolat) }}
+					{{ render_field_with_errors(LocationForm.Geolong) }}
+					{{ render_field(LocationForm.Submit) }}
 				</form>
 				<button type="#" class="btn btn-default" data-toggle="modal" data-target="#DeleteNode">Delete Node</button>
 				<button type="#" class="btn btn-default">Exit</button>
@@ -65,6 +65,17 @@
     </div>
   </div>
 </div>
+
+<script>
+/*
+setting values for adddress- form
+*/
+$('input[name="street"]').val('{{Node.location.street}}');
+$('input[name="city"]').val('{{Node.location.city}}');
+$('input[name="geolat"]').val('{{Node.location.geolat}}');
+$('input[name="geolong"]').val('{{Node.location.geolong}}');
+</script>
+
 {% endmacro %}
 
 {% macro ModalDelete() %}
@@ -76,7 +87,7 @@
 				<h2 class="modal-title">Confirm Delete</h2>
 			</div>
 			<div class="modal-body">
-				<a href="{{ url_for('DeleteNode', mac=mac) }}"><button class="btn btn-danger">I Confirm</button></a>
+				<a href="{{ url_for('NodeView.DeleteNode', mac=mac) }}"><button class="btn btn-danger">I Confirm</button></a>
 			</div>
 		</div>
 	</div>

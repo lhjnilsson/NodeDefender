@@ -6,7 +6,7 @@ namespace = '/icpeevent';
 var socket = io.connect('http://' + document.domain + ':' + location.port + namespace);
 
 socket.on('connect', function() {
-    socket.emit('join', {room : '{{mac}}'});
+    socket.emit('join', {room : '{{iCPE.mac}}'});
 });
 
 function checkboxChange(box, icpe, nodeid, attribute) {
@@ -50,64 +50,61 @@ socket.on('roomevent', function(msg) {
 				<i class="fa fa-map-marker"></i><a href="{{url_for('index')}}"> Dashboard</a>
 			</li>
 			<li>
-				<a href="{{url_for('NodesList')}}"> Node List</a>
+				<a href="{{url_for('NodeView.NodesList')}}"> Node List</a>
 			</li>
 			<li class="active">{{iCPE.mac}}</li>
     </ol>
   </div>
 </div>
 {% include "flash.html" %}
-{% import "nodes/macro/info.html" %}
+{% from "nodes/macros/info.html" import General, Technical %}
+{% from "macros/map.html" import Map %}
+{% from "nodes/macros/node.html" import ModalSettings, ModalDelete %}
 <div class="row">
 	<div class="col-lg-6">
-		{{ Map(latitude, longitude) }}
+		{{ Map(Node.location.latitude, Node.location.longitude) }}
 	</div>	
 	<div class="col-lg-3">
-		{{ info.General(iCPE) }}	
+		{{ General(iCPE, moment) }}	
 	</div>
 	<div class="col-lg-3">
-		{{ info.Technical(iCPE) }}		
+		{{ Technical(iCPE) }}		
 	</div>
 </div>
+{% from "nodes/macros/sensor.html" import SensorBox, SensorModal %}
 <div class="row">
 	{% if iCPE.sensors|length > 0 %}
 	{% for sensor in iCPE.sensors %}
 		{{ SensorBox(sensor) }}
-		{{ SensorModal(sensor) }}
+		{{ SensorModal(sensor, SensorForm) }}
 	{% endfor %}
 	{% endif %}
 </div>
-{% import "nodes/macro/stats.html" %}
+{% from "nodes/macros/stats.html" import Power, Heat, Events %}
 <div class="row">
 	<div class="col-lg-12">
     {% if iCPE.powerstat %}
     <div class="col-lg-4">
-			{{ stats.Power() }}
+			{{ Power(iCPE.powerstat) }}
 		</div>
     {% endif %}
     {% if iCPE.heatstat %}
 		<div class="col-lg-4">
-			{{ stats.Heat() }}	
+			{{ Heat(iCPE.heatstat) }}	
 		</div>
     {% endif %}
 		{% if iCPE.events %}
 		<div class="col-lg-4">
-			{{ stats.Events() }}			
+			{{ Events(iCPE.events) }}			
 		</div>
 		{% endif %}
 	</div>
 </div>
+{{ ModalSettings(Node, iCPEForm, LocationForm) }}
+{{ ModalDelete() }}
 <script>
 $(document).ready(function() {
 $('input[name="alias"]').val('Alias');
-
-/*
-setting values for adddress- form
-*/
-$('input[name="street"]').val('{{iCPE.location.street}}');
-$('input[name="city"]').val('{{iCPE.location.city}}');
-$('input[name="geolat"]').val('{{iCPE.location.geolat}}');
-$('input[name="geolong"]').val('{{iCPE.location.geolong}}');
 
 
 

@@ -1,12 +1,15 @@
 import logging
 from flask import Flask
 from celery import Celery
+from flask_moment import Moment
+moment = Moment()
 
 def CreateApp():
     app = Flask(__name__)
     app.config.from_object('config')
     app.template_folder = "frontend/templates"
     app.static_folder = "frontend/static"
+    moment.init_app(app)
     return app
 
 def CreateLogging():

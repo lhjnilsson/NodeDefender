@@ -31,6 +31,9 @@ def Add(mac, sensorid, *classes):
         except TypeError:
             print("Error adding class ", classnum)
             return
+        
+        if classname is None:
+            break
 
         if types:
             mqtt.sensor.Sup(mac, sensorid, classname)
@@ -38,7 +41,7 @@ def Add(mac, sensorid, *classes):
         CmdclassSQL.Add(mac, sensorid, classnum, classname)
         if fields:
             CmdclassSQL.AddField(mac, sensorid, classname, **fields)
-        return CmdclassRedis.Load(mac, sensorid, classname)
+        CmdclassRedis.Load(mac, sensorid, classname)
     return False
 
 def AddTypes(mac, sensorid, classname, classtypes):
@@ -46,7 +49,6 @@ def AddTypes(mac, sensorid, classname, classtypes):
     CmdclassSQL.AddTypes(mac, sensorid, classname, classtypes)
     fields = zwave.InfoTypes(classname, classtypes)
     if fields:
-        print(fields)
         for field in fields:
             CmdclassSQL.AddField(mac, sensorid, classname, **field)
     return CmdclassRedis.Load(mac, sensorid, classname)
