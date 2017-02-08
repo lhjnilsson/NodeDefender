@@ -16,3 +16,22 @@ L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
 
 </script>
 {% endmacro %}
+
+{% macro MapGroup(height, nodes) %}
+<div id="map" style="height: {{height}}, width: 100%"></div>
+<script>
+var map = L.map('map',{
+			center: [57.691, 11.936],
+			zoom: 9
+	});
+
+	L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+			attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+	}).addTo(map);
+
+	{% for node in nodes %}
+	var marker = L.marker([{{node.location.geolat}}, {{node.location.geolong}}]).addTo(map);
+	marker.bindPopup("<a href=\"/nodes/list/{{node.mac}}\">{{node.alias}}</a>");
+	{% endfor %}
+</script>
+{% endmacro %}

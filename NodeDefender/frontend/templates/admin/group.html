@@ -3,7 +3,7 @@
 <div class="row">
     <div class="col-lg-12">
         <h1 class="page-header">
-            Admin <small>Group List</small>
+					Admin <small>Group {{Group.name}}</small>
 				</h1>
              <ol class="breadcrumb">
            <li class="active">
@@ -16,13 +16,21 @@
 {% include "flash.html" %}
 {% from "admin/macros/group.html" import ListGroups, CreateGroup %}
 <div class="row">
-	 <div class="col-lg-12">
-
-			<div class="box" style="padding: 0;">
-		</div>
-  </div>
+	<div class="col-lg-10">
+		{{MapGroup(Group.nodes)}}
+	</div>
+	<div class="col-lg-2">
+		{{GroupInfo(Group)}}
+	</div>
 </div>
-
+<div class="row">
+	<div class="col-lg-6">
+		{{Messages(Group.Messages)}}
+	</div>
+	<div class="col-lg-6">
+		{{UserList(Group.users)}}
+	</div>
+</div>
 <script>
 $(document).ready(function() {
 });

@@ -3,6 +3,9 @@ from functools import wraps
 numtoname = {'20' : 'basic', '71' : 'alarm'}
 
 def Supported(classname):
+    '''
+    Return True if the classname is Known
+    '''
     try: 
         eval(classname + '.Info')()
         return True
@@ -10,22 +13,29 @@ def Supported(classname):
         return False
 
 def Info(classnum):
+    '''
+    Returns Classname, flag if Class- types and Fields for Web
+    '''
     try:
         classname = numtoname[str(classnum)]
     except KeyError:
-        print('classnum: ' + str(classnum))
         return None, None, None
     
     return eval(classname + '.Info')()
 
 def InfoTypes(classname, classtypes):
+    '''
+    Returns information about Classtypes
+    '''
     try:
         return eval(classname + '.InfoTypes')(classtypes)
     except KeyError:
         return None
 
 def Event(topic, payload):
-    print("TOPIC: " + topic.cmdclass)
+    '''
+    Z-Wave event. Tries to lookup if the event is known(supported) or not
+    '''
     try:
         return eval(topic.cmdclass + '.Event')(payload)
     except NameError as e:
@@ -34,21 +44,6 @@ def Event(topic, payload):
         print("Descr not found")
 
     return False
-
-
-def Load(*classlist):
-    supported = []
-    unsupported = []
-    for cmdclass in classlist:
-        try:
-            supported.append(eval(cmdclass.classname + '.Load')(cmdclass.classtypes))
-            print('Appended: ' + cmdclass.classname)
-        except NameError:
-            unsupported.append(cmdclass)
-        except TypeError:
-            pass
-
-    return supported, unsupported
 
 
 class DataDescriptor:

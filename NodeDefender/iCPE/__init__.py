@@ -13,6 +13,13 @@ log = get_task_logger(__name__)
 log.addHandler(loggHandler)
 
 def Load(icpes = None):
+    '''
+    Loads iCPEs and Sensors
+    Tries to load cmdclasses to sensor, recieved NotImplementedError from
+    Redis- handler in the classname is not specific(the class is not
+                                                    supported).
+    if so it tries to add the class.
+    '''
     if icpes is None:
         icpes = iCPESQL.List()
     
@@ -31,6 +38,9 @@ def Load(icpes = None):
 
 
 class TopicDescriptor:
+    '''
+    Metaclass to store MQTT Topic
+    '''
     def __init__(self, name):
         self.name = name
 
@@ -47,6 +57,9 @@ class TopicDescriptor:
         raise AttributeError("Can't delete me")
 
 class Topic:
+    '''
+    Stores the data from topic
+    '''
     macaddr = TopicDescriptor("macaddr")
     msgtype = TopicDescriptor("msgtype")
     sensorid = TopicDescriptor("sensorid")
