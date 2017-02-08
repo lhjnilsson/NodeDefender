@@ -56,7 +56,7 @@ def AdminGroups():
             flash('Error: {}'.format(e), 'danger')
             return redirect(url_for('AdminView.AdminGroups'))
         flash('Successfully Created Group: {}'.format(Group.name), 'success')
-        return redirect(url_for('AdminView.AdminGroup', id = group.id))
+        return redirect(url_for('AdminView.AdminGroup', id = Group.id))
 
 @AdminView.route('/admin/groups/<id>')
 @login_required

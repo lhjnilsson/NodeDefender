@@ -4,38 +4,27 @@ from flask_script import Manager, prompt
 
 manager = Manager(usage="Administrate Roles")
 
-@manager.option('-n', '--name', dest='name', default=None)
-@manager.option('-d', '--desc', dest='desc', default=None)
-def create(name, desc):
-    'Create Role'
-    if name is None:
-        name = prompt('Role Name')
+@manager.option('-n', '-e', '--email', dest='email', default=None)
+def technician(email):
+    "List users that are member of a group"
+    if email is None:
+        email = prompt('Email of User')
+    return role.technician(email)
 
-    if desc is None:
-        desc = prompt('Description')
+@manager.option('-n', '-e', '--email', dest='email', default=None)
+def admin(email):
+    "List users that are member of a group"
+    if email is None:
+        email = prompt('Email of User')
+    return role.admin(email)
 
-    try:
-        role.Create(name, desc)
-    except ValueError:
-        print("Role already present")
-        return
+@manager.option('-n', '-e', '--email', dest='email', default=None)
+def superuser(email):
+    "List users that are member of a group"
+    if email is None:
+        email = prompt('Email of User')
+    return role.superuser(email)
 
-    print("Role {} Successfully added!".format(name))
-
-@manager.option('-i', '--index', dest='index', default=None)
-@manager.option('-n', '--name', dest='name', default=None)
-def delete(name, index):
-    "Delete Role"
-    if name is None and index is None:
-        name = prompt("Index or Name")
-    
-    try:
-        r = role.Delete((name if name else index))
-    except LookupError:
-        print("Unable to find Role")
-        return
-
-    print("Role {} Succesfully Removed".format(r.name))
 
 @manager.option('-n', '--name', dest='name', default=None)
 @manager.option('-i', '--index', dest='index', default=None)
