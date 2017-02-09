@@ -1,15 +1,40 @@
 {% macro NodeList(nodes) %}
-<div class="list-group">
-	{% for node in nodes %}
-		<a href="/nodes/list/{{node.icpe.mac}}" class="list-group-item">
-		<p class="col-sm-2"><b>Name:</b> {{ node.name }}</p>
-		<p class="col-sm-2"><b>Group:</b> {{ node.group.name }}</p>
-		<p class="col-sm-2"><b>Street:</b> {{ node.location.street }}</p>
-		<p class="col-sm-2"><b>City:</b> : {{node.location.city}}</p>
-		-
+<table class="table table-hover">
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>Group Name</th>
+			<th>Street</th>
+			<th>City</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for node in nodes %}
+		<tr>
+			<td>
+				<a href="/nodes/list/{{node.icpe.mac}}">
+					{{node.name}}	
+				</a>
+			</td>
+			<td>
+				<a href="/nodes/list/{{node.icpe.mac}}">
+					{{node.group.name}}
+				</a>
+			</td>
+			<td>
+				<a href="/nodes/list/{{node.icpe.mac}}">
+					{{node.location.street}}
+				</a>
+			</td>
+			<td>
+				<a href="/nodes/list/{{node.icpe.mac}}">
+					{{node.location.city}}
+				</a>
+			</td>
 		</a>
 	{% endfor %}
-</div>
+	</tbody>
+</table>
 {% endmacro %}
 
 {% macro AddNode(NodeCreateForm, unassigned) %}

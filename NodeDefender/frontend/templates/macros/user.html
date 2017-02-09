@@ -1,0 +1,14 @@
+{% macro List(users) %}
+	{% for user in users %}
+	<p>{{user.firstname}}</p>
+	{% endfor %}
+{% endmacro %}
+
+{% macro Info(user) %}
+{% from "macros/info.html" import Field %}
+{{Field("Firstname", user.firstname)}}
+{% endmacro %}
+
+{% macro Events(user) %}
+<p>Events</p>
+{% endmacro %}

@@ -3,7 +3,7 @@
 <div class="row">
     <div class="col-lg-12">
         <h1 class="page-header">
-            Admin <small>Users</small>
+					Admin <small>{{user.firstname}}, {{user.lastname}}</small>
 						        </h1>
 
              <ol class="breadcrumb">
@@ -15,11 +15,22 @@
     </div>
 </div>
 {% include "flash.html" %}
+{% from "macros/user.html" import Info %}
+{% from "admin/macros/group.html" import ListGroups %}
+{% from "macros/user.html" import Events %}
 <div class="row">
-	 <div class="col-lg-12">
-			<div class="box" style="padding: 0;">
-		</div>
-  </div>
+	<div class="col-lg-4">
+		<h3>User Info</h3>
+		{{Info(user)}}
+	</div>
+	<div class="col-lg-4">
+		<h3>Groups</h3>
+		{{ListGroups(user.group)}}
+	</div>
+	<div class="col-lg-4">
+		<h3>Events</h3>
+		{{Events(user)}}
+	</div>
 </div>
 
 <script>

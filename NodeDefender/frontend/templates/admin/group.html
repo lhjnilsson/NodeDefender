@@ -14,21 +14,28 @@
     </div>
 </div>
 {% include "flash.html" %}
-{% from "admin/macros/group.html" import ListGroups, CreateGroup %}
+{% from "admin/macros/group.html" import GroupInfo %}
+{% from "macros/map.html" import MapGroup %}
+{% from "macros/message.html" import Inbox %}
+{% from "macros/user.html" import List %}
+
 <div class="row">
 	<div class="col-lg-10">
-		{{MapGroup(Group.nodes)}}
+		{{MapGroup(200, Group.nodes)}}
 	</div>
 	<div class="col-lg-2">
+		<h3>Info</h3>
 		{{GroupInfo(Group)}}
 	</div>
 </div>
 <div class="row">
 	<div class="col-lg-6">
-		{{Messages(Group.Messages)}}
+		<h3>Messages</h3>
+		{{Inbox(Group.messages)}}
 	</div>
 	<div class="col-lg-6">
-		{{UserList(Group.users)}}
+		<h3>Users</h3>
+		{{List(Group.users)}}
 	</div>
 </div>
 <script>

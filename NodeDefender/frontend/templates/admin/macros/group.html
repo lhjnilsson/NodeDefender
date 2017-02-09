@@ -51,36 +51,11 @@
 {% endmacro %}
 
 {% macro GroupInfo(Group) %}
+{% from "macros/info.html" import Field %}
 <div class="row">
-	<div class="col-lg-6">
-		Name:
-	</div>
-	<div class="col-lg-6">
-		{{Group.name}}
-	</div>
-</div>
-<div class="row">
-	<div class="col-lg-6">
-		Description:
-	</div>
-	<div class="col-lg-6">
-		{{Group.description}}
-	</div>
-</div>
-<div class="row">
-	<div class="col-lg-6">
-		Steet:
-	</div>
-	<div class="col-lg-6">
-		--
-	</div>
-</div>
-<div class="row">
-	<div class="col-lg-6">
-		City:
-	</div>
-	<div class="col-lg-6">
-		--
-	</div>
+	{{Field(Name, Group.name)}}
+	{{Field(Description, Group.description)}}
+	{{Field(Street, NA)}}
+	{{Field(City, NA)}}
 </div>
 {% endmacro %}
