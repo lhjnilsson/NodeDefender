@@ -7,21 +7,20 @@ from datetime import datetime
 from .. import logger
 
 
-def Verify(mac, sensorid, classname, ipaddr = None, port = None):
-    if len(CmdclassRedis.Get(mac, sensorid, classname)):
-        return CmdclassRedis.Get(mac, sensorid, classname)
-    else:
-        if CmdclassSQL.Get(mac, sensorid, classname):
-            return CmdclassRedis.Load(mac, sensorid, classname)
-        else:
-            if not zwave.Supported(classname):
-                return False
-            icpe.Verify(mac, ipaddr, port)
-            sensor.Verify(mac, sensorid, ipaddr, port)
-            Add(mac, sensorid)
+def Verify(topic, payload, mqttsrc):
+    if len(CmdclassRedis.Get(topic.macaddr, topic.sensorid, topic.cmdclass)):
+        return CmdclassRedis.Get(topic.macaddr, topic.sensorid, topic.cmdclass)
     
-    mqtt.sensor.Query(mac, sensorid, ipaddr, port)
-    return CmdclassSQL.Get(mac, sensorid, classname)
+    elif CmdclassSQL.Get(topic.macaddr, topic.sensorid, topic.cmdclass):
+        return CmdclassRedis.Load(topic.macaddr, topic.sensorid, topic.cmdclass)
+    
+    else:
+        if not zwave.Supported(topic.cmdclass):
+            return False
+        icpe.Verify(topic, payload, mqttsrc)
+        sensor.Verify(topic, payload. mqttsrc)
+
+    return mqtt.sensor.Query(topic.macaddr, topic.sensorid, **mqttsrc)
 
 def Add(mac, sensorid, *classes):
     sensor.Verify(mac, sensorid)
@@ -30,7 +29,7 @@ def Add(mac, sensorid, *classes):
             classname, types, fields = zwave.Info(classnum)
         except TypeError:
             print("Error adding class ", classnum)
-            return
+            return False
         
         if classname is None:
             break
@@ -42,7 +41,7 @@ def Add(mac, sensorid, *classes):
         if fields:
             CmdclassSQL.AddField(mac, sensorid, classname, **fields)
         CmdclassRedis.Load(mac, sensorid, classname)
-    return False
+    return True
 
 def AddTypes(mac, sensorid, classname, classtypes):
     sensor.Verify(mac, sensorid)

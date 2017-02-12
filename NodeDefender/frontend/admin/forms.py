@@ -57,3 +57,17 @@ class CreateMQTTForm(Form):
     Password = StringField("Password")
     Submit = SubmitField("Create")
 
+
+class UserSettings(Form):
+    Firstname = StringField("Firstname")
+    Lastname = StringField("Lastname")
+    Email = StringField("Email")
+    Submit = SubmitField("Update")
+
+class UserPassword(Form):
+    Password = StringField("Password")
+    Submit = SubmitField("Update")
+
+class UserGroupAdd(Form):
+    Name = StringField("Group Name")
+    Submit = SubmitField("Update")

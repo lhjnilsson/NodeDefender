@@ -5,10 +5,11 @@ from ..models.redis import cmdclass as CmdclassRedis
 
 @celery.task
 @TopicToTuple
-def MQTT(mqttsrc, topic, payload):
+def MQTT(topic, payload, mqttsrc):
     if topic.msgtype == 'cmd':
         return
-    cmdclass, event = eval(topic.msgtype + '.' + topic.action)(mqttsrc, topic, payload)
+    cmdclass, event = eval(topic.msgtype + '.' + topic.action)(topic, payload,
+                                                              mqttsrc)
     
     if event:
         CmdclassRedis.Save(topic.macaddr, topic.sensorid, topic.cmdclass,

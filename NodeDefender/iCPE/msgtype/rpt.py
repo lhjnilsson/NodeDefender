@@ -1,23 +1,23 @@
 from .. import db, zwave
 from ..decorators import CommonPayload
 
-def status(mqttsrc, topic, payload):
+def status(topic, payload, mqttsrc):
     if topic.subfunc:
-        return sup(mqttsrc, topic, payload)
+        return sup(topic, payload, mqttsrc)
 
     cmdclass = db.cmdclass.Verify(topic.macaddr, topic.sensorid,
                                 topic.cmdclass, **mqttsrc)
     event = zwave.Event(topic, payload)
     return cmdclass, event
 
-def event(mqttsrc, topic, payload):
+def event(topic, payload, mqttsrc):
     cmdclass = db.cmdclass.Verify(topic.macaddr, topic.sensorid,
                                       topic.cmdclass, **mqttsrc)
     event = zwave.Event(topic, payload)
     return cmdclass, event
 
 @CommonPayload
-def sup(mqttsrc, topic, payload):
+def sup(topic, payload, mqttsrc):
     try:
         db.cmdclass.AddTypes(topic.macaddr, topic.sensorid, topic.cmdclass,
                          payload.typelist)
@@ -26,6 +26,6 @@ def sup(mqttsrc, topic, payload):
 
     return None, None
 
-def get(mqttsrc, topic, payload):
+def get(topic, payload, mqttsrc):
     if topic.subfunc:
-        return eval(topic.subfunc)(mqttsrc, topic, payload)
+        return eval(topic.subfunc)(topic, payload, mqttsrc)

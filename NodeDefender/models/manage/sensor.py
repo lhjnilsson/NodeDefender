@@ -2,12 +2,12 @@ from ..SQL import iCPEModel, SensorModel, SensorClassModel, WebField
 from ... import db
 from . import logger
 
-def Create(icpe, sensorid):
+def Create(icpe, sensorid, sensorinfo):
     if type(icpe) is str:
         icpe = iCPEModel.query.filter_by(mac = icpe).first()
         if icpe is None:
             raise LookupError('iCPE not found')
-    sensor = SensorModel(sensorid)
+    sensor = SensorModel(sensorid, sensorinfo)
     icpe.sensors.append(sensor)
     db.session.add(icpe, sensor)
     db.session.commit()

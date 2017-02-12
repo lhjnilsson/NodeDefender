@@ -34,6 +34,32 @@
 </div>
 {% endmacro %}
 
+{% macro SensorSockets(sensors) %}
+<script>
+namespace = '/icpe';
+var icpesocket = io.connect('http://' + document.domain + ':' location.port + namespace);
+
+function checkboxClick(box, icpe, nodeid, cmdclass) {
+	$(box).addClass('disabled');
+	if (box.checked) {
+		
+	} else {
+
+	}
+	$(box).removeClass('disabled');
+}
+
+icpesocket.on('connect', function() {
+	icpesocket.emit('JoiniCPE', {icpe : '{{sensors[0].icpe.macaddr}}');
+});
+
+icpesocket.on('iCPEEvent', function(msg) {
+	console.log(msg);
+});
+
+</script>
+{% endmacro %}
+
 {% macro SensorModal(Sensor, SensorForm) %}
 {% from "macros/form.html" import render_field %}
 <div class="modal fade" id="PopCFG{{Sensor.nodeid}}" role="dialog">

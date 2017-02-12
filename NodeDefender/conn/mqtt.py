@@ -106,5 +106,5 @@ class _MQTT:
         client.subscribe('icpe/#')
 
     def on_message(self, client, userdata, msg):
-        MQTTEvent.apply_async(args=[self.info,
-                                    msg.topic, msg.payload.decode('utf-8')])
+        MQTTEvent.apply_async(args=[msg.topic, msg.payload.decode('utf-8'),
+                                    self.info])

@@ -1,5 +1,6 @@
 from .. import AdminView
-from .forms import GeneralForm, CreateUserForm, CreateGroupForm, CreateMQTTForm
+from .forms import (GeneralForm, CreateUserForm, CreateGroupForm,
+                    CreateMQTTForm, UserSettings, UserPassword, UserGroupAdd)
 from flask_login import login_required, current_user
 from flask import Blueprint, request, render_template, flash, redirect, url_for
 from ...models.manage import user as UserSQL
@@ -93,10 +94,15 @@ def AdminUsers():
 @login_required
 def AdminUser(id):
     User = UserModel.query.filter_by(id = id).first()
+    usersettings = UserSettings()
+    userpassword = UserPassword()
+    usergroupadd = UserGroupAdd()
     if User is None:
         flash('User {} not found'.format(id), 'danger')
         return redirect(url_for('AdminView.AdminGroups'))
-    return render_template('admin/user.html', User = User)
+    return render_template('admin/user.html', User = User, UserSettings =
+                           usersettings, UserPassword = userpassword,
+                           UserGroupAdd = usergroupadd)
 
 @AdminView.route('/admin/backup')
 @login_required

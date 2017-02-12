@@ -7,10 +7,10 @@ def TopicToTuple(func):
     Message Format for iCPE
     '''
     @wraps(func)
-    def zipper(*args, **kwargs):
+    def zipper(oldtopic, payload, mqttsrc):
         try:
             topic = Topic()
-            splitted = args[1].split('/')
+            splitted = oldtopic.split('/')
             topic.macaddr = splitted[1][2:]
             topic.msgtype = splitted[2]
             topic.sensorid = splitted[4].split(":")[0]
@@ -24,20 +24,19 @@ def TopicToTuple(func):
             except IndexError:
                 topic.subfunc = None
             topic.action = splitted[8]
-            return func(args[0], topic, args[2])
+            return func(topic, payload, mqttsrc)
         except IndexError:
-            return func(*args)
+            return func(oldtopic, payload, mqttsrc)
     return zipper
 
-class Test:
+class PayloadContainer:
     def __init__(self):
         pass
 
 def CommonPayload(func):
     @wraps(func)
-    def wrapper(mqttsrc, topic, payload):
-        p = Test()
-        print(type(payload))
+    def wrapper(topic, payload, mqttsrc):
+        p = PayloadContainer()
         for part in payload.split(' '):
             try:
                 key, value = part.split('=')
@@ -45,7 +44,7 @@ def CommonPayload(func):
             except ValueError:
                 pass
 
-        return func(mqttsrc, topic, p)
+        return func(topic, p, mqttsrc)
     return wrapper
 
 def SensorRules(func):

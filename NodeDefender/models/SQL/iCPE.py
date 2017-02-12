@@ -57,24 +57,25 @@ class SensorModel(db.Model):
     name = db.Column(db.String(32))
     sensorid = db.Column(db.String(4))
     
-    vendorid = db.Column(db.String(16))
-    productid = db.Column(db.String(16))
-    brandname = db.Column(db.String(32))
+    brand = db.Column(db.String(32))
     productname = db.Column(db.String(32))
-       
-    roletype = db.Column(db.String(32))
+    manufacturerid = db.Column(db.String(16))
+    productid = db.Column(db.String(16))
+    producttypeid = db.Column(db.String(16))
+    librarytype = db.Column(db.String(32))
     devicetype = db.Column(db.String(32))
-    generic_class = db.Column(db.String(16))
-   
+  
     cmdclasses = db.relationship('SensorClassModel', backref='sensor',
                                 cascade='save-update, merge, delete')
     webfields = db.relationship('WebField', backref='sensor',
                                 cascade='save-update, merge, delete')
 
-    def __init__(self, sensorid):
+    def __init__(self, sensorid, sensorinfo):
         self.sensorid = str(sensorid)
+        for key, value in sensorinfo.items():
+            setattr(self, key, value)
 
-        self.name = "None"
+        self.name = self.productname
 
 class SensorClassModel(db.Model):
     __tablename__ = 'sensorclass'

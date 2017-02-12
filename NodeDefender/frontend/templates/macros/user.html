@@ -7,8 +7,70 @@
 {% macro Info(user) %}
 {% from "macros/info.html" import Field %}
 {{Field("Firstname", user.firstname)}}
+{{Field("Lastname", user.lastname)}}
+{{Field("Email", user.email)}}
 {% endmacro %}
 
 {% macro Events(user) %}
 <p>Events</p>
+{% endmacro %}
+
+{% macro AddGroup(User, GroupForm) %}
+{% from "macros/form.html" import render_field_with_errors, render_submit %}
+<a href="#" data-toggle="modal" data-target="#AddGroup" style="position: absolute; right: 0; margin-right: 1vw;">
+	<i class="fa fa-plus" aria-hidden="true"></i>
+</a>
+</h3>
+<div class="modal fade" id="AddGroup" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h2 class="modal-title">User Settings</h2>
+			</div>
+			<div class="modal-body">
+				<form action="{{url_for('AdminView.AdminUser', id = User.id)}}" method="post" class="form-horizontal">
+					{{ GroupForm.csfr_token }}
+					{{ GroupForm.hidden_tag() }}
+					{{render_field_with_errors(GroupForm.Name)}}
+					{{render_submit(GroupForm.Submit)}}
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+{% endmacro %}
+
+{% macro AdminSettings(User, Form, Form2) %}
+{% from "macros/form.html" import render_field_with_errors, render_submit %}
+<a href="#" data-toggle="modal" data-target="#UserConfigure" style="position: absolute; right: 0; margin-right: 1vw;">
+	<i class="fa fa-cogs" aria-hidden="true"></i>
+</a>
+</h3>
+
+<div class="modal fade" id="UserConfigure" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">	
+			<div class="modal-header">
+				<h2 class="modal-title">User Settings</h2>
+			</div>
+			<div class="modal-body">
+				<form action="{{url_for('AdminView.AdminUser', id = User.id)}}" method="post" class="form-horizontal">
+					{{ Form.csfr_token }}
+					{{ Form.hidden_tag() }}
+					{{render_field_with_errors(Form.Firstname)}}
+					{{render_field_with_errors(Form.Lastname)}}
+					{{render_field_with_errors(Form.Email)}}
+					{{render_submit(Form.Submit)}}
+				</form>
+				<form action="{{url_for('AdminView.AdminUser', id = User.id)}}" method="post" class="form-horizontal">
+					{{ Form2.csfr_token }}
+					{{ Form2.hidden_tag() }}
+					{{render_field_with_errors(Form2.Password)}}
+					{{render_submit(Form2.Submit)}}
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
 {% endmacro %}

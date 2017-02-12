@@ -6,15 +6,16 @@ from ... import celery
 from datetime import datetime
 from .. import logger
 
-def Verify(mac, sensorid, ipaddr = None, port = None):
-    if len(SensorRedis.Get(mac, sensorid)):
-        return SensorRedis.Get(mac, sensorid)
+def Verify(topic, payload, mqttsrc):
+    if len(SensorRedis.Get(topic.macaddr, topic.sensorid)):
+        return SensorRedis.Get(topic.macaddr, topic.sensorid)
     else:
-        if SensorSQL.Get(mac, sensorid):
-            return SensorRedis.Load(SensorSQL.Get(mac, sensorid))
+        if SensorSQL.Get(topic.macaddr, topic.sensorid):
+            return SensorRedis.Load(topic.macaddr, topic.sensorid)
         else:
-            icpe.Verify(mac, ipaddr, port)
-            SensorSQL.Create(mac, sensorid)
-            SensorRedis.Load(SensorSQL.Get(mac, sensorid))
+            icpe.Verify(topic, payload, mqttsrc)
+            zinfo = zwave.db.SensorInfo(payload['vid'], payload['pid'])
+            SensorSQL.Create(topic.macaddr, topic.sensorid, zinfo)
+            SensorRedis.Load(topic.macaddr, topic.sensorid)
     
-    return mqtt.sensor.Query(mac, sensorid, ipaddr, port)
+    return mqtt.sensor.Query(topic.macaddr, topic.sensorid, **mqttsrc)
