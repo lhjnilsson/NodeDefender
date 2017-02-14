@@ -5,14 +5,12 @@ def status(topic, payload, mqttsrc):
     if topic.subfunc:
         return sup(topic, payload, mqttsrc)
 
-    cmdclass = db.cmdclass.Verify(topic.macaddr, topic.sensorid,
-                                topic.cmdclass, **mqttsrc)
+    cmdclass = db.cmdclass.Verify(topic, payload, mqttsrc)
     event = zwave.Event(topic, payload)
     return cmdclass, event
 
 def event(topic, payload, mqttsrc):
-    cmdclass = db.cmdclass.Verify(topic.macaddr, topic.sensorid,
-                                      topic.cmdclass, **mqttsrc)
+    cmdclass = db.cmdclass.Verify(topic, payload, mqttsrc)
     event = zwave.Event(topic, payload)
     return cmdclass, event
 

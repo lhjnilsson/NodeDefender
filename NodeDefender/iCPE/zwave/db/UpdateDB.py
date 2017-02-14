@@ -23,10 +23,10 @@ def FormatDict(ZWaveDict):
             except KeyError:
                 SensorDict[val] = 'None'
         try:
-            FDict[item['ManufacturerId']][item['ProductId']] = SensorDict
+            FDict[item['ManufacturerId'].lower()][item['ProductId'].lower()] = SensorDict
         except KeyError:
-            FDict[item['ManufacturerId']] = {}
-            FDict[item['ManufacturerId']][item['ProductId']] = SensorDict
+            FDict[item['ManufacturerId'].lower()] = {}
+            FDict[item['ManufacturerId'].lower()][item['ProductId'].lower()] = SensorDict
     return FDict
 
 def main():

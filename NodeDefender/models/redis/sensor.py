@@ -32,8 +32,11 @@ def Load(sensor, conn):
     s = {
         'name' : sensor.name,
         'sensorid' : sensor.sensorid,
-        'roletype' : sensor.roletype,
-        'devicetype' : sensor.devicetype
+        'librarytype' : sensor.librarytype,
+        'devicetype' : sensor.devicetype,
+        'productid' : sensor.productid,
+        'manufacturerid' : sensor.manufacturerid,
+        'brand' : sensor.brand
     }
     logger.info("Loaded Sensor {}:{} from Object".format(sensor.icpe.mac,
                                                          sensor.sensorid))

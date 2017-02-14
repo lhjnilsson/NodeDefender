@@ -20,7 +20,7 @@ def add(topic, payload, mqttsrc):
 def list(topic, payload, mqttsrc):
     # List of ZWave Sensors
     for sensor in payload.split(','):
-        db.sensor.Verify(topic.macaddr, sensor, **mqttsrc)
+        mqtt.sensor.Query(topic.macaddr, sensor, **mqttsrc)
     return None, None
 
 @CommonPayload
@@ -29,16 +29,14 @@ def qry(topic, payload, mqttsrc):
     if topic.sensorid < '2' or topic.sensorid == 'sys':
         pass
     else:
-        for cls in payload.clslist_0.split(','):
-            db.cmdclass.Add(topic.macaddr, topic.sensorid, cls)
+        db.cmdclass.Add(topic, payload, payload.clslist_0.split(','))
 
     return None, None
 
 @CommonPayload
 def sup(topic, payload, mqttsrc):
     try:
-        db.cmdclass.AddTypes(topic.macaddr, topic.sensorid, topic.cmdclass,
-                         payload.typelist)
+        db.cmdclass.AddTypes(topic, payload, topic.cmdclass, payload.typelist)
     except AttributeError:
         pass
 

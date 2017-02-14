@@ -7,7 +7,7 @@ from datetime import datetime
 from .. import logger
 
 
-def Verify(topic, payload, mqttsrc):
+def Verify(topic, payload, mqttsrc = None):
     if len(CmdclassRedis.Get(topic.macaddr, topic.sensorid, topic.cmdclass)):
         return CmdclassRedis.Get(topic.macaddr, topic.sensorid, topic.cmdclass)
     
@@ -18,12 +18,12 @@ def Verify(topic, payload, mqttsrc):
         if not zwave.Supported(topic.cmdclass):
             return False
         icpe.Verify(topic, payload, mqttsrc)
-        sensor.Verify(topic, payload. mqttsrc)
+        sensor.Verify(topic, payload, mqttsrc)
 
     return mqtt.sensor.Query(topic.macaddr, topic.sensorid, **mqttsrc)
 
-def Add(mac, sensorid, *classes):
-    sensor.Verify(mac, sensorid)
+def Add(topic, payload, *classes):
+    sensor.Verify(topic, payload)
     for classnum in classes:
         try:
             classname, types, fields = zwave.Info(classnum)
@@ -35,19 +35,19 @@ def Add(mac, sensorid, *classes):
             break
 
         if types:
-            mqtt.sensor.Sup(mac, sensorid, classname)
+            mqtt.sensor.Sup(topic.macaddr, topic.sensorid, classname)
 
-        CmdclassSQL.Add(mac, sensorid, classnum, classname)
+        CmdclassSQL.Add(topic.macaddr, topic.sensorid, classnum, classname)
         if fields:
-            CmdclassSQL.AddField(mac, sensorid, classname, **fields)
-        CmdclassRedis.Load(mac, sensorid, classname)
+            CmdclassSQL.AddField(topic.macaddr, topic.sensorid, classname, **fields)
+        CmdclassRedis.Load(topic.mac, topic.sensorid, classname)
     return True
 
-def AddTypes(mac, sensorid, classname, classtypes):
-    sensor.Verify(mac, sensorid)
-    CmdclassSQL.AddTypes(mac, sensorid, classname, classtypes)
+def AddTypes(topic, payload, classname, classtypes):
+    sensor.Verify(topic.macaddr, topic.sensorid)
+    CmdclassSQL.AddTypes(topic.macaddr, topic.sensorid, classname, classtypes)
     fields = zwave.InfoTypes(classname, classtypes)
     if fields:
         for field in fields:
-            CmdclassSQL.AddField(mac, sensorid, classname, **field)
-    return CmdclassRedis.Load(mac, sensorid, classname)
+            CmdclassSQL.AddField(topic.macaddr, topic.sensorid, classname, **field)
+    return CmdclassRedis.Load(topic.macaddr, topic.sensorid, classname)

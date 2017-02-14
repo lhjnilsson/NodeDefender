@@ -72,10 +72,11 @@ class SensorModel(db.Model):
 
     def __init__(self, sensorid, sensorinfo):
         self.sensorid = str(sensorid)
-        for key, value in sensorinfo.items():
-            setattr(self, key, value)
+        if sensorinfo:
+            for key, value in sensorinfo.items():
+                setattr(self, key, value)
 
-        self.name = self.productname
+            self.productname = self.name
 
 class SensorClassModel(db.Model):
     __tablename__ = 'sensorclass'

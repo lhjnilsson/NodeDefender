@@ -6,13 +6,13 @@ from ... import celery
 from datetime import datetime
 from . import logger, Load
 
-def Verify(topic, payload, mqttsrc):
+def Verify(topic, payload, mqttsrc = None):
     if len(iCPERedis.Get(topic.macaddr)):
         return iCPERedis.Get(topic.macaddr)
     else:
         if iCPESQL.Get(topic.macaddr):
             return iCPERedis.Load(topic.macaddr)
         else:
-            iCPESQL.Create(topic.mac, **mqttsrc)
-            iCPERedis.Load(topic.mac)
-    return mqtt.icpe.Query(topic.mac, **mqttsrc)
+            iCPESQL.Create(topic.macaddr, **mqttsrc)
+            iCPERedis.Load(topic.macaddr)
+    return mqtt.icpe.Query(topic.macaddr, **mqttsrc)

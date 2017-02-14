@@ -7,7 +7,7 @@ def TopicToTuple(func):
     Message Format for iCPE
     '''
     @wraps(func)
-    def zipper(oldtopic, payload, mqttsrc):
+    def zipper(oldtopic, payload, mqttsrc = None):
         try:
             topic = Topic()
             splitted = oldtopic.split('/')
@@ -35,8 +35,10 @@ class PayloadContainer:
 
 def CommonPayload(func):
     @wraps(func)
-    def wrapper(topic, payload, mqttsrc):
+    def wrapper(topic, payload, mqttsrc = None):
         p = PayloadContainer()
+        if type(payload) is PayloadContainer:
+            return func(topic, payload, mqttsrc)
         for part in payload.split(' '):
             try:
                 key, value = part.split('=')
