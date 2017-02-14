@@ -8,7 +8,7 @@ from ..models.redis import cmdclass as CmdclassRedis
 def MQTT(topic, payload, mqttsrc):
     if topic.msgtype == 'cmd':
         return
-    cmdclass, event = eval(topic.msgtype + '.' + topic.action)(topic, payload,
+    event = eval(topic.msgtype + '.' + topic.action)(topic, payload,
                                                               mqttsrc)
     
     if event:

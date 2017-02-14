@@ -1,4 +1,4 @@
-from ... import BaseModel, PayloadSplitter, DataDescriptor
+from ... import BaseModel, PayloadSplitter, DataDescriptor, ClassInfo
 
 class BasicModel(BaseModel):
     value = DataDescriptor('value')
@@ -9,8 +9,13 @@ class BasicModel(BaseModel):
 
 
 def Info():
-    return 'basic', False, {'type' : 'checkbox', 'readonly' : False, 'name' :
-                            'basic'}
+    classinfo = ClassInfo()
+    classinfo.classname = 'basic'
+    classinfo.classnumber = '20'
+    classinfo.types = False
+    classinfo.fields = [{'type' : 'checkbox', 'readonly' : False, 'name' :
+                            'basic'}]
+    return classinfo
 
 def Load(classtypes):
     return {'basic' : None}

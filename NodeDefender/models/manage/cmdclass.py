@@ -51,6 +51,8 @@ def AddField(icpe, sensor, cmdclass, name, type, readonly):
 
     sensor = cmdclass.sensor
     icpe = sensor.icpe
+    if [f for f in cmdclass.webfields if f.name == name]:
+        return True
     
     field = WebField(name, type, readonly)
     icpe.webfields.append(field)

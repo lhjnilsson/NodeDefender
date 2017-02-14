@@ -1,5 +1,4 @@
-from ... import BaseModel, PayloadSplitter, DataDescriptor
-
+from ... import BaseModel, PayloadSplitter, DataDescriptor, ClassInfo
 zalm = {'06' : 'AccessControl'}
 
 class AlarmModel(BaseModel):
@@ -24,14 +23,15 @@ class AlarmModel(BaseModel):
         super().__init__()
 
 
-def Info():
-    return 'alarm', True, False
-
-def InfoTypes(classtypes):
-    ret = []
-    for t in classtypes.split(','):
-        ret.append(eval(zalm[t] + '.Info')())
-    return ret
+def Info(classtype = None):
+    classinfo = ClassInfo()
+    classinfo.classname = 'alarm'
+    classinfo.classnumber = '71'
+    classinfo.types = True
+    classinfo.fields = {}
+    if classtype:
+        classinfo.fields = eval(zalm[classtype] + '.Fields')()
+    return classinfo
 
 def Load():
     return {'notification': None}

@@ -1,6 +1,12 @@
 from functools import wraps
 
-numtoname = {'20' : 'basic', '71' : 'alarm'}
+supported = {'20' : 'basic', '71' : 'alarm'}
+
+def NumToName(classnum):
+    try:
+        return supported[classnum[:2]]
+    except KeyError:
+        raise NotImplementedError
 
 def Supported(classname):
     '''
@@ -10,27 +16,16 @@ def Supported(classname):
         eval(classname + '.Info')()
         return True
     except NameError:
-        return False
+        raise NotImplementedError
 
-def Info(classnum):
+def Info(classname, classtypes):
     '''
     Returns Classname, flag if Class- types and Fields for Web
     '''
     try:
-        classname = numtoname[str(classnum)]
-    except KeyError:
-        return None, None, None
-    
-    return eval(classname + '.Info')()
-
-def InfoTypes(classname, classtypes):
-    '''
-    Returns information about Classtypes
-    '''
-    try:
-        return eval(classname + '.InfoTypes')(classtypes)
-    except KeyError:
-        return None
+        return eval(classname + '.Info')(classtypes)
+    except NameError:
+        raise NotImplementedError
 
 def Event(topic, payload):
     '''
@@ -62,6 +57,16 @@ class DataDescriptor:
     def __delete__(self, instance):
         raise AttributeError("Can't delete me")
 
+class ClassInfo:
+    classname = DataDescriptor('classname')
+    classnumber = DataDescriptor('classnumber')
+    types = DataDescriptor('types')
+    fields = DataDescriptor('fields')
+    def __init__(self):
+        self.classname = None
+        self.classnumber = None
+        self.types = None
+        self.fields = None
 
 class BaseModel:
     sensorid = DataDescriptor('sensorid')

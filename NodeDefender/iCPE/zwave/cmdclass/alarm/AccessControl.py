@@ -1,4 +1,4 @@
-def Info():
+def Fields():
     return {'type' : 'checkbox', 'readonly' : True, 'name' : 'door'}
 
 def Event(payload):

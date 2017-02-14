@@ -6,48 +6,50 @@ from ... import celery
 from datetime import datetime
 from .. import logger
 
-
 def Verify(topic, payload, mqttsrc = None):
     if len(CmdclassRedis.Get(topic.macaddr, topic.sensorid, topic.cmdclass)):
-        return CmdclassRedis.Get(topic.macaddr, topic.sensorid, topic.cmdclass)
+        return True
     
-    elif CmdclassSQL.Get(topic.macaddr, topic.sensorid, topic.cmdclass):
-        return CmdclassRedis.Load(topic.macaddr, topic.sensorid, topic.cmdclass)
+    if CmdclassRedis.Load(topic.macaddr, topic.sensorid, topic.cmdclass):
+        return True
+
+    if not zwave.Supported(topic.cmdclass):
+        return False
     
-    else:
-        if not zwave.Supported(topic.cmdclass):
-            return False
-        icpe.Verify(topic, payload, mqttsrc)
-        sensor.Verify(topic, payload, mqttsrc)
+    icpe.Verify(topic, payload, mqttsrc)
+    sensor.Verify(topic, payload, mqttsrc)
+    return Add(topic, payload)
 
-    return mqtt.sensor.Query(topic.macaddr, topic.sensorid, **mqttsrc)
-
-def Add(topic, payload, *classes):
-    sensor.Verify(topic, payload)
-    for classnum in classes:
+def Add(topic, payload, classnum = None):
+    if classnum:
         try:
-            classname, types, fields = zwave.Info(classnum)
-        except TypeError:
-            print("Error adding class ", classnum)
+            topic.cmdclass = zwave.NumToName(classnum)
+        except NotImplementedError:
             return False
-        
-        if classname is None:
-            break
+    try:
+        classinfo = zwave.Info(topic.cmdclass)
+    except NotImplementedError:
+        return False
+    
+    if classinfo.types:
+        mqtt.sensor.Sup(topic.macaddr, topic.sensorid, classname)
 
-        if types:
-            mqtt.sensor.Sup(topic.macaddr, topic.sensorid, classname)
+    CmdclassSQL.Add(topic.macaddr, topic.sensorid, classinfo.classnumber,
+                    classinfo.classname)
+    if classinfo.fields:
+        CmdclassSQL.AddField(topic.macaddr, topic.sensorid, classinfo.classname,
+                            **classinfo.fields)
+    return CmdclassRedis.Load(topic.macaddr, topic.sensorid, classinfo.classname)
 
-        CmdclassSQL.Add(topic.macaddr, topic.sensorid, classnum, classname)
-        if fields:
-            CmdclassSQL.AddField(topic.macaddr, topic.sensorid, classname, **fields)
-        CmdclassRedis.Load(topic.mac, topic.sensorid, classname)
-    return True
+def AddTypes(topic, payload, classtypes):
+    CmdclassSQL.AddTypes(topic.macaddr, topic.sensorid, topic.cmdclass, classtypes)
+    for classtype in classtypes:
+        try:
+            classinfo = zwave.Info(topic.cmdclass, classtype)
+        except NotImplementedError:
+            pass
 
-def AddTypes(topic, payload, classname, classtypes):
-    sensor.Verify(topic.macaddr, topic.sensorid)
-    CmdclassSQL.AddTypes(topic.macaddr, topic.sensorid, classname, classtypes)
-    fields = zwave.InfoTypes(classname, classtypes)
-    if fields:
-        for field in fields:
-            CmdclassSQL.AddField(topic.macaddr, topic.sensorid, classname, **field)
+        if classinfo.fields:
+            CmdclassSQL.AddField(topic.macaddr, topic.sensorid,
+                                topic.cmdclass, **classinfo.fields)
     return CmdclassRedis.Load(topic.macaddr, topic.sensorid, classname)
