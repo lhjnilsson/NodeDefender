@@ -24,25 +24,31 @@ SOFTWARE.
 '''
 from flask_socketio import emit, send, disconnect, join_room, leave_room, \
         close_room, rooms
-from . import socketio, icpe, outSocketQueue
-from threading import Thread
+from ... import socketio
+from ...iCPE.event import Socket
+from ...models.redis import cmdclass as CmdclassRedis
 
-@socketio.on('event', namespace='/icpeevent')
+@socketio.on('event', namespace='/nodedata')
 def icpeevent(msg):
+    print('EVENT')
+    print(msg)
+    return True
+    
+    SocketEvent.delay(**msg)
     if icpe.SocketEvent(**msg):
         return True
     else:
         return False
 
-def _echoToChannel():
-    while True:
-        event, msg, room = outSocketQueue.get()
-        socketio.emit(event, msg, namespace = '/icpeevent', room = room)
-
-
-@socketio.on('join', namespace='/icpeevent')
+@socketio.on('join', namespace='/nodedata')
 def joinicpe(msg):
     join_room(msg['room'])
+    return
 
-t1 = Thread(target=_echoToChannel,)
-t1.start()
+@socketio.on('LookupGet', namespace='/nodedata')
+def Lookup(msg):
+    print("Lookup")
+    rsp = CmdclassRedis.Get(msg['macaddr'], msg['sensorid'], msg['classname'])
+    print(rsp)
+    return
+

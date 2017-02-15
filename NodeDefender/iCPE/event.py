@@ -17,4 +17,8 @@ def MQTT(topic, payload, mqttsrc):
     
     return True
 
+@celery.task
+def Socket(macaddr, sensorid, cmdclass, classtype, event):
+    return True
+
 from .msgtype import rpt, rsp, cmd, err

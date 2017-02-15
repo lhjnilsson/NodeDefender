@@ -2,18 +2,18 @@
 {% block content %}
 <script>
 
-namespace = '/icpeevent';
+namespace = '/nodedata';
 var socket = io.connect('http://' + document.domain + ':' + location.port + namespace);
 
 socket.on('connect', function() {
     socket.emit('join', {room : '{{iCPE.mac}}'});
 });
 
-function checkboxChange(box, icpe, nodeid, attribute) {
+function checkboxChange(box, macaddr, sensorid, cmdclass, classtype) {
 	if (box.checked) {
-		socket.emit('event', {mac : icpe, nodeid : nodeid, state : 'True', class : attribute});
+		socket.emit('event', {macaddr : macaddr, sensorid : sensorid, cmdclass : cmdclass, classtype : classtype, event : '1'});
 	} else {
-		socket.emit('event', {mac : icpe, nodeid : nodeid, state : 'False', class : attribute});
+		socket.emit('event', {macaddr : macaddr, sensorid : sensorid, cmdclass : cmdclass, classtype : classtype, event : '0'});
 	}
 }
 
@@ -102,11 +102,23 @@ socket.on('roomevent', function(msg) {
 </div>
 {{ ModalSettings(Node, iCPEForm, LocationForm) }}
 {{ ModalDelete() }}
+{% from "nodes/macros/sensor.html" import SensorLookup %}
+{% from "nodes/macros/icpe.html" import iCPEScript %}
 <script>
 $(document).ready(function() {
 $('input[name="alias"]').val('Alias');
 
+// iCPEInfo
+{{ iCPEScript(iCPE) }}
 
+socket.on('LookupRespond', function(msg) {
+	console.log(msg);
+});
+
+// Sensors
+{% for sensor in iCPE.sensors %}
+{{ SensorLookup(sensor) }}
+{% endfor %}
 
 });	
 </script>

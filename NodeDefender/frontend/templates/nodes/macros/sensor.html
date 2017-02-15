@@ -6,7 +6,7 @@
 			<i class="fa fa-cog" aria-hidden="true"></i>
 		</a>
 	</h3>
-  <div class="box">
+	<div class="box" id="Box{{Sensor.sensorid}}">
 		<form name="#" class="form-horizontal" method="#">
 		{% for field in Sensor.webfields %}
 		{% if field.display == True %}
@@ -18,7 +18,7 @@
 				<label class="lightbox" id="{{Sensor.nodeid}}{{field.name}}"></label>
 				{% else %}
 				<label class="switch">
-					<input type="checkbox" id="{{Sensor.nodeid}}{{field.name}}" onclick="checkboxChange(this, '{{Sensor.icpe.mac}}', '{{Sensor.nodeid}}','{{field.name}}');">
+					<input type="checkbox" id="{{Sensor.nodeid}}{{field.name}}" onclick="checkboxChange(this, '{{Sensor.icpe.mac}}', '{{Sensor.sensorid}}','{{field.sensorclass.classname}}, None');">
 					<div class="slider"></div>
 				</label>
 				{% endif %}
@@ -100,4 +100,13 @@ icpesocket.on('iCPEEvent', function(msg) {
 		</div>
 	</div>
 </div>
+{% endmacro %}
+
+{% macro SensorLookup(sensor) %}
+$(document.getElementById("Box" + {{sensor.sensorid}})).addClass("blur");
+console.log({{sensor.sensorid}});
+{% for cmdclass in sensor.cmdclasses %}
+socket.emit('LookupGet', {macaddr : "{{sensor.icpe.mac}}", sensorid : "{{sensor.sensorid}}", classname : "{{cmdclass.classname}}"});
+{% endfor %}
+
 {% endmacro %}
