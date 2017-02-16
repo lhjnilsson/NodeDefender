@@ -28,6 +28,11 @@
 				<h2 class="modal-title">User Settings</h2>
 			</div>
 			<div class="modal-body">
+				<div class="form-group">
+					<label for="sell">Avalible Groups: </label>
+					<select class="form-control" id="GroupsList">
+					</select>
+				</div>
 				<form action="{{url_for('AdminView.AdminUser', id = User.id)}}" method="post" class="form-horizontal">
 					{{ GroupForm.csfr_token }}
 					{{ GroupForm.hidden_tag() }}
@@ -38,7 +43,27 @@
 		</div>
 	</div>
 </div>
+<script>
+$(document).ready(function() {
+	socket.emit('groups', {'user' : '{{User.email}}'});
 
+	socket.on('groupsrsp', function(msg) {
+		console.log('rsp');
+		var glength = msg.groups.length;
+		for (var i = 0; i < glength; i++) {
+			$('#GroupsList').append('<option>'+  msg.groups[i] + '</option>');
+		}
+	});
+
+	$('#GroupsList').change(function() {
+		var name = $('#GroupsList:selected').attr('value');
+		console.log('change');
+		console.log(name);
+		socket.emit('groupinfo', {'name' : name});
+	});
+});
+
+</script>
 {% endmacro %}
 
 {% macro AdminSettings(User, Form, Form2) %}
