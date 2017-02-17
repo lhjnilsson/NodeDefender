@@ -40,6 +40,8 @@ def Get(mac, sensorid, cmdclass, conn):
 def Save(mac, sensorid, cmd, conn, **kwargs):
     cmdclass = conn.hgetall(mac + sensorid + cmd)
     for key, value in kwargs.items():
+        print(key, value)
         cmdclass[key] = value
 
-    return conn.hmset(mac + sensorid + cmd, cmdclass)
+    conn.hmset(mac + sensorid + cmd, cmdclass)
+    return conn.bgsave()

@@ -12,18 +12,20 @@ def Supported(classname):
     '''
     Return True if the classname is Known
     '''
-    try: 
-        eval(classname + '.Info')()
-        return True
+    try:
+        return eval(classname + '.Info')()
     except NameError:
-        raise NotImplementedError
+        return False
 
-def Info(classname, classtypes):
+def Info(classname, classtypes = None):
     '''
     Returns Classname, flag if Class- types and Fields for Web
     '''
     try:
-        return eval(classname + '.Info')(classtypes)
+        if classtypes:
+            return eval(classname + '.Info')(classtypes)
+        else:
+            return eval(classname + '.Info')()
     except NameError:
         raise NotImplementedError
 
@@ -97,13 +99,11 @@ def PayloadSplitter(model=BaseModel):
         @wraps(func)
         def wrapper(payload):
             m = model()
-            for part in payload.split(' '):
-                try:
-                    key, value =  part.split('=')
-                    setattr(m, key, value)
-                except ValueError:
+            for key in dir(payload):
+                if '_' in key:
                     pass
-
+                else:
+                    setattr(m, key, getattr(payload, key))
             return func(m)
         return wrapper
     return decorate

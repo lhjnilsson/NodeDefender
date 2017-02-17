@@ -32,7 +32,7 @@ def Add(topic, payload, classnum = None):
         return False
     
     if classinfo.types:
-        mqtt.sensor.Sup(topic.macaddr, topic.sensorid, classname)
+        mqtt.sensor.Sup(topic.macaddr, topic.sensorid, classinfo.classname)
 
     CmdclassSQL.Add(topic.macaddr, topic.sensorid, classinfo.classnumber,
                     classinfo.classname)
