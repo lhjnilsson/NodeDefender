@@ -9,7 +9,7 @@ def Load(field, conn):
         return None
     f = {
         'name' : field.name,
-        'macaddr' : field.icpe.mac,
+        'macaddr' : field.icpe.macaddr,
         'sensorid' : field.sensor.sensorid,
         'cmdclass' : field.sensorclass.classname,
         'type' : field.type,
@@ -17,9 +17,9 @@ def Load(field, conn):
         'display' : field.display,
         'loaded_at' : str(datetime.now())
     }
-    conn.sadd(field.icpe.mac + field.sensor.sensorid + ':fields',
+    conn.sadd(field.icpe.macaddr + field.sensor.sensorid + ':fields',
               field.name)
-    conn.hmset(field.icpe.mac + field.sensor.sensorid + field.name, f)
+    conn.hmset(field.icpe.macaddr + field.sensor.sensorid + field.name, f)
     return f
 
 @redisconn

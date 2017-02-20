@@ -24,7 +24,7 @@ def Load(icpe, conn):
         return None
     i = {
         'name' : icpe.name,
-        'mac' : icpe.mac,
+        'mac' : icpe.macaddr,
         'ipaddr' : icpe.ipaddr,
         'online' : False,
         'battery' : None,
@@ -32,8 +32,8 @@ def Load(icpe, conn):
         'last_online' : False
     }
 
-    conn.sadd(icpe.mac + ":sensors", [sensor.sensorid for sensor in icpe.sensors])
-    return conn.hmset(icpe.mac, i)
+    conn.sadd(icpe.macaddr + ":sensors", [sensor.sensorid for sensor in icpe.sensors])
+    return conn.hmset(icpe.macaddr, i)
 
 @redisconn
 def Get(mac, conn):

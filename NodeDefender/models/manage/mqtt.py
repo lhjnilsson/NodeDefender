@@ -35,7 +35,7 @@ def Include(ipaddr, mac):
     mqtt.icpes.append(icpe)
     db.session.add(mqtt)
     db.session.commit()
-    logger.info("Included iCPE {} to MQTT {}:{}".format(icpe.mac, mqtt.ipaddr,
+    logger.info("Included iCPE {} to MQTT {}:{}".format(icpe.macaddr, mqtt.ipaddr,
                                                         str(mqtt.port)))
     return mqtt
 
@@ -51,7 +51,7 @@ def Exclude(ipaddr, mac):
     mqtt.icpes.remove(icpe)
     db.session.add(mqtt)
     db.session.commit()
-    logger.info("Removed iCPE {} from MQTT {}:{}".fomrat(icpe.mac, mqtt.ipaddr,
+    logger.info("Removed iCPE {} from MQTT {}:{}".fomrat(icpe.macaddr, mqtt.ipaddr,
                                                          str(mqtt.port)))
     return mqtt
 

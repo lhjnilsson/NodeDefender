@@ -11,7 +11,7 @@ def Create(icpe, sensorid, sensorinfo):
     icpe.sensors.append(sensor)
     db.session.add(icpe, sensor)
     db.session.commit()
-    logger.info("Created Sensor {}:{}".format(icpe.mac, sensor.sensorid))
+    logger.info("Created Sensor {}:{}".format(icpe.macaddr, sensor.sensorid))
     return sensor
 
 def Delete(sensor, icpe = None):
@@ -25,7 +25,7 @@ def Delete(sensor, icpe = None):
 
     db.session.delete(sensor)
     db.session.commit()
-    logger.info("Deleted Sensor {}:{}".format(icpe.mac, sensor.sensorid))
+    logger.info("Deleted Sensor {}:{}".format(icpe.macaddr, sensor.sensorid))
     return sensor
 
 def Save(sensor):

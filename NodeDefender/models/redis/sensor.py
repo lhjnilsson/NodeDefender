@@ -38,11 +38,11 @@ def Load(sensor, conn):
         'manufacturerid' : sensor.manufacturerid,
         'brand' : sensor.brand
     }
-    logger.info("Loaded Sensor {}:{} from Object".format(sensor.icpe.mac,
+    logger.info("Loaded Sensor {}:{} from Object".format(sensor.icpe.macaddr,
                                                          sensor.sensorid))
-    conn.sadd(sensor.icpe.mac + sensor.sensorid + ':classes', \
+    conn.sadd(sensor.icpe.macaddr + sensor.sensorid + ':classes', \
               [cmdclass.classname for cmdclass in sensor.cmdclasses])
-    return conn.hmset(sensor.icpe.mac + sensor.sensorid, s)
+    return conn.hmset(sensor.icpe.macaddr + sensor.sensorid, s)
 
 @redisconn
 def Get(mac, sensorid, conn):

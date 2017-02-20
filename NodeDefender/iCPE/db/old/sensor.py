@@ -78,11 +78,11 @@ def LoadFromObject(sensor, conn):
         'cmdclass' : supported
     }
     if not len(supported):
-        mqtt.sensor.Query(sensor.icpe.mac, str(sensor.sensorid))
+        mqtt.sensor.Query(sensor.icpe.macaddr, str(sensor.sensorid))
 
-    logger.info("Loaded Sensor {}:{} from Object".format(sensor.icpe.mac,
+    logger.info("Loaded Sensor {}:{} from Object".format(sensor.icpe.macaddr,
                                                          sensor.sensorid))
-    conn.hmset(sensor.icpe.mac + str(sensor.sensorid), s)
+    conn.hmset(sensor.icpe.macaddr + str(sensor.sensorid), s)
     return s
 
 @redisconn

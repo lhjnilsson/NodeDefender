@@ -41,7 +41,7 @@ function checkboxClick(box, icpe, nodeid, cmdclass) {
 }
 
 icpesocket.on('connect', function() {
-	icpesocket.emit('JoiniCPE', {icpe : '{{sensors[0].icpe.macaddr}}');
+	icpesocket.emit('JoiniCPE', {icpe : '{{sensors[0].icpe.macaddraddr}}');
 });
 
 icpesocket.on('iCPEEvent', function(msg) {

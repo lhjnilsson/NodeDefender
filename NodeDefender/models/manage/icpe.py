@@ -33,7 +33,7 @@ def Create(mac, node = None, ipaddr = None, port = None):
 
     db.session.add(icpe)
     db.session.commit()
-    logger.info("Added iCPE: {}".format(icpe.mac))
+    logger.info("Added iCPE: {}".format(icpe.macaddr))
     return icpe
 
 def Delete(icpe):
@@ -42,7 +42,7 @@ def Delete(icpe):
 
     db.session.delete(icpe)
     db.session.commit()
-    logger.info("Deleted iCPE: {}".format(icpe.mac))
+    logger.info("Deleted iCPE: {}".format(icpe.macaddr))
     return True
 
 def Join(icpe, node):
@@ -59,7 +59,7 @@ def Join(icpe, node):
     node.icpe = icpe
     db.session.add(node)
     db.session.commit()
-    logger.info("Added iCPE: {} to Node: {}".format(icpe.mac, node.name))
+    logger.info("Added iCPE: {} to Node: {}".format(icpe.macaddr, node.name))
 
 def Leave(icpe, node):
     if type(icpe) is str:
@@ -75,4 +75,4 @@ def Leave(icpe, node):
     group.icpes.remove(icpe)
     db.session.add(group)
     db.session.commit()
-    logger.info("Removed iCPE: {} from Node: {}".format(icpe.mac, node.name))
+    logger.info("Removed iCPE: {} from Node: {}".format(icpe.macaddr, node.name))

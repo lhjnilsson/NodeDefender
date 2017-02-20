@@ -31,7 +31,7 @@ def Load(mac, conn):
 
     i = {
         'name' : icpe.name,
-        'mac' : icpe.mac,
+        'mac' : icpe.macaddr,
         'ipaddr' : icpe.ipaddr,
         'online' : False,
         'battery' : None,
@@ -46,15 +46,15 @@ def Load(mac, conn):
 def LoadFromObject(icpe, conn):
     i = {
         'name' : icpe.name,
-        'mac' : icpe.mac,
+        'mac' : icpe.macaddr,
         'ipaddr' : icpe.ipaddr,
         'online' : False,
         'battery' : None,
         'loaded_at' : datetime.now(),
         'last_online' : False
     }
-    conn.hmset(icpe.mac, i)
-    logger.info("Loaded iCPE: {} from Object".format(icpe.mac))
+    conn.hmset(icpe.macaddr, i)
+    logger.info("Loaded iCPE: {} from Object".format(icpe.macaddr))
     return i
 
 @redisconn

@@ -33,7 +33,7 @@ def Load(icpes = None):
                 try:
                     CmdclassRedis.Load(cmdclass)
                 except NotImplementedError:
-                    db.cmdclass.Add(icpe.mac, sensor.sensorid,
+                    db.cmdclass.Add(icpe.macaddr, sensor.sensorid,
                                           cmdclass.classnumber)
 
     for field in FieldSQL.List():

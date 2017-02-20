@@ -224,7 +224,7 @@ class iCPEset:
 
     def __contains__(self, mac):
         try:
-            return [icpe for icpe in self.iCPEs if mac == icpe.mac][0]
+            return [icpe for icpe in self.iCPEs if mac == icpe.macaddr][0]
         except IndexError:
             return False
 
@@ -251,13 +251,13 @@ class iCPEset:
     def _MQTTSubscriber(self):
         while True:
             mac, topic, payload = inMQTTQueue.get()
-            icpe = [icpe for icpe in self.iCPEs if mac == icpe.mac][0]
+            icpe = [icpe for icpe in self.iCPEs if mac == icpe.macaddr][0]
             if icpe:
                 icpe.callback(topic, paylod)
 
     def LoadiCPEs(self, icpes):
         for icpe in icpes:
-            self.iCPEs.add(self.iCPE(icpe.mac, False, iCPE.FromDB(icpe)))
+            self.iCPEs.add(self.iCPE(icpe.macaddr, False, iCPE.FromDB(icpe)))
         else:
             return None
         return len(icpes)

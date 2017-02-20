@@ -33,7 +33,7 @@ def list():
     'List Sensors'
     for s in sensor.List():
         print("ID: {}, Name: {}".format(s.id, s.name))
-        print("MAC: {}, Sensor ID: {}".format(s.icpe.mac, s.sensorid))
+        print("MAC: {}, Sensor ID: {}".format(s.icpe.macaddr, s.sensorid))
         print("-------------")
 
 @manager.option('-m', '--mac', dest='mac', default=None)
@@ -50,4 +50,4 @@ def info(mac, index):
         print("Unable to find iCPE {}".format(mac))
 
     print('ID: {}, Name: {}'.format(s.id, s.name))
-    print('iCPE: {}, Mac: {}'.format(s.icpe.name, s.icpe.mac))
+    print('iCPE: {}, Mac: {}'.format(s.icpe.name, s.icpe.macaddr))

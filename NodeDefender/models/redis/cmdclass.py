@@ -20,9 +20,9 @@ def Load(cmdclass, conn):
     if cmdclass.classname is None:
         raise NotImplementedError('Classname undefined')
 
-    conn.sadd(cmdclass.sensor.icpe.mac + cmdclass.sensor.sensorid +\
+    conn.sadd(cmdclass.sensor.icpe.macaddr + cmdclass.sensor.sensorid +\
               ":classes", cmdclass.classname)
-    return conn.hmset(cmdclass.sensor.icpe.mac + \
+    return conn.hmset(cmdclass.sensor.icpe.macaddr + \
                       cmdclass.sensor.sensorid + \
                       cmdclass.classname, \
                         {

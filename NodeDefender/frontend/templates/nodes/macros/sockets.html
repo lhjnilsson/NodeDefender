@@ -16,7 +16,7 @@ socket.on('SensorRespond', function(sensor, fields) {
 
 {% for sensor in iCPE.sensors %}
 	$(document.getElementById("Box" + {{sensor.sensorid}})).addClass("blur");
-	socket.emit('SensorGet', {macaddr : "{{sensor.icpe.mac}}", sensorid : "{{sensor.sensorid}}"});
+	socket.emit('SensorGet', {macaddr : "{{sensor.icpe.macaddr}}", sensorid : "{{sensor.sensorid}}"});
 {% endfor %}
 
 </script>
