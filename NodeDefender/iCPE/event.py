@@ -4,7 +4,7 @@ from .decorators import TopicToTuple
 from ..models.redis import cmdclass as CmdclassRedis
 from ..models.redis import field as FieldRedis
 from .zwave import ZWaveEvent
-from ..conn.websocket import CmdclassEvent
+from ..conn.websocket import FieldEvent
 
 @celery.task
 @TopicToTuple
@@ -16,7 +16,7 @@ def MQTT(topic, payload, mqttsrc):
     if 'value' in dir(event):
         FieldRedis.Update(topic.macaddr, topic.sensorid, event.name,
                           event.value)
-        CmdclassEvent(topic.macaddr, topic.sensorid, topic.cmdclass,
+        FieldEvent(topic.macaddr, topic.sensorid, topic.cmdclass,
                       event.value)
     return True
 

@@ -1,4 +1,5 @@
 {% macro SensorBox(Sensor) %}
+{% from "nodes/macros/fields.html" import Switch, Box, Value %}
 <div class="col-lg-2">
 	<h3 style="max-width: 80%;">
 		{{ Sensor.name }}
@@ -10,23 +11,13 @@
 		<form name="#" class="form-horizontal" method="#">
 		{% for field in Sensor.fields %}
 		{% if field.display == True %}
-		<div class="form-group">
-			<label class="col-sm-2 control-label">{{field.name}}</label>
-			<div class="col-sm-5 col-sm-offset-5">
-				{% if field.type == 'checkbox' %}
-				{% if field.readonly %}
-				<label class="lightbox" id="{{Sensor.nodeid}}{{field.name}}"></label>
-				{% else %}
-				<label class="switch">
-					<input type="checkbox" id="{{Sensor.nodeid}}{{field.name}}" onclick="checkboxChange(this, '{{Sensor.icpe.mac}}', '{{Sensor.sensorid}}','{{field.sensorclass.classname}}, None');">
-					<div class="slider"></div>
-				</label>
-				{% endif %}
-				{% else %}
-				<p id="{{Sensor.nodeid}}{{field.name}}">0.0</p>
-				{% endif %}
-			</div>
-		</div>
+			{% if field.type == 'switch' %}
+				{{ Switch(field) }}
+			{% elif field.type == 'box' %}
+				{{ Box(field) }}
+			{% elif field.type == 'value' %}
+				{{ Value(field) }}
+			{% endif %}
 		{% endif %}
 		{% endfor %}
 		</form>

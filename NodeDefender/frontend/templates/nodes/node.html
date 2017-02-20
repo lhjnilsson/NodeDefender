@@ -1,40 +1,11 @@
 {% extends "base.html" %}
 {% block content %}
-<script>
+{% from "nodes/macros/sockets.html" import Lookup, EventListener %}
+{{ EventListener(iCPE.mac) }}
 
+<script>
 namespace = '/nodedata';
 var socket = io.connect('http://' + document.domain + ':' + location.port + namespace);
-
-socket.on('connect', function() {
-    socket.emit('JoinNode', {macaddr : '{{iCPE.mac}}'});
-});
-
-function checkboxChange(box, macaddr, sensorid, cmdclass, classtype) {
-	if (box.checked) {
-		socket.emit('event', {macaddr : macaddr, sensorid : sensorid, cmdclass : cmdclass, classtype : classtype, event : '1'});
-	} else {
-		socket.emit('event', {macaddr : macaddr, sensorid : sensorid, cmdclass : cmdclass, classtype : classtype, event : '0'});
-	}
-}
-
-socket.on('roomevent', function(msg) {
-	console.log(msg);
-	if (msg['datatype'] == "<class 'bool'>") {
-		checkbox = document.getElementById(msg['nodeid']+msg['attribute']);
-		if ($(checkbox).hasClass('lightbox')) {
-			if (msg['value']) {
-				$(checkbox).addClass('lightboxlight');
-			} else {
-				$(checkbox).removeClass('lightboxlight');
-			}
-		}	else {
-			$(checkbox).prop('checked', msg['value']);
-		} 
-	} else {
-		$('#'+msg['nodeid']+msg['attribute']).text(msg['value'])
-	}
-});
-
 </script>
 
 <div class="row">
@@ -100,15 +71,10 @@ socket.on('roomevent', function(msg) {
 		{% endif %}
 	</div>
 </div>
+
 {{ ModalSettings(Node, iCPEForm, LocationForm) }}
 {{ ModalDelete() }}
-{% from "nodes/macros/sockets.html" import Lookup, EventListener %}
-<script>
-$(document).ready(function() {
-$('input[name="alias"]').val('Alias');
-})
-</script>
-{{ EventListener(iCPE.mac) }}
-// iCPEInfo
+
 {{ Lookup(iCPE) }}
+
 {% endblock %}

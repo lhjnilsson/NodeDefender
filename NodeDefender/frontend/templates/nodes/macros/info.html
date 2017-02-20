@@ -32,6 +32,7 @@
 {% endmacro %}
 
 {% macro ModaliCPEInfo(iCPE, moment) %}
+{% from "macros/info.html" import Field %}
 <div class="modal fade" id="iCPEInfo" role="dialog">
 	<div class="modal-dialog">
 		<div class="modal-content">
@@ -40,35 +41,15 @@
 				<h2 class="modal-title">Information</h2>
 			</div>
 			<div class="modal-body">
-				<table class="table">
-					<thead>
-					</thead>
-					<tbody>
-						<tr>
-							<td>Alias</td>
-							<td>{{iCPE.alias}}</td>
-						</tr>
-						<tr>
-							<td>Mac</td>
-							<td>{{iCPE.mac}}</td>
-						</tr>
-						<tr>
-							<td>Street</td>
-							<td>{{iCPE.node.location.street}}</td>
-						</tr>
-						<tr>
-							<td>City</td>
-							<td>{{iCPE.node.location.city}}</td>
-						</tr>
-						<tr>
-							<td>Created</td>
-							<td>{{moment(iCPE.created_on).format('Do MMM YYYY, HH:mm:ss')}}</td>
-						<tr>
-							<td>Last Online</td>
-							<td>{{moment(iCPE.last_online).format('Do MMM YYYY, HH:mm:ss')}}</td>
-						</tr>
-					</tbody>
-				</table>
+				<h3>General Information</h3>
+				{{ Field('Name', {{iCPE.node.Name}}) }}
+				{{ Field('Mac', {{iCPE.macaddr}}) }}
+				{{ Field('Created on', {{moment(iCPE.created_on).format('Do MMM YYY, HH:MM:SS')}}) }}
+				<h3>Location</h3>
+				{{ Field('Street', {{iCPE.node.location.street}}) }}
+				{{ Field('City', {{iCPE.node.location.city}}) }}
+				{{ Field('Latitude', {{iCPE.node.location.geolat}}) }}
+				{{ Field('Longitude', {{iCPE.node.location.geolong}}) }}
 			</div>
 		</div>
 	</div>

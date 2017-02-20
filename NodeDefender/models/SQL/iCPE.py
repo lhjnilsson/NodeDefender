@@ -9,7 +9,7 @@ class iCPEModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     node_id = db.Column(db.Integer, db.ForeignKey('node.id'))
     name = db.Column(db.String(64))
-    mac = db.Column(db.String(12), unique=True)
+    macaddr = db.Column(db.String(12), unique=True)
     ipaddr = db.Column(db.String(32))
     online =  db.Column(db.Boolean)
     created_on = db.Column(db.DateTime)
@@ -20,8 +20,8 @@ class iCPEModel(db.Model):
     fields = db.relationship('FieldModel', backref='icpe',
                                 cascade='save-update, merge, delete')
 
-    def __init__(self, mac):
-        self.mac = mac.upper()
+    def __init__(self, macaddr):
+        self.macaddr = macaddr.upper()
         self.created_on = datetime.now()
 
     def __repr__(self):

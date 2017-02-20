@@ -26,9 +26,23 @@ socket.on('SensorRespond', function(sensor, fields) {
 <script>
 var eventsocket = io.connect('http://' + document.domain + ':' + location.port + '/icpe' + '{{macaddr}}');
 
-function switchChange(box, value) {
 
+function switchChange(box, macaddr, sensorid, cmdclass, classtype) {
+	if (box.checked) {
+		socket.emit('event', {macaddr : macaddr, sensorid : sensorid, cmdclass : cmdclass, classtype : classtype, event : '1'});
+	} else {
+		socket.emit('event', {macaddr : macaddr, sensorid : sensorid, cmdclass : cmdclass, classtype : classtype, event : '0'});
+	}
 }
+
+function switchEvent(field, value) {
+	if (value) {
+		field.attr("checked", true);
+	} else {
+		field.attr("checked" false);
+	}
+}
+
 
 function boxChange(box, value) {
  if(value) {
@@ -42,8 +56,17 @@ function fieldChange(box, value) {
 	$(box).text(value);
 }
 
-eventsocket.on('CmdclassEvent', function(msg) {
-	console.log(msg.sensorid);
+
+
+eventsocket.on('FieldEvent', function(sensor, field, value) {
+	f = document.getElementById(sensor.sensorid+field.name);
+	if (field.type == 'switch') {
+		switchEvent(f, value);
+	} else if (field.type == 'box') {
+		boxEvent(f, value);
+	} else if (field.type == 'value') {
+		valueEvent(f, value);
+	}
 });
 </script>
 {% endmacro %}
