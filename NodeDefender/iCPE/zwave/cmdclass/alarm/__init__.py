@@ -1,7 +1,7 @@
 from ... import BaseModel, PayloadSplitter, DataDescriptor, ClassInfo
 zalm = {'06' : 'AccessControl'}
 
-class AlarmModel(BaseModel):
+class AlarmModel:
     v1alm = DataDescriptor('v1alm')
     zalm = DataDescriptor('zalm')
     evt = DataDescriptor('evt')
@@ -28,9 +28,13 @@ def Info(classtype = None):
     classinfo.classname = 'alarm'
     classinfo.classnumber = '71'
     classinfo.types = True
-    classinfo.fields = {}
+    classinfo.fields = []
     if classtype:
-        classinfo.fields = eval(zalm[classtype] + '.Fields')()
+        try:
+            classinfo.fields.append(eval(zalm[classtype] + '.Fields')())
+        except KeyError as e:
+            print("Unable to add {} for class {}".format(classtype,
+                                                         classinfo.classname))
     return classinfo
 
 def Load():
@@ -40,7 +44,7 @@ def Load():
 def Event(payload):
     try:
         return eval(zalm[payload.zalm] + '.Event')(payload)
-    except NameError as e:
+    except KeyError as e:
         print(str(e))
 
 from . import AccessControl

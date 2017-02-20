@@ -3,7 +3,7 @@ from functools import wraps
 from ... import loggHandler
 import logging
 
-pool = ConnectionPool(host='localhost', port=6379, db=0)
+pool = ConnectionPool(host='localhost', port=6379, db=0, decode_responses=True)
 
 logger = logging.getLogger('Redis')
 logger.setLevel('INFO')

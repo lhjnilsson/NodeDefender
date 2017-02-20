@@ -1,8 +1,8 @@
-from ... import BaseModel, PayloadSplitter, DataDescriptor
+from ... import BaseModel, PayloadSplitter, DataDescriptor, ClassInfo
 
 mtype = {'1' : 'Electric'}
 
-class MeterModel(BaseModel):
+class MeterModel:
     unit = DataDescriptor('unit')
     type = DataDescriptor('type')
     precision = DataDescriptor('precision')
@@ -25,8 +25,19 @@ class MeterModel(BaseModel):
         self.rateType = None
         super().__init__()
 
-def Info():
-    return 'meter', True
+def Info(classtype = None):
+    classinfo = ClassInfo()
+    classinfo.classname = 'meter'
+    classinfo.classnum = '25'
+    classinfo.types = True
+    classinfo.fields = [{}]
+    if classtype:
+        try:
+            classinfo.fields.append(eval(mtype[classtype] + '.Fields')())
+        except KeyError:
+            print("Unable to add {} for class {}".format(classtype,
+                                                         classinfo.clasname))
+    return classinfo
 
 def Load(classtypes):
     return {'meter' : 0}
@@ -35,7 +46,7 @@ def Load(classtypes):
 def Event(payload):
     try:
         return eval(mtype[payload.type] + '.Event')(payload)
-    except NameError as e:
+    except KeyError as e:
         print(str(e))
 
 from . import Electric

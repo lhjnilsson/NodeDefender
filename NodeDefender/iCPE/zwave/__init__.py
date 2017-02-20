@@ -89,22 +89,26 @@ class BaseModel:
         self.classnumber = None
         self.classname = None
         self.subfunc = None
-        self._retdata = {}
+        self.value = None
     
     def __call__(self):
         return self._retdata
+
+class ZWaveEvent:
+    def __init__(self):
+        super().__init__()
 
 def PayloadSplitter(model=BaseModel):
     def decorate(func):
         @wraps(func)
         def wrapper(payload):
-            m = model()
+            ZWaveEvent = type('ZWaveEvent', (model, BaseModel), dict())()
             for key in dir(payload):
                 if '_' in key:
                     pass
                 else:
-                    setattr(m, key, getattr(payload, key))
-            return func(m)
+                    setattr(ZWaveEvent, key, getattr(payload, key))
+            return func(ZWaveEvent)
         return wrapper
     return decorate
 

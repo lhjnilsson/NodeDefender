@@ -8,7 +8,7 @@
 	</h3>
 	<div class="box" id="Box{{Sensor.sensorid}}">
 		<form name="#" class="form-horizontal" method="#">
-		{% for field in Sensor.webfields %}
+		{% for field in Sensor.fields %}
 		{% if field.display == True %}
 		<div class="form-group">
 			<label class="col-sm-2 control-label">{{field.name}}</label>
@@ -23,7 +23,7 @@
 				</label>
 				{% endif %}
 				{% else %}
-				<p id="{{Sensor.nodeid}}{{field.name}}"></p>
+				<p id="{{Sensor.nodeid}}{{field.name}}">0.0</p>
 				{% endif %}
 			</div>
 		</div>
@@ -102,11 +102,3 @@ icpesocket.on('iCPEEvent', function(msg) {
 </div>
 {% endmacro %}
 
-{% macro SensorLookup(sensor) %}
-$(document.getElementById("Box" + {{sensor.sensorid}})).addClass("blur");
-console.log({{sensor.sensorid}});
-{% for cmdclass in sensor.cmdclasses %}
-socket.emit('LookupGet', {macaddr : "{{sensor.icpe.mac}}", sensorid : "{{sensor.sensorid}}", classname : "{{cmdclass.classname}}"});
-{% endfor %}
-
-{% endmacro %}

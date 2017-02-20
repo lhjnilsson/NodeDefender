@@ -1,5 +1,7 @@
 from ...models.manage import cmdclass as CmdclassSQL
 from ...models.redis import cmdclass as CmdclassRedis
+from ...models.manage import field as FieldSQL
+from ...models.redis import field as FieldRedis
 from . import redisconn, icpe, sensor
 from .. import mqtt, zwave
 from ... import celery
@@ -36,20 +38,31 @@ def Add(topic, payload, classnum = None):
 
     CmdclassSQL.Add(topic.macaddr, topic.sensorid, classinfo.classnumber,
                     classinfo.classname)
-    if classinfo.fields:
-        CmdclassSQL.AddField(topic.macaddr, topic.sensorid, classinfo.classname,
-                            **classinfo.fields)
+    for field in classinfo.fields:
+        if not len(field):
+            continue
+        FieldRedis.Load(FieldSQL.Add(topic.macaddr, topic.sensorid, classinfo.classname,
+                            **field))
     return CmdclassRedis.Load(topic.macaddr, topic.sensorid, classinfo.classname)
 
-def AddTypes(topic, payload, classtypes):
-    CmdclassSQL.AddTypes(topic.macaddr, topic.sensorid, topic.cmdclass, classtypes)
-    for classtype in classtypes:
+def AddTypes(topic, payload):
+    try:
+        types = payload.typelist.split(',')
+    except AttributeError:
+        types = payload.type
+
+    CmdclassSQL.AddTypes(topic.macaddr, topic.sensorid, topic.cmdclass,
+                         types)
+    for classtype in types:
         try:
             classinfo = zwave.Info(topic.cmdclass, classtype)
         except NotImplementedError:
             pass
 
-        if classinfo.fields:
-            CmdclassSQL.AddField(topic.macaddr, topic.sensorid,
-                                topic.cmdclass, **classinfo.fields)
-    return CmdclassRedis.Load(topic.macaddr, topic.sensorid, classname)
+        for field in classinfo.fields:
+            if not len(field):
+                continue
+            FieldRedis.Load(FieldSQL.Add(topic.macaddr, topic.sensorid,
+                                topic.cmdclass, **field))
+             
+    return CmdclassRedis.Load(topic.macaddr, topic.sensorid, topic.cmdclass)

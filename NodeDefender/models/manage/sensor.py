@@ -1,4 +1,4 @@
-from ..SQL import iCPEModel, SensorModel, SensorClassModel, WebField
+from ..SQL import iCPEModel, SensorModel, SensorClassModel 
 from ... import db
 from . import logger
 

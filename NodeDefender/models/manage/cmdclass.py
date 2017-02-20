@@ -1,4 +1,4 @@
-from ..SQL import iCPEModel, SensorModel, SensorClassModel, WebField
+from ..SQL import iCPEModel, SensorModel, SensorClassModel, FieldModel
 from ... import db
 from . import logger, sensor
 
@@ -18,6 +18,8 @@ def Add(mac, sensorid, classnumber, classname):
         return s
 
     s = sensor.Get(mac, sensorid)
+    if s is None:
+        print('Sensor {} not found'.format(sensorid))
     cmdclass = SensorClassModel(classnumber, classname)
     s.cmdclasses.append(cmdclass)
     db.session.add(s, cmdclass)
@@ -35,28 +37,9 @@ def AddTypes(mac, sensorid, classname, classtypes):
     if cmdclass is None:
         return False
 
-    cmdclass.classtypes = classtypes
+    cmdclass.classtypes = str(classtypes)
     db.session.add(cmdclass)
     db.session.commit()
     logger.info("Added Classtypes {}:{} to Sensor {}:{}".\
                 format(classname, classtypes, mac, sensorid))
     return cmdclass
-
-def AddField(icpe, sensor, cmdclass, name, type, readonly):
-    cmdclass = \
-    SensorClassModel.query.join(SensorModel).join(iCPEModel).\
-            filter(SensorClassModel.classname == cmdclass).\
-            filter(SensorModel.sensorid == sensor).\
-            filter(iCPEModel.mac == icpe).first()
-
-    sensor = cmdclass.sensor
-    icpe = sensor.icpe
-    if [f for f in cmdclass.webfields if f.name == name]:
-        return True
-    
-    field = WebField(name, type, readonly)
-    icpe.webfields.append(field)
-    sensor.webfields.append(field)
-    cmdclass.webfields.append(field)
-    db.session.add(cmdclass)
-    return db.session.commit()

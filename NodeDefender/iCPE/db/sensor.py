@@ -17,14 +17,10 @@ def Verify(topic, payload, mqttsrc = None):
 
     icpe.Verify(topic, payload, mqttsrc)
     Add(topic, payload)
-    return mqtt.sensor.Query(topic.macaddr, topic.sensorid, **mqttsrc)
+    return True
 
 def Add(topic, payload):
-    try:
-        zinfo = zwave.db.SensorInfo(payload.vid, payload.pid)
-    except AttributeError:
-        print(payload)
-        zinfo = None
+    zinfo = zwave.db.SensorInfo(payload.vid, payload.pid)
     SensorSQL.Create(topic.macaddr, topic.sensorid, zinfo)
     SensorRedis.Load(topic.macaddr, topic.sensorid)
     return True

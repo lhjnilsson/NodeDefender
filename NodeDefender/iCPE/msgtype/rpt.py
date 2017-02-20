@@ -18,8 +18,7 @@ def event(topic, payload, mqttsrc):
 @CommonPayload
 def sup(topic, payload, mqttsrc):
     try:
-        db.cmdclass.AddTypes(topic.macaddr, topic.sensorid, topic.cmdclass,
-                         payload.typelist)
+        db.cmdclass.AddTypes(topic, payload)
     except AttributeError:
         pass
 

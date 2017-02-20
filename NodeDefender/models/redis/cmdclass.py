@@ -28,8 +28,8 @@ def Load(cmdclass, conn):
                         {
                             'cmdclass' : cmdclass.classnumber,
                            'cmdname' : cmdclass.classname,
-                           'last_updated' : str(datetime.now),
-                           'loaded_at' : str(datetime.now),
+                           'last_updated' : str(datetime.now()),
+                           'loaded_at' : str(datetime.now()),
                        })
 
 @redisconn
@@ -37,11 +37,14 @@ def Get(mac, sensorid, cmdclass, conn):
     return conn.hgetall(mac + sensorid + cmdclass)
 
 @redisconn
-def Save(mac, sensorid, cmd, conn, **kwargs):
-    cmdclass = conn.hgetall(mac + sensorid + cmd)
-    for key, value in kwargs.items():
-        print(key, value)
-        cmdclass[key] = value
+def Fields(mac, sensorid, cmdclass, conn):
+    fieldlist = conn.smembers(mac + sensorid + cmdclass + ':fields')
+    return [field for field in fieldlist]
 
-    conn.hmset(mac + sensorid + cmd, cmdclass)
-    return conn.bgsave()
+@redisconn
+def Save(mac, sensorid, cmd, conn, **kwargs):
+    for key, value in kwargs.items():
+        conn.hmset(mac + sensorid + cmd, {key : value})
+        
+    conn.hmset(mac + sensorid + cmd, {'last_updated' : str(datetime.now())})
+    return True

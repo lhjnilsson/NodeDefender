@@ -55,5 +55,9 @@ def Save(mac, sid, conn, **kwargs):
     return conn.hmset(mac + str(sid), kwargs)
 
 @redisconn
+def Fields(mac, sensorid, conn):
+    return conn.smembers(mac + sensorid + ':fields')
+
+@redisconn
 def Cmdclasses(mac, sensorid, conn):
     return conn.smembers(mac + sensorid + ':classes')

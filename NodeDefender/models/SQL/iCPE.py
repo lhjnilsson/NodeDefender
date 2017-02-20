@@ -17,7 +17,7 @@ class iCPEModel(db.Model):
     sensors = db.relationship('SensorModel', backref='icpe',
                               cascade='save-update, merge, delete')
     notesticky = db.Column(db.String(150))
-    webfields = db.relationship('WebField', backref='icpe',
+    fields = db.relationship('FieldModel', backref='icpe',
                                 cascade='save-update, merge, delete')
 
     def __init__(self, mac):
@@ -27,8 +27,8 @@ class iCPEModel(db.Model):
     def __repr__(self):
         return '<Name %r, Mac %r>' % (self.name, self.mac)
 
-class WebField(db.Model):
-    __tablename__ = 'webfield'
+class FieldModel(db.Model):
+    __tablename__ = 'field'
     id = db.Column(db.Integer, primary_key=True)
     
     icpe_id = db.Column(db.Integer, db.ForeignKey('icpe.id'))
@@ -67,14 +67,15 @@ class SensorModel(db.Model):
   
     cmdclasses = db.relationship('SensorClassModel', backref='sensor',
                                 cascade='save-update, merge, delete')
-    webfields = db.relationship('WebField', backref='sensor',
+    fields = db.relationship('FieldModel', backref='sensor',
                                 cascade='save-update, merge, delete')
 
     def __init__(self, sensorid, sensorinfo):
         self.sensorid = str(sensorid)
         if sensorinfo:
             for key, value in sensorinfo.items():
-                setattr(self, key, value)
+                print(key.lower(), value)
+                setattr(self, key.lower(), value)
 
             self.productname = self.name
 
@@ -85,7 +86,7 @@ class SensorClassModel(db.Model):
     classnumber = db.Column(db.String(20))
     classname = db.Column(db.String(20))
     classtypes = db.Column(db.String(200))
-    webfields = db.relationship('WebField', backref='sensorclass',
+    fields = db.relationship('FieldModel', backref='sensorclass',
                                 cascade='save-update, merge, delete')
 
     def __init__(self, classnumber, classname):

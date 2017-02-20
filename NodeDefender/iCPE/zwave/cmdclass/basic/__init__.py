@@ -1,6 +1,6 @@
-from ... import BaseModel, PayloadSplitter, DataDescriptor, ClassInfo
+from ... import PayloadSplitter, DataDescriptor, ClassInfo
 
-class BasicModel(BaseModel):
+class BasicModel:
     value = DataDescriptor('value')
 
     def __init__(self):
@@ -22,9 +22,10 @@ def Load(classtypes):
 
 @PayloadSplitter(model=BasicModel)
 def Event(payload):
+    payload.name = 'basic'
     if payload.value == '0x00':
-        payload._retdata['basic'] = False
+        payload.value = False
     else:
-        payload._retdata['basic'] = True
+        payload.value = True
 
     return payload

@@ -1,0 +1,49 @@
+{% macro Lookup(iCPE) %}
+<script>
+socket.on('SensorRespond', function(sensor, fields) {
+	console.log(fields);
+	for (var field in fields) {
+		box = $(document.getElementById(sensor.sensorid + field.name));
+		if (field.type == 'checkbox') {
+			boxChange(box, field.value);
+		}
+		else if (field.type == ) {
+		}
+	}
+	console.log("Sensor Loaded " + sensor.sensorid);
+	$(document.getElementById("Box" + sensor.sensorid)).removeClass("blur");
+});
+
+{% for sensor in iCPE.sensors %}
+	$(document.getElementById("Box" + {{sensor.sensorid}})).addClass("blur");
+	socket.emit('SensorGet', {macaddr : "{{sensor.icpe.mac}}", sensorid : "{{sensor.sensorid}}"});
+{% endfor %}
+
+</script>
+{% endmacro %}
+
+{% macro EventListener(macaddr) %}
+<script>
+var eventsocket = io.connect('http://' + document.domain + ':' + location.port + '/icpe' + '{{macaddr}}');
+
+function switchChange(box, value) {
+
+}
+
+function boxChange(box, value) {
+ if(value) {
+	 $(box).addClass('lightboxlight');
+ } else {
+	 $(box).removeClass('lightboxlight');
+ }
+}
+
+function fieldChange(box, value) {
+	$(box).text(value);
+}
+
+eventsocket.on('CmdclassEvent', function(msg) {
+	console.log(msg.sensorid);
+});
+</script>
+{% endmacro %}

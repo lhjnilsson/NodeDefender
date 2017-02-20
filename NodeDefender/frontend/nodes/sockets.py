@@ -27,6 +27,8 @@ from flask_socketio import emit, send, disconnect, join_room, leave_room, \
 from ... import socketio
 from ...iCPE.event import Socket
 from ...models.redis import cmdclass as CmdclassRedis
+from ...models.redis import field as FieldRedis
+from ...models.redis import sensor as SensorRedis
 
 @socketio.on('event', namespace='/nodedata')
 def icpeevent(msg):
@@ -40,15 +42,22 @@ def icpeevent(msg):
     else:
         return False
 
-@socketio.on('join', namespace='/nodedata')
-def joinicpe(msg):
-    join_room(msg['room'])
-    return
+@socketio.on('SensorGet', namespace='/nodedata')
+def SensorGet(msg):
+    f = {}
+    sensor = SensorRedis.Get(msg['macaddr'], msg['sensorid'])
+    fields = SensorRedis.Fields(msg['macaddr'], msg['sensorid'])
+    for field in fields:
+        f[field] = FieldRedis.Get(msg['macaddr'], msg['sensorid'],
+                                              field)
+    
+    emit('SensorRespond', (sensor, f))
+    return True
 
-@socketio.on('LookupGet', namespace='/nodedata')
-def Lookup(msg):
-    print("Lookup")
-    rsp = CmdclassRedis.Get(msg['macaddr'], msg['sensorid'], msg['classname'])
-    print(rsp)
-    return
-
+@socketio.on('CmdclassGet', namespace='/nodedata')
+def CmdclassGet(sensor):
+    rsp = CmdclassRedis.Get(sensor['macaddr'], sensor['sensorid'], sensor['classname'])
+    fields = CmdclassRedis.Fields(sensor['macaddr'], sensor['sensorid'],
+                                  sensor['classname'])
+    emit('CmdclassRespond', {'rsp' : rsp, 'fields' : fields})
+    return True

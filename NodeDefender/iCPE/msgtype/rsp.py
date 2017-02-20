@@ -38,15 +38,16 @@ def qry(topic, payload, mqttsrc):
     if topic.sensorid < '2' or topic.sensorid == 'sys':
         pass
     else:
-        db.cmdclass.Add(topic, payload, payload.clslist_0.split(','))
-
+        db.sensor.Verify(topic, payload, mqttsrc)
+        for classnum in payload.clslist_0.split(','):
+            db.cmdclass.Add(topic, payload, classnum)
     return None, None
 
 @VerifyiCPE
 @CommonPayload
 def sup(topic, payload, mqttsrc):
     try:
-        db.cmdclass.AddTypes(topic, payload, topic.cmdclass, payload.typelist)
+        db.cmdclass.AddTypes(topic, payload, payload.typelist)
     except AttributeError:
         pass
 

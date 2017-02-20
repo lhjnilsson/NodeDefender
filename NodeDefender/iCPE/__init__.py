@@ -1,5 +1,7 @@
 from .. import celery, loggHandler
 from ..models.manage import icpe as iCPESQL
+from ..models.manage import field as FieldSQL
+from ..models.redis import field as FieldRedis
 from ..models.redis import icpe as iCPERedis
 from ..models.redis import sensor as SensorRedis
 from ..models.redis import cmdclass as CmdclassRedis
@@ -33,7 +35,9 @@ def Load(icpes = None):
                 except NotImplementedError:
                     db.cmdclass.Add(icpe.mac, sensor.sensorid,
                                           cmdclass.classnumber)
-            
+
+    for field in FieldSQL.List():
+        FieldRedis.Load(field)
     return True
 
 

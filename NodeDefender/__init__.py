@@ -30,12 +30,12 @@ from flask_socketio import SocketIO
 from flask_moment import Moment
 from flask_mail import Mail
 from apscheduler.schedulers.gevent import GeventScheduler
-from gevent import monkey, sleep
 from .factory import CreateApp, CreateLogging, CreateCelery
 from flask_security import Security, SQLAlchemyUserDatastore
 from .security.forms import LoginForm
 from redis import ConnectionPool
 from redlock import RedLock
+from gevent import monkey
 monkey.patch_all()
 
 # Setup logging
@@ -52,7 +52,8 @@ api = Api(app)
 RedisPool = ConnectionPool()
 
 # Initialize SocketIO
-socketio = SocketIO(app)
+socketio = SocketIO(app, message_queue='redis://localhost:6379/0',
+                    async_mode='gevent')
 
 # Initialize SQLAlchemy for Database
 db = SQLAlchemy(app)
