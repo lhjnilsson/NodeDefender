@@ -53,9 +53,9 @@
 {% macro GroupInfo(Group) %}
 {% from "macros/info.html" import Field %}
 <div class="row">
-	{{Field(Name, Group.name)}}
-	{{Field(Description, Group.description)}}
-	{{Field(Street, NA)}}
-	{{Field(City, NA)}}
+	{{Field('Name', Group.name)}}
+	{{Field('Description', Group.description)}}
+	{{Field('Street', NA)}}
+	{{Field('City', NA)}}
 </div>
 {% endmacro %}
