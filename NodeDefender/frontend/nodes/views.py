@@ -88,7 +88,7 @@ def NodesUpdate(mac):
 @NodeView.route('/nodes/list/<mac>/<nodeid>', methods=['GET', 'POST'])
 @login_required
 def NodesNodeConfigure(mac, nodeid):
-    iCPE = iCPEModel.query.filter_by(mac = mac).first()
+    iCPE = iCPEModel.query.filter_by(macaddr = mac).first()
     if iCPE is None:
         return redirect(url_for('index'))
     NodeBasic = NodeBasicForm()
@@ -111,7 +111,7 @@ def NodesNodeConfigure(mac, nodeid):
 def NodesNotesAdd(mac):
     if request.method == 'POST':
         note = request.form['note']
-        icpe = iCPEModel.query.filter_by(mac = mac).first()
+        icpe = iCPEModel.query.filter_by(macaddr = mac).first()
         dbnote = NodeNotesModel(current_user.email, note)
         icpe.notes.append(dbnote)
         db.session.add(icpe)
@@ -125,7 +125,7 @@ def NodesNotesAdd(mac):
 def NodesNoteSticky(mac):
     if request.method == 'POST':
         note = request.form['note']
-        icpe = iCPEModel.query.filter_by(mac = mac).first()
+        icpe = iCPEModel.query.filter_by(macaddr = mac).first()
         icpe.notesticky = note
         db.session.add(icpe)
         db.session.commit()
@@ -147,15 +147,15 @@ def DeleteNode(mac):
 @NodeView.route('/nodes/<mac>/<nodeid>/<cls>/<field>/hide')
 def NodesNodeClassHide(mac, nodeid, cls, field):
     if 1 < db.session.query(iCPEModel, NodeModel).\
-                            filter(iCPEModel.mac == mac).\
+                            filter(iCPEModel.macaddr == mac).\
                             filter(NodeModel.nodeid == int(nodeid)).count():
         CleanDuplicate(db.session.query(iCPEModel, NodeModel).\
-                                        filter(iCPEModel.mac == mac).\
+                                        filter(iCPEModel.macaddr == mac).\
                                         filter(NodeModel.nodeid == int(nodeid)).all())
     Cls = NodeClassModel.query.join(NodeModel).join(iCPEModel).\
             filter(NodeClassModel.commandclass == cls).\
             filter(NodeModel.nodeid == nodeid).\
-            filter(iCPEModel.mac == mac).first()
+            filter(iCPEModel.macaddr == mac).first()
     Cls.hiddenFields.append(NodeHiddenFieldModel(field))
     db.session.add(Cls)
     db.session.commit()
@@ -165,15 +165,15 @@ def NodesNodeClassHide(mac, nodeid, cls, field):
 @NodeView.route('/nodes/<mac>/<nodeid>/<cls>/<field>/display')
 def NodesNodeClassDisplay(mac, nodeid, cls, field):
     if 1 < db.session.query(iCPEModel, NodeModel).\
-                            filter(iCPEModel.mac == mac).\
+                            filter(iCPEModel.macaddr == mac).\
                             filter(NodeModel.nodeid == nodeid).count():
         CleanDuplicate(db.session.query(iCPEModel, NodeModel).\
-                                        filter(iCPEModel.mac == mac).\
+                                        filter(iCPEModel.macaddr == mac).\
                                         filter(NodeModel.nodeid == nodeid).all())
     Cls = NodeClassModel.query.join(NodeModel).join(iCPEModel).\
             filter(NodeClassModel.commandclass == cls).\
             filter(NodeModel.nodeid == nodeid).\
-            filter(iCPEModel.mac == mac).first()
+            filter(iCPEModel.macaddr == mac).first()
     
     for hiddenfield in Cls.hiddenFields:
         db.session.delete(hiddenfield)

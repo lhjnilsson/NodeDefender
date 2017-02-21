@@ -59,7 +59,7 @@ def Get(name = None, mac = None):
     if name:
         return NodeModel.query.filter_by(name = node).first()
     else:
-        return iCPEModel.query.filter_by(mac = mac).first().node
+        return iCPEModel.query.filter_by(macaddr = mac).first().node
 
 def List(user = None):
     if user:

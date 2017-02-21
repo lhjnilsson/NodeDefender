@@ -9,7 +9,7 @@ def Add(icpe, sensor, cmdclass, name, type, readonly):
     SensorClassModel.query.join(SensorModel).join(iCPEModel).\
             filter(SensorClassModel.classname == cmdclass).\
             filter(SensorModel.sensorid == sensor).\
-            filter(iCPEModel.mac == icpe).first()
+            filter(iCPEModel.macaddr == icpe).first()
     
     sensor = cmdclass.sensor
     icpe = sensor.icpe

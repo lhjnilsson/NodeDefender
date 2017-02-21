@@ -37,7 +37,7 @@ def GetFA(key):
         return 'question'
 
 def ZWaveEvent(**kwargs):
-    icpe = iCPEModel.query.filter_by(mac = kwargs['mac']).first()
+    icpe = iCPEModel.query.filter_by(macaddr = kwargs['mac']).first()
     if not icpe:
         return
     FAIcon = GetFA(kwargs['attribute'] + str(kwargs['value']))
@@ -47,7 +47,7 @@ def ZWaveEvent(**kwargs):
     db.session.commit()
 
 def PowerEvent(**kwargs):
-    icpe = iCPEModel.query.filter_by(mac = kwargs['mac']).first()
+    icpe = iCPEModel.query.filter_by(macaddr = kwargs['mac']).first()
     if icpe is None:
         return
     FAIcon = GetFA('Power')
@@ -57,7 +57,7 @@ def PowerEvent(**kwargs):
     db.session.commit()
 
 def HeatEvent(**kwargs):
-    icpe = iCPEModel.query.filter_by(mac = kwargs['mac']).first()
+    icpe = iCPEModel.query.filter_by(macaddr = kwargs['mac']).first()
     if icpe is None:
         return
     FAIcon = GetFA('Heat')

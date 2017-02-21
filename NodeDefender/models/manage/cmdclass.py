@@ -6,14 +6,14 @@ def Get(mac, sensorid, classname):
     return SensorClassModel.query.join(SensorModel).join(iCPEModel).\
        filter(SensorClassModel.classname == str(classname)).\
        filter(SensorModel.sensorid == int(sensorid)).\
-       filter(iCPEModel.mac == str(mac)).first()
+       filter(iCPEModel.macaddr == str(mac)).first()
 
 def Add(mac, sensorid, classnumber, classname):
     print('Add Class: ' + mac + str(sensorid))
     s = SensorClassModel.query.join(SensorModel).join(iCPEModel).\
        filter(SensorClassModel.classnumber == str(classnumber)).\
        filter(SensorModel.sensorid == int(sensorid)).\
-       filter(iCPEModel.mac == str(mac)).first()
+       filter(iCPEModel.macaddr == str(mac)).first()
     if s:
         return s
 
@@ -32,7 +32,7 @@ def AddTypes(mac, sensorid, classname, classtypes):
     cmdclass = SensorClassModel.query.join(SensorModel).join(iCPEModel).\
        filter(SensorClassModel.classname == classname).\
        filter(SensorModel.sensorid == sensorid).\
-       filter(iCPEModel.mac == mac).first()
+       filter(iCPEModel.macaddr == mac).first()
 
     if cmdclass is None:
         return False

@@ -159,7 +159,7 @@ class iCPE(MQTTFunctions, WSFunctions):
         return True
 
     def AddNode(self, nodeid, vid, ptype, pid, generic_0):
-        iCPENode = iCPEModel.query.filter_by(mac = self.mac).first()
+        iCPENode = iCPEModel.query.filter_by(macaddr = self.mac).first()
         ProdInfo = PepperDB.GetBaseInfo(vid, ptype, pid)
         AddNode = NodeModel(nodeid, vid, ptype, pid, generic_0,
                             ProdInfo['ProductName'], ProdInfo['BrandName'])
@@ -266,7 +266,7 @@ class iCPEset:
     def AddiCPE(self, mac, alias, street, city):
         if len(mac) != 12:
             raise ValueError('MAC needs to be 12 digits')
-        newiCPE = iCPEModel(mac.upper(), alias)
+        newiCPE = iCPEModel.macaddr.upper(), alias)
         location = LocationModel(street, city)
         newiCPE.location = location
         db.session.add(newiCPE)
@@ -278,7 +278,7 @@ class iCPEset:
         icpe = self.__contains__(mac)
         if not icpe:
             raise TypeError('not a known iCPE')
-        node = iCPEModel.query.filter_by(mac = mac).first()
+        node = iCPEModel.query.filter_by(macaddr = mac).first()
         if not node:
             raise ValueError('Mac is not registered')
         db.session.delete(node)

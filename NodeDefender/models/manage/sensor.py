@@ -4,7 +4,7 @@ from . import logger
 
 def Create(icpe, sensorid, sensorinfo):
     if type(icpe) is str:
-        icpe = iCPEModel.query.filter_by(mac = icpe).first()
+        icpe = iCPEModel.query.filter_by(macaddr = icpe).first()
         if icpe is None:
             raise LookupError('iCPE not found')
     sensor = SensorModel(sensorid, sensorinfo)
@@ -18,7 +18,7 @@ def Delete(sensor, icpe = None):
     if type(sensor) is str and icpe:
         sensor = SensorModel.query.join(iCPEModel).\
                 filter(SensorModel.sensorid == sensor).\
-                filter(iCPEModel.mac == icpe).first()
+                filter(iCPEModel.macaddr == icpe).first()
 
         if sensor is None:
             raise LookupError('Sensor not found')
@@ -37,7 +37,7 @@ def List(icpe = None):
     if icpe is None:
         return [sensor for sensor in SensorModel.query.all()]
     if type(icpe) is str:
-        icpe = iCPEModel.query.filter_by(mac = icpe).first()
+        icpe = iCPEModel.query.filter_by(macaddr = icpe).first()
         if icpe is None:
             raise LookupError('iCPE not found')
     return [sensor for sensor in icpe.sensors]
@@ -46,4 +46,4 @@ def List(icpe = None):
 def Get(icpe, sensor):
     return SensorModel.query.join(iCPEModel).\
                 filter(SensorModel.sensorid == int(sensor)).\
-                filter(iCPEModel.mac == icpe).first()
+                filter(iCPEModel.macaddr == icpe).first()

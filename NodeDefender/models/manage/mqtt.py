@@ -28,7 +28,7 @@ def Include(ipaddr, mac):
     if mqtt is None:
         raise LookupError('MQTT Connection does not exist')
 
-    icpe = iCPEModel.query.filter_by(mac = mac).first()
+    icpe = iCPEModel.query.filter_by(macaddr = mac).first()
     if icpe is None:
         raise LookupError('iCPE not found')
 
@@ -44,7 +44,7 @@ def Exclude(ipaddr, mac):
     if mqtt is None:
         raise LookupError('MQTT Connection does not exist')
 
-    icpe = iCPEModel.query.filter_by(mac = mac).first()
+    icpe = iCPEModel.query.filter_by(macaddr = mac).first()
     if icpe is None:
         raise LookupError('iCPE not found')
 

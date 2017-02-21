@@ -6,7 +6,7 @@ def List():
     return [icpe for icpe in iCPEModel.query.all()]
 
 def Get(icpe):
-    return iCPEModel.query.filter_by(mac = icpe).first()
+    return iCPEModel.query.filter_by(macaddr = icpe).first()
 
 def Create(mac, node = None, ipaddr = None, port = None):
     if Get(mac) is not None:
@@ -38,7 +38,7 @@ def Create(mac, node = None, ipaddr = None, port = None):
 
 def Delete(icpe):
     if type(icpe) is str:
-        icpe = iCPEModel.query.filter_by(mac = icpe).first()
+        icpe = iCPEModel.query.filter_by(macaddr = icpe).first()
 
     db.session.delete(icpe)
     db.session.commit()
@@ -47,7 +47,7 @@ def Delete(icpe):
 
 def Join(icpe, node):
     if type(icpe) is str:
-        icpe = iCPEModel.query.filter_by(mac = icpe).first()
+        icpe = iCPEModel.query.filter_by(macaddr = icpe).first()
         if icpe is None:
             raise LookupError('iCPE not found')
 
@@ -63,7 +63,7 @@ def Join(icpe, node):
 
 def Leave(icpe, node):
     if type(icpe) is str:
-        icpe = iCPEModel.query.filter_by(mac = icpe).first()
+        icpe = iCPEModel.query.filter_by(macaddr = icpe).first()
         if icpe is None:
             raise LookupError('iCPE not found')
 
