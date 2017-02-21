@@ -13,7 +13,7 @@ def Info():
     classinfo.classname = 'basic'
     classinfo.classnumber = '20'
     classinfo.types = False
-    classinfo.fields = [{'type' : 'checkbox', 'readonly' : False, 'name' :
+    classinfo.fields = [{'type' : 'switch', 'readonly' : False, 'name' :
                             'basic'}]
     return classinfo
 

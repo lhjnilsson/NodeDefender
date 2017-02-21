@@ -31,6 +31,9 @@ def list(topic, payload, mqttsrc):
         mqtt.sensor.Query(topic.macaddr, sensor, **mqttsrc)
     return None, None
 
+def set(topic, payload, mqttsrc):
+    pass
+
 @VerifyiCPE
 @CommonPayload
 def qry(topic, payload, mqttsrc):

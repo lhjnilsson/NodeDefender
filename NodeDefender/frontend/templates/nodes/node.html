@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 {% from "nodes/macros/sockets.html" import Lookup, EventListener %}
-{{ EventListener(iCPE.mac) }}
+{{ EventListener(iCPE.macaddr) }}
 
 <script>
 namespace = '/nodedata';

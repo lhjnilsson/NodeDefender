@@ -8,6 +8,10 @@ def List():
 def Get(icpe):
     return iCPEModel.query.filter_by(macaddr = icpe).first()
 
+def MQTT(macaddr):
+    icpe = iCPEModel.query.filter_by(macaddr = macaddr).first()
+    return icpe.mqtt[0].ipaddr, icpe.mqtt[0].port
+
 def Create(mac, node = None, ipaddr = None, port = None):
     if Get(mac) is not None:
         raise ValueError('iCPE Already exists')

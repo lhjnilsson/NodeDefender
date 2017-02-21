@@ -1,10 +1,15 @@
 from .. import celery
-from . import zwave, db
+from . import zwave, db, mqtt
 from .decorators import TopicToTuple
 from ..models.redis import cmdclass as CmdclassRedis
 from ..models.redis import field as FieldRedis
 from .zwave import ZWaveEvent
 from ..conn.websocket import FieldEvent
+
+@celery.task
+def WebSocket(macaddr, sensorid, cmdclass, value):
+    mqtt.zwave.Set(macaddr, sensorid, cmdclass, value)
+    return True
 
 @celery.task
 @TopicToTuple
@@ -16,7 +21,7 @@ def MQTT(topic, payload, mqttsrc):
     if 'value' in dir(event):
         FieldRedis.Update(topic.macaddr, topic.sensorid, event.name,
                           event.value)
-        FieldEvent(topic.macaddr, topic.sensorid, topic.cmdclass,
+        FieldEvent(topic.macaddr, topic.sensorid, event.name,
                       event.value)
     return True
 

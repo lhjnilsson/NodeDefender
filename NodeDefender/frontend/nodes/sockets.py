@@ -25,39 +25,25 @@ SOFTWARE.
 from flask_socketio import emit, send, disconnect, join_room, leave_room, \
         close_room, rooms
 from ... import socketio
-from ...iCPE.event import Socket
+from ...iCPE.event import WebSocket as SocketEvent
 from ...models.redis import cmdclass as CmdclassRedis
 from ...models.redis import field as FieldRedis
 from ...models.redis import sensor as SensorRedis
 
-@socketio.on('event', namespace='/nodedata')
+@socketio.on('ZWaveSet', namespace='/nodedata')
 def icpeevent(msg):
-    print('EVENT')
     print(msg)
+    SocketEvent(msg['macaddr'], msg['sensorid'], msg['cmdclass'], msg['value'])
     return True
-    
-    SocketEvent.delay(**msg)
-    if icpe.SocketEvent(**msg):
-        return True
-    else:
-        return False
 
 @socketio.on('SensorGet', namespace='/nodedata')
 def SensorGet(msg):
-    f = {}
+    fieldlist = []
     sensor = SensorRedis.Get(msg['macaddr'], msg['sensorid'])
     fields = SensorRedis.Fields(msg['macaddr'], msg['sensorid'])
     for field in fields:
-        f[field] = FieldRedis.Get(msg['macaddr'], msg['sensorid'],
-                                              field)
+        fieldlist.append(FieldRedis.Get(msg['macaddr'], msg['sensorid'],
+                                              field))
     
-    emit('SensorRespond', (sensor, f))
-    return True
-
-@socketio.on('CmdclassGet', namespace='/nodedata')
-def CmdclassGet(sensor):
-    rsp = CmdclassRedis.Get(sensor['macaddr'], sensor['sensorid'], sensor['classname'])
-    fields = CmdclassRedis.Fields(sensor['macaddr'], sensor['sensorid'],
-                                  sensor['classname'])
-    emit('CmdclassRespond', {'rsp' : rsp, 'fields' : fields})
+    emit('SensorRespond', (sensor, fieldlist))
     return True

@@ -41,15 +41,20 @@
 				<h2 class="modal-title">Information</h2>
 			</div>
 			<div class="modal-body">
-				<h3>General Information</h3>
-				{{ Field('Name', {{iCPE.node.Name}}) }}
-				{{ Field('Mac', {{iCPE.macaddr}}) }}
-				{{ Field('Created on', {{moment(iCPE.created_on).format('Do MMM YYY, HH:MM:SS')}}) }}
-				<h3>Location</h3>
-				{{ Field('Street', {{iCPE.node.location.street}}) }}
-				{{ Field('City', {{iCPE.node.location.city}}) }}
-				{{ Field('Latitude', {{iCPE.node.location.geolat}}) }}
-				{{ Field('Longitude', {{iCPE.node.location.geolong}}) }}
+				<div class="row">	
+				<h4>General Information</h4>
+				{{ Field('Name', iCPE.node.name) }}
+				{{ Field('Mac', iCPE.macaddr) }}
+				{{ Field('Created on', moment(iCPE.created_on).format('Do MMM YYY, HH:mm:ss')) }}
+				<h4>Location</h4>
+				{{ Field('Street', iCPE.node.location.street) }}
+				{{ Field('City', iCPE.node.location.city) }}
+				{{ Field('Latitude', iCPE.node.location.geolat) }}
+				{{ Field('Longitude', iCPE.node.location.geolong) }}
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 			</div>
 		</div>
 	</div>

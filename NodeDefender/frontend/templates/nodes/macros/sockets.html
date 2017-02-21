@@ -1,16 +1,20 @@
 {% macro Lookup(iCPE) %}
 <script>
 socket.on('SensorRespond', function(sensor, fields) {
-	console.log(fields);
-	for (var field in fields) {
+	for (var i = 0; i < fields.length; i++) {
+		field = fields[i];
 		box = $(document.getElementById(sensor.sensorid + field.name));
-		if (field.type == 'checkbox') {
-			boxChange(box, field.value);
+		console.log(field);
+		if (field.type == 'switch') {
+			switchEvent(box, field.value);
 		}
-		else if (field.type == ) {
+		else if (field.type == 'box') {
+			boxEvent(box, field.value);
+		}
+		else if (field.type == 'value') {
+			valueEvent(box, field.value);
 		}
 	}
-	console.log("Sensor Loaded " + sensor.sensorid);
 	$(document.getElementById("Box" + sensor.sensorid)).removeClass("blur");
 });
 
@@ -29,22 +33,24 @@ var eventsocket = io.connect('http://' + document.domain + ':' + location.port +
 
 function switchChange(box, macaddr, sensorid, cmdclass, classtype) {
 	if (box.checked) {
-		socket.emit('event', {macaddr : macaddr, sensorid : sensorid, cmdclass : cmdclass, classtype : classtype, event : '1'});
+		socket.emit('ZWaveSet', {'macaddr' : macaddr, 'sensorid' : sensorid, 'cmdclass' : cmdclass, 'value' : '1'});
 	} else {
-		socket.emit('event', {macaddr : macaddr, sensorid : sensorid, cmdclass : cmdclass, classtype : classtype, event : '0'});
+		socket.emit('ZWaveSet', {'macaddr' : macaddr, 'sensorid' : sensorid, 'cmdclass' : cmdclass, 'value' : '0'});
 	}
 }
 
 function switchEvent(field, value) {
+	console.log('Switch Event ' + value);
 	if (value) {
 		field.attr("checked", true);
 	} else {
-		field.attr("checked" false);
+		field.attr("checked", false);
 	}
 }
 
 
-function boxChange(box, value) {
+function boxEvent(box, value) {
+	console.log('Box Event ' + value);
  if(value) {
 	 $(box).addClass('lightboxlight');
  } else {
@@ -52,7 +58,8 @@ function boxChange(box, value) {
  }
 }
 
-function fieldChange(box, value) {
+function valueEvent(box, value) {
+	console.log('Value Event ' + value);
 	$(box).text(value);
 }
 
@@ -60,6 +67,7 @@ function fieldChange(box, value) {
 
 eventsocket.on('FieldEvent', function(sensor, field, value) {
 	f = document.getElementById(sensor.sensorid+field.name);
+	console.log('event..');
 	if (field.type == 'switch') {
 		switchEvent(f, value);
 	} else if (field.type == 'box') {

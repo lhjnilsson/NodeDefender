@@ -10,7 +10,7 @@
 	<div class="box" id="Box{{Sensor.sensorid}}">
 		<form name="#" class="form-horizontal" method="#">
 		{% for field in Sensor.fields %}
-		{% if field.display == True %}
+		{% if field.display  %}
 			{% if field.type == 'switch' %}
 				{{ Switch(field) }}
 			{% elif field.type == 'box' %}
