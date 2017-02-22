@@ -17,7 +17,7 @@
 {% from "admin/macros/group.html" import GroupInfo %}
 {% from "macros/map.html" import MapGroup %}
 {% from "macros/message.html" import Inbox %}
-{% from "macros/user.html" import List %}
+{% from "admin/macros/user.html" import ListUsers %}
 
 <div class="row">
 	<div class="col-lg-10">
@@ -35,7 +35,7 @@
 	</div>
 	<div class="col-lg-6">
 		<h3>Users</h3>
-		{{List(Group.users)}}
+		{{ListUsers(Group.users)}}
 	</div>
 </div>
 <script>

@@ -1,23 +1,29 @@
 from flask_socketio import emit, send
 from ... import socketio
 from ...models.manage import group as GroupSQL
+from ...models.manage import user as UserSQL
 
 @socketio.on('groups', namespace='/adminusers')
 def Groups(msg):
     groups = GroupSQL.List()
     groupsnames = [group.name for group in groups]
-    emit('groupsrsp', {'groups' : groupsnames})
+    emit('groupsrsp', (groupsnames))
     return True
 
-@socketio.on('groupinfo', namespace='/adminusers')
+@socketio.on('groupInfoGet', namespace='/adminusers')
 def GroupInfo(msg):
-    print("welcome", msg['name'])
     group = GroupSQL.Get(msg['name'])
     info = {'name' : group.name,
             'description' : group.description,
             'users' : str(len(group.users)),
             'nodes' : str(len(group.nodes)),
-            'created_on' : group.created_on,
+            'created_on' : str(group.created_on),
            }
-    emit('groupinfo', {'info' : info})
+    emit('groupInfoRsp', (info))
+    return True
+
+@socketio.on('addToGroup', namespace='/adminusers')
+def AddToGroup(msg):
+    UserSQL.Join(msg['user'], msg['group'])
+    emit('Reload')
     return True

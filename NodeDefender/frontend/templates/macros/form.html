@@ -1,9 +1,9 @@
-{% macro render_field_with_errors(field) %}
+{% macro render_field_with_errors(field, value = None) %}
 <div class="form-group">
 	{{ field.label(class="col-sm-2 control-label") }}
 	<div class="col-sm-10">
 		<div class="control">
-			{{ field(class="form-control")|safe }}
+			{{ field(class="form-control", value=value)|safe }}
 		</div>
 	</div>
 </div>

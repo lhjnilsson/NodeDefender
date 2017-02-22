@@ -90,19 +90,28 @@ def AdminUsers():
     flash('Successfully added user {}'.format(user.firstname), 'success')
     return redirect(url_for('AdminView.AdminUser', id = user.id))
 
-@AdminView.route('/admin/users/<id>')
+@AdminView.route('/admin/users/<id>', methods=['GET', 'POST'])
 @login_required
 def AdminUser(id):
-    User = UserModel.query.filter_by(id = id).first()
     usersettings = UserSettings()
     userpassword = UserPassword()
     usergroupadd = UserGroupAdd()
-    if User is None:
-        flash('User {} not found'.format(id), 'danger')
-        return redirect(url_for('AdminView.AdminGroups'))
-    return render_template('admin/user.html', User = User, UserSettings =
-                           usersettings, UserPassword = userpassword,
-                           UserGroupAdd = usergroupadd)
+    if request.method == 'GET':
+        User = UserModel.query.filter_by(id = id).first()
+        if User is None:
+            flash('User {} not found'.format(id), 'danger')
+            return redirect(url_for('AdminView.AdminGroups'))
+        return render_template('admin/user.html', User = User, UserSettings =
+                               usersettings, UserPassword = userpassword,
+                               UserGroupAdd = usergroupadd)
+    
+    if usersettings.Email.data and usersettings.validate():
+        user = UserModel.query.filter_by(id = id).first()
+        user.firstname = usersettings.Firstname.data
+        user.lastname = usersettings.Lastname.data
+        user.email = usersettings.Email.data
+        UserSQL.Save(user)
+        return redirect(url_for('AdminView.AdminUser', id = user.id))
 
 @AdminView.route('/admin/backup')
 @login_required

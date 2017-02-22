@@ -26,7 +26,7 @@ def Delete(email):
     return user
 
 def Get(email):
-    return UserModel.query.filter_by(email = user).first()
+    return UserModel.query.filter_by(email = email).first()
 
 def List():
     return [user for user in UserModel.query.all()]
