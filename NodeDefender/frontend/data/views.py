@@ -1,5 +1,9 @@
 from .. import DataView
 from .models import *
+from flask import request, render_template
+
+icpes = []
+stats = []
 
 @DataView.route('/data/power')
 def DataPower():

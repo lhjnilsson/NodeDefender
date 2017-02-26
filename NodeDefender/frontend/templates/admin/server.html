@@ -18,11 +18,21 @@
 {% from "admin/macros/mqtt.html" import ListMQTT %}
 <div class="row">
 	<div class="col-lg-4">
-		{{ GeneralSettings(GeneralForm) }}
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				General Settings
+			</div>
+			<div class="panel-body">
+				{{ GeneralSettings(GeneralForm) }}
+			</div>
+		</div>
 	</div>
 	<div class="col-lg-4">
-		<h3>Database Settings</h3>
-		<div class="box">
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				Database Settings
+			</div>
+			<div class="panel-body">
 				<form class="form-horizontal">
           <div class="form-group">
 						<label for="dbsettings" class="col-sm-2 control-label">First</label>
@@ -39,10 +49,18 @@
 						</div>
           </div>
 				</form>
-      </div>
+			</div>
+		</div>
 	</div>	
 	<div class="col-lg-4">
-		{{ ListMQTT(MQTTList, MQTTForm) }}
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				MQTT Connections
+			</div>
+			<div class="panel-body">
+				{{ ListMQTT(MQTTList, MQTTForm) }}
+			</div>
+		</div>
 	</div>
 </div>
 <script>

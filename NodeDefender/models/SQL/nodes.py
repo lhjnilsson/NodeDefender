@@ -29,6 +29,14 @@ class NodeModel(db.Model):
         self.location = location
         self.created_on = datetime.now()
 
+
+    def to_json(self):
+        return {'name' : self.name,
+                'location' : {'latitude' : self.location.latitude,
+                              'longitude' : self.location.longitude
+                             }
+               }
+
 class LocationModel(db.Model):
     '''
     One-to-one Table representing Location for iCPE

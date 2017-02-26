@@ -12,9 +12,6 @@ var socket = io.connect('http://' + document.domain + ':' + location.port + name
 	<div class="col-lg-12">
 		<h1 class="page-header">
 			Nodes <small> {{iCPE.alias}} </small>
-      <a href="#" data-toggle="modal" data-target="#NodeSettings" style="position: absolute; right: 0; margin-right: 1vw;">
-				<i class="fa fa-cog" aria-hidden="true"></i>
-      </a>
     </h1>
     <ol class="breadcrumb">
 			<li>
@@ -30,24 +27,58 @@ var socket = io.connect('http://' + document.domain + ':' + location.port + name
 {% include "flash.html" %}
 {% from "nodes/macros/info.html" import General, Technical %}
 {% from "macros/map.html" import Map %}
-{% from "nodes/macros/node.html" import ModalSettings, ModalDelete %}
 <div class="row">
 	<div class="col-lg-6">
-		{{ Map(Node.location.latitude, Node.location.longitude) }}
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				{{ Node.location.street}}, {{ Node.location.city }}
+				<div class="floatRight" id="location">
+				</div>
+			</div>
+			<div class="panel-body" style="padding: 0; height: 200px;">
+				{{ Map(Node.location.latitude, Node.location.longitude) }}
+			</div>
+		</div>
 	</div>	
 	<div class="col-lg-3">
-		{{ General(iCPE, moment) }}	
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				General Information
+				<div class="floatRight" id="general">
+				</div>
+			</div>
+			<div class="panel-body" style="height: 200px;">
+				{{ General(iCPE, moment) }}	
+			</div>
+		</div>
 	</div>
 	<div class="col-lg-3">
-		{{ Technical(iCPE) }}		
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				Technical Status
+				<div class="floatRight" id="technical">
+				</div>
+			</div>
+			<div class="panel-body" style="height: 200px;">
+				{{ Technical(iCPE) }}
+			</div>
+		</div>
 	</div>
 </div>
 {% from "nodes/macros/sensor.html" import SensorBox, SensorModal %}
 <div class="row">
 	{% if iCPE.sensors|length > 0 %}
 	{% for sensor in iCPE.sensors %}
-		{{ SensorBox(sensor) }}
-		{{ SensorModal(sensor, SensorForm) }}
+	<div class="col-lg-2">
+		<div class="panel panel-info">
+			<div class="panel-heading">
+				{{ sensor.name }}
+			</div>
+			<div class="panel-body">
+				{{ SensorBox(sensor) }}
+			</div>
+		</div>
+	</div>
 	{% endfor %}
 	{% endif %}
 </div>
@@ -71,9 +102,23 @@ var socket = io.connect('http://' + document.domain + ':' + location.port + name
 		{% endif %}
 	</div>
 </div>
+{% from "nodes/macros/modals.html" import ModalGrouplist, ModifyLocation, ModifyGeneral %}
+<script>
+$(document).ready(function() {
+$('#general').prepend('<a style="color: #FFFFFF;" href="#" data-toggle="modal" data-target="#groupList"><i class="fa fa-users" aria-hidden="true"></i></a>');
 
-{{ ModalSettings(Node, iCPEForm, LocationForm) }}
-{{ ModalDelete() }}
+{% if current_user.has_role("technician") %}
+$('#location').prepend('<a style="color: #FFFFFF;" href="#" data-toggle="modal" data-target="#modifyLocation"><i class="fa fa-pencil" aria-hidden="true"></i></a>');
+$('#general').prepend('<a style="color: #FFFFFF;" href="#" data-toggle="modal" data-target="#modifyGeneral"><i class="fa fa-pencil" aria-hidden="true"></i></a>');
+{% endif %}
+});
+</script>
+{{ ModalGrouplist(Node.groups) }}
+
+{% if current_user.has_role("technician") %}
+{{ ModifyLocation(Node.Location) }}
+{{ ModifyGeneral(Node) }}
+{% endif %}
 
 {{ Lookup(iCPE) }}
 

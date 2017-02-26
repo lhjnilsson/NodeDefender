@@ -22,8 +22,13 @@
 {% from "admin/macros/group.html" import ListGroups, CreateGroup %}
 <div class="row">
 	 <div class="col-lg-12">
-			{{ ListGroups(groups) }}
-			<div class="box" style="padding: 0;">
+		 <div class="panel panel-primary">
+			 <div class="panel-heading">
+				Group List
+			 </div>
+			 <div class="panel-body" style="padding: 0;">
+				 {{ ListGroups(groups) }}
+			 </div>
 		</div>
   </div>
 </div>

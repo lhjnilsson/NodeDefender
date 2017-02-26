@@ -39,6 +39,13 @@ class UserModel(db.Model, UserMixin):
     roles = db.relationship('UserRoleModel', secondary=roles_users, backref=db.backref('users', lazy='dynamic'))
     messages = db.relationship('UserMessageModel', backref='user')
 
+    def to_json(self):
+        return {'firstName': self.firstname,
+                'lastName' : self.lastname,
+                'email' : self.email,
+               }
+
+
 class UserMessageModel(db.Model):
     # Mailbox for User. 
     __tablename__ = 'usermessage'

@@ -3,7 +3,7 @@
 <div class="row">
     <div class="col-lg-12">
         <h1 class="page-header">
-					Messages<small> {{user.firstname}} {{user.lastname}}</small>
+					Messages<small> {{current_user.firstname}} {{current_user.lastname}}</small>
         </h1>
           <ol class="breadcrumb">
            <li>
@@ -14,37 +14,19 @@
     </div>
 </div>
 
+{% from "macros/messages.html" import MessageList %}
 <div class="row">
-    <div class="col-lg-12">
-      <div class="box" style="padding: 0;">
-				<div class="list-group">
-					{% for message in messages %}
-					<a href="#" data-toggle="modal" data-target="#{{message.id}}" class="list-group-item">
-											<p class="col-sm-3"><b> {{ message.created_on.strftime('%Y-%m-%d') }} </b></p>
-											<p class="col-sm-3"><b>From:</b> {{message.mailfrom }} </p>
-                        <p class="col-sm-3"><b>Subject:</b> {{ message.subject }}</p>
-                        -
-                    </a>
-					{% endfor %}
-				</div>
+	<div class="col-lg-8 col-lg-offset-2">
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				Messages
 			</div>
-    </div>
-    <tbody>
-</div>
-{% for message in messages %}
-<div class="modal fade" id="{{message.id}}" role="dialog">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h2 class="modal-title">{{ message.subject }}</h2>
-			</div>
-			<div class="modal-body">
-				{{ message.body }}
+			<div class="panel-body">
+				{{ MessageList() }}
 			</div>
 		</div>
 	</div>
 </div>	
-{% endfor %}
 
 
 

@@ -30,9 +30,4 @@ def UserInboxID(mailid):
     return render_template('user/inboxid.html', mailid=mailid, message =
                            message)
 
-@UserView.route('/user/settings')
-@login_required
-def UserSettings():
-    return render_template('user/settings.html')
-
 

@@ -1,28 +1,18 @@
 {% macro SensorBox(Sensor) %}
 {% from "nodes/macros/fields.html" import Switch, Box, Value %}
-<div class="col-lg-2">
-	<h3 style="max-width: 80%;">
-		{{ Sensor.name }}
-		<a href="#" data-toggle="modal" data-target="#PopCFG{{Sensor.nodeid}}" style="position: absolute; right: 0; margin-right: 1vw;">
-			<i class="fa fa-cog" aria-hidden="true"></i>
-		</a>
-	</h3>
-	<div class="box" id="Box{{Sensor.sensorid}}">
-		<form name="#" class="form-horizontal" method="#">
-		{% for field in Sensor.fields %}
-		{% if field.display  %}
-			{% if field.type == 'switch' %}
-				{{ Switch(field) }}
-			{% elif field.type == 'box' %}
-				{{ Box(field) }}
-			{% elif field.type == 'value' %}
-				{{ Value(field) }}
-			{% endif %}
-		{% endif %}
-		{% endfor %}
-		</form>
-	</div>
-</div>
+<form name="#" class="form-horizontal" method="#">
+{% for field in Sensor.fields %}
+{% if field.display  %}
+	{% if field.type == 'switch' %}
+		{{ Switch(field) }}
+	{% elif field.type == 'box' %}
+		{{ Box(field) }}
+	{% elif field.type == 'value' %}
+		{{ Value(field) }}
+	{% endif %}
+{% endif %}
+{% endfor %}
+</form>
 {% endmacro %}
 
 {% macro SensorSockets(sensors) %}

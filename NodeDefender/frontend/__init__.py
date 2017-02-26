@@ -22,10 +22,10 @@ assets.init(app)
 def inject_user():      # Adds general data to base-template
     if current_user.is_authenticated:
         # Return Message- inbox for user if authenticated
-        return dict(user = current_user)
+        return dict(current_user = current_user)
     else:
         # If not authenticated user get Guest- ID(That cant be used).
-        return dict(user = current_user)
+        return dict(current_user = current_user)
 
 @app.route('/')
 @app.route('/index')
@@ -41,6 +41,7 @@ from .admin import views
 from .data import views
 from .nodes import views
 from .user import views
+from . import sockets
 
 # Register Blueprints
 app.register_blueprint(AdminView)

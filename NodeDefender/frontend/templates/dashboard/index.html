@@ -14,28 +14,76 @@
 	</div>
 </div>
 {% include "flash.html" %}
-{% from "dashboard/macros/map.html" import map %}
-{% from "dashboard/macros/statistics.html" import statistics %}
-{% from "dashboard/macros/messagelist.html" import messagelist %}
-{% from "dashboard/macros/eventlist.html" import eventlist %}
+{% from "macros/map.html" import MapGroup with context %}
 <div class="row">
 	<div class="col-lg-12">
-		{{ map(nodes) }}
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				Node Map
+			</div>
+			<div class="panel-body" style="height: 300px; padding: 0;">
+				{{ MapGroup() }}
+			</div>
+		</div>
 	</div>
 </div>
 <br>
+{% from "macros/statistics.html" import AverageHeat, AveragePower, AverageEvents with context %}
 <div class="row">
-	<div class="col-lg-12">
-		{{ statistics(data) }}
-	</div>	
+	<div class="col-lg-4">
+		<div class="panel panel-info">
+			<div class="panel-heading">
+				Heat 
+			</div>
+			<div class="panel-body">
+				{{ AverageHeat() }}
+			</div>
+		</div>
+	</div>
+	<div class="col-lg-4">
+		<div class="panel panel-info">
+			<div class="panel-heading">
+				Power
+			</div>
+			<div class="panel-body">
+				{{ AveragePower() }}
+			</div>
+		</div>
+	</div>
+	<div class="col-lg-4">
+		<div class="panel panel-info">
+			<div class="panel-heading">
+				Events
+			</div>
+			<div class="panel-body">
+				{{ AverageEvents() }}
+			</div>
+		</div>
+	</div>
 </div>
 <br>
+{% from "macros/messages.html" import MessageList %}
+{% from "macros/statistics.html" import EventList %}
 <div class="row">
 	<div class="col-lg-6">
-		{{ messagelist(messages) }}
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				Message List
+			</div>
+			<div class="panel-body">
+				{{ MessageList() }}
+			</div>
+		</div>
 	</div>
 	<div class="col-lg-6">
-		{{ eventlist(events) }}
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				Event List
+			</div>
+			<div class="panel-body">
+				{{ EventList() }}
+			</div>
+		</div>
 	</div>
 </div>
 {% endblock %}

@@ -19,11 +19,17 @@
     </div>
 </div>
 {% include "flash.html" %}
-{% from "nodes/macros/node.html" import NodeList, AddNode %}
+{% from "macros/node.html" import NodeList, AddNode with context %}
 <div class="row">
-	 <div class="col-lg-12">
-			{{ NodeList(nodes) }}
-			<div class="box" style="padding: 0;">
+	<div class="col-lg-12">
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				Node List
+			</div>
+			<div class="panel-body" style="padding: 0;">
+				{{ NodeList(nodes) }}
+		
+			</div>
 		</div>
   </div>
 </div>

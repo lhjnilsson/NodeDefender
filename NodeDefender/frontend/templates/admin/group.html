@@ -16,26 +16,84 @@
 {% include "flash.html" %}
 {% from "admin/macros/group.html" import GroupInfo %}
 {% from "macros/map.html" import MapGroup %}
-{% from "macros/message.html" import Inbox %}
+{% from "macros/messages.html" import MessageList %}
 {% from "admin/macros/user.html" import ListUsers %}
 
 <div class="row">
-	<div class="col-lg-10">
-		{{MapGroup(200, Group.nodes)}}
+	<div class="col-lg-8">
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				Nodes
+			</div>
+			<div class="panel-body" style="height: 200px; padding: 0;">
+				{{MapGroup(Group.nodes)}}
+			</div>
+		</div>
 	</div>
-	<div class="col-lg-2">
-		<h3>Info</h3>
-		{{GroupInfo(Group)}}
+	<div class="col-lg-4">
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				General Info
+			</div>
+			<div class="panel-body">
+				{{GroupInfo(Group)}}
+			</div>
+		</div>
+	</div>
+</div>
+{% from "macros/statistics.html" import AverageHeat, AveragePower, AverageEvents %}
+<div class="row">
+	<div class="col-lg-4">
+		<div class="panel panel-info">
+			<div class="panel-heading">
+				Heat 
+			</div>
+			<div class="panel-body">
+				{{ AverageHeat() }}
+			</div>
+		</div>
+	</div>
+	<div class="col-lg-4">
+		<div class="panel panel-info">
+			<div class="panel-heading">
+				Power
+			</div>
+			<div class="panel-body">
+				{{ AveragePower() }}
+			</div>
+		</div>
+	</div>
+	<div class="col-lg-4">
+		<div class="panel panel-info">
+			<div class="panel-heading">
+				Events
+			</div>
+			<div class="panel-body">
+				{{ AverageEvents() }}
+			</div>
+		</div>
 	</div>
 </div>
 <div class="row">
 	<div class="col-lg-6">
-		<h3>Messages</h3>
-		{{Inbox(Group.messages)}}
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				Messages
+			</div>
+			<div class="panel-body" style="padding: 0";>
+				{{MessageList(Group.messages)}}
+			</div>
+		</div>
 	</div>
 	<div class="col-lg-6">
-		<h3>Users</h3>
-		{{ListUsers(Group.users)}}
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				Users
+			</div>
+			<div class="panel-body" style="padding: 0";>
+				{{ListUsers(Group.users)}}
+			</div>
+		</div>
 	</div>
 </div>
 <script>

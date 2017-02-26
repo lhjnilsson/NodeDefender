@@ -1,5 +1,5 @@
 {% macro Map(latitude, longitude) %}
-<div id="map" style="height: 200px; width: 100%;"></div>
+<div id="map" style="height: 100%; width: 100%;"></div>
 <script>
 var map = L.map('map',{
 		center: [{{latitude}}, {{longitude}}],
@@ -17,23 +17,46 @@ L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
 </script>
 {% endmacro %}
 
-{% macro MapGroup(height, nodes) %}
-<div id="map" style="height: {{height}}px; width: 100%;"></div>
+{% macro MapGroup(nodes = None) %}
+<div id="map" style="height: 100%; width: 100%;"></div>
 <script>
 var map = L.map('map',{
-			center: [57.691, 11.936],
-			zoom: 9
-	});
+	center: [57.691, 11.936],
+	zoom: 9
+});
 
-	L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-			attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a>'
-	}).addTo(map);
+L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+		attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a>'
+}).addTo(map);
 
-	{% if nodes %}
+function addMarker(node) {
+	var marker = L.marker([node.location.latitude, node.location.longitude]).addTo(map);
+	marker.bindPopup(node.name);
+}
+
+var nodes = "{{nodes}}";
+
+{% if nodes == None %}
+	groupSocket.emit("groups", current_email)
+{% else %}
 	{% for node in nodes %}
-	var marker = L.marker([{{node.location.geolat}}, {{node.location.geolong}}]).addTo(map);
-	marker.bindPopup("<a href=\"/nodes/list/{{node.mac}}\">{{node.alias}}</a>");
-	{% endfor %}
+	var marker = L.marker([{{node.location.latitude}}, {{node.location.longitude}}]).addTo(map);
+		marker.bindPopup("{{node.name}}");
+{% endfor %}
 {% endif %}
+
+groupSocket.on("groups", function(groups) {
+	nodeSocket.emit("nodes", groups)
+});
+
+
+
+
+nodeSocket.on("nodes", function(nodes) {
+	for (var i = 0; i < nodes.length; i++) {
+		addMarker(nodes[i]);
+	}
+})
 </script>
 {% endmacro %}
+

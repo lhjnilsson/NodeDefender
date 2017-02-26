@@ -1,4 +1,7 @@
-{% macro Inbox(messages) %}
+{% macro MessageList(messages = None) %}
+{% if messages == None %}
+{% set messages = [] %}
+{% endif %}
 <div class="list-group">
 	{% for message in messages %}
 	<a href="#" class="list-group-item">
@@ -12,3 +15,5 @@
 	{% endfor %}
 </div>
 {% endmacro %}
+
+

@@ -2,6 +2,7 @@ from ... import db
 from ...models.SQL import GroupModel, UserModel
 from . import logger
 from . import user as UserSQL
+from . import node as NodeSQL
 
 def Create(name, description = None):
     group = GroupModel.query.filter_by(name=name).first()
@@ -31,9 +32,16 @@ def Save(group):
     db.session.add(group)
     return db.session.commit()
 
-def List():
-    return [group for group in GroupModel.query.all()]
-    
+def List(user = None, node = None):
+    if user is None and node is None:
+        return [group for group in GroupModel.query.all()]
+    if user:
+        user = UserSQL.Get(user)
+        return [group for group in user.group]
+    if node:
+        node = NodeSQL.Get(name = node)
+        return [group for group in node.groups]
+
 def Members(group):
     group = GroupModel.query.filter_by(name = groupname).first()
     return [member for member in group.members]
