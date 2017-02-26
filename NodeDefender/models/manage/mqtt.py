@@ -1,5 +1,6 @@
 from ... import db
 from ..SQL import MQTTModel
+from . import logger
 
 def Create(ipaddr, port, username = None, password = None):
     mqtt = MQTTModel.query.filter_by(ipaddr = ipaddr).first()
@@ -9,6 +10,7 @@ def Create(ipaddr, port, username = None, password = None):
     mqtt = MQTTModel(ipaddr, port, username, password)
     db.session.add(mqtt)
     db.session.commit()
+    logger.info("Created MQTT: {}:{}".format(ipaddr, str(port)))
     return mqtt
 
 def Delete(ipaddr, port = None):
@@ -18,6 +20,7 @@ def Delete(ipaddr, port = None):
     
     db.session.delete(mqtt)
     db.session.commit()
+    logger.info("Delted MQTT: {}:{}".format(ipaddr, str(port)))
     return mqtt
 
 def Include(ipaddr, mac):
@@ -25,13 +28,15 @@ def Include(ipaddr, mac):
     if mqtt is None:
         raise LookupError('MQTT Connection does not exist')
 
-    icpe = iCPEModel.query.filter_by(mac = mac).first()
+    icpe = iCPEModel.query.filter_by(macaddr = mac).first()
     if icpe is None:
         raise LookupError('iCPE not found')
 
     mqtt.icpes.append(icpe)
     db.session.add(mqtt)
     db.session.commit()
+    logger.info("Included iCPE {} to MQTT {}:{}".format(icpe.macaddr, mqtt.ipaddr,
+                                                        str(mqtt.port)))
     return mqtt
 
 def Exclude(ipaddr, mac):
@@ -39,13 +44,15 @@ def Exclude(ipaddr, mac):
     if mqtt is None:
         raise LookupError('MQTT Connection does not exist')
 
-    icpe = iCPEModel.query.filter_by(mac = mac).first()
+    icpe = iCPEModel.query.filter_by(macaddr = mac).first()
     if icpe is None:
         raise LookupError('iCPE not found')
 
     mqtt.icpes.remove(icpe)
     db.session.add(mqtt)
     db.session.commit()
+    logger.info("Removed iCPE {} from MQTT {}:{}".fomrat(icpe.macaddr, mqtt.ipaddr,
+                                                         str(mqtt.port)))
     return mqtt
 
 def Query(ipaddr, mac):
@@ -55,5 +62,8 @@ def Query(ipaddr, mac):
 def List():
     return [mqtt for mqtt in MQTTModel.query.all()]
 
-def Get(ipaddr):
+def iCPE(macaddr):
+    pass
+
+def Get(ipaddr, port):
     return MQTTModel.query.first()

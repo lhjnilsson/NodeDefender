@@ -12,13 +12,9 @@ def Location(street, city):
         raise LookupError('Cant find location')
     return location(street, city, coord.latitude, coord.longitude)
 
-def Create(name, group, location, mac):
-    group = GroupModel.query.filter_by(name = group).first()
-    if group is None:
-        raise LookupError('Cant find group')
-    node = NodeModel(name, LocationModel(*location), iCPEModel(mac))
-    group.nodes.append(node)
-    db.session.add(node, group)
+def Create(name, location):
+    node = NodeModel(name, LocationModel(*location))
+    db.session.add(node)
     db.session.commit()
     return node
 
@@ -63,7 +59,7 @@ def Get(name = None, mac = None):
     if name:
         return NodeModel.query.filter_by(name = node).first()
     else:
-        return iCPEModel.query.filter_by(mac = mac).first().node
+        return iCPEModel.query.filter_by(macaddr = mac).first().node
 
 def List(user = None):
     if user:

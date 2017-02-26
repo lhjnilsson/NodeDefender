@@ -1,0 +1,44 @@
+{% macro ListUsers(users) %}
+<table class="table table-hover">
+	<thead>
+		<tr>
+			<th>Firstname</th>
+			<th>Lastname</th>
+			<th>Email</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for user in users %}
+		<tr>
+			<td>
+				<a href="{{url_for('AdminView.AdminUser', id = user.id)}}">
+				{{user.firstname}}
+				</a>
+			</td>
+			<td>
+				<a href="{{url_for('AdminView.AdminUser', id = user.id)}}">
+					{{user.lastname}}
+				</a>
+			</td>
+			<td>
+				<a href="{{url_for('AdminView.AdminUser', id = user.id)}}">
+				{{user.email}}
+				</a>
+			</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+{% endmacro %}
+
+{% macro CreateUser(Form) %}
+{% from "macros/form.html" import render_field_with_errors, render_field %}
+<form action="{{url_for('AdminView.AdminUsers')}}" method="post" class="form-horizontal">
+	{{ Form.csfr_token }}
+	{{ Form.hidden_tag() }}
+	{{ render_field_with_errors(Form.Firstname) }}
+	{{ render_field_with_errors(Form.Lastname) }}
+	{{ render_field_with_errors(Form.Email) }}
+	{{ render_field(Form.Submit) }}
+</form>
+{% endmacro %}

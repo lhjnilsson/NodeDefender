@@ -24,11 +24,18 @@ class NodeModel(db.Model):
     notesticky = db.Column(db.String(150))
     icpe = db.relationship('iCPEModel', backref='node', uselist=False)
 
-    def __init__(self, name, location, icpe):
+    def __init__(self, name, location):
         self.name = name
         self.location = location
-        self.icpe = icpe
         self.created_on = datetime.now()
+
+
+    def to_json(self):
+        return {'name' : self.name,
+                'location' : {'latitude' : self.location.latitude,
+                              'longitude' : self.location.longitude
+                             }
+               }
 
 class LocationModel(db.Model):
     '''

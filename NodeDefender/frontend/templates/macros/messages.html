@@ -1,0 +1,19 @@
+{% macro MessageList(messages = None) %}
+{% if messages == None %}
+{% set messages = [] %}
+{% endif %}
+<div class="list-group">
+	{% for message in messages %}
+	<a href="#" class="list-group-item">
+		<div class="d-flex w-100 justify-content-between">
+			<h5 class="mb-1">{{messaga.topic}}</h5>
+			<small>{{message.created_on}}</small>
+		</div>
+		<p class="mb-1">{{message.text}}</p>
+		<small>From: {{message.user.firstname}} {{message.user.lastname}}</small>
+	</a>
+	{% endfor %}
+</div>
+{% endmacro %}
+
+

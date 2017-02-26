@@ -30,7 +30,7 @@
 					{% for node in icpe.znodes %}
 					<tr>
 						<td>
-							<a href="{{url_for('DataHeatiCPENode', mac = icpe.mac, nodeid = node.nodeid)}}">
+							<a href="{{url_for('DataHeatiCPENode', mac = icpe.macaddr, nodeid = node.nodeid)}}">
 									{{ node.alias }}
 							</a>
 						</td>

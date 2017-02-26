@@ -2,14 +2,18 @@ from ... import UserDatastore, db
 from flask_security import utils
 from flask_script import Command, prompt, prompt_pass
 from ..SQL import UserModel, GroupModel
+from . import logger
 
-def Create(name, password):
+def Create(name, password = None):
     if UserDatastore.get_user(name):
         raise ValueError('User already present')
-
-    encrypted_password = utils.encrypt_password(password)
-    user = UserDatastore.create_user(email=name, password=encrypted_password)
+    if password:
+        encrypted_password = utils.encrypt_password(password)
+        user = UserDatastore.create_user(email=name, password=encrypted_password)
+    else:
+        user = UserDatastore.create_user(email=name, password=None)
     db.session.commit()
+    logger.info("Created user: {}".format(user.email))
     return user
 
 def Delete(email):
@@ -18,10 +22,29 @@ def Delete(email):
         raise LookupError('Cant find user')
     UserDatastore.delete_user(user)
     db.session.commit()
+    logger.info("Deleted user: {}".format(user.email))
     return user
+
+def Get(email):
+    return UserModel.query.filter_by(email = email).first()
 
 def List():
     return [user for user in UserModel.query.all()]
+
+def Save(user):
+    db.session.add(user)
+    return db.session.commit()
+
+def Friends(user):
+    user = UserModel.query.filter_by(email=user).first()
+    if user is None:
+        raise KeyError('User does not exists')
+    
+    if user.has_role('superuser'):
+        return List()
+
+    groupnames = [g.name for g in user.group] 
+    return UserModel.query.filter(UserModel.group.any(GroupModel.name.in_(groupnames)))
 
 def Groups(user):
     if type(user) is str:
@@ -43,6 +66,7 @@ def Join(email, groupname):
     group.users.append(user)
     db.session.add(group)
     db.session.commit()
+    logger.info("User {} Joined Group {}".format(user.email, group.name))
     return user
 
 def Leave(email, groupname):
@@ -57,6 +81,7 @@ def Leave(email, groupname):
     group.users.remove(user)
     db.session.add(user)
     db.session.commit()
+    logger.info("User {} Left Group {}".format(user.email, group.name))
     return user
 
 def Roles(user):
@@ -78,8 +103,9 @@ def Add(user, role):
         if role is None:
             raise LookupError('Cant find Role')
 
-    user = UserDatastore.add_role_to_user(user, role)
+    UserDatastore.add_role_to_user(user, role)
     db.session.commit()
+    logger.info("Added Role {} to User {}".format(role.name, user.email))
     return user
 
 def Remove(user, role):
@@ -93,6 +119,7 @@ def Remove(user, role):
         if role is None:
             raise LookupError('Cant find Role')
 
-    user = UserDatastore.remove_role_from_user(user, role)
+    UserDatastore.remove_role_from_user(user, role)
     db.session.commit()
+    logger.info("Removed Role {} from User {}".format(role.name, user.email))
     return user

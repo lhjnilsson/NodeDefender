@@ -1,25 +1,26 @@
-from wtforms import StringField, BooleanField, SelectField, validators
-from flask_wtf import Form
+from wtforms import StringField, BooleanField, SelectField, SubmitField, validators
+from flask_wtf import FlaskForm as Form
 
-class SensorForm(Form):
-    NodeField = StringField([validators.DataRequired()]);
-
-class NodeLocationForm(Form):
-    street = StringField("Steet", [validators.DataRequired()])
-    city = StringField("City", [validators.DataRequired()])
-    geolat = StringField("Latitude", [validators.DataRequired()])
-    geolong = StringField("Longitude", [validators.DataRequired()])
+class LocationForm(Form):
+    Street = StringField("Steet", [validators.DataRequired()])
+    City = StringField("City", [validators.DataRequired()])
+    Geolat = StringField("Latitude", [validators.DataRequired()])
+    Geolong = StringField("Longitude", [validators.DataRequired()])
+    Submit = SubmitField()
 
 class iCPEForm(Form):
-    alias = StringField('Alias', [validators.InputRequired()])
-    comment = StringField('Comment', validators=[])
+    Alias = StringField('Alias', [validators.InputRequired()])
+    Comment = StringField('Comment', validators=[])
+    Submit = SubmitField()
 
-class NodeForm(Form):
-    alias = StringField('Alias', [validators.InputRequired()])
+class SensorForm(Form):
+    Alias = StringField('Alias', [validators.InputRequired()])
+    Submit = SubmitField()
 
 class NodeCreateForm(Form):
     Name = StringField('Name', [validators.DataRequired()])
-    Group = StringField('Group', [validators.DataRequired()])
-    Mac = StringField('Mac', [validators.DataRequired()])
+    Group = StringField('Group')
+    Mac = StringField('Mac')
     Street = StringField('Street', [validators.DataRequired()])
     City = StringField('City', [validators.DataRequired()])
+    Submit = SubmitField('Add')

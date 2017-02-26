@@ -1,0 +1,58 @@
+{% macro NodeList(nodes = None) %}
+<table class="table table-hover">
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>Group Name</th>
+			<th>Street</th>
+			<th>City</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for node in nodes %}
+		<tr>
+			<td>
+				<a href="/nodes/list/{{node.icpe.macaddr}}">
+					{{node.name}}	
+				</a>
+			</td>
+			<td>
+				<a href="/nodes/list/{{node.icpe.macaddr}}">
+					{{node.group.name}}
+				</a>
+			</td>
+			<td>
+				<a href="/nodes/list/{{node.icpe.macaddr}}">
+					{{node.location.street}}
+				</a>
+			</td>
+			<td>
+				<a href="/nodes/list/{{node.icpe.macaddr}}">
+					{{node.location.city}}
+				</a>
+			</td>
+		</a>
+	{% endfor %}
+	</tbody>
+</table>
+{% endmacro %}
+
+{% macro AddNode(NodeCreateForm, unassigned) %}
+{% from "macros/form.html" import render_field_with_errors, render_field %}
+<div class="row">
+	<div class="col-lg-12">
+		<div class="box">
+			<form action="{{url_for('NodeView.NodesList')}}" method="post" class="form-horizontal">
+				{{ NodeCreateForm.csfr_token }}
+				{{ NodeCreateForm.hidden_tag() }}
+				{{ render_field_with_errors(NodeCreateForm.Name) }}
+				{{ render_field_with_errors(NodeCreateForm.Group) }}
+				{{ render_field_with_errors(NodeCreateForm.Mac) }}
+				{{ render_field_with_errors(NodeCreateForm.Street) }}
+				{{ render_field_with_errors(NodeCreateForm.City) }}
+				{{ render_field(NodeCreateForm.Submit) }}
+			</form>
+		</div>
+	</div>
+</div>
+{% endmacro %}

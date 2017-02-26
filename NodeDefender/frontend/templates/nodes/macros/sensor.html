@@ -1,0 +1,85 @@
+{% macro SensorBox(Sensor) %}
+{% from "nodes/macros/fields.html" import Switch, Box, Value %}
+<form name="#" class="form-horizontal" method="#">
+{% for field in Sensor.fields %}
+{% if field.display  %}
+	{% if field.type == 'switch' %}
+		{{ Switch(field) }}
+	{% elif field.type == 'box' %}
+		{{ Box(field) }}
+	{% elif field.type == 'value' %}
+		{{ Value(field) }}
+	{% endif %}
+{% endif %}
+{% endfor %}
+</form>
+{% endmacro %}
+
+{% macro SensorSockets(sensors) %}
+<script>
+namespace = '/icpe';
+var icpesocket = io.connect('http://' + document.domain + ':' location.port + namespace);
+
+function checkboxClick(box, icpe, nodeid, cmdclass) {
+	$(box).addClass('disabled');
+	if (box.checked) {
+		
+	} else {
+
+	}
+	$(box).removeClass('disabled');
+}
+
+icpesocket.on('connect', function() {
+	icpesocket.emit('JoiniCPE', {icpe : '{{sensors[0].icpe.macaddraddr}}');
+});
+
+icpesocket.on('iCPEEvent', function(msg) {
+	console.log(msg);
+});
+
+</script>
+{% endmacro %}
+
+{% macro SensorModal(Sensor, SensorForm) %}
+{% from "macros/form.html" import render_field %}
+<div class="modal fade" id="PopCFG{{Sensor.nodeid}}" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">{{Sensor.name}}</h4>
+			</div>
+			<div class="modal-body">
+				<h3>Static values</h3>
+				<table class="table">
+					<thead>
+					</thead>
+					<tbody>
+						<tr>
+							<td>Brandname</td>
+							<td></td>
+						</tr>
+						<tr>
+							<td>Productname</td>
+							<td></td>
+						</tr>
+						<tr>
+							<td>Generic Class</td>
+							<td></td>
+						</tr>
+					</tbody>
+				</table>
+					<h3>Modify values</h3>
+				<form method="POST" action="#">
+					{{ SensorForm.csfr_token }}
+					{{ SensorForm.hidden_tag() }}
+					{{ render_field(SensorForm.Alias) }}
+					{{ render_field(SensorForm.Submit) }}
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+{% endmacro %}
+

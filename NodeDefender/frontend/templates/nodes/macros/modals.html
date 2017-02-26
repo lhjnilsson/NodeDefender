@@ -1,0 +1,67 @@
+{% macro ModalGrouplist(grouplist) %}
+{% from "macros/group.html" import ListGroups %}
+<div class="modal fade" id="groupList" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h2 class="modal-title">Group List</h2>
+			</div>
+			<div class="modal-body">
+				{{ ListGroups(grouplist) }}
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+{% endmacro %}
+
+{% macro ModifyLocation(location) %}
+{% from "macros/form.html" import render_manual %}
+<div class="modal fade" id="modifyLocation" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h2 class="modal-title">Modify Location</h2>
+			</div>
+			<div class="modal-body">
+				<form class="form-horizontal">
+					{{ render_manual("Street", "formstreet") }}
+					{{ render_manual("City", "formcity") }}
+					{{ render_manual("Latitude", "formlatitude") }}
+					{{ render_manual("Longitude", "formlongitude") }}
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" data-dismiss="modal">Submit</button>
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+$(document).ready(function() {
+
+});
+</script>
+{% endmacro %}
+{% macro ModifyGeneral(node) %}
+<div class="modal fade" id="modifyGeneral" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h2 class="modal-title">Modify General Information</h2>
+			</div>
+			<div class="modal-body">
+			
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+{% endmacro %}

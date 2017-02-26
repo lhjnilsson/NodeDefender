@@ -4,6 +4,11 @@
     <div class="col-lg-12">
         <h1 class="page-header">
             Nodes <small>Node List</small>
+						{% if current_user.has_role('admin') %}
+						<a href="#" data-toggle="modal" data-target="#AddNew" style="position: absolute; right: 0; margin-right: 1vw;">
+							<i class="fa fa-plus" aria-hidden="true"></i>
+						</a>
+						{% endif %}
         </h1>
              <ol class="breadcrumb">
            <li class="active">
@@ -14,30 +19,20 @@
     </div>
 </div>
 {% include "flash.html" %}
+{% from "macros/node.html" import NodeList, AddNode with context %}
 <div class="row">
-    <div class="col-lg-12">
-			<div class="box" style="padding: 0;">
-				<div class="list-group">
-					{% for node in nodes %}
-                    <a href="/nodes/list/{{node.icpe.mac}}" class="list-group-item">
-                        <p class="col-sm-2"><b>Name:</b> {{ node.name }}</p>
-                        <p class="col-sm-2"><b>Group:</b> {{ node.group.name }}</p>
-                        <p class="col-sm-2"><b>Street:</b> {{ node.location.street }}</p>
-                        <p class="col-sm-2"><b>City:</b> : {{node.location.city}}</p>
-                        -
-                    </a>
-					{% endfor %}
-				</div>
+	<div class="col-lg-12">
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				Node List
 			</div>
-    </div>
-    <tbody>
+			<div class="panel-body" style="padding: 0;">
+				{{ NodeList(nodes) }}
+		
+			</div>
+		</div>
+  </div>
 </div>
-<div class="row">
-	<div class="col-lg-2 col-lg-offset-10">
-		<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#AddNew">Add new</button>
-	</div>
-</div>
-
 <div class="modal fade" id="AddNew" role="dialog">
 	<div class="modal-dialog">
 		
@@ -46,7 +41,7 @@
 				<h2 class="modal-title">Add new node</h2>
 			</div>
 			<div class="modal-body">
-				{% include "nodes/new.html" %}
+				{{ AddNode(NodeCreateForm, unassigned) }}
 		</div>
 	</div>
 </div>	

@@ -15,6 +15,7 @@ class GroupModel(db.Model):
     __tablename__ = 'group'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50))
+    email = db.Column(db.String(120))
     description = db.Column(db.String(250))
     created_on = db.Column(db.DateTime)
     users = db.relationship('UserModel', secondary=user_list, backref=db.backref('group', lazy='dynamic'))

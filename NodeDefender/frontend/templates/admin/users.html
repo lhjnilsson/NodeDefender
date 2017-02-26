@@ -4,20 +4,49 @@
     <div class="col-lg-12">
         <h1 class="page-header">
             Admin <small>Users</small>
+						{% if current_user.has_role('admin') %}
+						<a href="#" data-toggle="modal" data-target="#AddNew" style="position: absolute; right: 0; margin-right: 1vw;">
+							<i class="fa fa-plus" aria-hidden="true"></i>
+						</a>
+						{% endif %}
         </h1>
              <ol class="breadcrumb">
            <li class="active">
-            <i class="fa fa-sliders"></i> Admin
+						 <i class="fa fa-map-marker"></i><a href="{{url_for('index')}}"> Dashboard</a>
           </li>
+					<li class="active">Node List</li>
        </ol>
     </div>
 </div>
-
-
+{% include "flash.html" %}
+{% from "admin/macros/user.html" import ListUsers, CreateUser %}
 <div class="row">
-    <div class="col-lg-12 box">
-        <h1>Node List</h1>
-    </div>
+	 <div class="col-lg-12">
+		 <div class="panel panel-primary">
+			 <div class="panel-heading">
+				 User List
+			 </div>
+			 <div class="panel-body" style="padding: 0;">
+					{{	ListUsers(Users) }}
+			 </div>
+		</div>
+  </div>
 </div>
+<div class="modal fade" id="AddNew" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h2 class="modal-title">Add new node</h2>
+			</div>
+			<div class="modal-body">
+				{{ CreateUser(CreateUserForm) }}
+		</div>
+	</div>
+</div>	
+
+<script>
+$(document).ready(function() {
+});
+</script>
 
 {% endblock %}

@@ -1,10 +1,31 @@
-from .. import db
+from .. import db, zwave
+from ..decorators import CommonPayload
+from .decorators import VerifyCmdclass, VerifySensor
 
-def status(conninfo, topic, payload):
-    sensor = db.sensor.Get(topic.macaddr, topic.sensorid)
-    if sensor is None:
-        sensor = db.Load(conninfo, topic.macaddr, topic.sensorid)
+@VerifyCmdclass
+@CommonPayload
+def status(topic, payload, mqttsrc):
+    if topic.subfunc:
+        return sup(topic, payload, mqttsrc)
+    return zwave.Event(topic, payload)
 
-    evt = zwave.event(payload)
-    db.UpdateSensor(topic, sensor, evt)
-    return True
+@VerifyCmdclass
+@CommonPayload
+def event(topic, payload, mqttsrc):
+    return zwave.Event(topic, payload)
+
+@VerifyCmdclass
+@CommonPayload
+def sup(topic, payload, mqttsrc):
+    try:
+        db.cmdclass.AddTypes(topic, payload)
+    except AttributeError:
+        pass
+
+    return None, None
+
+@VerifySensor
+@CommonPayload
+def get(topic, payload, mqttsrc):
+    if topic.subfunc:
+        return eval(topic.subfunc)(topic, payload, mqttsrc)

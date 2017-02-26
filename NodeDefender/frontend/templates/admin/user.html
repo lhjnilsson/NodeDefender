@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block content %}
+{% from "macros/socket.html" import CreateSocket %}
+{{ CreateSocket('socket', 'adminusers') }}
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header">
+					Admin <small>{{User.firstname}}, {{User.lastname}}</small>
+				</h1>
+        <ol class="breadcrumb">
+					<li class="active">
+						<i class="fa fa-map-marker"></i><a href="{{url_for('index')}}"> Dashboard</a>
+          </li>
+					<li class="active">Node List</li>
+       </ol>
+    </div>
+</div>
+{% include "flash.html" %}
+{% from "admin/macros/group.html" import ListGroups %}
+{% from "macros/user.html" import Info, Events, AddGroup, AdminSettings %}
+<div class="row">
+	<div class="col-lg-4">
+		<h3>User Info
+		{% if current_user.has_role('admin') %}
+		{{ AdminSettings(User, UserSettings, UserPassword) }}
+		{% else %}
+		</h3>
+		{% endif %}
+		{{Info(User)}}
+	</div>
+	<div class="col-lg-4">
+		<h3>Groups
+		{% if current_user.has_role('admin') %}
+		{{ AddGroup(User, UserGroupAdd) }}
+		{% else %}
+		</h3>
+		{% endif %}
+		{{ListGroups(User.group)}}
+	</div>
+	<div class="col-lg-4">
+		<h3>Events</h3>
+		{{Events(User)}}
+	</div>
+</div>
+
+<script>
+$(document).ready(function() {
+});
+</script>
+
+{% endblock %}

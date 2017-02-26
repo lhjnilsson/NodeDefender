@@ -78,7 +78,7 @@ def info(mac):
     if icpe is None:
         print("Unable to find iCPE {}".format(mac))
 
-    print('ID: {}, MAC: {}'.format(icpe.id, icpe.mac))
+    print('ID: {}, MAC: {}'.format(icpe.id, icpe.macaddr))
     print('Alias {}, Node: {}'.format(icpe.alias, icpe.node.name))
     print('ZWave Sensors: ')
     for sensor in iCPE.sensors:

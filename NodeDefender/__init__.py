@@ -28,14 +28,18 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_restful import Api
 from flask_socketio import SocketIO
 from flask_moment import Moment
+from flask_mail import Mail
 from apscheduler.schedulers.gevent import GeventScheduler
-from gevent import monkey, sleep
 from .factory import CreateApp, CreateLogging, CreateCelery
 from flask_security import Security, SQLAlchemyUserDatastore
+from .security.forms import LoginForm
+from redis import ConnectionPool
+from redlock import RedLock
+from gevent import monkey
 monkey.patch_all()
 
 # Setup logging
-logger, handler = CreateLogging()
+logger, loggHandler = CreateLogging()
 
 # Initialize the Flask- Application
 app = CreateApp()
@@ -45,9 +49,11 @@ api = Api(app)
 
 # Config-file 
 
+RedisPool = ConnectionPool()
 
 # Initialize SocketIO
-socketio = SocketIO(app)
+socketio = SocketIO(app, message_queue='redis://localhost:6379/0',
+                    async_mode='gevent')
 
 # Initialize SQLAlchemy for Database
 db = SQLAlchemy(app)
@@ -74,12 +80,16 @@ logger.info('NodeDefender Succesfully started')
 # Setup Flask-Security
 from .models.SQL import UserModel, UserRoleModel
 UserDatastore = SQLAlchemyUserDatastore(db, UserModel, UserRoleModel)
-security = Security(app, UserDatastore)
+security = Security(app, UserDatastore,\
+                   login_form=LoginForm)
+
+# Initialize Mail
+mail = Mail(app)
 
 # MQTT
 from . import conn
 
 # Frontend
 moment = Moment(app)
-from .models import SQL
+from .models import SQL, redis
 from . import frontend

@@ -35,7 +35,7 @@ class MQTTFunctions:
     def logged(func):
         @wraps(func)
         def logger(*args, **kwargs):
-            icpe = iCPEModel.query.filter_by(mac = args[1]['mac'][2:]).first()
+            icpe = iCPEModel.query.filter_by(macaddr = args[1]['mac'][2:]).first()
             if not icpe:
                 return func(*args, **kwargs)
             icpe.online = True
@@ -125,7 +125,7 @@ class MQTTFunctions:
         if int(topic['nodeid']) in known or topic['nodeid'] == '0' or \
         topic['nodeid'] == '1':
             return
-        iCPENode = iCPEModel.query.filter_by(mac = self.mac).first()
+        iCPENode = iCPEModel.query.filter_by(macaddr = self.mac).first()
         payload = self.PayloadToDict(payload.decode('ascii'))
         self.AddNode(topic['nodeid'], payload['vid'], payload['ptype'],
                      payload['pid'], payload['generic_0'])

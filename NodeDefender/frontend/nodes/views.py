@@ -1,8 +1,9 @@
 from .. import NodeView
 from flask import render_template, request, flash, redirect, url_for
 from flask_security import login_required
-from ...models.manage import node as NodeManage
-from .forms import (SensorForm, NodeLocationForm, iCPEForm, NodeForm,
+from ...models.manage import node as NodeSQL
+from ...models.manage import icpe as iCPESQL
+from .forms import (LocationForm, iCPEForm, SensorForm,
 NodeCreateForm)
 
 @NodeView.route('/nodes/list', methods=['GET', 'POST'])
@@ -11,13 +12,13 @@ def NodesList():
     CreateForm = NodeCreateForm()
 
     if request.method == 'GET':
-        nodes = NodeManage.List()
+        nodes = NodeSQL.List()
         return render_template('nodes/list.html', nodes = nodes, NodeCreateForm =
                                CreateForm)
     else:
         CreateForm.validate_on_submit()
         try:
-            location = NodeManage.Location(
+            location = NodeSQL.Location(
                 CreateForm.Street.data,
                 CreateForm.City.data)
         except LookupError as e:
@@ -25,47 +26,49 @@ def NodesList():
             return redirect(url_for('NodeView.NodesList'))
        
         try:
-            node = NodeManage.Create(
+            Node = NodeSQL.Create(
                 CreateForm.Name.data,
-                CreateForm.Group.data,
-                location,
-                CreateForm.Mac.data)
+                location)
+            iCPE = iCPESQL.Get(CreateForm.Mac.data)
+            if iCPE is None:
+                iCPE = iCPESQL.Create(CreateForm.Mac.data)
+            iCPESQL.Join(iCPE, Node)
+            if CreateForm.Group.data:
+                NodeSQL.Join(Node.name, CreateForm.Group.data)
         except LookupError as e:
             flash("Error Creating Node: " + str(e), 'danger')
             return redirect(url_for('NodeView.NodesList'))
         
-        flash('Succesfully added node: ' + node.name, 'success')
+        flash('Succesfully added node: ' + Node.name, 'success')
         return redirect(url_for('NodeView.NodesList'))
 
 @NodeView.route('/nodes/list/<mac>', methods=['GET', 'POST'])
 @login_required
 def NodesNode(mac):
-    iCPE = NodeManage.Get(mac = mac)
+    iCPE = iCPESQL.Get(mac)
     if iCPE is None:
         raise ValueError('Cant find mac')
-    form = NodeForm()
-    BasicForm = iCPEForm()
-    AddressForm = NodeAddressForm()
-    NodeBasic = NodeBasicForm()
+    Node = iCPE.node
+    sensorform = SensorForm()
+    icpeform = iCPEForm()
+    locationform = LocationForm()
     if request.method == 'GET':
-        znodes = icpe.WebForm(mac)
-        return render_template('nodes/node.html', mac=mac, form=form,
-                               iCPE = iCPE, znodes = znodes, iCPEBasicForm =
-                               BasicForm, iCPEAddressForm = AddressForm,
-                               NodeBasicForm = NodeBasic)
-    elif request.method == 'POST':
-        if BasicForm.validate_on_submit():
-            iCPE.alias = BasicForm.alias.data
-            iCPE.comment = BasicForm.comment.data
-        elif AddressForm.validate_on_submit():
-            iCPE.location.street = AddressForm.street.data
-            iCPE.location.city = AddressForm.city.data
-            iCPE.location.geolat = AddressForm.geolat.data
-            iCPE.location.geolong = AddressForm.geolong.data
-        
-        db.session.add(iCPE)
-        db.session.commit()
-        return render_template('nodes/node.html', mac=mac, form=form, iCPE = iCPE,
+        return render_template('nodes/node.html', iCPE = iCPE, Node = Node,
+                               iCPEForm = icpeform, LocationForm = locationform,
+                               SensorForm = sensorform)
+    
+    if icpeform.Submit.data and icpeform.validate_on_submit():
+        iCPE.alias = BasicForm.alias.data
+        iCPE.comment = BasicForm.comment.data
+    elif locationform.Submit.data and locationform.validate_on_submit():
+        iCPE.location.street = AddressForm.street.data
+        iCPE.location.city = AddressForm.city.data
+        iCPE.location.geolat = AddressForm.geolat.data
+        iCPE.location.geolong = AddressForm.geolong.data
+
+    db.session.add(iCPE)
+    db.session.commit()
+    return render_template('nodes/node.html', mac=mac, form=form, iCPE = iCPE,
                                 iCPEAddressForm = AddressForm, iCPEBasicForm =
                                 BasicForm, NodeBasicForm = NodeBasic)
 
@@ -85,7 +88,7 @@ def NodesUpdate(mac):
 @NodeView.route('/nodes/list/<mac>/<nodeid>', methods=['GET', 'POST'])
 @login_required
 def NodesNodeConfigure(mac, nodeid):
-    iCPE = iCPEModel.query.filter_by(mac = mac).first()
+    iCPE = iCPEModel.query.filter_by(macaddr = mac).first()
     if iCPE is None:
         return redirect(url_for('index'))
     NodeBasic = NodeBasicForm()
@@ -108,7 +111,7 @@ def NodesNodeConfigure(mac, nodeid):
 def NodesNotesAdd(mac):
     if request.method == 'POST':
         note = request.form['note']
-        icpe = iCPEModel.query.filter_by(mac = mac).first()
+        icpe = iCPEModel.query.filter_by(macaddr = mac).first()
         dbnote = NodeNotesModel(current_user.email, note)
         icpe.notes.append(dbnote)
         db.session.add(icpe)
@@ -122,7 +125,7 @@ def NodesNotesAdd(mac):
 def NodesNoteSticky(mac):
     if request.method == 'POST':
         note = request.form['note']
-        icpe = iCPEModel.query.filter_by(mac = mac).first()
+        icpe = iCPEModel.query.filter_by(macaddr = mac).first()
         icpe.notesticky = note
         db.session.add(icpe)
         db.session.commit()
@@ -144,15 +147,15 @@ def DeleteNode(mac):
 @NodeView.route('/nodes/<mac>/<nodeid>/<cls>/<field>/hide')
 def NodesNodeClassHide(mac, nodeid, cls, field):
     if 1 < db.session.query(iCPEModel, NodeModel).\
-                            filter(iCPEModel.mac == mac).\
+                            filter(iCPEModel.macaddr == mac).\
                             filter(NodeModel.nodeid == int(nodeid)).count():
         CleanDuplicate(db.session.query(iCPEModel, NodeModel).\
-                                        filter(iCPEModel.mac == mac).\
+                                        filter(iCPEModel.macaddr == mac).\
                                         filter(NodeModel.nodeid == int(nodeid)).all())
     Cls = NodeClassModel.query.join(NodeModel).join(iCPEModel).\
             filter(NodeClassModel.commandclass == cls).\
             filter(NodeModel.nodeid == nodeid).\
-            filter(iCPEModel.mac == mac).first()
+            filter(iCPEModel.macaddr == mac).first()
     Cls.hiddenFields.append(NodeHiddenFieldModel(field))
     db.session.add(Cls)
     db.session.commit()
@@ -162,15 +165,15 @@ def NodesNodeClassHide(mac, nodeid, cls, field):
 @NodeView.route('/nodes/<mac>/<nodeid>/<cls>/<field>/display')
 def NodesNodeClassDisplay(mac, nodeid, cls, field):
     if 1 < db.session.query(iCPEModel, NodeModel).\
-                            filter(iCPEModel.mac == mac).\
+                            filter(iCPEModel.macaddr == mac).\
                             filter(NodeModel.nodeid == nodeid).count():
         CleanDuplicate(db.session.query(iCPEModel, NodeModel).\
-                                        filter(iCPEModel.mac == mac).\
+                                        filter(iCPEModel.macaddr == mac).\
                                         filter(NodeModel.nodeid == nodeid).all())
     Cls = NodeClassModel.query.join(NodeModel).join(iCPEModel).\
             filter(NodeClassModel.commandclass == cls).\
             filter(NodeModel.nodeid == nodeid).\
-            filter(iCPEModel.mac == mac).first()
+            filter(iCPEModel.macaddr == mac).first()
     
     for hiddenfield in Cls.hiddenFields:
         db.session.delete(hiddenfield)

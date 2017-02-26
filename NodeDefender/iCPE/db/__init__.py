@@ -1,7 +1,6 @@
 from redis import ConnectionPool, StrictRedis
 from functools import wraps
-
-pool = ConnectionPool(host='localhost', port=6379, db=0)
+from ... import logger, RedisPool
 
 def redisconn(func):
     @wraps(func)
@@ -10,25 +9,23 @@ def redisconn(func):
         return func(*args, conn = conn, **kwargs)
     return wrapper
 
-
-def Load(mqtt, mac, sensorid = None):
+def Load(mqttsrc, mac, sensorid = None):
     if sensorid:
         if sensor.Load(mac, sensorid):
             pass
         else:
             if icpe.Load(mac):
-                sensor.CreateLoadQuery(mqtt, mac, sensorid)
+                sensor.CreateLoadQuery(mqttsrc, mac, sensorid)
             else:
-                icpe.CreateLoadQuery(mqtt, mac)
-                sensor.CreateLoadQuery(mqtt, mac, sensorid)
+                icpe.CreateLoadQuery(mqttsrc, mac)
+                sensor.CreateLoadQuery(mqttsrc, mac, sensorid)
 
     else:
         if icpe.Load(mac):
             pass
         else:
-            icpe.CreateLoadQuery(mqtt, mac)
+            icpe.CreateLoadQuery(mqttsrc, mac)
 
-    return True
+    return sensor.Get(mac, sensorid) if sensorid else icpe.Get(mac)
 
-
-from . import sensor, icpe
+from . import sensor, icpe, cmdclass

@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header">
+					Admin <small>Group {{Group.name}}</small>
+				</h1>
+             <ol class="breadcrumb">
+           <li class="active">
+						 <i class="fa fa-map-marker"></i><a href="{{url_for('index')}}"> Dashboard</a>
+          </li>
+					<li class="active">Node List</li>
+       </ol>
+    </div>
+</div>
+{% include "flash.html" %}
+{% from "admin/macros/group.html" import GroupInfo %}
+{% from "macros/map.html" import MapGroup %}
+{% from "macros/messages.html" import MessageList %}
+{% from "admin/macros/user.html" import ListUsers %}
+
+<div class="row">
+	<div class="col-lg-8">
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				Nodes
+			</div>
+			<div class="panel-body" style="height: 200px; padding: 0;">
+				{{MapGroup(Group.nodes)}}
+			</div>
+		</div>
+	</div>
+	<div class="col-lg-4">
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				General Info
+			</div>
+			<div class="panel-body">
+				{{GroupInfo(Group)}}
+			</div>
+		</div>
+	</div>
+</div>
+{% from "macros/statistics.html" import AverageHeat, AveragePower, AverageEvents %}
+<div class="row">
+	<div class="col-lg-4">
+		<div class="panel panel-info">
+			<div class="panel-heading">
+				Heat 
+			</div>
+			<div class="panel-body">
+				{{ AverageHeat() }}
+			</div>
+		</div>
+	</div>
+	<div class="col-lg-4">
+		<div class="panel panel-info">
+			<div class="panel-heading">
+				Power
+			</div>
+			<div class="panel-body">
+				{{ AveragePower() }}
+			</div>
+		</div>
+	</div>
+	<div class="col-lg-4">
+		<div class="panel panel-info">
+			<div class="panel-heading">
+				Events
+			</div>
+			<div class="panel-body">
+				{{ AverageEvents() }}
+			</div>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<div class="col-lg-6">
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				Messages
+			</div>
+			<div class="panel-body" style="padding: 0";>
+				{{MessageList(Group.messages)}}
+			</div>
+		</div>
+	</div>
+	<div class="col-lg-6">
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				Users
+			</div>
+			<div class="panel-body" style="padding: 0";>
+				{{ListUsers(Group.users)}}
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+$(document).ready(function() {
+});
+</script>
+
+{% endblock %}

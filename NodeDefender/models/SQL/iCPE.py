@@ -9,20 +9,42 @@ class iCPEModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     node_id = db.Column(db.Integer, db.ForeignKey('node.id'))
     name = db.Column(db.String(64))
-    mac = db.Column(db.String(12), unique=True)
+    macaddr = db.Column(db.String(12), unique=True)
     ipaddr = db.Column(db.String(32))
     online =  db.Column(db.Boolean)
+    created_on = db.Column(db.DateTime)
     last_online = db.Column(db.DateTime)
-    sensors = db.relationship('SensorModel', backref='icpe')
+    sensors = db.relationship('SensorModel', backref='icpe',
+                              cascade='save-update, merge, delete')
     notesticky = db.Column(db.String(150))
+    fields = db.relationship('FieldModel', backref='icpe',
+                                cascade='save-update, merge, delete')
 
-    def __init__(self, mac):
-        self.mac = mac.upper()
+    def __init__(self, macaddr):
+        self.macaddr = macaddr.upper()
         self.created_on = datetime.now()
 
     def __repr__(self):
-        return '<Node %r, Mac %r>' % (self.alias, self.mac)
+        return '<Name %r, Mac %r>' % (self.name, self.mac)
 
+class FieldModel(db.Model):
+    __tablename__ = 'field'
+    id = db.Column(db.Integer, primary_key=True)
+    
+    icpe_id = db.Column(db.Integer, db.ForeignKey('icpe.id'))
+    sensor_id = db.Column(db.Integer, db.ForeignKey('sensor.id'))
+    cmdclass_id = db.Column(db.Integer, db.ForeignKey('sensorclass.id'))
+
+    name = db.Column(db.String(16))
+    display = db.Column(db.Boolean)
+    type = db.Column(db.String(16))
+    readonly = db.Column(db.Boolean)
+
+    def __init__(self, name, type, readonly):
+        self.name = str(name)
+        self.display = True
+        self.type = str(type)
+        self.readonly = bool(readonly)
 
 class SensorModel(db.Model):
     '''
@@ -33,33 +55,40 @@ class SensorModel(db.Model):
     icpe_id = db.Column(db.Integer, db.ForeignKey('icpe.id'))
     
     name = db.Column(db.String(32))
-    sensorid = db.Column(db.Integer)
+    sensorid = db.Column(db.String(4))
     
-    vendorid = db.Column(db.String(16))
-    productid = db.Column(db.String(16))
-    brandname = db.Column(db.String(32))
+    brand = db.Column(db.String(32))
     productname = db.Column(db.String(32))
-       
-    roletype = db.Column(db.String(32))
+    manufacturerid = db.Column(db.String(16))
+    productid = db.Column(db.String(16))
+    producttypeid = db.Column(db.String(16))
+    librarytype = db.Column(db.String(32))
     devicetype = db.Column(db.String(32))
-    generic_class = db.Column(db.String(16))
-   
-    cmdclasses = db.relationship('SensorClassModel', backref='sensor')
+  
+    cmdclasses = db.relationship('SensorClassModel', backref='sensor',
+                                cascade='save-update, merge, delete')
+    fields = db.relationship('FieldModel', backref='sensor',
+                                cascade='save-update, merge, delete')
 
-    def __init__(self, sensorid):
-        self.sensorid = int(sensorid)
+    def __init__(self, sensorid, sensorinfo):
+        self.sensorid = str(sensorid)
+        if sensorinfo:
+            for key, value in sensorinfo.items():
+                print(key.lower(), value)
+                setattr(self, key.lower(), value)
 
-        self.name = "None"
+            self.productname = self.name
 
 class SensorClassModel(db.Model):
     __tablename__ = 'sensorclass'
     id = db.Column(db.Integer, primary_key=True)
     sensor_id = db.Column(db.Integer, db.ForeignKey('sensor.id'))
-    cmdclass = db.Column(db.String(20))
-    types = db.Column(db.String(200))
+    classnumber = db.Column(db.String(20))
+    classname = db.Column(db.String(20))
+    classtypes = db.Column(db.String(200))
+    fields = db.relationship('FieldModel', backref='sensorclass',
+                                cascade='save-update, merge, delete')
 
-    def __init__(self, cmdclass, types):
-        self.cmdclass = cmdclass
-        if type(types) is list:
-            types = str(types)[1:-1]
-        self.types = types
+    def __init__(self, classnumber, classname):
+        self.classnumber = classnumber
+        self.classname = classname

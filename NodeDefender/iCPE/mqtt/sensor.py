@@ -1,5 +1,9 @@
 from . import msg, Fire, mqttconn
 
 @mqttconn
-def Query(mqtt, mac, sensorid):
-    return Fire(mqtt.ipaddr, mqtt.port, msg.format(mac, sensorid, 'node', 'qry'))
+def Query(mac, sensorid, ipaddr = '127.0.0.1', port = 1883):
+    return Fire(ipaddr, port, msg.format(mac, sensorid, 'info', 'qry'))
+
+@mqttconn
+def Sup(mac, sensorid, cmdclass, ipaddr = '127.0.0.1', port = 1883):
+    return Fire(ipaddr, port, msg.format(mac, sensorid, cmdclass+':sup', 'get'))

@@ -14,46 +14,25 @@
     </div>
 </div>
 {% include "flash.html" %}
+{% from "admin/macros/general.html" import GeneralSettings %}
+{% from "admin/macros/mqtt.html" import ListMQTT %}
 <div class="row">
 	<div class="col-lg-4">
-		<h3>General Settings</h3>
-		<div class="box">
-			<form name="sform" class="form-horizontal" method="post" action="{{url_for('AdminServerSetGeneral')}}">
-          <div class="form-group">
-						{{ sform.port.label(class="col-sm-2 control-label") }}
-						<div class="col-sm-10">
-							{{ sform.port(class="form-control") }}
-						</div>
-					</div>
-					<div class="form-group">
-						{{ sform.debug.label(class="col-sm-2 control-label") }}
-						<div class="col-sm-10">
-							{{ sform.debug(class="form-control") }}
-						</div>
-					</div>
-					<div class="form-group">
-						{{ sform.logging.label(class="col-sm-2 control-label") }}
-						<div class="col-sm-10">
-							{{ sform.logging(class="form-control") }}
-						</div>
-					</div>
-					<div class="form-group">
-						{{ sform.sqldriver.label(class="col-sm-2 control-label") }}
-						<div class="col-sm-10">
-							{{ sform.sqldriver(class="form-control") }}
-						</div>
-					</div>
-					<div class="form-group">
-						<div class="col-sm-offset-2 col-sm-10">
-							<button type="submit" class="btn btn-default">Update</button>
-						</div>
-					</div>
-				</form>
-      </div>
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				General Settings
+			</div>
+			<div class="panel-body">
+				{{ GeneralSettings(GeneralForm) }}
+			</div>
+		</div>
 	</div>
 	<div class="col-lg-4">
-		<h3>Database Settings</h3>
-		<div class="box">
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				Database Settings
+			</div>
+			<div class="panel-body">
 				<form class="form-horizontal">
           <div class="form-group">
 						<label for="dbsettings" class="col-sm-2 control-label">First</label>
@@ -70,20 +49,18 @@
 						</div>
           </div>
 				</form>
-      </div>
+			</div>
+		</div>
 	</div>	
 	<div class="col-lg-4">
-		<h3>SNMP Settings</h3>
-		<div class="box">
-			<form class="form-horizontal">
-        <div class="form-group">
-					<label for="#" class="col-sm-2 control-label">First</label>
-					<div class="col-sm-10">
-						<input type="text" class="form-control" id="#" placeholder"Email" value="First">
-          </div>
-        </div>
-			</form>
-    </div>
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				MQTT Connections
+			</div>
+			<div class="panel-body">
+				{{ ListMQTT(MQTTList, MQTTForm) }}
+			</div>
+		</div>
 	</div>
 </div>
 <script>
