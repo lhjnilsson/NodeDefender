@@ -1,6 +1,7 @@
 from ..SQL import iCPEModel, NodeModel, MQTTModel
 from ... import db
 from . import logger
+from redlock import RedLock
 
 def List():
     return [icpe for icpe in iCPEModel.query.all()]
@@ -16,6 +17,10 @@ def MQTT(macaddr):
     return icpe.mqtt[0].ipaddr, icpe.mqtt[0].port
 
 def Create(mac, node = None, ipaddr = None, port = None):
+    lock = RedLock(mac)
+    if lock.acquire() is False:
+        return False
+
     if Get(mac) is not None:
         raise ValueError('iCPE Already exists')
 
@@ -41,6 +46,7 @@ def Create(mac, node = None, ipaddr = None, port = None):
     db.session.add(icpe)
     db.session.commit()
     logger.info("Added iCPE: {}".format(icpe.macaddr))
+    lock.release()
     return icpe
 
 def Delete(icpe):
