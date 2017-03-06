@@ -29,20 +29,21 @@ from ...models.manage import icpe as iCPESQL
 
 @socketio.on('list', namespace='/icpe')
 def List(msg):
-    icpes = [icpe.name for icpe in iCPESQL.List(**msg)]
+    icpes = [icpe.macaddr for icpe in iCPESQL.List(**msg)]
     emit('listRsp', (icpes))
     return True
 
 @socketio.on('unassigned', namespace='/icpe')
 def Unassigned(msg):
-    icpes = [icpe.name for icpe in iCPESQL.Unassigned(**msg)]
-    emit('unassignedRsp', namespace='/icpe')
+    icpes = [icpe.macaddr for icpe in iCPESQL.Unassigned(**msg)]
+    emit('unassignedRsp', (icpes), namespace='/icpe')
     return True
 
 
 @socketio.on('info', namespace='/icpe')
 def Info(msg):
-    icpe = iCPESQL.Get(**msg)
-    emit('infoRsp', (icpe.to_json()))
-    return True
+    icpe = iCPESQL.Get(msg['macaddr'])
+    if icpe:
+        emit('infoRsp', (icpe.to_json()))
+        return True
 

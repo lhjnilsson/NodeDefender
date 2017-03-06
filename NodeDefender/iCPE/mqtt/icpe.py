@@ -22,8 +22,8 @@ def Exclude(mac, ipaddr = '127.0.0.1', port = 1883):
 
 @mqttconn
 def Query(mac, ipaddr = '127.0.0.1', port = 1883):
-    if not SensorList(mac, ipaddr, port):
+    if not SensorList(mac, ipaddr = ipaddr, port = port):
         return False
-    if not Network(mac, ipaddr, port):
+    if not Network(mac, ipaddr = ipaddr, port = port):
         return False
     return True

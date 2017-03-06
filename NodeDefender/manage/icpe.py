@@ -66,7 +66,7 @@ def list():
     'List iCPEs'
     for i in icpe.List():
         print("ID: {}, Name: {}, MAC: {}".format(i.id, i.name,
-                                                  i.mac))
+                                                  i.macaddr))
 
 @manager.option('-mac', '--mac', dest='mac', default=None)
 def info(mac):

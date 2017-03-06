@@ -127,11 +127,11 @@ $(document).ready(function() {
 			toastr.error('Please enter City');
 			return false;
 		}
-		
+			
 		$('#SubmitName').text($('#nodeName').val());
 		$('#SubmitStreet').text($('#nodeStreet').val());
 		$('#SubmitCity').text($('#nodeCity').val());
-
+		nodeSocket.emit('coords', {'street' : $('#SubmitStreet').text(), 'city' : $('#SubmitCity').text()})
 		return true;
 	}
 	var group = function() {
@@ -144,10 +144,12 @@ $(document).ready(function() {
 		return true;
 	}
 	var icpe = function() {
-		if ($('#manualMAC').val() != '') {
+
+		if ($('#manualMAC').val().length == 12) {
 			$('#SubmitiCPE').text($('#manualMAC').val());
 			return true;
 		}
+		
 		if ($('#icpemac').text() != 'None') {
 			$('#SubmitiCPE').text($('#icpemac').text());
 			return true;
@@ -155,8 +157,21 @@ $(document).ready(function() {
 		toastr.error('Please enter correct iCPE');
 		return false;
 	}
+	var submit = function() {
+		var macaddr = $('#SubmitiCPE').text();
+		var group = $('#SubmitGroup').text();
+		var node = $('#SubmitName').text();
+		var street = $('#SubmitStreet').text();
+		var city = $('#SubmitCity').text();
+		nodeSocket.emit('create', {'macaddr' : macaddr, 'group' : group, 'node' : node, 'street' : street, 'city' : city});
+	}
+	initMultistep(basic, group, icpe, submit);
 
-	initMultistep(basic, group, icpe);
+	nodeSocket.on('coordsRsp', function(coords) {
+		$('#SubmitLatitude').text(coords.latitude);
+		$('#SubmitLongitude').text(coords.longitude);
+	});
+
 });
 </script>
 <script src="/static/js/multistep.js"></script>

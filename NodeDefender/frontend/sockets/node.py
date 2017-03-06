@@ -26,8 +26,36 @@ from flask_socketio import emit, send, disconnect, join_room, leave_room, \
         close_room, rooms
 from ... import socketio
 from ...models.manage import node as NodeSQL
+from ...models.manage import icpe as iCPESQL
 from flask import jsonify
+from geopy.geocoders import Nominatim
 
 @socketio.on('nodes', namespace='/node')
 def icpeevent(msg):
     return emit('nodes', [node.to_json() for node in NodeSQL.List(msg)])
+
+
+@socketio.on('coords', namespace='/node')
+def Coords(msg):
+    geo = Nominatim()
+    geocords = geo.geocode(msg['city'] + ' ' + msg['street'])
+    if geocords:
+        latitude = geocords.latitude
+        longitude = geocords.longitude
+        emit('coordsRsp', {'street' : msg['street'], 'city' : msg['city'],
+                           'latitude' : str(latitude), 'longitude' :
+                           str(longitude)})
+    else:
+         emit('coordsRsp', {'street' : msg['street'], 'city' : msg['city'],
+                           'latitude' : 'Not Found', 'longitude' :
+                           'Not Found'})
+    return True
+
+@socketio.on('create', namespace='/node')
+def Create(msg):
+    location = NodeSQL.Location(msg['street'], msg['city'])
+    node = NodeSQL.Create(msg['node'], location)
+    NodeSQL.Join(node.name, msg['group'])
+    iCPESQL.Join(msg['macaddr'], node.name)
+    emit('reload', namespace='/general')
+    return True

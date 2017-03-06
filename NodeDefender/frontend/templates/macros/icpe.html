@@ -44,14 +44,9 @@
 $(document).ready(function() {
 	iCPESocket.emit('unassigned', {'user' : '{{user.email}}'});
 
-	iCPESocket.on('unassigned', function(icpes) {
-		var y = icpes.length;
-		if (y < 1) {
-			return 
-		}
-		
-		for (var i = 0; i < y; i++) {
-			$('#GroupsList').append('<option>'+  icpes[i] + '</option>');
+	iCPESocket.on('unassignedRsp', function(icpes) {
+		for (var i = 0; i < icpes.length; i++) {
+			$('#UnassignedList').append('<option>'+  icpes[i] + '</option>');
 		}
 	});
 	
@@ -63,8 +58,8 @@ $(document).ready(function() {
 	});
 
 	$('#UnassignedList').change(function() {
-		var name = $('#UnassignedList option:selected').text();
-		if (name == 'manual') {
+		var macaddr = $('#UnassignedList option:selected').text();
+		if (macaddr == 'manual') {
 			$("#unassigned").hide();
 			$("#manual").show();
 			$("#icpemac").text('None');
@@ -72,7 +67,7 @@ $(document).ready(function() {
 			$("#manual").hide();
 			$("#unassigned").show();
 			$("#manualMAC").text('');
-			iCPESocket.emit('info', {'name' : name});
+			iCPESocket.emit('info', {'macaddr' : macaddr});
 		}
 	});
 	$("#unassigned").hide();

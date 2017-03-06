@@ -25,14 +25,14 @@ class iCPEModel(db.Model):
         self.created_on = datetime.now()
 
     def __repr__(self):
-        return '<Name %r, Mac %r>' % (self.name, self.mac)
+        return '<Name %r, Mac %r>' % (self.name, self.macaddr)
 
     def to_json(self):
         icpe = {'mac' : self.macaddr,
                 'ipaddr' : self.ipaddr,
-                'createdOn' : self.created_on,
-                'sensors' : len(self.sensors),
-                'mqttConnection' : self.mqtt.ipaddr}
+                'createdOn' : str(self.created_on),
+                'sensors' : str(len(self.sensors)),
+                'mqttConnection' : self.mqtt[0].ipaddr}
         return icpe
 
 class FieldModel(db.Model):

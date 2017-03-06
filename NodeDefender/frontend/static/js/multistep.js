@@ -1,8 +1,9 @@
 var cb = []
-
+var submitcb;
 var initMultistep = function() {
-	for (var i = 0; i < arguments.length; i++)
+	for (var i = 0; i < (arguments.length - 1); i++)
 		cb[i] = arguments[i];
+	submitcb = arguments[arguments.length - 1];
 }
 $(document).ready(function() {
 	var current = 1;
@@ -39,8 +40,11 @@ $(document).ready(function() {
 		}
 		hideButtons(current);
 	})
+	
+	btnsubmit.click(function() {
+		submitcb();
+	})
 });
-
 checkStep = function(current) {
 	if (current > 0) {
 		return cb[current - 1]();
