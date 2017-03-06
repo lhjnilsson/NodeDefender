@@ -21,6 +21,7 @@
 		<div class="panel panel-primary">
 			<div class="panel-heading">
 				General Settings
+				<div class="floatRight" id="generalSettings"></div>
 			</div>
 			<div class="panel-body">
 				{{ GeneralSettings(GeneralForm) }}
@@ -31,6 +32,7 @@
 		<div class="panel panel-primary">
 			<div class="panel-heading">
 				Database Settings
+				<div class="floatRight" id="databaseSettings"></div>
 			</div>
 			<div class="panel-body">
 				<form class="form-horizontal">
@@ -56,6 +58,10 @@
 		<div class="panel panel-primary">
 			<div class="panel-heading">
 				MQTT Connections
+				<div class="floatRight">
+					<div id="mqttSettings" style="display: inline;"></div>
+					<div id="mqttAdd" style="display: inline;"></div>
+				</div>
 			</div>
 			<div class="panel-body">
 				{{ ListMQTT(MQTTList, MQTTForm) }}
@@ -65,8 +71,16 @@
 </div>
 <script>
 $(document).ready(function() {
-	$(":checkbox").bootstrapSwitch();
-	$(":checkbox").bootstrapSwitch('size','small');
+{% if current_user.has_role("admin") %}
+	$('#generalSettings').prepend('<a style="color: #FFFFFF;" href="#" data-toggle="modal" data-target="#modifyLocation"><i class="fa fa-pencil" aria-hidden="true"></i></a>');
+	$('#databaseSettings').prepend('<a style="color: #FFFFFF;" href="#" data-toggle="modal" data-target="#modifyGeneral"><i class="fa fa-pencil" aria-hidden="true"></i></a>');
+	$('#mqttSettings').prepend('<a style="color: #FFFFFF;" href="#" data-toggle="modal" data-target="#modifyLocation"><i class="fa fa-pencil" aria-hidden="true"></i></a>');
+	$('#mqttAdd').prepend('<a style="color: #FFFFFF;" href="#" data-toggle="modal" data-target="#AddMQTT"><i class="fa fa-plus" aria-hidden="true"></i></a>');
+{% endif %}
 });
 </script>
+{% from "admin/modals/mqtt.html" import CreateMQTT %}
+
+{{ CreateMQTT(MQTTForm) }}
+
 {% endblock %}

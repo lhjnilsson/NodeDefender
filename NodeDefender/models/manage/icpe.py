@@ -5,6 +5,9 @@ from . import logger
 def List():
     return [icpe for icpe in iCPEModel.query.all()]
 
+def Unassigned(user = None):
+    return [icpe for icpe in iCPEModel.query.filter_by(node = None)]
+
 def Get(icpe):
     return iCPEModel.query.filter_by(macaddr = icpe).first()
 

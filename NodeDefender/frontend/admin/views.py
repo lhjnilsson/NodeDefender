@@ -7,6 +7,7 @@ from ...models.manage import user as UserSQL
 from ...models.manage import group as GroupSQL
 from ...models.manage import mqtt as MQTTSQL
 from ...models.SQL import GroupModel, UserModel
+from ...conn import mqtt
 
 @AdminView.route('/admin/server', methods=['GET', 'POST'])
 @login_required
@@ -19,10 +20,11 @@ def AdminServer():
                                MQTTList = MQTTList, MQTTForm = MQTT)
     if MQTT.Submit.data and MQTT.validate_on_submit():
         try:
-            MQTTSQL.Create(MQTT.IPAddr.data,\
+            m = MQTTSQL.Create(MQTT.IPAddr.data,\
                            MQTT.Port.data,\
                            MQTT.Username.data,\
                            MQTT.Password.data)
+            mqtt.Add(m.ipaddr, m.port, m.username, m.password)
         except ValueError as e:
             flash('Error: {}'.format(e), 'danger')
             return redirect(url_for('AdminView.AdminServer'))

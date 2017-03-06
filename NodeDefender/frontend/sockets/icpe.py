@@ -25,29 +25,24 @@ SOFTWARE.
 from flask_socketio import emit, send, disconnect, join_room, leave_room, \
         close_room, rooms
 from ... import socketio
-from ...models.manage import group as GroupSQL
+from ...models.manage import icpe as iCPESQL
 
-@socketio.on('groups', namespace='/group')
-def Groups(msg):
-    groups = GroupSQL.List()
-    groupsnames = [group.name for group in groups]
-    emit('groupsrsp', (groupsnames))
+@socketio.on('list', namespace='/icpe')
+def List(msg):
+    icpes = [icpe.name for icpe in iCPESQL.List(**msg)]
+    emit('listRsp', (icpes))
     return True
 
-@socketio.on('groupInfoGet', namespace='/group')
-def GroupInfo(msg):
-    group = GroupSQL.Get(msg['name'])
-    info = {'name' : group.name,
-            'description' : group.description,
-            'users' : str(len(group.users)),
-            'nodes' : str(len(group.nodes)),
-            'created_on' : str(group.created_on),
-           }
-    emit('groupInfoRsp', (info))
+@socketio.on('unassigned', namespace='/icpe')
+def Unassigned(msg):
+    icpes = [icpe.name for icpe in iCPESQL.Unassigned(**msg)]
+    emit('unassignedRsp', namespace='/icpe')
     return True
 
-@socketio.on('addToGroup', namespace='/group')
-def AddToGroup(msg):
-    UserSQL.Join(msg['user'], msg['group'])
-    emit('Reload')
+
+@socketio.on('info', namespace='/icpe')
+def Info(msg):
+    icpe = iCPESQL.Get(**msg)
+    emit('infoRsp', (icpe.to_json()))
     return True
+

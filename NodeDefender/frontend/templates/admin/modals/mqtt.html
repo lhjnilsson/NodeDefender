@@ -1,4 +1,4 @@
-{% macro CreateNew(Form) %}
+{% macro CreateMQTT(Form) %}
 {% from "macros/form.html" import render_field_with_errors, render_field, render_submit %}
 <div class="modal fade" id="AddMQTT" role="dialog">
 	<div class="modal-dialog">
@@ -25,37 +25,19 @@
 </div>
 {% endmacro %}
 
-{% macro ListMQTT(mqtts, Form) %}
-<table class="table table-hover">
-	<thead>
-		<tr>
-			<th>IP</th>
-			<th>Port</th>
-			<th>Online</th>
-		</tr>
-	</thead>
-	<tbody>
-		{% for mqtt in mqtts %}
-		<tr>
-			<td>
-				<a href="#" data-toggle="modal" data-target="#MQTT{{mqtt.id}}">
-				{{mqtt.ipaddr}}
-				</a>
-			</td>
-			<td>
-				<a href="#" data-toggle="modal" data-target="#MQTT{{mqtt.id}}">
-					{{mqtt.port}}
-				</a>
-			</td>
-			<td>
-				<a href="#" data-toggle="modal" data-target="#MQTT{{mqtt.id}}">
-				-
-				</a>
-			</td>
-		</tr>
-		{% endfor %}
-	</tbody>
-</table>
+{% macro Settings(mqtt) %}
+<div class="modal fade" id="MQTTInfo" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h2 class="modal-title">MQTT Settings</h2>
+			</div>
+			<div class="modal-body">
+				MQTT
+			</div>
+		</div>
+	</div>
+</div>
 {% endmacro %}
 
 

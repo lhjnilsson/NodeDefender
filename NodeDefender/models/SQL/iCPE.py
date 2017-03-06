@@ -27,6 +27,14 @@ class iCPEModel(db.Model):
     def __repr__(self):
         return '<Name %r, Mac %r>' % (self.name, self.mac)
 
+    def to_json(self):
+        icpe = {'mac' : self.macaddr,
+                'ipaddr' : self.ipaddr,
+                'createdOn' : self.created_on,
+                'sensors' : len(self.sensors),
+                'mqttConnection' : self.mqtt.ipaddr}
+        return icpe
+
 class FieldModel(db.Model):
     __tablename__ = 'field'
     id = db.Column(db.Integer, primary_key=True)

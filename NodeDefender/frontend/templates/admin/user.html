@@ -20,32 +20,49 @@
 {% from "macros/user.html" import Info, Events, AddGroup, AdminSettings %}
 <div class="row">
 	<div class="col-lg-4">
-		<h3>User Info
-		{% if current_user.has_role('admin') %}
-		{{ AdminSettings(User, UserSettings, UserPassword) }}
-		{% else %}
-		</h3>
-		{% endif %}
-		{{Info(User)}}
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				User Information
+				<div class="floatRight" id="userSettings"></div>
+			</div>
+			<div class="panel-body">
+				{{Info(User)}}
+			</div>
+		</div>
 	</div>
 	<div class="col-lg-4">
-		<h3>Groups
-		{% if current_user.has_role('admin') %}
-		{{ AddGroup(User, UserGroupAdd) }}
-		{% else %}
-		</h3>
-		{% endif %}
-		{{ListGroups(User.group)}}
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				Groups
+				<div class="floatRight" id="addGroups"></div>
+			</div>
+			<div class="panel-body">
+				{{ListGroups(User.group)}}
+			</div>
+		</div>
 	</div>
 	<div class="col-lg-4">
-		<h3>Events</h3>
-		{{Events(User)}}
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				Events
+			</div>
+			<div class="panel-body">
+				{{Events(user)}}
+			</div>
+		</div>
 	</div>
 </div>
 
 <script>
 $(document).ready(function() {
+{% if current_user.has_role("admin") %}
+	$('#userSettings').prepend('<a style="color: #FFFFFF;" href="#" data-toggle="modal" data-target="#UserConfigure"><i class="fa fa-pencil" aria-hidden="true"></i></a>');
+	$('#addGroups').prepend('<a style="color: #FFFFFF;" href="#" data-toggle="modal" data-target="#AddGroup"><i class="fa fa-plus" aria-hidden="true"></i></a>');
+{% endif %}
+
+
 });
 </script>
-
+{{ AdminSettings(User, UserSettings, UserPassword) }} 
+{{ AddGroup(User, UserGroupAdd) }}
 {% endblock %}

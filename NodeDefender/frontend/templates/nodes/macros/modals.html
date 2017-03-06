@@ -65,3 +65,99 @@ $(document).ready(function() {
 	</div>
 </div>
 {% endmacro %}
+{% macro CreateNode() %}
+{% from "macros/form.html" import render_manual %}
+{% from "macros/group.html" import SelectGroup %}
+{% from "macros/icpe.html" import SelectiCPE %}
+{% from "macros/info.html" import FieldID %}
+<div class="modal fade" id="CreateNode" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h2 class="modal-title">Create Node</h2>
+				<div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100"></div>
+			</div>
+			<div class="modal-body">
+				<div class="multiform-step">
+					<div class="row">
+					{{ render_manual('Name', 'nodeName') }}
+					{{ render_manual('Street', 'nodeStreet') }}
+					{{ render_manual('City', 'nodeCity') }}
+					</div>
+				</div>
+				<div class="multiform-step">
+					{{ SelectGroup(current_user) }}
+				</div>
+				<div class="multiform-step">
+					{{ SelectiCPE(current_user) }}
+				</div>
+				<div class="multiform-step">
+					<div class="row">
+						{{ FieldID('Name', 'None', 'SubmitName') }}
+						{{ FieldID('Street', 'None', 'SubmitStreet') }}
+						{{ FieldID('City', 'None', 'SubmitCity') }}
+						{{ FieldID('Latitude', 'None', 'SubmitLatitude') }}
+						{{ FieldID('Longitude', 'None', 'SubmitLongitude') }}
+						{{ FieldID('Group', 'None', 'SubmitGroup') }}
+						{{ FieldID('iCPE', 'None', 'SubmitiCPE') }}
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button class="multibtn multiform-back btn btn-info">Back</button>
+				<button class="multibtn multiform-next btn btn-info">Next</button>
+				<button class="multibtn multiform-submit btn btn-success">Submit</button>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+$(document).ready(function() {
+	var basic = function() {
+		if ($('#nodeName').val() == '') {
+			toastr.error('Please Enter Name');
+			return false;
+		}
+		if ($('#nodeStreet').val() == '') {
+			toastr.error('Please Enter Street');
+			return false;
+		}
+		if ($('#nodeCity').val() == '') {
+			toastr.error('Please enter City');
+			return false;
+		}
+		
+		$('#SubmitName').text($('#nodeName').val());
+		$('#SubmitStreet').text($('#nodeStreet').val());
+		$('#SubmitCity').text($('#nodeCity').val());
+
+		return true;
+	}
+	var group = function() {
+		if ($('#GroupsList option:selected').text() == '') {
+			toastr.error('Please choose Group');
+			return false;
+		}
+		$('#SubmitGroup').text($('#GroupsList option:selected').text());
+
+		return true;
+	}
+	var icpe = function() {
+		if ($('#manualMAC').val() != '') {
+			$('#SubmitiCPE').text($('#manualMAC').val());
+			return true;
+		}
+		if ($('#icpemac').text() != 'None') {
+			$('#SubmitiCPE').text($('#icpemac').text());
+			return true;
+		}
+		toastr.error('Please enter correct iCPE');
+		return false;
+	}
+
+	initMultistep(basic, group, icpe);
+});
+</script>
+<script src="/static/js/multistep.js"></script>
+{% endmacro %}
