@@ -1,7 +1,6 @@
 from .. import app
 from flask_login import login_required, current_user
 from flask import Blueprint, render_template
-from . import assets
 from ..models.manage import node as NodeManage
 from ..models.manage import data as DataManage
 
@@ -15,8 +14,6 @@ NodeView = Blueprint('NodeView', __name__, template_folder="templates/node",
                       static_folder="static")
 UserView = Blueprint('UserView', __name__, template_folder="templates/user",
                       static_folder="static")
-
-assets.init(app)
 
 @app.context_processor
 def inject_user():      # Adds general data to base-template
