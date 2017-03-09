@@ -1,0 +1,33 @@
+{% macro ListMQTT(mqtts, Form) %}
+<table class="table table-hover">
+	<thead>
+		<tr>
+			<th>IP</th>
+			<th>Port</th>
+			<th>Online</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for mqtt in mqtts %}
+		<tr>
+			<td>
+				<a href="#" data-toggle="modal" data-target="#MQTT{{mqtt.id}}">
+				{{mqtt.ipaddr}}
+				</a>
+			</td>
+			<td>
+				<a href="#" data-toggle="modal" data-target="#MQTT{{mqtt.id}}">
+					{{mqtt.port}}
+				</a>
+			</td>
+			<td>
+				<a href="#" data-toggle="modal" data-target="#MQTT{{mqtt.id}}">
+				-
+				</a>
+			</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+{% endmacro %}
+

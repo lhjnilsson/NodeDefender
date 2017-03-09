@@ -102,7 +102,7 @@ var socket = io.connect('http://' + document.domain + ':' + location.port + name
 		{% endif %}
 	</div>
 </div>
-{% from "nodes/macros/modals.html" import ModalGrouplist, ModifyLocation, ModifyGeneral %}
+{% from "nodes/modals/node.html" import ModalGrouplist, ModifyLocation, ModifyGeneral %}
 <script>
 $(document).ready(function() {
 $('#general').prepend('<a style="color: #FFFFFF;" href="#" data-toggle="modal" data-target="#groupList"><i class="fa fa-users" aria-hidden="true"></i></a>');

@@ -14,8 +14,8 @@
     </div>
 </div>
 {% include "flash.html" %}
-{% from "admin/macros/general.html" import GeneralSettings %}
-{% from "admin/macros/mqtt.html" import ListMQTT %}
+{% from "macros/conn.html" import ListMQTT %}
+{% from "macros/form.html" import render_field, render_field_with_errors %}
 <div class="row">
 	<div class="col-lg-4">
 		<div class="panel panel-primary">
@@ -24,7 +24,15 @@
 				<div class="floatRight" id="generalSettings"></div>
 			</div>
 			<div class="panel-body">
-				{{ GeneralSettings(GeneralForm) }}
+				<form name="sform" class="form-horizontal" method="post" action="{{url_for('AdminView.AdminServer')}}">
+					{{ GeneralForm.csfr_token }}
+					{{ GeneralForm.hidden_tag() }}
+					{{ render_field_with_errors(GeneralForm.Port) }}
+					{{ render_field_with_errors(GeneralForm.Debug) }}
+					{{ render_field_with_errors(GeneralForm.Logging) }}
+					{{ render_field_with_errors(GeneralForm.SQLDriver) }}
+					{{ render_field(GeneralForm.Submit) }}	
+				</form>
 			</div>
 		</div>
 	</div>
