@@ -82,22 +82,22 @@ var socket = io.connect('http://' + document.domain + ':' + location.port + name
 	{% endfor %}
 	{% endif %}
 </div>
-{% from "nodes/macros/stats.html" import Power, Heat, Events %}
+{% from "macros/statsistics.html" import PowerGraph, HeatGraph, EventsList %}
 <div class="row">
 	<div class="col-lg-12">
     {% if iCPE.powerstat %}
     <div class="col-lg-4">
-			{{ Power(iCPE.powerstat) }}
+			{{ PowerGraph(iCPE.powerstat) }}
 		</div>
     {% endif %}
     {% if iCPE.heatstat %}
 		<div class="col-lg-4">
-			{{ Heat(iCPE.heatstat) }}	
+			{{ HeatGraph(iCPE.heatstat) }}	
 		</div>
     {% endif %}
 		{% if iCPE.events %}
 		<div class="col-lg-4">
-			{{ Events(iCPE.events) }}			
+			{{ EventsList(iCPE.events) }}			
 		</div>
 		{% endif %}
 	</div>
