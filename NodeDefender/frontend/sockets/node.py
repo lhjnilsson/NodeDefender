@@ -34,19 +34,34 @@ from geopy.geocoders import Nominatim
 def icpeevent(msg):
     return emit('nodes', [node.to_json() for node in NodeSQL.List(msg)])
 
+@socketio.on('location', namespace='/node')
+def Location(msg):
+    node = NodeSQL.Get(name = msg['node'])
+    return emit('location', (node.location.to_json()))
 
-@socketio.on('coords', namespace='/node')
+@socketio.on('updateLocation', namespace='/node')
+def UpdateLocation(msg):
+    node = NodeSQL.Get(name = msg['node'])
+    node.location.street = msg['street']
+    node.location.city = msg['city']
+    node.location.latitude = msg['latitude']
+    node.location.longitude = msg['longitude']
+    NodeSQL.Save(node)
+    emit('reload', namespace='/general')
+    return True
+
+@socketio.on('coordinates', namespace='/node')
 def Coords(msg):
     geo = Nominatim()
     geocords = geo.geocode(msg['city'] + ' ' + msg['street'])
     if geocords:
         latitude = geocords.latitude
         longitude = geocords.longitude
-        emit('coordsRsp', {'street' : msg['street'], 'city' : msg['city'],
+        emit('coordinates', {'street' : msg['street'], 'city' : msg['city'],
                            'latitude' : str(latitude), 'longitude' :
                            str(longitude)})
     else:
-         emit('coordsRsp', {'street' : msg['street'], 'city' : msg['city'],
+         emit('coordinates', {'street' : msg['street'], 'city' : msg['city'],
                            'latitude' : 'Not Found', 'longitude' :
                            'Not Found'})
     return True

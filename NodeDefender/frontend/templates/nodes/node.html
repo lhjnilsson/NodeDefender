@@ -82,7 +82,7 @@ var socket = io.connect('http://' + document.domain + ':' + location.port + name
 	{% endfor %}
 	{% endif %}
 </div>
-{% from "macros/statsistics.html" import PowerGraph, HeatGraph, EventsList %}
+{% from "macros/statistics.html" import PowerGraph, HeatGraph, EventList %}
 <div class="row">
 	<div class="col-lg-12">
     {% if iCPE.powerstat %}
@@ -97,7 +97,7 @@ var socket = io.connect('http://' + document.domain + ':' + location.port + name
     {% endif %}
 		{% if iCPE.events %}
 		<div class="col-lg-4">
-			{{ EventsList(iCPE.events) }}			
+			{{ EventList(iCPE.events) }}			
 		</div>
 		{% endif %}
 	</div>
@@ -116,7 +116,7 @@ $('#general').prepend('<a style="color: #FFFFFF;" href="#" data-toggle="modal" d
 {{ ModalGrouplist(Node.groups) }}
 
 {% if current_user.has_role("technician") %}
-{{ ModifyLocation(Node.Location) }}
+{{ ModifyLocation(Node.name) }}
 {{ ModifyGeneral(Node) }}
 {% endif %}
 

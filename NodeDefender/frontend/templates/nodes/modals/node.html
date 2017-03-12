@@ -18,7 +18,7 @@
 </div>
 {% endmacro %}
 
-{% macro ModifyLocation(location) %}
+{% macro ModifyLocation(nodename) %}
 {% from "macros/form.html" import render_manual %}
 <div class="modal fade" id="modifyLocation" role="dialog">
 	<div class="modal-dialog">
@@ -35,14 +35,45 @@
 					{{ render_manual("Longitude", "formlongitude") }}
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-primary" data-dismiss="modal">Submit</button>
-				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				<button type="button" class="location-coordinates btn btn-info">Coordinates</button>
+				<button type="button" class="location-submit btn btn-primary">Update</button>
 			</div>
 		</div>
 	</div>
 </div>
 <script>
 $(document).ready(function() {
+	nodeName = "{{nodename}}";
+	locCoords = $(".location-coordinates");
+	locSubmit = $(".location-submit");
+
+	nodeSocket.on('location', function(loc) {
+		$("#formstreet").val(loc.street);
+		$("#formcity").val(loc.city);
+		$("#formlatitude").val(loc.latitude);
+		$("#formlongitude").val(loc.longitude);
+	});
+	
+	nodeSocket.on('coordinates', function(coordinates) {
+		if (coordinates.latitude == 'Not Found') {
+			toastr.error('Coordinates not found');
+			return false;
+		}
+
+		$("#formlatitude").val(coordinates.latitude);
+		$("#formlongitude").val(coordinates.longitude);
+		return true;
+	});
+
+	locCoords.click(function() {
+		nodeSocket.emit('coordinates', {'city' : $("#formcity").val(), 'street' : $("#formstreet").val()})
+	});
+
+	locSubmit.click(function() {
+		nodeSocket.emit('updateLocation', {'node' : nodeName, 'city' : $("#formcity").val(), 'street' : $("#formstreet").val(), 'latitude' : $("#formlatitude").val(), 'longitude' : $("#formlongitude").val()})
+	});
+
+	nodeSocket.emit('location', {'node' : nodeName });
 
 });
 </script>
@@ -131,7 +162,7 @@ $(document).ready(function() {
 		$('#SubmitName').text($('#nodeName').val());
 		$('#SubmitStreet').text($('#nodeStreet').val());
 		$('#SubmitCity').text($('#nodeCity').val());
-		nodeSocket.emit('coords', {'street' : $('#SubmitStreet').text(), 'city' : $('#SubmitCity').text()})
+		nodeSocket.emit('coordinates', {'street' : $('#SubmitStreet').text(), 'city' : $('#SubmitCity').text()})
 		return true;
 	}
 	var group = function() {
@@ -167,9 +198,9 @@ $(document).ready(function() {
 	}
 	initMultistep(basic, group, icpe, submit);
 
-	nodeSocket.on('coordsRsp', function(coords) {
-		$('#SubmitLatitude').text(coords.latitude);
-		$('#SubmitLongitude').text(coords.longitude);
+	nodeSocket.on('coordinates', function(coordinates) {
+		$('#SubmitLatitude').text(coordinates.latitude);
+		$('#SubmitLongitude').text(coordinates.longitude);
 	});
 
 });

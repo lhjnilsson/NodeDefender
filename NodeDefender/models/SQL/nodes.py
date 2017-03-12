@@ -55,6 +55,10 @@ class LocationModel(db.Model):
         self.latitude = latitude
         self.longitude = longitude
 
+    def to_json(self):
+        return {'street' : self.street, 'city' : self.city,
+                'latitude' : self.latitude, 'longitude' : self.longitude}
+
     def __repr__(self):
         return '<%r, %r>' % (self.street, self.city)
 
