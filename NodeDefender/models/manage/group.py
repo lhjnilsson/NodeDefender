@@ -37,7 +37,7 @@ def List(user = None, node = None):
         return [group for group in GroupModel.query.all()]
     if user:
         user = UserSQL.Get(user)
-        return [group for group in user.group]
+        return [group for group in user.groups]
     if node:
         node = NodeSQL.Get(name = node)
         return [group for group in node.groups]

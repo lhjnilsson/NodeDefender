@@ -43,7 +43,7 @@ def Friends(user):
     if user.has_role('superuser'):
         return List()
 
-    groupnames = [g.name for g in user.group] 
+    groupnames = [g.name for g in user.groups] 
     return UserModel.query.filter(UserModel.group.any(GroupModel.name.in_(groupnames)))
 
 def Groups(user):
@@ -52,7 +52,7 @@ def Groups(user):
         if user is None:
             raise LookupError('User not found')
 
-    return [group for group in user.group]
+    return [group for group in user.groups]
 
 def Join(email, groupname):
     user = UserDatastore.get_user(email)

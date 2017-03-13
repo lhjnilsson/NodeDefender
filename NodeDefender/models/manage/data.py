@@ -19,6 +19,6 @@ def Get(email):
     data = {}
     user = UserModel.query.filter_by(email = email).first()
     if Group:
-        for group in user.group:
+        for group in user.groups:
             data[group.name] = group.statistics
     return data
