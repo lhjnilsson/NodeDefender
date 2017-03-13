@@ -1,3 +1,45 @@
+{% macro NodeInformation(node) %}
+{% from "macros/info.html" import Field %}
+<div class="modal fade" id="nodeInfo" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h2 class="modal-title">{{node.name}}</h2>
+			</div>
+			<div class="modal-body">
+				<div class="row">
+					{{ Field('Name', node.name) }}
+					{{ Field('Created At', node.created_at) }}
+				</div>
+			</div>
+			<div class="modal-footer">
+				{% if current_user.has_role('admin') %}
+				<a href="#" data-dismiss="modal" data-toggle="modal" data-target="#modifyInfo">
+					<button type="button" class="btn btn-primary">Modify</button>
+				</a>
+				{% endif %}
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="modifyInfo" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h2 class="modal-title">{{node.name}}</h2>
+			</div>
+			<div class="modal-body">
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+{% endmacro %}
 {% macro ModalGrouplist(grouplist) %}
 {% from "macros/group.html" import ListGroups %}
 <div class="modal fade" id="groupList" role="dialog">
