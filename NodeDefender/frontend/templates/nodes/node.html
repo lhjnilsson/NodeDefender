@@ -108,8 +108,8 @@ $(document).ready(function() {
 $('#general').prepend('<a style="color: #FFFFFF;" href="#" data-toggle="modal" data-target="#groupList"><i class="fa fa-users" aria-hidden="true"></i></a>');
 
 {% if current_user.has_role("technician") %}
-$('#location').prepend('<a style="color: #FFFFFF;" href="#" data-toggle="modal" data-target="#modifyLocation"><i class="fa fa-pencil" aria-hidden="true"></i></a>');
-$('#general').prepend('<a style="color: #FFFFFF;" href="#" data-toggle="modal" data-target="#modifyGeneral"><i class="fa fa-pencil" aria-hidden="true"></i></a>');
+$('#location').prepend('<a style="color: #FFFFFF; margin: 0 5px;" href="#" data-toggle="modal" data-target="#modifyLocation"><i class="fa fa-pencil" aria-hidden="true"></i></a>');
+$('#general').prepend('<a style="color: #FFFFFF; margin: 0 5px;" href="#" data-toggle="modal" data-target="#modifyGeneral"><i class="fa fa-pencil" aria-hidden="true"></i></a>');
 {% endif %}
 });
 </script>

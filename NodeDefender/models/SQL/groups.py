@@ -24,11 +24,12 @@ class GroupModel(db.Model):
     email = db.Column(db.String(120))
     description = db.Column(db.String(250))
     created_on = db.Column(db.DateTime)
-    users = db.relationship('UserModel', secondary=user_list, backref=db.backref('group', lazy='dynamic'))
+    users = db.relationship('UserModel', secondary=user_list,
+                            backref=db.backref('groups', lazy='dynamic'))
     messages = db.relationship('GroupMessageModel', backref='groupmessages')
     nodes = db.relationship('NodeModel', secondary=node_list,
-                            backref=db.backref('group', lazy='dynamic'))
-    statistics = db.relationship('StatisticsModel', backref='group', uselist=False)
+                            backref=db.backref('groups', lazy='dynamic'))
+    statistics = db.relationship('StatisticsModel', backref='groups', uselist=False)
    
     def __init__(self, name, description):
         self.name = name
