@@ -24,6 +24,10 @@ h3 {
 	margin-left: 1vw;
 }
 
+.textCenter {
+	text-align: center;
+}
+
 @media(min-width:768px) {
     body {
         margin-top: 50px;

@@ -1,3 +1,12 @@
+{% macro CurrentHeat(node = None) %}
+<p><strong>Current Heat</strong></p>
+<p>0.0 C</p>
+{% endmacro %}
+
+{% macro CurrentPower(node = None) %}
+<p><strong>Current Power</strong></p>
+<p>0.0 W</p>
+{% endmacro %}
 {% macro AverageHeat(node = None, group = None, sensor = None) %}
 <div class="row">
 	<div class="col-xs-4">
