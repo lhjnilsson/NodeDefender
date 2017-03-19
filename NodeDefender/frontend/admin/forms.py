@@ -1,5 +1,5 @@
 from wtforms import StringField, BooleanField, SelectField, SubmitField, validators
-from ...settings import ReadServer
+from ...settings import read_server
 from flask_wtf import FlaskForm as Form
 def loggingchoices():
     '''
@@ -17,7 +17,7 @@ def sqlchoices():
         yield index, choice
 
 def confparser(section, parameter):
-    conf = ReadServer()
+    conf = read_server()
     return conf[section][parameter]
 
 class GeneralForm(Form):

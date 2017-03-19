@@ -1,10 +1,23 @@
 from configparser import ConfigParser
-
-
+from .models.manage import mqtt as MQTTSQL
+import os
+from datetime import datetime
 '''
 Utilities used to read and modify configuration
 '''
 config = ConfigParser()
+
+
+hostname = os.uname().nodename
+release = 'Alpha-2'
+_loaded_at = datetime.now()
+
+def uptime():
+    return str(datetime.now() - _loaded_at)
+
+def general_info():
+    hostname = os.uname().nodename
+    
 
 def ReadConf(section):
     config.read('settings.ini')
@@ -18,30 +31,33 @@ def ReadBackup():
 def SetBackup():
     pass
 
-def ReadMqtt():
+def mqtt_list():
     mqttconf = []
     for value in range(4):
         mqttconf.append({key: value for key, value in\
                          ReadConf('MQTT'+str(value + 1))})
     return mqttconf
 
-def SetMqtt():
+def get_mqtt():
     pass
 
-def ReadServer():
-    Settings = {}
-    Settings['BASE'] = {key: value for key, value in ReadConf('BASE')}
-    Settings['SNMP'] = {key: value for key, value in ReadConf('SNMP')}
-    Settings['MAIL'] = {key: value for key, value in ReadConf('MAIL')}
-    Settings['DATABASE'] = {key: value for key, value in ReadConf('DATABASE')}
-    return Settings
-
-def SetServer():
+def set_mqtt():
     pass
 
-def ReadUsers():
+def read_server():
+    s = {}
+    s['BASE'] = {key: value for key, value in ReadConf('BASE')}
+    s['SNMP'] = {key: value for key, value in ReadConf('SNMP')}
+    s['MAIL'] = {key: value for key, value in ReadConf('MAIL')}
+    s['DATABASE'] = {key: value for key, value in ReadConf('DATABASE')}
+    return s
+
+def set_server():
     pass
 
-def SetUsers():
+
+def read_database():
     pass
 
+def set_database():
+    pass

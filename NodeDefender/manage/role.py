@@ -1,4 +1,4 @@
-from .. import UserDatastore, db
+from .. import db
 from ..models.manage import role
 from flask_script import Manager, prompt
 
@@ -9,21 +9,21 @@ def technician(email):
     "List users that are member of a group"
     if email is None:
         email = prompt('Email of User')
-    return role.technician(email)
+    return role.AddRole(email, 'technician')
 
 @manager.option('-n', '-e', '--email', dest='email', default=None)
 def admin(email):
     "List users that are member of a group"
     if email is None:
         email = prompt('Email of User')
-    return role.admin(email)
+    return role.AddRole(email, 'administrator')
 
 @manager.option('-n', '-e', '--email', dest='email', default=None)
 def superuser(email):
     "List users that are member of a group"
     if email is None:
         email = prompt('Email of User')
-    return role.superuser(email)
+    return role.AddRole(email, 'superuser')
 
 
 @manager.option('-n', '--name', dest='name', default=None)

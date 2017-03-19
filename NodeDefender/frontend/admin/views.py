@@ -6,8 +6,9 @@ from flask import Blueprint, request, render_template, flash, redirect, url_for
 from ...models.manage import user as UserSQL
 from ...models.manage import group as GroupSQL
 from ...models.manage import mqtt as MQTTSQL
-from ...models.SQL import GroupModel, UserModel
 from ...conn import mqtt
+from ... import serializer
+from ...security import group_required
 
 @AdminView.route('/admin/server', methods=['GET', 'POST'])
 @login_required
@@ -61,14 +62,16 @@ def AdminGroups():
         flash('Successfully Created Group: {}'.format(Group.name), 'success')
         return redirect(url_for('AdminView.AdminGroup', id = Group.id))
 
-@AdminView.route('/admin/groups/<id>')
+@AdminView.route('/admin/groups/<name>')
+@group_required
 @login_required
-def AdminGroup(id):
-    Group = GroupModel.query.filter_by(id = id).first()
-    if Group is None:
-        flash('Group {} not found'.format(id), 'danger')
+def AdminGroup(name):
+    name = serializer.loads(name)
+    group = GroupSQL.Get(name)
+    if group is None:
+        flash('Group {} not found'.format(name), 'danger')
         return redirect(url_for('AdminView.AdminGroups'))
-    return render_template('admin/group.html', Group = Group)
+    return render_template('admin/group.html', Group = group)
 
 @AdminView.route('/admin/users', methods=['GET', 'POST'])
 @login_required
@@ -92,28 +95,29 @@ def AdminUsers():
     flash('Successfully added user {}'.format(user.firstname), 'success')
     return redirect(url_for('AdminView.AdminUser', id = user.id))
 
-@AdminView.route('/admin/users/<id>', methods=['GET', 'POST'])
+@AdminView.route('/admin/users/<email>', methods=['GET', 'POST'])
 @login_required
-def AdminUser(id):
+def AdminUser(email):
+    email = serializer.loads(email)
     usersettings = UserSettings()
     userpassword = UserPassword()
     usergroupadd = UserGroupAdd()
+    user = UserSQL.Get(email)
     if request.method == 'GET':
-        User = UserModel.query.filter_by(id = id).first()
-        if User is None:
+        if user is None:
             flash('User {} not found'.format(id), 'danger')
             return redirect(url_for('AdminView.AdminGroups'))
-        return render_template('admin/user.html', User = User, UserSettings =
+        return render_template('admin/user.html', User = user, UserSettings =
                                usersettings, UserPassword = userpassword,
                                UserGroupAdd = usergroupadd)
     
     if usersettings.Email.data and usersettings.validate():
-        user = UserModel.query.filter_by(id = id).first()
         user.firstname = usersettings.Firstname.data
         user.lastname = usersettings.Lastname.data
         user.email = usersettings.Email.data
         UserSQL.Save(user)
-        return redirect(url_for('AdminView.AdminUser', id = user.id))
+        return redirect(url_for('AdminView.AdminUser', email =
+                                serializer.dumps(email)))
 
 @AdminView.route('/admin/backup')
 @login_required

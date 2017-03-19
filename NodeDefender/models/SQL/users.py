@@ -1,18 +1,7 @@
 from ... import db
-from flask_security import UserMixin, RoleMixin
+from datetime import datetime
 
-roles_users = db.Table('roles_users',
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
-    db.Column('role_id', db.Integer, db.ForeignKey('role.id')))
-
-class UserRoleModel(db.Model, RoleMixin):
-    __tablename__ = 'role'
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80), unique=True)
-    description = db.Column(db.String(255))
-
-
-class UserModel(db.Model, UserMixin):
+class UserModel(db.Model):
     '''
     Table of Users
 
@@ -36,8 +25,25 @@ class UserModel(db.Model, UserMixin):
     current_login_ip = db.Column(db.String(100))
     login_count = db.Column(db.Integer)
     registered_at = db.Column(db.DateTime)
-    roles = db.relationship('UserRoleModel', secondary=roles_users, backref=db.backref('users', lazy='dynamic'))
+    
+    technician = db.Column(db.Boolean)
+    administrator = db.Column(db.Boolean)
+    superuser = db.Column(db.Boolean)
+    
     messages = db.relationship('UserMessageModel', backref='user')
+
+    def __init__(self, email):
+        self.email = email
+        self.firstname = None
+        self.lastname = None
+        self.password = None
+        self.active = False
+        self.confirmed_at = None
+        self.registered_at = datetime.now()
+
+        self.technician = False
+        self.administrator = False
+        self.superuser = False
 
     def to_json(self):
         return {'firstName': self.firstname,
@@ -45,6 +51,23 @@ class UserModel(db.Model, UserMixin):
                 'email' : self.email,
                }
 
+    def is_active(self):
+        return True
+
+    def get_id(self):
+        return str(self.id)
+
+    def is_authenticated(self):
+        return self.authenticated
+
+    def is_anonymous(self):
+        return False
+
+    def has_role(self, role):
+        try:
+            return getattr(self, role)
+        except AttributeError:
+            print(role)
 
 class UserMessageModel(db.Model):
     # Mailbox for User. 

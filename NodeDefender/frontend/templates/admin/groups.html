@@ -4,7 +4,7 @@
     <div class="col-lg-12">
         <h1 class="page-header">
             Admin <small>Group List</small>
-						{% if current_user.has_role('admin') %}
+						{% if current_user.has_role('administrator') %}
 						<a href="#" data-toggle="modal" data-target="#CreateNew" style="position: absolute; right: 0; margin-right: 1vw;">
 							<i class="fa fa-plus" aria-hidden="true"></i>
 						</a>
@@ -19,7 +19,7 @@
     </div>
 </div>
 {% include "flash.html" %}
-{% from "macros/group.html" import ListGroups, CreateGroup %}
+{% from "macros/group.html" import ListGroups, CreateGroup with context %}
 <div class="row">
 	 <div class="col-lg-12">
 		 <div class="panel panel-primary">

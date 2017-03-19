@@ -1,5 +1,5 @@
 from flask_socketio import emit, send
-from ... import socketio
+from ... import socketio, settings
 from ...models.manage import group as GroupSQL
 from ...models.manage import user as UserSQL
 
@@ -26,4 +26,11 @@ def GroupInfo(msg):
 def AddToGroup(msg):
     UserSQL.Join(msg['user'], msg['group'])
     emit('Reload')
+    return True
+
+@socketio.on('generalInfo', namespace='/admin')
+def general_info():
+    info = {'hostname' : settings.hostname, 'release' : settings.release,
+            'uptime' : settings.uptime()}
+    emit('generalInfo', info)
     return True

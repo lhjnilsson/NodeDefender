@@ -12,22 +12,22 @@
 		{% for group in groups %}
 		<tr>
 			<td>
-				<a href="{{url_for('AdminView.AdminGroup', id = group.id)}}">
+				<a href="{{url_for('AdminView.AdminGroup', name = serialize(group.name))}}">
 				{{group.name}}
 				</a>
 			</td>
 			<td>
-				<a href="{{url_for('AdminView.AdminGroup', id = group.id)}}">
+				<a href="{{url_for('AdminView.AdminGroup', name = serialize(group.name))}}">
 					{{group.description}}
 				</a>
 			</td>
 			<td>
-				<a href="{{url_for('AdminView.AdminGroup', id = group.id)}}">
+				<a href="{{url_for('AdminView.AdminGroup', name = serialize(group.name))}}">
 				{{group.users|count}}
 				</a>
 			</td>
 			<td>
-				<a href="{{url_for('AdminView.AdminUser', id = group.id)}}">
+				<a href="{{url_for('AdminView.AdminGroup', name = serialize(group.name))}}">
 					{{group.nodes|count}}
 				</a>
 			</td>

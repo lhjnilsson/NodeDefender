@@ -17,7 +17,7 @@
 </div>
 {% include "flash.html" %}
 {% from "macros/group.html" import ListGroups %}
-{% from "macros/user.html" import Info, Events, AddGroup, AdminSettings %}
+{% from "macros/user.html" import Info, Events, AddGroup, AdminSettings with context %}
 <div class="row">
 	<div class="col-lg-4">
 		<div class="panel panel-primary">
@@ -55,7 +55,7 @@
 
 <script>
 $(document).ready(function() {
-{% if current_user.has_role("admin") %}
+{% if current_user.has_role("administrator") %}
 	$('#userSettings').prepend('<a style="color: #FFFFFF;" href="#" data-toggle="modal" data-target="#UserConfigure"><i class="fa fa-pencil" aria-hidden="true"></i></a>');
 	$('#addGroups').prepend('<a style="color: #FFFFFF;" href="#" data-toggle="modal" data-target="#AddGroup"><i class="fa fa-plus" aria-hidden="true"></i></a>');
 {% endif %}

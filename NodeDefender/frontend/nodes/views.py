@@ -1,6 +1,6 @@
 from .. import NodeView
 from flask import render_template, request, flash, redirect, url_for
-from flask_security import login_required
+from flask_login import login_required
 from ...models.manage import node as NodeSQL
 from ...models.manage import icpe as iCPESQL
 from .forms import (LocationForm, iCPEForm, SensorForm,

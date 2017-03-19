@@ -2,6 +2,7 @@ import logging
 from flask import Flask
 from celery import Celery
 from flask_moment import Moment
+from itsdangerous import URLSafeSerializer
 moment = Moment()
 
 def CreateApp():
@@ -35,3 +36,21 @@ def CreateCelery(app = None):
                 return TaskBase.__call__(self, *args, **kwargs)
     celery.Task = ContextTask
     return celery
+
+class Serializer:
+    def __init__(self, app):
+        self.serializer = URLSafeSerializer(app.config['SECRET_KEY'])
+        self.salt = app.config['SECRET_SALT']
+
+    def loads(self, token):
+        return self.serializer.loads(token)
+
+    def dumps(self, string):
+        return self.serializer.dumps(string)
+
+    def loads_salted(self, token):
+        return self.serializer.loads(token, salt=self.salt)
+
+    def dumps_salted(self, string):
+        return self.serializer.dumps(token, salt=self.salt)
+

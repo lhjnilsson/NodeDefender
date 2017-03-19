@@ -15,24 +15,30 @@
 </div>
 {% include "flash.html" %}
 {% from "macros/conn.html" import ListMQTT %}
-{% from "macros/form.html" import render_field, render_field_with_errors %}
+{% from "macros/info.html" import FieldID %}
 <div class="row">
 	<div class="col-lg-4">
 		<div class="panel panel-primary">
 			<div class="panel-heading">
-				General Settings
+				General Info
+			</div>
+			<div class="panel-body">
+				{{ FieldID('Hostname', '-', 'hostName') }}
+				{{ FieldID('Release', '-', 'releaseInfo') }}
+				{{ FieldID('Uptime', '-', 'uptime') }}
+			</div>
+		</div>
+	</div>
+	<div class="col-lg-4">
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				Server Settings
 				<div class="floatRight" id="generalSettings"></div>
 			</div>
 			<div class="panel-body">
-				<form name="sform" class="form-horizontal" method="post" action="{{url_for('AdminView.AdminServer')}}">
-					{{ GeneralForm.csfr_token }}
-					{{ GeneralForm.hidden_tag() }}
-					{{ render_field_with_errors(GeneralForm.Port) }}
-					{{ render_field_with_errors(GeneralForm.Debug) }}
-					{{ render_field_with_errors(GeneralForm.Logging) }}
-					{{ render_field_with_errors(GeneralForm.SQLDriver) }}
-					{{ render_field(GeneralForm.Submit) }}	
-				</form>
+				{{ FieldID('Server Port', '-', 'serverPort') }}
+				{{ FieldID('Debug Mode', '-', 'debugMode') }}
+				{{ FieldID('Logging', '-', 'loggMode') }}
 			</div>
 		</div>
 	</div>
@@ -43,22 +49,8 @@
 				<div class="floatRight" id="databaseSettings"></div>
 			</div>
 			<div class="panel-body">
-				<form class="form-horizontal">
-          <div class="form-group">
-						<label for="dbsettings" class="col-sm-2 control-label">First</label>
-						<div class="col-sm-10">
-							<select class="form-control" id="dbsetting">
-								<option>Local(SQLite)</option>
-								<option>MySQL/MariaDB</option>
-								<option>PostgreSQL</option>
-							</select>
-						</div>
-						<label for="Local(SQLLite)" class="col-sm-2 control-label">First</label>
-						<div class="col-sm-10">
-							<input type="text" class="form-control" id="Local(SQLLite)" placeholder="test" value="test">
-						</div>
-          </div>
-				</form>
+				{{ FieldID('Host', '-', 'databaseHost') }}
+				{{ FieldID('Driver', '-', 'databaseDriver') }}
 			</div>
 		</div>
 	</div>	
@@ -76,16 +68,46 @@
 			</div>
 		</div>
 	</div>
+	<div class="col-lg-4">
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				Celery
+			</div>
+			<div class="panel-body">
+			</div>
+		</div>
+	</div>
 </div>
 <script>
 $(document).ready(function() {
-{% if current_user.has_role("admin") %}
-	$('#generalSettings').prepend('<a style="color: #FFFFFF;" href="#" data-toggle="modal" data-target="#modifyLocation"><i class="fa fa-pencil" aria-hidden="true"></i></a>');
-	$('#databaseSettings').prepend('<a style="color: #FFFFFF;" href="#" data-toggle="modal" data-target="#modifyGeneral"><i class="fa fa-pencil" aria-hidden="true"></i></a>');
-	$('#mqttSettings').prepend('<a style="color: #FFFFFF;" href="#" data-toggle="modal" data-target="#modifyLocation"><i class="fa fa-pencil" aria-hidden="true"></i></a>');
+{% if current_user.has_role("administrator") %}
+	$('#generalSettings').prepend('<a style="color: #FFFFFF;" href="#" data-toggle="modal" data-target="#modifyLocation"><i class="fa fa-cog" aria-hidden="true"></i></a>');
+	$('#databaseSettings').prepend('<a style="color: #FFFFFF;" href="#" data-toggle="modal" data-target="#modifyGeneral"><i class="fa fa-cog" aria-hidden="true"></i></a>');
 	$('#mqttAdd').prepend('<a style="color: #FFFFFF;" href="#" data-toggle="modal" data-target="#AddMQTT"><i class="fa fa-plus" aria-hidden="true"></i></a>');
 {% endif %}
 });
+adminSocket.on('generalInfo', function(info) {
+	$('#hostName').text(info.hostname);
+	$('#releaseInfo').text(info.release);
+	$('#uptime').text(info.uptime);
+});
+adminSocket.on('serverInfo', function(info) {
+
+});
+adminSocket.on('databaseInfo', function(info) {
+
+});
+adminSocket.on('mqttInfo', function(info) {
+
+});
+adminSocket.on('celeryInfo', function(info) {
+
+});
+adminSocket.emit('generalInfo');
+adminSocket.emit('serverInfo');
+adminSocket.emit('databaseInfo');
+adminSocket.emit('celeryInfo');
+
 </script>
 {% from "admin/modals/mqtt.html" import CreateMQTT %}
 
