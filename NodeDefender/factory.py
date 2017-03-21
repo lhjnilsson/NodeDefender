@@ -3,11 +3,21 @@ from flask import Flask
 from celery import Celery
 from flask_moment import Moment
 from itsdangerous import URLSafeSerializer
+from . import config
+import os
+
 moment = Moment()
 
 def CreateApp():
     app = Flask(__name__)
-    app.config.from_object('config')
+    try:
+        mode = os.environ['NodeDefender_Mode']
+        pass
+    except KeyError:
+        print('NodeDefender_Mode not set, running as Testing.')
+        mode = 'Testing'
+        
+    app.config.from_object('NodeDefender.config.'+mode+'Config')
     app.template_folder = "frontend/templates"
     app.static_folder = "frontend/static"
     moment.init_app(app)

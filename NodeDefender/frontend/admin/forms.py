@@ -21,6 +21,7 @@ def confparser(section, parameter):
     return conf[section][parameter]
 
 class GeneralForm(Form):
+    '''
     Port = StringField('Server Port', [validators.DataRequired(
                         message='port')], default = confparser('BASE', 'port'))
     Debug = BooleanField('Debug Mode',[validators.DataRequired(\
@@ -32,7 +33,7 @@ class GeneralForm(Form):
                             default = confparser('BASE', 'sqldriver'),
                             choices = [(key, value) for key, value in sqlchoices()])
     Submit = SubmitField('Update')
-
+    '''
 class DatabaseServerForn(Form):
     SQL = StringField()
     TrackModifications = BooleanField()

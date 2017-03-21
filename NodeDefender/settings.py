@@ -46,6 +46,7 @@ def set_mqtt():
 
 def read_server():
     s = {}
+    return 
     s['BASE'] = {key: value for key, value in ReadConf('BASE')}
     s['SNMP'] = {key: value for key, value in ReadConf('SNMP')}
     s['MAIL'] = {key: value for key, value in ReadConf('MAIL')}

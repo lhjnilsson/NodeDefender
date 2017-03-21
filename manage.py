@@ -9,6 +9,7 @@ from NodeDefender.manage.node import manager as NodeManager
 from NodeDefender.manage.icpe import manager as iCPEManager
 from NodeDefender.manage.sensor import manager as SensorManager
 from NodeDefender.manage.mqtt import manager as MQTTManager
+from NodeDefender.manage import production, development, testing
 
 manager = Manager(app)
 
