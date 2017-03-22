@@ -29,7 +29,7 @@ def postgres_uri():
             +sever()+':'+port()+'/'+db()
 
 def sqlite_uri():
-    return 'NodeDefender.db'
+    return 'sqlite:///' + parser['DATABASE']['FILE_PATH']
 
 def uri():
     db_engine = engine()

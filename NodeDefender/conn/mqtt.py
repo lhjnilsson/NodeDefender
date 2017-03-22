@@ -108,3 +108,6 @@ class _MQTT:
     def on_message(self, client, userdata, msg):
         MQTTEvent.apply_async(args=[msg.topic, msg.payload.decode('utf-8'),
                                     self.info])
+
+
+Load()
