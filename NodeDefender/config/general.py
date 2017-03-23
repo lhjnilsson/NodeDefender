@@ -12,3 +12,25 @@ def secret_key():
 
 def secret_salt():
     return parser['GENERAL']['SALT']
+
+def setup():
+    print("Setting up General Configuration")
+    key = ""
+    
+    while not key:
+        key = input("Enter Secret Key:")
+
+    salt = ""
+
+    while not salt:
+        salt = input("Please enter Salt:")
+
+def get(key):
+    return parser['GENERAL'][key]
+
+def set(**kwargs):
+    for key, value in kwargs.items():
+        parser['GENERAL'][key] = value
+
+    with open(configpath, 'w') as fw:
+        parser.write(fw)
