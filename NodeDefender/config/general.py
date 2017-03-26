@@ -1,4 +1,4 @@
-from . import parser
+from . import parser, configpath
 from datetime import datetime
 
 def hostname():
@@ -13,24 +13,12 @@ def secret_key():
 def secret_salt():
     return parser['GENERAL']['SALT']
 
-def setup():
-    print("Setting up General Configuration")
-    key = ""
-    
-    while not key:
-        key = input("Enter Secret Key:")
-
-    salt = ""
-
-    while not salt:
-        salt = input("Please enter Salt:")
-
-def get(key):
+def get_cfg(key):
     return parser['GENERAL'][key]
 
-def set(**kwargs):
+def set_cfg(**kwargs):
     for key, value in kwargs.items():
-        parser['GENERAL'][key] = value
+        parser['GENERAL'][key] = str(value)
 
     with open(configpath, 'w') as fw:
         parser.write(fw)

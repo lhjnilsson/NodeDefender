@@ -38,11 +38,11 @@ from redlock import RedLock
 from gevent import monkey
 monkey.patch_all()
 
-# Setup logging
-logger, loggHandler = CreateLogging()
-
 # Initialize the Flask- Application
 app = CreateApp()
+
+# Setup logging
+logger, loggHandler = CreateLogging(app)
 
 # Initialize Api
 api = Api(app)
@@ -52,7 +52,7 @@ api = Api(app)
 RedisPool = ConnectionPool()
 
 # Initialize SocketIO
-socketio = SocketIO(app, message_queue='redis://localhost:6379/0',
+socketio = SocketIO(app, message_queue=app.config['CELERY_BROKER_URI'],
                     async_mode='gevent')
 
 # Initialize SQLAlchemy for Database

@@ -1,4 +1,4 @@
-from . import parser
+from . import parser, configpath
 
 def enabled():
     return parser['CELERY']['ENABLED']
@@ -15,40 +15,28 @@ def port():
 def database():
     return parser['CELERY']['DATABASE']
 
+def broker_uri():
+    if broker() == 'REDIS':
+        return 'redis://'+server()+':'+port()+'/'+database()
+    elif broker() == 'AMQP':
+        return 'pyamqp://'+server()+':'+port()+'/'+database()
+    else:
+        return None
 
-def setup():
-    print("Setting up Celery Configuration")
-    
-    broker = ''
-    while not broker:
-        broker = input("Enter Broker type:")
+def backend_uri():
+    if broker() == 'REDIS':
+        return 'redis://'+server()+':'+port()+'/'+database()
+    elif broker() == 'AMQP':
+        return 'rpc://'+server()+':'+port()+'/'+database()
+    else:
+        return None
 
-    server = ''
-    while not server:
-        server = input("Enter Server Address:")
-
-    port = ''
-    while not port:
-        port = input("Enter Server Port:")
-
-    database = ''
-    while not database:
-        database = input("Please Enter Database:")
-
-    set({'ENABLED' : True,
-         'BROKER' : broker,
-         'SERVER' : server,
-         'PORT' : port,
-         'DATABASE' : database})
-    
-    return True
-
-def get(key):
+def get_cfg(key):
     return parser['CELERY'][key.upper()]
 
-def set(**kwargs):
+def set_cfg(**kwargs):
     for key, value in kwargs.items():
-        parser['CELERY'][key] = value
+        parser['CELERY'][key] = str(value)
 
     with open(configpath, 'w') as fw:
         parser.write(fw)

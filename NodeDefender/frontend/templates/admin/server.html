@@ -16,6 +16,7 @@
 {% include "flash.html" %}
 {% from "macros/conn.html" import ListMQTT %}
 {% from "macros/info.html" import FieldID %}
+{% from "admin/macros/server.html" import LoggingSettings, DatabaseSettings %}
 <div class="row">
 	<div class="col-lg-4">
 		<div class="panel panel-primary">
@@ -32,13 +33,11 @@
 	<div class="col-lg-4">
 		<div class="panel panel-primary">
 			<div class="panel-heading">
-				Server Settings
+				Logging Settings
 				<div class="floatRight" id="generalSettings"></div>
 			</div>
-			<div class="panel-body">
-				{{ FieldID('Server Port', '-', 'serverPort') }}
-				{{ FieldID('Debug Mode', '-', 'debugMode') }}
-				{{ FieldID('Logging', '-', 'loggMode') }}
+			<div class="panel-body" id="loggingPanel">
+				{{ LoggingSettings() }}
 			</div>
 		</div>
 	</div>
@@ -48,9 +47,8 @@
 				Database Settings
 				<div class="floatRight" id="databaseSettings"></div>
 			</div>
-			<div class="panel-body">
-				{{ FieldID('Host', '-', 'databaseHost') }}
-				{{ FieldID('Driver', '-', 'databaseDriver') }}
+			<div class="panel-body" id="databasePanel">
+				{{ DatabaseSettings() }}
 			</div>
 		</div>
 	</div>	
@@ -71,7 +69,16 @@
 	<div class="col-lg-4">
 		<div class="panel panel-primary">
 			<div class="panel-heading">
-				Celery
+				Celery Settings
+			</div>
+			<div class="panel-body">
+			</div>
+		</div>
+	</div>
+	<div class="col-lg-4">
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				Mail Settings
 			</div>
 			<div class="panel-body">
 			</div>
@@ -91,23 +98,6 @@ adminSocket.on('generalInfo', function(info) {
 	$('#releaseInfo').text(info.release);
 	$('#uptime').text(info.uptime);
 });
-adminSocket.on('serverInfo', function(info) {
-
-});
-adminSocket.on('databaseInfo', function(info) {
-
-});
-adminSocket.on('mqttInfo', function(info) {
-
-});
-adminSocket.on('celeryInfo', function(info) {
-
-});
-adminSocket.emit('generalInfo');
-adminSocket.emit('serverInfo');
-adminSocket.emit('databaseInfo');
-adminSocket.emit('celeryInfo');
-
 </script>
 {% from "admin/modals/mqtt.html" import CreateMQTT %}
 
