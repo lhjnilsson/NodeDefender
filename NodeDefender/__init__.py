@@ -29,20 +29,20 @@ from flask_restful import Api
 from flask_socketio import SocketIO
 from flask_moment import Moment
 from flask_mail import Mail
+from flask_login import LoginManager
+from flask_bcrypt import Bcrypt
 from apscheduler.schedulers.gevent import GeventScheduler
-from .factory import CreateApp, CreateLogging, CreateCelery
-from flask_security import Security, SQLAlchemyUserDatastore
-from .security.forms import LoginForm
+from .factory import CreateApp, CreateLogging, CreateCelery, Serializer
 from redis import ConnectionPool
 from redlock import RedLock
 from gevent import monkey
 monkey.patch_all()
 
-# Setup logging
-logger, loggHandler = CreateLogging()
-
 # Initialize the Flask- Application
 app = CreateApp()
+
+# Setup logging
+logger, loggHandler = CreateLogging(app)
 
 # Initialize Api
 api = Api(app)
@@ -52,7 +52,7 @@ api = Api(app)
 RedisPool = ConnectionPool()
 
 # Initialize SocketIO
-socketio = SocketIO(app, message_queue='redis://localhost:6379/0',
+socketio = SocketIO(app, message_queue=app.config['CELERY_BROKER_URI'],
                     async_mode='gevent')
 
 # Initialize SQLAlchemy for Database
@@ -62,26 +62,18 @@ logger.info('Database started')
 # Initialize Celery
 celery = CreateCelery(app)
 
-'''
 # For the Authentication
-LoginMan = login_manager.LoginManager()
+LoginMan = LoginManager()
 LoginMan.init_app(app)
-LoginMan.login_view = 'AuthView.login'
+LoginMan.login_view = 'AuthView.Login'
 LoginMan.login_message_category = "info"
 
-
-# Bcrypt for password- management
 bcrypt = Bcrypt(app)
-'''
+
+serializer = Serializer(app)
 
 # Report that startup is successfull
 logger.info('NodeDefender Succesfully started')
-
-# Setup Flask-Security
-from .models.SQL import UserModel, UserRoleModel
-UserDatastore = SQLAlchemyUserDatastore(db, UserModel, UserRoleModel)
-security = Security(app, UserDatastore,\
-                   login_form=LoginForm)
 
 # Initialize Mail
 mail = Mail(app)
@@ -92,4 +84,4 @@ from . import conn
 # Frontend
 moment = Moment(app)
 from .models import SQL, redis
-from . import frontend
+from . import frontend, mail

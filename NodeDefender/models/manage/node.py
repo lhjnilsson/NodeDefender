@@ -57,9 +57,14 @@ def Leave(node, group):
 
 def Get(name = None, mac = None):
     if name:
-        return NodeModel.query.filter_by(name = node).first()
+        return NodeModel.query.filter_by(name = name).first()
     else:
         return iCPEModel.query.filter_by(macaddr = mac).first().node
+
+def Save(model):
+    db.session.add(model)
+    db.session.commit()
+    return True
 
 def List(user = None):
     if user:

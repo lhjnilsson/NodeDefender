@@ -28,5 +28,26 @@ from ... import socketio
 from ...models.manage import group as GroupSQL
 
 @socketio.on('groups', namespace='/group')
-def icpeevent(msg):
-    return emit('groups', [group.name for group in GroupSQL.List(msg)])
+def Groups(msg):
+    groups = GroupSQL.List()
+    groupsnames = [group.name for group in groups]
+    emit('groupsrsp', (groupsnames))
+    return True
+
+@socketio.on('groupInfoGet', namespace='/group')
+def GroupInfo(msg):
+    group = GroupSQL.Get(msg['name'])
+    info = {'name' : group.name,
+            'description' : group.description,
+            'users' : str(len(group.users)),
+            'nodes' : str(len(group.nodes)),
+            'created_on' : str(group.created_on),
+           }
+    emit('groupInfoRsp', (info))
+    return True
+
+@socketio.on('addToGroup', namespace='/group')
+def AddToGroup(msg):
+    UserSQL.Join(msg['user'], msg['group'])
+    emit('Reload')
+    return True

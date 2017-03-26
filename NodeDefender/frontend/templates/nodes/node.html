@@ -11,7 +11,7 @@ var socket = io.connect('http://' + document.domain + ':' + location.port + name
 <div class="row">
 	<div class="col-lg-12">
 		<h1 class="page-header">
-			Nodes <small> {{iCPE.alias}} </small>
+			Nodes <small> {{Node.name}} </small>
     </h1>
     <ol class="breadcrumb">
 			<li>
@@ -25,7 +25,7 @@ var socket = io.connect('http://' + document.domain + ':' + location.port + name
   </div>
 </div>
 {% include "flash.html" %}
-{% from "nodes/macros/info.html" import General, Technical %}
+{% from "nodes/macros/info.html" import NodeInfo, iCPEInfo with context %}
 {% from "macros/map.html" import Map %}
 <div class="row">
 	<div class="col-lg-6">
@@ -43,29 +43,29 @@ var socket = io.connect('http://' + document.domain + ':' + location.port + name
 	<div class="col-lg-3">
 		<div class="panel panel-primary">
 			<div class="panel-heading">
-				General Information
+				{{Node.name}}
 				<div class="floatRight" id="general">
 				</div>
 			</div>
 			<div class="panel-body" style="height: 200px;">
-				{{ General(iCPE, moment) }}	
+				{{ NodeInfo(Node) }}
 			</div>
 		</div>
 	</div>
 	<div class="col-lg-3">
 		<div class="panel panel-primary">
 			<div class="panel-heading">
-				Technical Status
+				{{iCPE.name}}, {{iCPE.macaddr}}
 				<div class="floatRight" id="technical">
 				</div>
 			</div>
 			<div class="panel-body" style="height: 200px;">
-				{{ Technical(iCPE) }}
+				{{ iCPEInfo(iCPE) }}
 			</div>
 		</div>
 	</div>
 </div>
-{% from "nodes/macros/sensor.html" import SensorBox, SensorModal %}
+{% from "nodes/macros/sensor.html" import SensorBox %}
 <div class="row">
 	{% if iCPE.sensors|length > 0 %}
 	{% for sensor in iCPE.sensors %}
@@ -73,6 +73,9 @@ var socket = io.connect('http://' + document.domain + ':' + location.port + name
 		<div class="panel panel-info">
 			<div class="panel-heading">
 				{{ sensor.name }}
+				<div class="floatRight">
+					<a href="#" style="color: #FFFFFF; margin: 0 5px;" onclick="sensorModal('{{iCPE.macaddr}}', '{{sensor.sensorid}}')"><i class="fa fa-info" aria-hidden="true"></i></a>
+				</div>
 			</div>
 			<div class="panel-body">
 				{{ SensorBox(sensor) }}
@@ -82,44 +85,51 @@ var socket = io.connect('http://' + document.domain + ':' + location.port + name
 	{% endfor %}
 	{% endif %}
 </div>
-{% from "nodes/macros/stats.html" import Power, Heat, Events %}
+{% from "macros/statistics.html" import PowerGraph, HeatGraph, EventList %}
 <div class="row">
 	<div class="col-lg-12">
     {% if iCPE.powerstat %}
     <div class="col-lg-4">
-			{{ Power(iCPE.powerstat) }}
+			{{ PowerGraph(iCPE.powerstat) }}
 		</div>
     {% endif %}
     {% if iCPE.heatstat %}
 		<div class="col-lg-4">
-			{{ Heat(iCPE.heatstat) }}	
+			{{ HeatGraph(iCPE.heatstat) }}	
 		</div>
     {% endif %}
 		{% if iCPE.events %}
 		<div class="col-lg-4">
-			{{ Events(iCPE.events) }}			
+			{{ EventList(iCPE.events) }}			
 		</div>
 		{% endif %}
 	</div>
 </div>
-{% from "nodes/macros/modals.html" import ModalGrouplist, ModifyLocation, ModifyGeneral %}
+{% from "nodes/modals/node.html" import ModalGrouplist, ModifyLocation, ModifyGeneral %}
+{% from "nodes/modals/node.html" import NodeInformation with context %}
+{% from "nodes/modals/sensor.html" import SensorModal %}
 <script>
 $(document).ready(function() {
-$('#general').prepend('<a style="color: #FFFFFF;" href="#" data-toggle="modal" data-target="#groupList"><i class="fa fa-users" aria-hidden="true"></i></a>');
+$('#general').prepend('<a style="color: #FFFFFF; margin: 0 5px;" href="#" data-toggle="modal" data-target="#groupList"><i class="fa fa-users" aria-hidden="true"></i></a>');
+$('#general').prepend('<a style="color: #FFFFFF; margin: 0 5px;" href="#" data-toggle="modal" data-target="#nodeInfo"><i class="fa fa-info" aria-hidden="true"></i></a>');
 
 {% if current_user.has_role("technician") %}
-$('#location').prepend('<a style="color: #FFFFFF;" href="#" data-toggle="modal" data-target="#modifyLocation"><i class="fa fa-pencil" aria-hidden="true"></i></a>');
-$('#general').prepend('<a style="color: #FFFFFF;" href="#" data-toggle="modal" data-target="#modifyGeneral"><i class="fa fa-pencil" aria-hidden="true"></i></a>');
+$('#location').prepend('<a style="color: #FFFFFF; margin: 0 5px;" href="#" data-toggle="modal" data-target="#modifyLocation"><i class="fa fa-pencil" aria-hidden="true"></i></a>');
 {% endif %}
+
 });
+function sensorModal(iCPE, sensor) {
+	$('#SensorModal').modal('show');
+}
 </script>
 {{ ModalGrouplist(Node.groups) }}
+{{ NodeInformation(Node) }}
 
 {% if current_user.has_role("technician") %}
-{{ ModifyLocation(Node.Location) }}
+{{ ModifyLocation(Node.name) }}
 {{ ModifyGeneral(Node) }}
 {% endif %}
 
 {{ Lookup(iCPE) }}
-
+{{ SensorModal() }}
 {% endblock %}

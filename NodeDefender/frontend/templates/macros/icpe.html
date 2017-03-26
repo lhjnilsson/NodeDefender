@@ -1,0 +1,77 @@
+{% macro SelectiCPE(user) %}
+{% from "macros/form.html" import render_manual %}
+<br>
+<div class="form-group">
+	<label for="sell">Unassigned iCPEs: </label>
+	<select class="form-control" id="UnassignedList">
+		<option>Manual</option>
+	</select>
+</div>
+<form class="form-horizontal">
+	<div class="row">
+		<div id="manual" stlye="width: 97.5%;">
+			{{ render_manual('MAC', 'manualMAC') }}
+		</div>
+		<div id="unassigned">
+			<div class="col-md-6">
+				<p><strong>MAC</strong></p>
+			</div>
+			<div class="col-md-6">
+				<p id="icpemac">None</p>
+			</div>
+			<div class="col-md-6">
+				<p><strong>Sensors</strong></p>
+			</div>
+			<div class="col-md-6">
+				<p id="icpesensors">None</p>
+			</div>
+			<div class="col-md-6">
+				<p><strong>Created at</strong></p>
+			</div>
+			<div class="col-md-6">
+				<p id="icpecreated">None</p>
+			</div>
+			<div class="col-md-6">
+				<p><strong>MQTT Connection</strong></p>
+			</div>
+			<div class="col-md-6">
+				<p id="icpemqtt">None</p>
+			</div>
+		</div>
+	</div>
+</form>
+<script>
+$(document).ready(function() {
+	iCPESocket.emit('unassigned', {'user' : '{{user.email}}'});
+
+	iCPESocket.on('unassignedRsp', function(icpes) {
+		for (var i = 0; i < icpes.length; i++) {
+			$('#UnassignedList').append('<option>'+  icpes[i] + '</option>');
+		}
+	});
+	
+	iCPESocket.on('infoRsp', function(icpe) {
+		$('#icpemac').text(icpe.mac);
+		$('#icpesensors').text(icpe.sensors);
+		$('#icpecreated').text(icpe.createdAt);
+		$('#icpemqtt').text(icpe.mqttConnection);
+	});
+
+	$('#UnassignedList').change(function() {
+		var macaddr = $('#UnassignedList option:selected').text();
+		if (macaddr == 'manual') {
+			$("#unassigned").hide();
+			$("#manual").show();
+			$("#icpemac").text('None');
+		} else {
+			$("#manual").hide();
+			$("#unassigned").show();
+			$("#manualMAC").text('');
+			iCPESocket.emit('info', {'macaddr' : macaddr});
+		}
+	});
+	$("#unassigned").hide();
+	$("#manual").show();
+});
+</script>
+{% endmacro %}

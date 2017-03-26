@@ -4,11 +4,6 @@
     <div class="col-lg-12">
         <h1 class="page-header">
             Nodes <small>Node List</small>
-						{% if current_user.has_role('admin') %}
-						<a href="#" data-toggle="modal" data-target="#AddNew" style="position: absolute; right: 0; margin-right: 1vw;">
-							<i class="fa fa-plus" aria-hidden="true"></i>
-						</a>
-						{% endif %}
         </h1>
              <ol class="breadcrumb">
            <li class="active">
@@ -19,12 +14,14 @@
     </div>
 </div>
 {% include "flash.html" %}
-{% from "macros/node.html" import NodeList, AddNode with context %}
+{% from "macros/node.html" import NodeList with context %}
+{% from "nodes/modals/node.html" import CreateNode with context %}
 <div class="row">
 	<div class="col-lg-12">
 		<div class="panel panel-primary">
 			<div class="panel-heading">
 				Node List
+				<div class="floatRight" id="createNode"></div>
 			</div>
 			<div class="panel-body" style="padding: 0;">
 				{{ NodeList(nodes) }}
@@ -33,21 +30,13 @@
 		</div>
   </div>
 </div>
-<div class="modal fade" id="AddNew" role="dialog">
-	<div class="modal-dialog">
-		
-		<div class="modal-content">
-			<div class="modal-header">
-				<h2 class="modal-title">Add new node</h2>
-			</div>
-			<div class="modal-body">
-				{{ AddNode(NodeCreateForm, unassigned) }}
-		</div>
-	</div>
-</div>	
-
+{{ CreateNode() }}
 <script>
 $(document).ready(function() {
+{% if current_user.has_role("technician") %}
+$('#createNode').prepend('<a style="color: #FFFFFF;" href="#" data-toggle="modal" data-target="#CreateNode"><i class="fa fa-plus" aria-hidden="true"></i></a>');
+{% endif %}
+
 });
 </script>
 

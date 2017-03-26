@@ -3,7 +3,11 @@
 	{{ field.label(class="col-sm-2 control-label") }}
 	<div class="col-sm-10">
 		<div class="control">
-			{{ field(class="form-control", value=value)|safe }}
+			{% if value == None %}
+				{{ field(class="form-control")|safe }}
+			{% else %}
+				{{ field(class="form-control", value=value)|safe }}
+			{% endif %}
 		</div>
 	</div>
 </div>

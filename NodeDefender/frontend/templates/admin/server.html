@@ -14,16 +14,30 @@
     </div>
 </div>
 {% include "flash.html" %}
-{% from "admin/macros/general.html" import GeneralSettings %}
-{% from "admin/macros/mqtt.html" import ListMQTT %}
+{% from "macros/conn.html" import ListMQTT %}
+{% from "macros/info.html" import FieldID %}
+{% from "admin/macros/server.html" import LoggingSettings, DatabaseSettings %}
 <div class="row">
 	<div class="col-lg-4">
 		<div class="panel panel-primary">
 			<div class="panel-heading">
-				General Settings
+				General Info
 			</div>
 			<div class="panel-body">
-				{{ GeneralSettings(GeneralForm) }}
+				{{ FieldID('Hostname', '-', 'hostName') }}
+				{{ FieldID('Release', '-', 'releaseInfo') }}
+				{{ FieldID('Uptime', '-', 'uptime') }}
+			</div>
+		</div>
+	</div>
+	<div class="col-lg-4">
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				Logging Settings
+				<div class="floatRight" id="generalSettings"></div>
+			</div>
+			<div class="panel-body" id="loggingPanel">
+				{{ LoggingSettings() }}
 			</div>
 		</div>
 	</div>
@@ -31,24 +45,10 @@
 		<div class="panel panel-primary">
 			<div class="panel-heading">
 				Database Settings
+				<div class="floatRight" id="databaseSettings"></div>
 			</div>
-			<div class="panel-body">
-				<form class="form-horizontal">
-          <div class="form-group">
-						<label for="dbsettings" class="col-sm-2 control-label">First</label>
-						<div class="col-sm-10">
-							<select class="form-control" id="dbsetting">
-								<option>Local(SQLite)</option>
-								<option>MySQL/MariaDB</option>
-								<option>PostgreSQL</option>
-							</select>
-						</div>
-						<label for="Local(SQLLite)" class="col-sm-2 control-label">First</label>
-						<div class="col-sm-10">
-							<input type="text" class="form-control" id="Local(SQLLite)" placeholder="test" value="test">
-						</div>
-          </div>
-				</form>
+			<div class="panel-body" id="databasePanel">
+				{{ DatabaseSettings() }}
 			</div>
 		</div>
 	</div>	
@@ -56,17 +56,51 @@
 		<div class="panel panel-primary">
 			<div class="panel-heading">
 				MQTT Connections
+				<div class="floatRight">
+					<div id="mqttSettings" style="display: inline;"></div>
+					<div id="mqttAdd" style="display: inline;"></div>
+				</div>
 			</div>
 			<div class="panel-body">
 				{{ ListMQTT(MQTTList, MQTTForm) }}
 			</div>
 		</div>
 	</div>
+	<div class="col-lg-4">
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				Celery Settings
+			</div>
+			<div class="panel-body">
+			</div>
+		</div>
+	</div>
+	<div class="col-lg-4">
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				Mail Settings
+			</div>
+			<div class="panel-body">
+			</div>
+		</div>
+	</div>
 </div>
 <script>
 $(document).ready(function() {
-	$(":checkbox").bootstrapSwitch();
-	$(":checkbox").bootstrapSwitch('size','small');
+{% if current_user.has_role("administrator") %}
+	$('#generalSettings').prepend('<a style="color: #FFFFFF;" href="#" data-toggle="modal" data-target="#modifyLocation"><i class="fa fa-cog" aria-hidden="true"></i></a>');
+	$('#databaseSettings').prepend('<a style="color: #FFFFFF;" href="#" data-toggle="modal" data-target="#modifyGeneral"><i class="fa fa-cog" aria-hidden="true"></i></a>');
+	$('#mqttAdd').prepend('<a style="color: #FFFFFF;" href="#" data-toggle="modal" data-target="#AddMQTT"><i class="fa fa-plus" aria-hidden="true"></i></a>');
+{% endif %}
+});
+adminSocket.on('generalInfo', function(info) {
+	$('#hostName').text(info.hostname);
+	$('#releaseInfo').text(info.release);
+	$('#uptime').text(info.uptime);
 });
 </script>
+{% from "admin/modals/mqtt.html" import CreateMQTT %}
+
+{{ CreateMQTT(MQTTForm) }}
+
 {% endblock %}

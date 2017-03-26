@@ -15,7 +15,6 @@ class NodeModel(db.Model):
     '''
     __tablename__ = 'node'
     id = db.Column(db.Integer, primary_key=True)
-    group_id = db.Column(db.Integer, db.ForeignKey('group.id'))
     name = db.Column(db.String(40), unique=True)
     location = db.relationship('LocationModel', uselist=False, backref='node')
     created_on = db.Column(db.DateTime)
@@ -54,6 +53,10 @@ class LocationModel(db.Model):
         self.city = city
         self.latitude = latitude
         self.longitude = longitude
+
+    def to_json(self):
+        return {'street' : self.street, 'city' : self.city,
+                'latitude' : self.latitude, 'longitude' : self.longitude}
 
     def __repr__(self):
         return '<%r, %r>' % (self.street, self.city)

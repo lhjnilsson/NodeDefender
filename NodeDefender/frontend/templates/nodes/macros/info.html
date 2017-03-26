@@ -1,103 +1,96 @@
-{% macro General(iCPE, moment) %}
-<h4><strong>Information <a href="#" data-toggle="modal" data-target="#iCPEInfo"><i class="fa fa-info" aria-hidden="true" style="position: absolute; right: 0; margin-right: 2vw"></i></a></strong></h4>
-<br>
-<h4><strong>Notebook <a href="#" data-toggle="modal" data-target="#NoteBook"><i class="fa fa-book" aria-hidden="true" style="position: absolute; right: 0; margin-right: 2vw;"></i></a></strong></h4>
-<h4><strong>Sticky Note: <a href="#" data-toggle="modal" data-target="#StickyNote"><i class="fa fa-pencil" aria-hidden="true" style="position: absolute; right: 0; margin-right: 2vw"></i></a></strong></h4>
-<p>{{iCPE.notesticky}}</p>
-{{ ModaliCPEInfo(iCPE, moment) }}
-{{ ModalNotebook(iCPE, moment) }}
-{{ ModalStickyNote(iCPE) }}
-{% endmacro %}
-
-{% macro Technical(iCPE) %}
-<div class="row">
-<a href="#" class="col-lg-4" data-toggle="tooltip" title="Update known Z-Wave devices">
-	<i class="fa fa-refresh fa-3x" aria-hidden="true"></i>
-</a>
-<a href="#" class="col-lg-4" data-toggle="tooltip" title="Include Z-Wave device">
-	<i class="fa fa-sign-in fa-3x" aria-hidden="true"></i>
-</a>
-<a href="#" class="col-lg-4" data-toggle="tooltip" title="Exclude Z-Wave device">
-	<i class="fa fa-sign-out fa-3x" aria-hidden="true"></i>
-</a>
-<br>
-<h4 class="col-lg-12"><strong>Connection:</strong> <small> - </small></h3>
-<br>
-<h4 class="col-lg-12"><strong>Battery:</strong> <small> - </small></h3>
+{% macro NodeInfo(node) %}
+{% from "macros/statistics.html" import CurrentPower, CurrentHeat %}
+<div class="row" style="height: 50%;">
+	<div class="col-lg-4 textCenter">
+		<a href="#">
+			<i class="fa fa-unlock fa-2x" aria-hidden="true"></i>
+			<p><strong>Unlocked</strong></p>
+		</a>
+	</div>
+	<div class="col-lg-4 textCenter">
+		<a href="#">
+			<h3 style="margin: 0;">0</h3>
+			<p><strong>Issues</strong></p>
+		</a>
+	</div>
+	<div class="col-lg-4 textCenter">
+		<a href="#">
+			<i class="fa fa-book fa-2x" aria-hidden="true"></i>
+			<p><strong>Notifications</strong></p>
+		</a>
+	</div>
 </div>
-{% endmacro %}
-
-{% macro ModaliCPEInfo(iCPE, moment) %}
-{% from "macros/info.html" import Field %}
-<div class="modal fade" id="iCPEInfo" role="dialog">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal">&times;</button>
-				<h2 class="modal-title">Information</h2>
-			</div>
-			<div class="modal-body">
-				<div class="row">	
-				<h4>General Information</h4>
-				{{ Field('Name', iCPE.node.name) }}
-				{{ Field('Mac', iCPE.macaddr) }}
-				{{ Field('Created on', moment(iCPE.created_on).format('Do MMM YYY, HH:mm:ss')) }}
-				<h4>Location</h4>
-				{{ Field('Street', iCPE.node.location.street) }}
-				{{ Field('City', iCPE.node.location.city) }}
-				{{ Field('Latitude', iCPE.node.location.geolat) }}
-				{{ Field('Longitude', iCPE.node.location.geolong) }}
-				</div>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-			</div>
-		</div>
+<div class="row" style="height: 50%;">
+	<div class="col-lg-6">
+		{{ CurrentPower(node = node.name) }}
+	</div>
+	<div class="col-lg-6">
+		{{ CurrentHeat(node = node.name) }}
 	</div>
 </div>
 {% endmacro %}
 
-{% macro ModalNotebook(iCPE, moment) %}
-<div class="modal fade" id="NoteBook" role="dialog">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal">&times;</button>
-				<h2 class="modal-title">Notebook</h2>
-			</div>
-			<div class="modal-body">
-				{% for note in iCPE.notes|sort(attribute='created_on', reverse=True) %}
-				<p style="width: 100%">{{note.author}} <span style="position: absolute; right: 0; margin-right: 1vw;">{{moment(note.created_on).format('Do MMM YYYY, HH:mm:ss')}}</span></p>
-				<p style="width: 100%;padding: 0.2vw; background-color: #f5f5f5">{{note.note}}</p>
-				{% endfor %}
-				<form action="{{url_for('NodeView.NodesNotesAdd', mac=mac)}}" method="post" class="form-horizontal">
-					<div class="form-group" style="margin: 1vw;">
-						<label for="notes">Enter note</label>
-						<input type="text" max-length="150" class="form-control" name="note"></input>
-						<button type="submit" class="btn btn-default">Submit</button>
-					</div>
-				</form>
-			</div>
-		</div>
+{% macro iCPEInfo(iCPE) %}
+<div class="row" style="height: 50%">
+	<a href="#" class="col-lg-4 textCenter" data-toggle="tooltip" title="Update known Z-Wave devices">
+		<i class="fa fa-refresh fa-2x" aria-hidden="true"></i>
+		<p><strong>Update</strong></p>
+	</a>
+	<a href="#" class="col-lg-4 textCenter" data-toggle="tooltip" title="Include Z-Wave device">
+		<i class="fa fa-sign-in fa-2x" aria-hidden="true"></i>
+		<p><strong>Include</strong></p>
+	</a>
+	<a href="#" class="col-lg-4 textCenter" data-toggle="tooltip" title="Exclude Z-Wave device">
+		<i class="fa fa-sign-out fa-2x" aria-hidden="true"></i>
+		<p><strong>Exclude</strong></p>
+	</a>
+</div>
+<div class="row" style="height: 50%">
+	<div class="col-lg-6">
+		<p><strong>Connection</strong></p>
+		<p class="inline">Type: </p> 
+		<p class="inline" id="connectionType">-</p>
+		<br>
+		<p class="inline">IP: </p> 
+		<p class="inline" id="connectionAddr">-</p>
+	</div>
+	<div class="col-lg-6">
+		<p><strong>Power</strong></p>
+		<p class="inline">Source: </p> 
+		<p class="inline" id="powerSource">-</p>
+		<br>
+		<p class="inline">Battery Level: </p> 
+		<p class="inline" id="powerLevel">-</p>
 	</div>
 </div>
-{% endmacro %}
+<script>
+$(document).ready(function() {
+	iCPE = "{{iCPE.macaddr}}";
+	updateButton = $('#update-icpe');
+	includeButton = $('#include-icpe');
+	excludeButton = $('#exclude-icpe');
 
-{% macro ModalStickyNote(iCPE) %}
-<div class="modal fade" id="StickyNote" role="dialog">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal">&times;</button>
-				<h2 class="modal-title">Modify Note</h2>
-			</div>
-			<div class="modal-body">
-				<form action="{{url_for('NodeView.NodesNoteSticky', mac=mac)}}" method="post" class="form-horizontal">
-					<input type="text" max-length="150" class="form-control" name="note" value="{{iCPE.notesticky}}"></input>
-					<button type="submit" class="btn btn-default">update</button>
-				</form>
-			</div>
-		</div>
-	</div>
-</div>
+	iCPESocket.on('connectionInfo', function(conn) {
+		$("#connectionType").text(conn.type);
+		$("#connectionAddr").text(conn.addr);
+	});
+	iCPESocket.on('powerInfo', function(pwr) {
+		$("#powerSource").text(pwr.source);
+		$("#powerLevel").text(pwr.level);
+	});
+
+	iCPESocket.emit('connectionInfo', {'iCPE' : iCPE});
+	iCPESocket.emit('powerInfo', {'iCPE' : iCPE});
+	
+	updateButton.click(function() {
+		iCPESocket('updateSensors', {'iCPE' : iCPE});
+	});
+	includeButton.click(function() {
+		iCPESocket('includeSensor', {'iCPE' : iCPE});
+	});
+	excludeButton.click(function() {
+		iCPESocket('excludeSensor', {'iCPE' : iCPE});
+	});
+});
+</script>
 {% endmacro %}

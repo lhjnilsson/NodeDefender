@@ -1,56 +1,43 @@
-from ... import UserDatastore, db
-from ..SQL import UserModel, UserRoleModel
-from . import logger
+from ..SQL import UserModel
+from ... import db
 
-def Init():
-    UserDatastore.create_role(name='technician', description='Permission to\
-                              modify Sensors on Nodes')
-    UserDatastore.create_role(name='admin', description='Permission to\
-                              add, modify and delete items in member Groups')
-    UserDatastore.create_role(name='superuser', description='Permission to do\
-                              anything avalible, on any group')
-    return db.session.commit()
-
-def technician(email):
-    user = UserDatastore.get_user(email)
+def AddRole(user, role):
+    if type(user) is str:
+        user = UserModel.query.filter_by(email = user).first()
+    
     if user is None:
-        raise LookupError('Canot find {}'.format(email))
-    role = UserDatastore.find_role('technician')
-    if role is None:
-        Init()
-        role = UserDatastore.find_role('technician')
-    UserDatastore.add_role_to_user(user, role)
-    return db.session.commit()
+        raise LookupError('User not found')
 
-def admin(email):
-    user = UserDatastore.get_user(email)
+    if role.lower() == 'technician':
+        user.technician = True
+        user.administrator = False
+        user.superuser = False
+    elif role.lower() == 'administrator':
+        user.technician = True
+        user.administrator = True
+        user.superuser = False
+    elif role.lower() == 'superuser':
+        user.technician = True
+        user.administrator = True
+        user.superuser = True
+    else:
+        raise ValueError('Not a valid Role')
+
+    db.session.add(user)
+    db.session.commit()
+    return
+
+def Role(user):
+    if type(user) is str:
+        user = UserModel.query.filter_by(email = user).first()
     if user is None:
-        raise LookupError('Canot find {}'.format(email))
-    role = UserDatastore.find_role('admin')
-    if role is None:
-        Init()
-        role = UserDatastore.find_role('admin')
-    UserDatastore.add_role_to_user(user, role)
-    technician(email)
-    return db.session.commit()
+        raise LookupError('User not found')
 
-def superuser(email):
-    user = UserDatastore.get_user(email)
-    if user is None:
-        raise LookupError('Canot find {}'.format(email))
-    role = UserDatastore.find_role('superuser')
-    if role is None:
-        Init()
-        role = UserDatastore.find_role('superuser')
-    UserDatastore.add_role_to_user(user, role)
-    technician(email)
-    admin(email)
-    return db.session.commit()
+    if user.technician:
+        return 'Technician'
+    if user.administrator:
+        return 'Administrator'
+    if user.superuser:
+        return 'Superuser'
 
-def Users(role):
-    if type(role) is str:
-        role = UserRoleModel.query.filter_by(name = role).first()
-        if role is None:
-            raise LookupError('Role not found')
-
-    return [member for member in role.users]
+    return 'None'

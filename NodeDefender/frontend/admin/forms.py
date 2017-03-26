@@ -1,5 +1,5 @@
 from wtforms import StringField, BooleanField, SelectField, SubmitField, validators
-from ...settings import ReadServer
+from ...settings import read_server
 from flask_wtf import FlaskForm as Form
 def loggingchoices():
     '''
@@ -17,10 +17,11 @@ def sqlchoices():
         yield index, choice
 
 def confparser(section, parameter):
-    conf = ReadServer()
+    conf = read_server()
     return conf[section][parameter]
 
 class GeneralForm(Form):
+    '''
     Port = StringField('Server Port', [validators.DataRequired(
                         message='port')], default = confparser('BASE', 'port'))
     Debug = BooleanField('Debug Mode',[validators.DataRequired(\
@@ -32,7 +33,7 @@ class GeneralForm(Form):
                             default = confparser('BASE', 'sqldriver'),
                             choices = [(key, value) for key, value in sqlchoices()])
     Submit = SubmitField('Update')
-
+    '''
 class DatabaseServerForn(Form):
     SQL = StringField()
     TrackModifications = BooleanField()

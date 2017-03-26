@@ -27,19 +27,25 @@ from ..iCPE.event import MQTT as MQTTEvent
 from collections import namedtuple
 from ..models.manage import mqtt as MQTTSQL
 from threading import Thread
+from .. import celery
+from redlock import RedLock
 
 conninfo = namedtuple('conninfo', 'ipaddr, port')
 
 connections = set()
 
-def Add(ip, port = 8883, username = None, password = None):
-    current = List(ip)
+def Add(ipaddr, port = 8883, username = None, password = None):
+    current = List(ipaddr)
     if current:
         if current.port == port:
             raise TypeError('Already Exisisting Connecton')
             return
 
-    mqtt = _MQTT(ip, port)
+    mqtt = _MQTT()
+    mqtt.ipaddr = ipaddr
+    mqtt.port = port
+    mqtt.connect()
+    mqtt.loop_start()
     connections.add(mqtt)
     return True
 
@@ -65,7 +71,6 @@ def Load(mqttlist = None):
         mqttlist = MQTTSQL.List()
 
     for m in mqttlist:
-        print(m.ipaddr)
         Thread(target = Add, args=[m.ipaddr, m.port, m.username,
                                    m.password]).start()
 
@@ -78,29 +83,33 @@ class _MQTT:
     Start a thread listening for both incoming from MQTT Broker and also an
     internal Queue. Puts Messages from broker another internal queue
     '''
-    def __init__(self, ip, port):
-        self.ip = ip
-        self.port = int(port)
-        self.online = False
+    def __init__(self):
+        self.ip = None
+        self.port = None
+        self.username = None
+        self.password = None
         self.client = PahoMQTT.Client()
         self.client.on_message = self.on_message
         self.client.on_connect = self.on_connect
-        try:
-            self.client.connect(self.ip, self.port, 60)
-            self.info = {'ipaddr' : self.ip, 'port' : self.port}
-            self.online = True
-            self.client.loop_start()
-        except ConnectionRefusedError:
-            pass #log this later
-
+       
     def __call__(self):
         if self.online:
             return str(self.ip) + ':' + str(self.port)
         else:
             return False
 
-    def publish(self, event):
-        self.client.publish(event)
+    def loop_start(self):
+        if self.ipaddr is None:
+            raise AttributeError('IP Address not set')
+        if self.port is None:
+            raise AttributeError('Port not set')
+        self.info = {'ipaddr' : self.ipaddr, 'port' : self.port}
+        self.client.loop_start()
+
+    def connect(self):
+        self.client.connect(str(self.ipaddr), int(self.port), 60)
+        self.connect = True
+        return True
 
     def on_connect(self, client, userdata, flags, rc):
         client.subscribe('icpe/#')
@@ -108,3 +117,19 @@ class _MQTT:
     def on_message(self, client, userdata, msg):
         MQTTEvent.apply_async(args=[msg.topic, msg.payload.decode('utf-8'),
                                     self.info])
+
+@celery.task
+def CheckMQTT():
+    for mqtt in MQTTSQL.List():
+        lock = RedLock(str(mqtt.ipaddr) + str(mqtt.port))
+        if lock.acquire() is False:
+            #Someone is already holding this
+            continue
+        m = _MQTT()
+        m.ipaddr = mqtt.ipaddr
+        m.port = mqtt.port
+        m.username = mqtt.username
+        m.password = mqtt.password
+        m.connect()
+        print('Going in as MQTT Handler')
+        m.loop_start()

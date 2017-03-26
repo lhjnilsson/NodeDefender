@@ -1,6 +1,4 @@
-from .. import app, UserDatastore, db
-from flask_security import utils
-from sys import exit
+from .. import app, db
 from flask_script import Command, prompt, prompt_pass
 from ..models.manage import user
 from flask_script import Manager
@@ -18,7 +16,8 @@ def create(email, password):
         password = prompt_pass('Password')
     
     try:
-        user.Create(email, password)
+        user.Create(email)
+        user.Password(email, password)
     except ValueError:
         print("User already present")
         return

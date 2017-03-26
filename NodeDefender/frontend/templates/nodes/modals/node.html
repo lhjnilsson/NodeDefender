@@ -1,0 +1,251 @@
+{% macro NodeInformation(node) %}
+{% from "macros/info.html" import Field %}
+<div class="modal fade" id="nodeInfo" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h2 class="modal-title">{{node.name}}</h2>
+			</div>
+			<div class="modal-body">
+				<div class="row">
+					{{ Field('Name', node.name) }}
+					{{ Field('Created At', moment(node.created_on).format('Do MMM YY, HH:mm:ss')) }}
+				</div>
+			</div>
+			<div class="modal-footer">
+				{% if current_user.has_role('administrator') %}
+				<a href="#" data-dismiss="modal" data-toggle="modal" data-target="#modifyInfo">
+					<button type="button" class="btn btn-primary">Modify</button>
+				</a>
+				{% endif %}
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="modifyInfo" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h2 class="modal-title">{{node.name}}</h2>
+			</div>
+			<div class="modal-body">
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+{% endmacro %}
+{% macro ModalGrouplist(grouplist) %}
+{% from "macros/group.html" import ListGroups %}
+<div class="modal fade" id="groupList" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h2 class="modal-title">Group List</h2>
+			</div>
+			<div class="modal-body">
+				{{ ListGroups(grouplist) }}
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+{% endmacro %}
+
+{% macro ModifyLocation(nodename) %}
+{% from "macros/form.html" import render_manual %}
+<div class="modal fade" id="modifyLocation" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h2 class="modal-title">Modify Location</h2>
+			</div>
+			<div class="modal-body">
+				<form class="form-horizontal">
+					{{ render_manual("Street", "formstreet") }}
+					{{ render_manual("City", "formcity") }}
+					{{ render_manual("Latitude", "formlatitude") }}
+					{{ render_manual("Longitude", "formlongitude") }}
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="location-coordinates btn btn-info">Coordinates</button>
+				<button type="button" class="location-submit btn btn-primary">Update</button>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+$(document).ready(function() {
+	nodeName = "{{nodename}}";
+	locCoords = $(".location-coordinates");
+	locSubmit = $(".location-submit");
+
+	nodeSocket.on('location', function(loc) {
+		$("#formstreet").val(loc.street);
+		$("#formcity").val(loc.city);
+		$("#formlatitude").val(loc.latitude);
+		$("#formlongitude").val(loc.longitude);
+	});
+	
+	nodeSocket.on('coordinates', function(coordinates) {
+		if (coordinates.latitude == 'Not Found') {
+			toastr.error('Coordinates not found');
+			return false;
+		}
+
+		$("#formlatitude").val(coordinates.latitude);
+		$("#formlongitude").val(coordinates.longitude);
+		return true;
+	});
+
+	locCoords.click(function() {
+		nodeSocket.emit('coordinates', {'city' : $("#formcity").val(), 'street' : $("#formstreet").val()})
+	});
+
+	locSubmit.click(function() {
+		nodeSocket.emit('updateLocation', {'node' : nodeName, 'city' : $("#formcity").val(), 'street' : $("#formstreet").val(), 'latitude' : $("#formlatitude").val(), 'longitude' : $("#formlongitude").val()})
+	});
+
+	nodeSocket.emit('location', {'node' : nodeName });
+
+});
+</script>
+{% endmacro %}
+{% macro ModifyGeneral(node) %}
+<div class="modal fade" id="modifyGeneral" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h2 class="modal-title">Modify General Information</h2>
+			</div>
+			<div class="modal-body">
+			
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+{% endmacro %}
+{% macro CreateNode() %}
+{% from "macros/form.html" import render_manual %}
+{% from "macros/group.html" import SelectGroup %}
+{% from "macros/icpe.html" import SelectiCPE %}
+{% from "macros/info.html" import FieldID %}
+<div class="modal fade" id="CreateNode" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h2 class="modal-title">Create Node</h2>
+				<div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100"></div>
+			</div>
+			<div class="modal-body">
+				<div class="multiform-step">
+					<div class="row">
+					{{ render_manual('Name', 'nodeName') }}
+					{{ render_manual('Street', 'nodeStreet') }}
+					{{ render_manual('City', 'nodeCity') }}
+					</div>
+				</div>
+				<div class="multiform-step">
+					{{ SelectGroup(current_user) }}
+				</div>
+				<div class="multiform-step">
+					{{ SelectiCPE(current_user) }}
+				</div>
+				<div class="multiform-step">
+					<div class="row">
+						{{ FieldID('Name', 'None', 'SubmitName') }}
+						{{ FieldID('Street', 'None', 'SubmitStreet') }}
+						{{ FieldID('City', 'None', 'SubmitCity') }}
+						{{ FieldID('Latitude', 'None', 'SubmitLatitude') }}
+						{{ FieldID('Longitude', 'None', 'SubmitLongitude') }}
+						{{ FieldID('Group', 'None', 'SubmitGroup') }}
+						{{ FieldID('iCPE', 'None', 'SubmitiCPE') }}
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button class="multibtn multiform-back btn btn-info">Back</button>
+				<button class="multibtn multiform-next btn btn-info">Next</button>
+				<button class="multibtn multiform-submit btn btn-success">Submit</button>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+$(document).ready(function() {
+	var basic = function() {
+		if ($('#nodeName').val() == '') {
+			toastr.error('Please Enter Name');
+			return false;
+		}
+		if ($('#nodeStreet').val() == '') {
+			toastr.error('Please Enter Street');
+			return false;
+		}
+		if ($('#nodeCity').val() == '') {
+			toastr.error('Please enter City');
+			return false;
+		}
+			
+		$('#SubmitName').text($('#nodeName').val());
+		$('#SubmitStreet').text($('#nodeStreet').val());
+		$('#SubmitCity').text($('#nodeCity').val());
+		nodeSocket.emit('coordinates', {'street' : $('#SubmitStreet').text(), 'city' : $('#SubmitCity').text()})
+		return true;
+	}
+	var group = function() {
+		if ($('#GroupsList option:selected').text() == '') {
+			toastr.error('Please choose Group');
+			return false;
+		}
+		$('#SubmitGroup').text($('#GroupsList option:selected').text());
+
+		return true;
+	}
+	var icpe = function() {
+
+		if ($('#manualMAC').val().length == 12) {
+			$('#SubmitiCPE').text($('#manualMAC').val());
+			return true;
+		}
+		
+		if ($('#icpemac').text() != 'None') {
+			$('#SubmitiCPE').text($('#icpemac').text());
+			return true;
+		}
+		toastr.error('Please enter correct iCPE');
+		return false;
+	}	
+	var submit = function() {
+		var macaddr = $('#SubmitiCPE').text();
+		var group = $('#SubmitGroup').text();
+		var node = $('#SubmitName').text();
+		var street = $('#SubmitStreet').text();
+		var city = $('#SubmitCity').text();
+		nodeSocket.emit('create', {'macaddr' : macaddr, 'group' : group, 'node' : node, 'street' : street, 'city' : city});
+	}
+	initMultistep(basic, group, icpe, submit);
+
+	nodeSocket.on('coordinates', function(coordinates) {
+		$('#SubmitLatitude').text(coordinates.latitude);
+		$('#SubmitLongitude').text(coordinates.longitude);
+	});
+
+});
+</script>
+<script src="/static/js/multistep.js"></script>
+{% endmacro %}

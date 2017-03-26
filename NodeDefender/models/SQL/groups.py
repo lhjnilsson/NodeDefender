@@ -7,6 +7,12 @@ user_list = db.Table('user_list',
                      db.Column('user_id', db.Integer,
                                db.ForeignKey('user.id'))
                     )
+node_list = db.Table('node_list',
+                     db.Column('group_id', db.Integer,
+                               db.ForeignKey('group.id')),
+                     db.Column('node_id', db.Integer,
+                               db.ForeignKey('node.id'))
+                    )
 
 class GroupModel(db.Model):
     '''
@@ -18,10 +24,12 @@ class GroupModel(db.Model):
     email = db.Column(db.String(120))
     description = db.Column(db.String(250))
     created_on = db.Column(db.DateTime)
-    users = db.relationship('UserModel', secondary=user_list, backref=db.backref('group', lazy='dynamic'))
+    users = db.relationship('UserModel', secondary=user_list,
+                            backref=db.backref('groups', lazy='dynamic'))
     messages = db.relationship('GroupMessageModel', backref='groupmessages')
-    nodes = db.relationship('NodeModel', backref='group')
-    statistics = db.relationship('StatisticsModel', backref='group', uselist=False)
+    nodes = db.relationship('NodeModel', secondary=node_list,
+                            backref=db.backref('groups', lazy='dynamic'))
+    statistics = db.relationship('StatisticsModel', backref='groups', uselist=False)
    
     def __init__(self, name, description):
         self.name = name

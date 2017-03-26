@@ -9,6 +9,7 @@ from NodeDefender.manage.node import manager as NodeManager
 from NodeDefender.manage.icpe import manager as iCPEManager
 from NodeDefender.manage.sensor import manager as SensorManager
 from NodeDefender.manage.mqtt import manager as MQTTManager
+from NodeDefender.manage.setup import manager as SetupManager
 
 manager = Manager(app)
 
@@ -19,6 +20,7 @@ manager.add_command('node', NodeManager)
 manager.add_command('iCPE', iCPEManager)
 manager.add_command('sensor', SensorManager)
 manager.add_command('mqtt', MQTTManager)
+manager.add_command('setup', SetupManager)
 
 migrate = Migrate(app, db)
 manager.add_command('db', MigrateCommand)
