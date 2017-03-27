@@ -1,4 +1,5 @@
 Flask
+werkzeug
 Flask-Script
 Flask-WTF
 Flask-Restful
@@ -12,7 +13,6 @@ Flask-SQLAlchemy
 Flask-migrate
 Flask-moment
 geopy
-flask-wtf
 paho-mqtt
 requests
 xmltodict

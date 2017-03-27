@@ -22,8 +22,10 @@ class Config:
     SECRET_SALT = general_config.secret_salt()
 
 class ProductionConfig(Config):
-    DATABASE_ENGINE = database_config.engine()
-    SQLALCHEMY_DATABASE_URI = database_config.uri()
+    DATABASE = database_config.enabled()
+    if DATABASE:
+        DATABASE_ENGINE = database_config.engine()
+        SQLALCHEMY_DATABASE_URI = database_config.uri()
 
     LOGGING = logging_config.enabled()
     if LOGGING:
@@ -40,17 +42,7 @@ class ProductionConfig(Config):
         MAIL_SERVER = mail_config.server()
         MAIL_PORT = mail_config.port()
         MAIL_USE_TLS = mail_config.tls()
-        if MAIL_USE_TLS == "True":
-            MAIL_USE_TLS = True
-        else:
-            MAIL_USE_TLS = False
-        
         MAIL_USE_SSL = mail_config.ssl()
-        if MAIL_USE_SSL == "True":
-            MAIL_USE_SSL = True
-        else:
-            MAIL_USE_SSL = False
-
         MAIL_USERNAME = mail_config.username()
         MAIL_PASSWORD = mail_config.password()
 

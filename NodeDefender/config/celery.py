@@ -1,7 +1,7 @@
 from . import parser, configpath
 
 def enabled():
-    return parser['CELERY']['ENABLED']
+    return True if parser['CELERY']['ENABLED'] == 'True' else False
 
 def broker():
     return parser['CELERY']['BROKER']
