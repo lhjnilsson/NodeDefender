@@ -16,7 +16,7 @@
 {% include "flash.html" %}
 {% from "macros/conn.html" import ListMQTT %}
 {% from "macros/info.html" import FieldID %}
-{% from "admin/macros/server.html" import LoggingSettings, DatabaseSettings %}
+{% from "admin/macros/server.html" import LoggingSettings, DatabaseSettings, MailSettings, CelerySettings %}
 <div class="row">
 	<div class="col-lg-4">
 		<div class="panel panel-primary">
@@ -72,6 +72,7 @@
 				Celery Settings
 			</div>
 			<div class="panel-body">
+				{{ CelerySettings() }}
 			</div>
 		</div>
 	</div>
@@ -81,6 +82,7 @@
 				Mail Settings
 			</div>
 			<div class="panel-body">
+				{{ MailSettings() }}
 			</div>
 		</div>
 	</div>
@@ -98,6 +100,7 @@ adminSocket.on('generalInfo', function(info) {
 	$('#releaseInfo').text(info.release);
 	$('#uptime').text(info.uptime);
 });
+adminSocket.emit('generalInfo');
 </script>
 {% from "admin/modals/mqtt.html" import CreateMQTT %}
 

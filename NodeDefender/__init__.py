@@ -52,8 +52,11 @@ api = Api(app)
 RedisPool = ConnectionPool()
 
 # Initialize SocketIO
-socketio = SocketIO(app, message_queue=app.config['CELERY_BROKER_URI'],
+try:
+    socketio = SocketIO(app, message_queue=app.config['CELERY_BROKER_URI'],
                     async_mode='gevent')
+except KeyError:
+    socketio = SocketIO(app, async_mode='gevent')
 
 # Initialize SQLAlchemy for Database
 db = SQLAlchemy(app)

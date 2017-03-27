@@ -25,14 +25,14 @@ def CreateApp():
 
 def CreateLogging(app = None):
     app = app or CreateApp()
-    if app.config['LOGGING_TYPE'] == 'LOCAL':
-        handler = logging.FileHandler(app.config['LOGGING_NAME'])
-    elif app.config['LOGGING_TYPE'] == 'SYSLOG':
-        handler = logging.handlers.SysLogHandler(address = (app.config['LOGGING_SERVER'],
+    try:
+        if app.config['LOGGING_TYPE'] == 'LOCAL':
+            handler = logging.FileHandler(app.config['LOGGING_NAME'])
+        elif app.config['LOGGING_TYPE'] == 'SYSLOG':
+            handler = logging.handlers.SysLogHandler(address = (app.config['LOGGING_SERVER'],
                                                   int(app.config['LOGGING_PORT'])))
-    else:
-        return None, None
-    
+    except KeyError:
+        handler = logging.StreamHandler()
     handler.setLevel(logging.INFO)
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     handler.setFormatter(formatter)
@@ -44,8 +44,12 @@ def CreateLogging(app = None):
 
 def CreateCelery(app = None):
     app = app or CreateApp()
-    celery = Celery(app.name, broker=app.config['CELERY_BROKER_URI'],
+    try:
+        celery = Celery(app.name, broker=app.config['CELERY_BROKER_URI'],
                    backend=app.config['CELERY_BACKEND_URI'])
+    except KeyError:
+        print('Celery Configuration incomplete. Concurreny disabled')
+        celery = Celery(app.name)
     celery.conf.update(app.config)
     TaskBase = celery.Task
     class ContextTask(TaskBase):

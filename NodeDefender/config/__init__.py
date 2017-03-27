@@ -20,6 +20,9 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SECRET_KEY = general_config.secret_key()
     SECRET_SALT = general_config.secret_salt()
+    LOGGING = False
+    MAIL = False
+    CELERY = False
 
 class ProductionConfig(Config):
     DATABASE_ENGINE = database_config.engine()
@@ -92,4 +95,3 @@ class DevelopmentConfig(Config):
 
 class TestingConfig(Config):
     TESTING = True
-    pass
