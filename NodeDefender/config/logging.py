@@ -1,7 +1,7 @@
 from . import parser, configpath
 
 def enabled():
-    return parser['LOGGING']['ENABLED']
+    return True if parser['LOGGING']['ENABLED'] == 'True' else False
 
 def type():
     return parser['LOGGING']['TYPE']

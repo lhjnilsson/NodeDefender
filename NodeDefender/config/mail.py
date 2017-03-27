@@ -1,7 +1,7 @@
 from . import parser, configpath
 
 def enabled():
-    return parser['MAIL']['ENABLED']
+    return True if parser['MAIL']['ENABLED'] == 'True' else False
 
 def server():
     return parser['MAIL']['SERVER']
@@ -10,10 +10,10 @@ def port():
     return parser['MAIL']['PORT']
 
 def tls():
-    return parser['MAIL']['TLS']
+    return True if parser['MAIL']['TLS'] == 'True' else False
 
 def ssl():
-    return parser['MAIL']['SSL']
+    return True if parser['MAIL']['SSL'] == 'True' else False
 
 def username():
     return parser['MAIL']['USERNAME']

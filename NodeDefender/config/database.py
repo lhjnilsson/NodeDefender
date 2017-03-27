@@ -1,7 +1,7 @@
 from . import parser, configpath
 
 def enabled():
-    return parser['DATABASE']['ENABLED']
+    return True if parser['DATABASE']['ENABLED'] == 'True' else False
 
 def engine():
     return parser['DATABASE']['ENGINE']
