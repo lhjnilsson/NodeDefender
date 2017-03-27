@@ -76,3 +76,44 @@ def db_port():
     emit('dbPort', (config.database.port()))
     return True
 
+@socketio.on('celeryBroker', namespace='/admin')
+def celery_broker():
+    emit('celeryBroker', (config.celery.broker()))
+    return True
+
+@socketio.on('celeryServer', namespace='/admin')
+def celery_server():
+    emit('celeryServer', (config.celery.server()))
+    return True
+
+@socketio.on('celeryPort', namespace='/admin')
+def celery_port():
+    emit('celeryPort', (config.celery.port()))
+    return True
+
+@socketio.on('celeryDatabase', namespace='/admin')
+def celery_database():
+    emit('celeryDatabase', (config.celery.database()))
+    return True
+
+@socketio.on('mailServer', namespace='/admin')
+def mail_server():
+    emit('mailServer', (config.mail.server()))
+    return True
+
+@socketio.on('mailPort', namespace='/admin')
+def mail_port():
+    emit('mailPort', (config.mail.port()))
+    return True
+
+@socketio.on('mailTLS', namespace='/admin')
+def mail_tls():
+    emit('mailTLS', (config.mail.tls()))
+    return True
+
+@socketio.on('mailSSL', namespace='/admin')
+def mail_ssl():
+    emit('mailSSL', (config.mail.ssl()))
+    return True
+
+

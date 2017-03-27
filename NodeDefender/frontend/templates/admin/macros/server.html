@@ -39,7 +39,6 @@ adminSocket.on('syslogPort', function(port) {
 adminSocket.emit('dbEngine');
 
 adminSocket.on('dbEngine', function(engine) {
-	console.log(engine);
 	if (engine.toUpperCase() == 'SQLITE') {
 		$('#dbEngine').text('SQLite');
 		adminSocket.emit('dbFile');
@@ -62,5 +61,63 @@ adminSocket.on('dbServer', function(server) {
 adminSocket.on('dbPort', function(port) {
  $('#dbPort').text(port);
 });
+	</script>
+{% endmacro %}
+
+{% macro CelerySettings() %}
+{% from "macros/info.html" import FieldID %}
+{{ FieldID('Broker', '-', 'celeryBroker') }}
+{{ FieldID('Server', '-', 'celeryServer') }}
+{{ FieldID('Port', '-', 'celeryPort') }}
+{{ FieldID('Database', '-', 'celeryDatabase') }}
+
+	<script>
+adminSocket.on('celeryBroker', function(broker) {
+	$('#celeryBroker').text(broker);
+});
+adminSocket.on('celeryServer', function(server) {
+	$('#celeryServer').text(server);
+});
+adminSocket.on('celeryPort', function(port) {
+  $('#celeryPort').text(port);
+});
+adminSocket.on('celeryDatabase', function(database) {
+ $('#celeryDatabase').text(database);
+});
+
+adminSocket.emit('celeryBroker');
+adminSocket.emit('celeryServer');
+adminSocket.emit('celeryPort');
+adminSocket.emit('celeryDatabase');
+
+	</script>
+{% endmacro %}
+
+{% macro MailSettings() %}
+{% from "macros/info.html" import FieldID %}
+{{ FieldID('Server', '-', 'mailServer') }}
+{{ FieldID('Port', '-', 'mailPort') }}
+{{ FieldID('TLS', '-', 'mailTLS') }}
+{{ FieldID('SSL', '-', 'mailSSL') }}
+
+	<script>
+adminSocket.on('mailServer', function(server) {
+	$('#mailServer').text(server);	
+});
+adminSocket.on('mailPort', function(port) {
+ $('#mailPort').text(port);
+});
+adminSocket.on('mailTLS', function(tls) {
+ $('#mailTLS').text(tls);
+});
+adminSocket.on('mailSSL', function(ssl) {
+ $('#mailSSL').text(ssl);
+});
+
+adminSocket.emit('mailServer');
+adminSocket.emit('mailPort');
+adminSocket.emit('mailTLS');
+adminSocket.emit('mailSSL');
+
 	</script>
 {% endmacro %}
