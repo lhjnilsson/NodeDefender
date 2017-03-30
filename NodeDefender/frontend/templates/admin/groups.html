@@ -4,11 +4,6 @@
     <div class="col-lg-12">
         <h1 class="page-header">
             Admin <small>Group List</small>
-						{% if current_user.has_role('administrator') %}
-						<a href="#" data-toggle="modal" data-target="#CreateNew" style="position: absolute; right: 0; margin-right: 1vw;">
-							<i class="fa fa-plus" aria-hidden="true"></i>
-						</a>
-						{% endif %}
         </h1>
              <ol class="breadcrumb">
            <li class="active">
@@ -25,6 +20,7 @@
 		 <div class="panel panel-primary">
 			 <div class="panel-heading">
 				Group List
+				<div class="floatRight" id="createGroup"></div>
 			 </div>
 			 <div class="panel-body" style="padding: 0;">
 				 {{ ListGroups(groups) }}
@@ -32,7 +28,7 @@
 		</div>
   </div>
 </div>
-<div class="modal fade" id="CreateNew" role="dialog">
+<div class="modal fade" id="createGroupModal" role="dialog">
 	<div class="modal-dialog">
 		
 		<div class="modal-content">
@@ -47,6 +43,9 @@
 
 <script>
 $(document).ready(function() {
+	{% if current_user.has_role("superuser") %}
+	$('#createGroup').prepend('<a style="color: #FFFFFF;" href="#" data-toggle="modal" data-target="#createGroupModal" style="position: absolute; right: 0; margin-right: 1vw;"><i class="fa fa-plus" aria-hidden="true"></i></a>');
+	{% endif %}
 });
 </script>
 

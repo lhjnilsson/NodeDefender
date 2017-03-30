@@ -41,7 +41,7 @@
 </div>
 {% endmacro %}
 {% macro ModalGrouplist(grouplist) %}
-{% from "macros/group.html" import ListGroups %}
+{% from "macros/group.html" import ListGroups with context %}
 <div class="modal fade" id="groupList" role="dialog">
 	<div class="modal-dialog">
 		<div class="modal-content">
@@ -154,9 +154,9 @@ $(document).ready(function() {
 			<div class="modal-body">
 				<div class="multiform-step">
 					<div class="row">
-					{{ render_manual('Name', 'nodeName') }}
-					{{ render_manual('Street', 'nodeStreet') }}
-					{{ render_manual('City', 'nodeCity') }}
+						{{ render_manual('Name', 'nodeName') }}
+						{{ render_manual('Street', 'nodeStreet') }}
+						{{ render_manual('City', 'nodeCity') }}
 					</div>
 				</div>
 				<div class="multiform-step">

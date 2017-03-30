@@ -2,7 +2,17 @@ from flask_socketio import emit, send
 from ... import socketio, settings, config
 from ...models.manage import group as GroupSQL
 from ...models.manage import user as UserSQL
+from ...models.manage import mqtt as MQTTSQL
 
+@socketio.on('createMQTT', namespace='/admin')
+def create_mqtt(msg):
+    mqtt = MQTTSQL.Create(msg['address'], msg['port'])
+    if len(msg['username']):
+        mqtt.username = msg['username']
+        mqtt.password = msg['password']
+    MQTTSQL.Save(mqtt)
+    emit('reload', namespace='/general')
+    return True
 
 @socketio.on('groups', namespace='/adminusers')
 def Groups(msg):

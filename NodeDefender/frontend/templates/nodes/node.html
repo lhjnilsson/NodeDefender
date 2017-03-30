@@ -105,7 +105,7 @@ var socket = io.connect('http://' + document.domain + ':' + location.port + name
 		{% endif %}
 	</div>
 </div>
-{% from "nodes/modals/node.html" import ModalGrouplist, ModifyLocation, ModifyGeneral %}
+{% from "nodes/modals/node.html" import ModalGrouplist, ModifyLocation, ModifyGeneral with context %}
 {% from "nodes/modals/node.html" import NodeInformation with context %}
 {% from "nodes/modals/sensor.html" import SensorModal %}
 <script>

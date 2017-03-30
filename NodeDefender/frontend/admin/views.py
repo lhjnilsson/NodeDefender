@@ -60,7 +60,8 @@ def AdminGroups():
             flash('Error: {}'.format(e), 'danger')
             return redirect(url_for('AdminView.AdminGroups'))
         flash('Successfully Created Group: {}'.format(Group.name), 'success')
-        return redirect(url_for('AdminView.AdminGroup', id = Group.id))
+        return redirect(url_for('AdminView.AdminGroup', name =
+                                serializer.dumps(Group.name)))
 
 @AdminView.route('/admin/groups/<name>')
 @group_required

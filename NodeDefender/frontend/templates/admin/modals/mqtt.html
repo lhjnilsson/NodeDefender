@@ -1,28 +1,82 @@
-{% macro CreateMQTT(Form) %}
-{% from "macros/form.html" import render_field_with_errors, render_field, render_submit %}
+{% macro CreateMQTT() %}
+{% from "macros/form.html" import render_manual %}
+{% from "macros/group.html" import SelectGroup %}
+{% from "macros/info.html" import FieldID %}
+
 <div class="modal fade" id="AddMQTT" role="dialog">
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal">&times;</button>
-				<h3 class="modal-title">Add MQTT Connection</h3>
+				<h2 class="modal-title">Add MQTT Connection</h2>
+				<div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100"></div>
 			</div>
 			<div class="modal-body">
-				<form action="{{url_for('AdminView.AdminServer')}}" method="post" class="form-horizontal">
-					{{ Form.csfw_token }}
-					{{ Form.hidden_tag() }}
-					{{ render_field_with_errors(Form.IPAddr) }}
-					{{ render_field_with_errors(Form.Port) }}
-					{{ render_field_with_errors(Form.Username) }}
-					{{ render_field_with_errors(Form.Password) }}
+				<div class="multiform-step">
+					<div class="row">
+						{{ render_manual('Address', 'mqttAddress') }}
+						{{ render_manual('Port', 'mqttPort') }}
+						{{ render_manual('Username', 'mqttUsername') }}
+						{{ render_manual('Password', 'mqttPassword') }}
+					</div>
+				</div>
+				<div class="multiform-step">
+					{{ SelectGroup(current_user) }}
+				</div>
+				<div class="multiform-step">
+					<div class="row">
+						{{ FieldID('Address', 'None', 'SubmitAddress') }}
+						{{ FieldID('Port', 'None', 'SubmitPort') }}
+						{{ FieldID('Group', 'None', 'SubmitGroup') }}
+					</div>
+				</div>
 			</div>
 			<div class="modal-footer">
-					{{ render_submit(Form.Submit) }}
-				</form>
+				<button class="multibtn multiform-back btn btn-info">Back</button>
+				<button class="multibtn multiform-next btn btn-info">Next</button>
+				<button class="multibtn multiform-submit btn btn-success">Submit</button>
 			</div>
 		</div>
 	</div>
 </div>
+	<script>
+$(document).ready(function() {
+	var basic = function() {
+		if ($('#mqttAddress').val() == '')
+		{
+			toastr.error('Please Enter Address');
+			return false;
+		}
+		if ($('#mqttPort').val() == '') {
+			toastr.error('Please Enter Port');
+		}
+		$('#SubmitAddress').text($('#mqttAddress').val());
+		$('#SubmitPort').text($('#mqttPort').val());
+		$('#SubmitUsername').text($('#mqttUsername').val());
+		$('#SubmitPassword').text($('#mqttPassword').val());
+		return true;
+	}
+	var group = function() {
+		if ($('#GroupsList option:selected').text() == '') {
+			toastr.error('Please choose Group');
+			return false;
+		}
+		$('#SubmitGroup').text($('#GroupsList option:selected').text());
+		return true;
+	}
+	var submit = function() {
+		var address = $('#SubmitAddress').text();
+		var port = $('#SubmitPort').text();
+		var username = $('#SubmitUsername').text();
+		var password = $('#SubmitPassword').text();
+
+		var group = $('#SubmitGroup').text();
+		adminSocket.emit('createMQTT', {'address' : address, 'port' : port, 'username' : username, 'password' : password, 'group' : group});
+	}
+	initMultistep(basic, group, submit);
+});
+	</script>
+	<script src="/static/js/multistep.js"></script>
 {% endmacro %}
 
 {% macro Settings(mqtt) %}
