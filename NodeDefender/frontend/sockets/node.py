@@ -71,6 +71,10 @@ def Create(msg):
     location = NodeSQL.Location(msg['street'], msg['city'])
     node = NodeSQL.Create(msg['node'], location)
     NodeSQL.Join(node.name, msg['group'])
-    iCPESQL.Join(msg['macaddr'], node.name)
+    try:
+        iCPESQL.Join(msg['macaddr'], node.name)
+    except LookupError:
+        iCPESQL.Create(msg['macaddr'])
+        iCPESQL.Join(msg['macaddr'], node.name)
     emit('reload', namespace='/general')
     return True

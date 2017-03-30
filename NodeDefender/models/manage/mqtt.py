@@ -67,3 +67,8 @@ def iCPE(macaddr):
 
 def Get(ipaddr, port):
     return MQTTModel.query.first()
+
+def Save(model):
+    db.session.add(model)
+    db.session.commit()
+    return True

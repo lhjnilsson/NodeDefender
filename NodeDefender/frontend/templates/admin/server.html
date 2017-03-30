@@ -102,8 +102,8 @@ adminSocket.on('generalInfo', function(info) {
 });
 adminSocket.emit('generalInfo');
 </script>
-{% from "admin/modals/mqtt.html" import CreateMQTT %}
+{% from "admin/modals/mqtt.html" import CreateMQTT with context %}
 
-{{ CreateMQTT(MQTTForm) }}
+{{ CreateMQTT() }}
 
 {% endblock %}

@@ -12,22 +12,22 @@
 		{% for node in nodes %}
 		<tr>
 			<td>
-				<a href="/nodes/list/{{node.icpe.macaddr}}">
+				<a href="{{ url_for('NodeView.NodesNode', name = serialize(node.name)) }}">
 					{{node.name}}	
 				</a>
 			</td>
 			<td>
-				<a href="/nodes/list/{{node.icpe.macaddr}}">
+				<a href="{{ url_for('NodeView.NodesNode', name = serialize(node.name)) }}">
 					
 				</a>
 			</td>
 			<td>
-				<a href="/nodes/list/{{node.icpe.macaddr}}">
+				<a href="{{ url_for('NodeView.NodesNode', name = serialize(node.name)) }}">
 					{{node.location.street}}
 				</a>
 			</td>
 			<td>
-				<a href="/nodes/list/{{node.icpe.macaddr}}">
+				<a href="{{ url_for('NodeView.NodesNode', name = serialize(node.name)) }}">
 					{{node.location.city}}
 				</a>
 			</td>

@@ -5,6 +5,7 @@ from ...models.manage import node as NodeSQL
 from ...models.manage import icpe as iCPESQL
 from .forms import (LocationForm, iCPEForm, SensorForm,
 NodeCreateForm)
+from ... import serializer
 
 @NodeView.route('/nodes/list', methods=['GET', 'POST'])
 @login_required
@@ -42,13 +43,12 @@ def NodesList():
         flash('Succesfully added node: ' + Node.name, 'success')
         return redirect(url_for('NodeView.NodesList'))
 
-@NodeView.route('/nodes/list/<mac>', methods=['GET', 'POST'])
+@NodeView.route('/nodes/<name>', methods=['GET', 'POST'])
 @login_required
-def NodesNode(mac):
-    iCPE = iCPESQL.Get(mac)
-    if iCPE is None:
-        raise ValueError('Cant find mac')
-    Node = iCPE.node
+def NodesNode(name):
+    name = serializer.loads(name)
+    Node = NodeSQL.Get(name)
+    iCPE = Node.icpe
     sensorform = SensorForm()
     icpeform = iCPEForm()
     locationform = LocationForm()
