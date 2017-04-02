@@ -1,0 +1,5 @@
+Unknown iCPE discovered,
+
+iCPE {{ icpe.macaddr }} has been discovered on MQTT Connection {{ mqtt.ipaddr}}:{{mqtt.port}}.
+
+Best Regards

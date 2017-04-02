@@ -1,0 +1,3 @@
+Welcome to NodeDefender {{ group.name }},
+
+Best Regards

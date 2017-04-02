@@ -4,14 +4,14 @@ from ..models.SQL import UserModel
 from itsdangerous import URLSafeTimedSerializer
 
 @celery.task
-def create_user(email, group = None):
+def create_user(user):
     try:
         user = UserSQL.Create(email)
     except ValueError:
         return
     token = serializer.dumps_salted(email)
     url = url_for('AuthView.Register', token=token)
-    template = render_template('auth/register.html', url=url)
+    template = render_template('auth/register.txt', url=url, user = user)
     subject = 'Welcome to NodeDefender'
     send_email(user.email, subject, template)
     return True
@@ -24,3 +24,6 @@ def confirm_user(user):
 def login_user(user, request):
     pass
 
+@celery_task
+def reset_password(user):
+    pass
