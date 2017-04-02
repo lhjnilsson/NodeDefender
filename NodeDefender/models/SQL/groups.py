@@ -14,6 +14,13 @@ node_list = db.Table('node_list',
                                db.ForeignKey('node.id'))
                     )
 
+mqtt_list = db.Table('mqtt_list',
+                     db.Column('group_id', db.Integer,
+                               db.ForeignKey('group.id')),
+                     db.Column('mqtt_id', db.Integer,
+                               db.ForeignKey('mqtt.id'))
+                    )
+
 class GroupModel(db.Model):
     '''
     Representing one group containing iCPEs and Users
@@ -27,6 +34,8 @@ class GroupModel(db.Model):
     users = db.relationship('UserModel', secondary=user_list,
                             backref=db.backref('groups', lazy='dynamic'))
     messages = db.relationship('GroupMessageModel', backref='groupmessages')
+    mqtts = db.relationship('MQTTModel', secondary=mqtt_list,
+                            backref=db.backref('groups', lazy='dynamic'))
     nodes = db.relationship('NodeModel', secondary=node_list,
                             backref=db.backref('groups', lazy='dynamic'))
     statistics = db.relationship('StatisticsModel', backref='groups', uselist=False)

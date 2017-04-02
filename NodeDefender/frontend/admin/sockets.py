@@ -14,6 +14,12 @@ def create_mqtt(msg):
     emit('reload', namespace='/general')
     return True
 
+@socketio.on('mqttInfo', namespace='/admin')
+def mqtt_info(msg):
+    mqtt = MQTTSQL.Get(**msg)
+    emit('mqttInfo', mqtt.to_json())
+    return True
+
 @socketio.on('groups', namespace='/adminusers')
 def Groups(msg):
     groups = GroupSQL.List()
