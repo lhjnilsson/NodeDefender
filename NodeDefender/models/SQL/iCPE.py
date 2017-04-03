@@ -19,6 +19,12 @@ class iCPEModel(db.Model):
     notesticky = db.Column(db.String(150))
     fields = db.relationship('FieldModel', backref='icpe',
                                 cascade='save-update, merge, delete')
+    heat = db.relationship('HeatModel', backref="icpe",
+                           cascade="save-update, merge, delete")
+    power = db.relationship('PowerModel', backref="icpe",
+                           cascade="save-update, merge, delete")
+    events = db.relationship('EventModel', backref="icpe",
+                           cascade="save-update, merge, delete")
 
     def __init__(self, macaddr):
         self.macaddr = macaddr.upper()
@@ -77,6 +83,13 @@ class SensorModel(db.Model):
                                 cascade='save-update, merge, delete')
     fields = db.relationship('FieldModel', backref='sensor',
                                 cascade='save-update, merge, delete')
+    heat = db.relationship('HeatModel', backref="sensor",
+                           cascade="save-update, merge, delete")
+    power = db.relationship('PowerModel', backref="sensor",
+                           cascade="save-update, merge, delete")
+    events = db.relationship('EventModel', backref="sensor",
+                           cascade="save-update, merge, delete")
+
 
     def __init__(self, sensorid, sensorinfo):
         self.sensorid = str(sensorid)
@@ -96,6 +109,8 @@ class SensorClassModel(db.Model):
     classtypes = db.Column(db.String(200))
     fields = db.relationship('FieldModel', backref='sensorclass',
                                 cascade='save-update, merge, delete')
+    events = db.relationship('EventModel', backref="sensorclass",
+                           cascade="save-update, merge, delete")
 
     def __init__(self, classnumber, classname):
         self.classnumber = classnumber

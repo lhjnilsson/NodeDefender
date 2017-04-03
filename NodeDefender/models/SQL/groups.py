@@ -38,7 +38,6 @@ class GroupModel(db.Model):
                             backref=db.backref('groups', lazy='dynamic'))
     nodes = db.relationship('NodeModel', secondary=node_list,
                             backref=db.backref('groups', lazy='dynamic'))
-    statistics = db.relationship('StatisticsModel', backref='groups', uselist=False)
    
     def __init__(self, name, description):
         self.name = name
