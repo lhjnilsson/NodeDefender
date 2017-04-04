@@ -1,3 +1,9 @@
+from datetime import datetime, timedelta
+from ...SQL import PowerModel
+
+def Latest(node):
+    return PowerModel.query.filter_by(name = node).first()
+
 def Get(node, from_date = (datetime.now() - timedelta(days=7)), to_date =
         datetime.now()):
     return session.query(PowerModel).filter(name == node, date > from_date, date
