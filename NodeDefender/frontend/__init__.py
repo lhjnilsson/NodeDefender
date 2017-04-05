@@ -44,7 +44,7 @@ def inject_serializer():
 @login_required
 def index():
     nodes = NodeManage.List(current_user.email)
-    data = DataManage.Get(current_user.email)
+    data = []
     events = [] 
     return render_template('dashboard/index.html', node=nodes, data = data, messages =
                           [], events = [])

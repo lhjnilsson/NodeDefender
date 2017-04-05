@@ -27,6 +27,16 @@ def Groups(msg):
     emit('groupsrsp', (groupsnames))
     return True
 
+@socketio.on('createGroup', namespace='/admin')
+def create_group(info):
+    if GroupSQL.Get(info['name']):
+        emit('error', ('Group exsists'), namespace='/general')
+        return False
+    group = GroupSQL.Create(info['name'], info['description'], info['mail'])
+    GroupSQL.Address(group, info['street'], info['city'])
+    emit('reload', namespace='/general')
+    return True
+
 @socketio.on('groupInfoGet', namespace='/adminusers')
 def GroupInfo(msg):
     group = GroupSQL.Get(msg['name'])
