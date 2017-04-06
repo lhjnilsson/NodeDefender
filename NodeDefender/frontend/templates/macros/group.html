@@ -55,8 +55,9 @@
 <div class="row">
 	{{Field('Name', Group.name)}}
 	{{Field('Description', Group.description)}}
-	{{Field('Street', NA)}}
-	{{Field('City', NA)}}
+	{{Field('Street', Group.location.street)}}
+	{{Field('City', Group.location.city)}}
+	{{Field('Created', Group.created_on)}}
 </div>
 {% endmacro %}
 

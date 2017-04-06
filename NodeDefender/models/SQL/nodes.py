@@ -48,6 +48,7 @@ class LocationModel(db.Model):
     __tablename__ = 'location'
     id = db.Column(db.Integer, primary_key=True)
     node_id = db.Column(db.Integer, db.ForeignKey('node.id'))
+    group_id = db.Column(db.Integer, db.ForeignKey('group.id'))
     street = db.Column(db.String(30))
     city = db.Column(db.String(30))
     latitude = db.Column(db.String(10))

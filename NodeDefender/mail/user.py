@@ -16,14 +16,14 @@ def create_user(user):
     send_email(user.email, subject, template)
     return True
 
-@celery_task
+@celery.task
 def confirm_user(user):
     pass
 
-@celery_task
+@celery.task
 def login_user(user, request):
     pass
 
-@celery_task
+@celery.task
 def reset_password(user):
     pass

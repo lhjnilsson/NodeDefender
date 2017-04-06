@@ -1,19 +1,33 @@
 from ... import db
-from ...models.SQL import GroupModel, UserModel
+from ...models.SQL import GroupModel, UserModel, LocationModel
 from . import logger
 from . import user as UserSQL
 from . import node as NodeSQL
+from geopy.geocoders import Nominatim
 
-def Create(name, description = None):
+def Create(name, mail = None, description = None):
     group = GroupModel.query.filter_by(name=name).first()
     if group is not None:
         raise ValueError('Group already present')
 
-    group = GroupModel(name, description)
+    group = GroupModel(name, mail, description)
     db.session.add(group)
     db.session.commit()
     logger.info("Created Group: {}".format(group.name))
     return group
+
+def Location(group, street, city):
+    if type(group) == str:
+        group = Get(group)
+    geo = Nominatim()
+    coord = geo.geocode(city + ' ' + street, timeout = 10)
+    if coord is None:
+        raise LookupError('Cant find location')
+    group.location = LocationModel(street, city, coord.latitude,
+                                   coord.longitude)
+    db.session.add(group)
+    db.session.commit()
+    return True
 
 def Delete(group):
     group = GroupModel.query.filter_by(name=group).first()

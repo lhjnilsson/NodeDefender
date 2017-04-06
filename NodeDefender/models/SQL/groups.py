@@ -1,5 +1,6 @@
 from ... import db
 from datetime import datetime
+from .nodes import LocationModel
 
 user_list = db.Table('user_list',
                      db.Column('group_id', db.Integer,
@@ -38,10 +39,13 @@ class GroupModel(db.Model):
                             backref=db.backref('groups', lazy='dynamic'))
     nodes = db.relationship('NodeModel', secondary=node_list,
                             backref=db.backref('groups', lazy='dynamic'))
-   
-    def __init__(self, name, description):
+    location = db.relationship('LocationModel', uselist=False,
+                               backref='group')
+
+    def __init__(self, name, email, description):
         self.name = name
-        self.description = description
+        self.email = email
+        self.description = str(description)
         self.created_on = datetime.now()
 
 class GroupMessageModel(db.Model):

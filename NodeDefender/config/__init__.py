@@ -20,6 +20,8 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SECRET_KEY = general_config.secret_key()
     SECRET_SALT = general_config.secret_salt()
+    SERVER_NAME = '127.0.0.1:5000'
+    PORT = 5000
 
 class ProductionConfig(Config):
     DATABASE = database_config.enabled()

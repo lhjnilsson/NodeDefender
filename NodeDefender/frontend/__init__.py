@@ -24,12 +24,12 @@ def load_user(id):
 
 @app.context_processor
 def inject_user():      # Adds general data to base-template
-    if current_user.is_authenticated:
+    if current_user:
         # Return Message- inbox for user if authenticated
         return dict(current_user = current_user)
     else:
         # If not authenticated user get Guest- ID(That cant be used).
-        return dict(current_user = current_user)
+        return dict(current_user = None)
 
 
 @app.context_processor

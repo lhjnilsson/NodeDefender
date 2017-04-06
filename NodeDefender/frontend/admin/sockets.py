@@ -3,6 +3,7 @@ from ... import socketio, settings, config
 from ...models.manage import group as GroupSQL
 from ...models.manage import user as UserSQL
 from ...models.manage import mqtt as MQTTSQL
+from ...mail import group as GroupMail
 
 @socketio.on('createMQTT', namespace='/admin')
 def create_mqtt(msg):
@@ -32,8 +33,9 @@ def create_group(info):
     if GroupSQL.Get(info['name']):
         emit('error', ('Group exsists'), namespace='/general')
         return False
-    group = GroupSQL.Create(info['name'], info['description'], info['mail'])
-    GroupSQL.Address(group, info['street'], info['city'])
+    group = GroupSQL.Create(info['name'], info['mail'], info['description'])
+    GroupSQL.Location(group, info['street'], info['city'])
+    GroupMail.new_group.delay(group.name)
     emit('reload', namespace='/general')
     return True
 
