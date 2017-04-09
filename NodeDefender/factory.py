@@ -3,10 +3,12 @@ from flask import Flask
 from celery import Celery
 from flask_moment import Moment
 from itsdangerous import URLSafeSerializer
+from flask_wtf.csrf import CSRFProtect
 from . import config
 import os
 
 moment = Moment()
+csfr = CSRFProtect()
 
 def CreateApp():
     app = Flask(__name__)
@@ -75,5 +77,5 @@ class Serializer:
         return self.serializer.loads(token, salt=self.salt)
 
     def dumps_salted(self, string):
-        return self.serializer.dumps(token, salt=self.salt)
+        return self.serializer.dumps(string, salt=self.salt)
 

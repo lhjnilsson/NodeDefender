@@ -10,4 +10,4 @@ if app.config['TESTING']:
 LoadiCPE()
 LoadMQTT()
 
-socketio.run(app, host='0.0.0.0')
+socketio.run(app)

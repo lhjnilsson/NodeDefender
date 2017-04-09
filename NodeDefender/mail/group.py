@@ -20,40 +20,16 @@ def new_group(group):
     return True
 
 @celery.task
-def new_node(group, node):
-    group = GroupSQL.Get(group)
-    if group is None:
-        return False
-    if group.email is None:
-        return False
-
-    template = render_template('mail/group/new_group.txt', group = group)
-    subject = 'Group Created'
-    send_email(group.email, subject, template)
-    return True
-
-@celery.task
-def new_icpe(group, icpe):
-    group = GroupSQL.Get(group)
-    if group is None:
-        return False
-    if group.email is None:
-        return False
-
-    template = render_template('mail/group/new_group.txt', group = group)
-    subject = 'Group Created'
-    send_email(group.email, subject, template)
-    return True
-
-@celery.task
 def new_mqtt(group, mqtt):
     group = GroupSQL.Get(group)
     if group is None:
         return False
     if group.email is None:
         return False
-
-    template = render_template('mail/group/new_group.txt', group = group)
-    subject = 'Group Created'
-    send_email(group.email, subject, template)
+    
+    msg = Message('MQTT {} added to {}'.format(mqtt.ipaddr, group.name), sender='noreply@nodedefender.com', recipients=[group.email])
+    url = url_for('AdminView.AdminGroup', name = serializer.dumps(group.name))
+    msg.body = render_template('mail/group/new_node.txt', group = group, url =
+                              url)
+    mail.send(msg)
     return True

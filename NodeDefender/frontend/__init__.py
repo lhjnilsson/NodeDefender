@@ -1,4 +1,4 @@
-from .. import app, LoginMan
+from .. import app, LoginMan, serializer
 from flask_login import login_required, current_user
 from flask import Blueprint, render_template
 from ..models.manage import node as NodeManage
@@ -35,9 +35,10 @@ def inject_user():      # Adds general data to base-template
 @app.context_processor
 def inject_serializer():
     def serialize(name):
-        serializer = URLSafeSerializer(app.config['SECRET_KEY'])
         return serializer.dumps(name)
-    return dict(serialize = serialize)
+    def serialize_salted(name):
+        return serializer.dumps_salted(name)
+    return dict(serialize = serialize, serialize_salted = serialize_salted)
 
 @app.route('/')
 @app.route('/index')

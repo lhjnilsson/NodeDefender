@@ -1,5 +1,0 @@
-Welcome to NodeDefender {{ group.name }},
-
-url: {{ url_for('AdminView.AdminGroup', name = url) }}
-
-Best Regards

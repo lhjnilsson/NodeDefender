@@ -48,7 +48,7 @@ def delete(ipaddr):
         print("Error: ", e)
         return
 
-    print("Node {} Successfully deleted".format(name))
+    print("MQTT {} Successfully deleted".format(ipaddr))
 
 @manager.command
 def list():

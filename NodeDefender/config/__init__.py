@@ -22,7 +22,7 @@ class Config:
     SECRET_SALT = general_config.secret_salt()
     SERVER_NAME = '127.0.0.1:5000'
     PORT = 5000
-
+    WTF_CSRF_ENABLED = False
 class ProductionConfig(Config):
     DATABASE = database_config.enabled()
     if DATABASE:

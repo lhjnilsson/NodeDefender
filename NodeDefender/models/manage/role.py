@@ -7,8 +7,12 @@ def AddRole(user, role):
     
     if user is None:
         raise LookupError('User not found')
-
-    if role.lower() == 'technician':
+    
+    if role.lower() == 'observer':
+        user.technician = False
+        user.administrator = False
+        user.superuser = False
+    elif role.lower() == 'technician':
         user.technician = True
         user.administrator = False
         user.superuser = False

@@ -78,6 +78,7 @@ class BaseModel:
     pid = DataDescriptor('pid')
     classnumber = DataDescriptor('classnumber')
     classname = DataDescriptor('classname')
+    classtype = DataDescriptor('classtype')
     subfunc = DataDescriptor('subfunc')
 
     def __init__(self):
@@ -89,6 +90,7 @@ class BaseModel:
         self.classnumber = None
         self.classname = None
         self.subfunc = None
+        self.classtype = None
         self.value = None
     
     def __call__(self):

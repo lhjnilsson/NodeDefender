@@ -2,6 +2,7 @@ from . import redisconn
 from .. import mqtt
 from ...models.manage import icpe as iCPESQL
 from ...models.redis import icpe as iCPERedis
+from ...mail import icpe as iCPEMail
 from ... import celery
 from datetime import datetime
 from . import logger, Load
@@ -15,4 +16,6 @@ def Verify(topic, payload, mqttsrc = None):
         else:
             iCPESQL.Create(topic.macaddr, **mqttsrc)
             iCPERedis.Load(topic.macaddr)
+            iCPEMail.new_icpe.apply_async((topic.macaddr, mqttsrc['ipaddr'],
+                                           mqttsrc['port']), countdown=30)
     return mqtt.icpe.Query(topic.macaddr, **mqttsrc)

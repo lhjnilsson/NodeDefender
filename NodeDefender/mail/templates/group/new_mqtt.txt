@@ -1,5 +1,0 @@
-New MQTT Connection Added.
-
-MQTT Connection to {{ mqtt.ipaddr }} has been added to group {{ group.name }}
-
-Best Regards,

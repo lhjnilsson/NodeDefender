@@ -27,6 +27,7 @@ from flask_socketio import emit, send, disconnect, join_room, leave_room, \
 from ... import socketio
 from ...models.manage import node as NodeSQL
 from ...models.manage import icpe as iCPESQL
+from ...mail import node as NodeMail
 from flask import jsonify
 from geopy.geocoders import Nominatim
 
@@ -76,5 +77,6 @@ def Create(msg):
     except LookupError:
         iCPESQL.Create(msg['macaddr'])
         iCPESQL.Join(msg['macaddr'], node.name)
+    NodeMail.new_node.delay(msg['group'], msg['node'])
     emit('reload', namespace='/general')
     return True

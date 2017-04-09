@@ -1,5 +1,0 @@
-New node created,
-
-Node {{ node.name }} has been added to group {{ group.name }}.
-
-Best Regards

@@ -3,7 +3,10 @@ from ... import socketio, settings, config
 from ...models.manage import group as GroupSQL
 from ...models.manage import user as UserSQL
 from ...models.manage import mqtt as MQTTSQL
+from ...models.manage import role as RoleSQL
 from ...mail import group as GroupMail
+from ...mail import user as UserMail
+from ...conn.mqtt import Load as LoadMQTT
 
 @socketio.on('createMQTT', namespace='/admin')
 def create_mqtt(msg):
@@ -11,7 +14,10 @@ def create_mqtt(msg):
     if len(msg['username']):
         mqtt.username = msg['username']
         mqtt.password = msg['password']
+    group = GroupSQL.Get(msg['group'])
+    mqtt.groups.append(group)
     MQTTSQL.Save(mqtt)
+    LoadMQTT([mqtt])
     emit('reload', namespace='/general')
     return True
 
@@ -36,6 +42,19 @@ def create_group(info):
     group = GroupSQL.Create(info['name'], info['mail'], info['description'])
     GroupSQL.Location(group, info['street'], info['city'])
     GroupMail.new_group.delay(group.name)
+    emit('reload', namespace='/general')
+    return True
+
+@socketio.on('createUser', namespace='/admin')
+def create_user(info):
+    user = UserSQL.Create(info['email'])
+    user.firstname = info['firstname']
+    user.lastname = info['lastname']
+    UserSQL.Save(user)
+    UserSQL.Lock(info['email'])
+    UserSQL.Join(info['email'], info['group'])
+    RoleSQL.AddRole(info['email'], info['role'])
+    UserMail.create_user.delay(user.email)
     emit('reload', namespace='/general')
     return True
 

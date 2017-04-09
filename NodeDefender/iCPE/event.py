@@ -5,6 +5,7 @@ from ..models.redis import cmdclass as CmdclassRedis
 from ..models.redis import field as FieldRedis
 from .zwave import ZWaveEvent
 from ..conn.websocket import FieldEvent
+from ..models.manage.data import sensor as SQLData
 
 @celery.task
 def WebSocket(macaddr, sensorid, cmdclass, value):
@@ -23,6 +24,13 @@ def MQTT(topic, payload, mqttsrc):
                           event.value)
         FieldEvent(topic.macaddr, topic.sensorid, event.name,
                       event.value)
+        if event.classtype == 'power' or event.classtype == 'heat':
+            eval('SQLData.' + event.classtype + '.Put')(topic.macaddr, topic.sensorid,
+                                         event.value)
+        else:
+            SQLData.event.Put(topic.macaddr, topic.sensorid, event.classname,
+                          event.classtype, event.value)
+
     return True
 
 @celery.task

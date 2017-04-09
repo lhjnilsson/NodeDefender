@@ -77,7 +77,7 @@ $(document).ready(function() {
 		var mail = $('#submitMail').text();
 		var role = $('#submitRole').text();
 		var group = $('#submitGroup').text();
-		adminSocket.emit('createUser', {'firstname' : firstname, 'lastname' : lastname, 'email' : email, 'role' : role, 'group' : group});
+		adminSocket.emit('createUser', {'firstname' : firstname, 'lastname' : lastname, 'email' : mail, 'role' : role, 'group' : group});
 		return true;
 	}
 	initMultistep(userInfo, userGroup, userSubmit);

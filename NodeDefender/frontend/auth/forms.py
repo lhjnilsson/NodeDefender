@@ -7,7 +7,7 @@ class LoginForm(Form):
 
     email = StringField('Email Address', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
-    remember = BooleanField('Remember Me')
+    remember = BooleanField('Remember Me', default=False)
     submit = SubmitField('Submit')
 
 class RegisterForm(Form):
@@ -16,3 +16,10 @@ class RegisterForm(Form):
     password = PasswordField('Password', validators=[DataRequired(),
                                                     EqualTo('confirm_password')])
     confirm_password = PasswordField('Retype Password', validators=[DataRequired()])
+    submit = SubmitField('Submit')
+
+class PasswordForm(Form):
+    password = PasswordField('Password', validators=[DataRequired(),
+                                                    EqualTo('confirm_password')])
+    confirm_password = PasswordField('Retype Password', validators=[DataRequired()])
+    submit = SubmitField('Submit')
