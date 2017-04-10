@@ -3,12 +3,17 @@ from ....SQL import PowerModel
 from .. import icpe as iCPEData
 
 def Latest(icpe, sensor):
-    return PowerModel.query.filter_by(node = None, icpe = icpe, sensor = sensor).first()
+    return PowerModel.query.join(iCPEModel).join(SensorModel).\
+            filter(iCPEModel.macaddr == icpe).\
+            filter(SensorModel.sensorid == sensor).first()
 
 def Get(icpe, sensor, from_date = (datetime.now() - timedelta(days=7)), to_date =
         datetime.now()):
-    return session.query(PowerModel).filter(node == None, icpe == icpe, sensor == None, date > from_date, date
-                                            < to_date)
+    return PowerModel.query.join(iCPEModel).join(SensorModel).\
+            filter(PowerModel.date > from_date).\
+            filter(PowerModel.date < to_date).\
+            filter(iCPEModel.macaddr == icpe).\
+            filter(SensorModel.sensorid == sensor).all()
 
 def Put(icpe, sensor, power, date = datetime.now()):
     date = date.replace(minute=0, second=0, microsecond=0)
@@ -25,6 +30,7 @@ def Put(icpe, sensor, power, date = datetime.now()):
             data.low = power
 
         data.average = (data.average + power) / 2
+        data.total = data.total + power
         db.session.add(data)
     else:
         sensor.power.append(PowerModel(power, date))

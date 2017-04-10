@@ -2,12 +2,15 @@ from datetime import datetime, timedelta
 from ....SQL import PowerModel, iCPEModel
 
 def Latest(icpe):
-    return PowerModel.query.filter_by(node = None, icpe = icpe, sensor = None).first()
+    return PowerModel.query.join(iCPEModel).\
+            filter(iCPEModel.macaddr == icpe).first()
 
 def Get(icpe, from_date = (datetime.now() - timedelta(days=7)), to_date =
         datetime.now()):
-    return session.query(PowerModel).filter(node == None, icpe == icpe, sensor == None, date > from_date, date
-                                            < to_date)
+    return PowerModel.query.join(iCPEModel).\
+            filter(PowerModel.date > from_date).\
+            filter(PowerModel.date < to_date).\
+            filter(iCPEModel.macaddr == icpe).all()
 
 def Put(icpe, power, date = datetime.now()):
     date = date.replace(minute=0, second=0, microsecond=0)
@@ -23,10 +26,11 @@ def Put(icpe, power, date = datetime.now()):
             data.low = power
 
         data.average = (data.average + power) / 2
+        data.total = data.total + power
         db.session.add(data)
     else:
         icpe.power.append(PowerModel(power, date))
-        db.session.add(icpe) 
+        db.session.add(icpe)
     
     db.session.commit()
     for node in icpe.nodes:

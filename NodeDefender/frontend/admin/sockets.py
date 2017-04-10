@@ -17,6 +17,7 @@ def create_mqtt(msg):
     group = GroupSQL.Get(msg['group'])
     mqtt.groups.append(group)
     MQTTSQL.Save(mqtt)
+    GroupMail.new_mqtt.delay(group.name, mqtt.ipaddr, mqtt.port)
     LoadMQTT([mqtt])
     emit('reload', namespace='/general')
     return True
@@ -55,6 +56,15 @@ def create_user(info):
     UserSQL.Join(info['email'], info['group'])
     RoleSQL.AddRole(info['email'], info['role'])
     UserMail.create_user.delay(user.email)
+    emit('reload', namespace='/general')
+    return True
+
+@socketio.on('resetUserPassword', namespace='/admin')
+def reset_password(user):
+    user = UserSQL.Get(info['email'])
+    if user is None:
+        emit('error', ('user not found'), namespace='/general')
+    UserMail.reset_password.delay(user.email)
     emit('reload', namespace='/general')
     return True
 

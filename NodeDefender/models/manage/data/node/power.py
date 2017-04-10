@@ -1,13 +1,16 @@
 from datetime import datetime, timedelta
 from ....SQL import PowerModel, NodeModel
 
-def Latest(icpe):
-    return PowerModel.query.filter_by(node = None, icpe = icpe, sensor = None).first()
+def Latest(node):
+    return PowerModel.query.join(NodeModel).\
+            filter(NodeModel.name == node).first()
 
-def Get(icpe, from_date = (datetime.now() - timedelta(days=7)), to_date =
+def Get(node, from_date = (datetime.now() - timedelta(days=7)), to_date =
         datetime.now()):
-    return session.query(PowerModel).filter(node == None, icpe == icpe, sensor == None, date > from_date, date
-                                            < to_date)
+    return PowerModel.query.join(NodeModel).\
+            filter(PowerModel.date > from_date).\
+            filter(PowerModel.date < to_date).\
+            filter(NodeModel.name == node).all()
 
 def Put(node, power, date = datetime.now()):
     date = date.replace(minute=0, second=0, microsecond=0)
@@ -23,6 +26,7 @@ def Put(node, power, date = datetime.now()):
             data.low = power
 
         data.average = (data.average + power) / 2
+        data.total = data.total + power
         db.session.add(data)
     else:
         node.power.append(PowerModel(power, date))

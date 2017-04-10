@@ -84,7 +84,6 @@ def ResetPassword(token):
 
     if password_form.validate_on_submit():
         UserSQL.Password(user.email, password_form.password)
-        UserSQL.Enable(user.email)
     else:
         flash('Error doing register, please try again', 'error')
         return redirect(url_for('AuthView.Login'))
