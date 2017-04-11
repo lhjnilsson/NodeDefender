@@ -60,7 +60,7 @@ def create_user(info):
     return True
 
 @socketio.on('resetUserPassword', namespace='/admin')
-def reset_password(user):
+def reset_password(info):
     user = UserSQL.Get(info['email'])
     if user is None:
         emit('error', ('user not found'), namespace='/general')

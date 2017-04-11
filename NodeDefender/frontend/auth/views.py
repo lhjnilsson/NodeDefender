@@ -79,11 +79,11 @@ def ResetPassword(token):
 
     password_form = PasswordForm()
     if request.method == 'GET':
-        return render_template('auth/reset_password.html', user = user, password_form =
-                               password_form)
+        return render_template('auth/reset_password.html', user = user,
+                               PasswordForm = password_form)
 
     if password_form.validate_on_submit():
-        UserSQL.Password(user.email, password_form.password)
+        UserSQL.Password(user.email, password_form.password.data)
     else:
         flash('Error doing register, please try again', 'error')
         return redirect(url_for('AuthView.Login'))

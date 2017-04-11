@@ -16,8 +16,8 @@ def CreateApp():
         mode = os.environ['NodeDefender_Mode']
         pass
     except KeyError:
-        print('NodeDefender_Mode not set, running as Testing.')
-        mode = 'Testing'
+        print('NodeDefender_Mode not set, running as Development.')
+        mode = 'Development'
         
     app.config.from_object('NodeDefender.config.'+mode+'Config')
     app.template_folder = "frontend/templates"

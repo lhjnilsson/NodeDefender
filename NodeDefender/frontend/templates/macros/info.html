@@ -3,7 +3,11 @@
 	<strong>{{key}}:</strong>
 </div>
 <div class="col-lg-6">
-	{{word}}
+	{% if word %}
+		{{word}}
+	{% else %}
+		-
+	{% endif %}
 </div>
 {% endmacro %}
 
@@ -12,7 +16,11 @@
 	<strong>{{key}}:</strong>
 </div>
 <div class="col-lg-6">
-	<p id="{{id}}">None</p>
+	{% if value %}
+		<p id="{{id}}">{{value}}</p>
+	{% else %}
+		<p id="{{id}}">None</p>
+	{% endif %}
 </div>
 {% endmacro %}
 

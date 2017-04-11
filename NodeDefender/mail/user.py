@@ -45,13 +45,10 @@ def reset_password(user):
     if user.email == None:
         return False
 
-    if user.active:
-        return False
-
     msg = Message('Reset password', sender='noreply@nodedefender.com',
                   recipients=[user.email])
     url = url_for('AuthView.ResetPassword',\
-                 url = serializer.dumps_salted(user.email))
+                 token = serializer.dumps_salted(user.email))
     msg.body = render_template('mail/user/reset_password.txt', user = user, url =
                               url)
     mail.send(msg)

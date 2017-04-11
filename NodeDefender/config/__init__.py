@@ -20,9 +20,10 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SECRET_KEY = general_config.secret_key()
     SECRET_SALT = general_config.secret_salt()
-    SERVER_NAME = '127.0.0.1:5000'
-    PORT = 5000
+    SERVER_NAME = general_config.server_name()
+    PORT = general_config.server_port()
     WTF_CSRF_ENABLED = False
+
 class ProductionConfig(Config):
     DATABASE = database_config.enabled()
     if DATABASE:
