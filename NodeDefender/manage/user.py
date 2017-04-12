@@ -25,15 +25,14 @@ def create(email, password):
     print("User {} Successfully added!".format(email))
 
 
-@manager.option('-i', '--index', dest='index', default=None)
 @manager.option('-n', '-e', '--email', dest='email', default=None)
-def delete(email, index):
+def delete(email):
     "Deltes User"
-    if email is None and index is None:
-        email = prompt('Email or Index')
+    if email is None:
+        email = prompt('Email')
 
     try:
-        u = user.Delete((email if email else index))
+        u = user.Delete(email)
     except LookupError as e:
         print("Error: ", e)
 

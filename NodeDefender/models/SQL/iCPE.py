@@ -11,7 +11,7 @@ class iCPEModel(db.Model):
     name = db.Column(db.String(64))
     macaddr = db.Column(db.String(12), unique=True)
     ipaddr = db.Column(db.String(32))
-    online =  db.Column(db.Boolean)
+    enabled =  db.Column(db.Boolean)
     created_on = db.Column(db.DateTime)
     last_online = db.Column(db.DateTime)
     sensors = db.relationship('SensorModel', backref='icpe',
@@ -28,6 +28,7 @@ class iCPEModel(db.Model):
 
     def __init__(self, macaddr):
         self.macaddr = macaddr.upper()
+        self.enabled = False
         self.created_on = datetime.now()
 
     def __repr__(self):

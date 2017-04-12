@@ -26,6 +26,8 @@ def Load(icpes = None):
         icpes = iCPESQL.List()
     
     for icpe in icpes:
+        if not icpe.enabled:
+            continue
         iCPERedis.Load(icpe)
         for sensor in icpe.sensors:
             SensorRedis.Load(sensor)

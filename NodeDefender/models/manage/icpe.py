@@ -49,6 +49,31 @@ def Create(mac, node = None, ipaddr = None, port = None):
     lock.release()
     return icpe
 
+def Enable(icpe, ipaddr = None, port = None):
+    icpe = Get(icpe)
+    icpe.enabled = True
+    if ipaddr and port:
+        ipaddr = str(ipaddr)
+        port = int(port)
+        mqtt = MQTTModel.query.filter_by(ipaddr = ipaddr, port = port).first()
+        icpe.mqtts.append(mqtt)
+
+    db.session.add(icpe)
+    db.session.commit()
+    return True
+
+def Disable(icpe):
+    icpe = Get(icpe)
+    icpe.enabled = False
+    db.session.add(icpe)
+    db.session.commit()
+    return True
+
+def Enabled(icpe):
+    icpe = Get(icpe)
+    return icpe.Enabled
+
+
 def Delete(icpe):
     if type(icpe) is str:
         icpe = iCPEModel.query.filter_by(macaddr = icpe).first()
