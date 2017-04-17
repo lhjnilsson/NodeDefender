@@ -1,37 +1,52 @@
 from datetime import datetime, timedelta
-from ....SQL import PowerModel, NodeModel
+from ....SQL import PowerModel, NodeModel, iCPEModel
+from ..... import db
+from sqlalchemy import func
+from sqlalchemy.sql import label
 
 def Latest(node):
-    return PowerModel.query.join(NodeModel).\
-            filter(NodeModel.name == node).first()
+    node = NodeModel.query.filter(NodeModel.name == node).first()
+    if not node:
+        return False
+
+    power_data = db.session.query(PowerModel, \
+                                  label('low', func.min(PowerModel.low)),
+                                  label('high', func.max(PowerModel.high)),
+                                  label('total', func.sum(PowerModel.average)),
+                                  label('date', PowerModel.date)).\
+            join(iCPEModel).\
+            filter(iCPEModel.macaddr == node.icpe.macaddr).\
+            order_by(PowerModel.date.desc()).\
+            group_by(PowerModel.date).first()
+
+    if not power_data:
+        return False
+    
+    return {'node' : node.name, 'date' : power_data.date, 'low' : power_data.low,\
+            'high' : power_data.high, 'total' : power_data.total}
 
 def Get(node, from_date = (datetime.now() - timedelta(days=7)), to_date =
         datetime.now()):
-    return PowerModel.query.join(NodeModel).\
+    node = NodeModel.query.filter(NodeModel.name == node).first()
+    if not node:
+        return False
+    
+    power_data = db.session.query(PowerModel, \
+                                  label('low', func.min(PowerModel.low)),
+                                  label('high', func.max(PowerModel.high)),
+                                  label('total', func.sum(PowerModel.average)),
+                                  label('date', PowerModel.date)).\
+            join(iCPEModel).\
+            filter(iCPEModel.macaddr == node.icpe.macaddr).\
             filter(PowerModel.date > from_date).\
             filter(PowerModel.date < to_date).\
-            filter(NodeModel.name == node).all()
+            group_by(PowerModel.date).all()
 
-def Put(node, power, date = datetime.now()):
-    date = date.replace(minute=0, second=0, microsecond=0)
-    data, node = PowerModel.query.join(NodeModel).\
-            filter(PowerModel.date == date).\
-            filter(NodeModel.name == node).first()
-
-    if data:
-        if power > data.power:
-            data.high = power
-
-        if power < data.power:
-            data.low = power
-
-        data.average = (data.average + power) / 2
-        data.total = data.total + power
-        db.session.add(data)
-    else:
-        node.power.append(PowerModel(power, date))
-        db.session.add(node)
-    
-    db.session.commit()
-    for group in node.groups:
-        GroupData.power.put(group.name, power, date)
+    if not power_data:
+        return False
+    ret_json = {'node' : node.name}
+    ret_json['power'] = []
+    for data in power_data:
+        ret_json['power'].append({data.date : {'low' : data.low, 'high' : data.high,
+                                    'total' : data.total}})
+    return ret_json

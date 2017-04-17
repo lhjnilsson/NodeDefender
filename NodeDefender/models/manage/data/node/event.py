@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from ...SQL import EventModel
+from ....SQL import EventModel
 
 def Latest(node):
     return EventModel.query.filter_by(name = node).first()

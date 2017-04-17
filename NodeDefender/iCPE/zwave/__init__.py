@@ -80,6 +80,7 @@ class BaseModel:
     classname = DataDescriptor('classname')
     classtype = DataDescriptor('classtype')
     subfunc = DataDescriptor('subfunc')
+    enabled = DataDescriptor('enabled')
 
     def __init__(self):
         self.sensorid = None
@@ -92,6 +93,7 @@ class BaseModel:
         self.subfunc = None
         self.classtype = None
         self.value = None
+        self.enabled = False
     
     def __call__(self):
         return self._retdata

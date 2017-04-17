@@ -17,6 +17,7 @@ def MQTT(macaddr):
     return icpe.mqtt[0].ipaddr, icpe.mqtt[0].port
 
 def Create(mac, node = None, ipaddr = None, port = None):
+    print(mac)
     lock = RedLock(mac)
     if lock.acquire() is False:
         return False
@@ -56,7 +57,7 @@ def Enable(icpe, ipaddr = None, port = None):
         ipaddr = str(ipaddr)
         port = int(port)
         mqtt = MQTTModel.query.filter_by(ipaddr = ipaddr, port = port).first()
-        icpe.mqtts.append(mqtt)
+        icpe.mqtt.append(mqtt)
 
     db.session.add(icpe)
     db.session.commit()
@@ -71,7 +72,7 @@ def Disable(icpe):
 
 def Enabled(icpe):
     icpe = Get(icpe)
-    return icpe.Enabled
+    return icpe.enabled
 
 
 def Delete(icpe):

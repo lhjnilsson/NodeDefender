@@ -1,36 +1,58 @@
 from datetime import datetime, timedelta
-from ....SQL import PowerModel, GroupModel
+from ....SQL import PowerModel, GroupModel, iCPEModel
+from ..... import db
+from sqlalchemy import func
+from sqlalchemy.sql import label
 
 def Latest(group):
-    return PowerModel.query.join(GroupModel).\
-            filter(GroupModel.name == group).first()
+    group = GroupModel.query.filter(GroupModel.name == group).first()
+    if not group:
+        return False
+
+    #icpes = [[icpe.macaddr for icpe in node.icpes] for node in group.nodes]
+    icpes = [node.icpe.macaddr for node in group.nodes]
+
+    power_data = db.session.query(PowerModel, \
+                                  label('low', func.min(PowerModel.low)),
+                                  label('high', func.max(PowerModel.high)),
+                                  label('total', func.sum(PowerModel.average)),
+                                  label('date', PowerModel.date)).\
+            join(iCPEModel).\
+            filter(iCPEModel.macaddr.in_(*[icpes])).\
+            order_by(PowerModel.date.desc()).\
+            group_by(PowerModel.date).first()
+
+    if not power_data:
+        return False
+    
+    return {'group' : group.name, 'date' : power_data.date, 'low' : power_data.low,\
+            'high' : power_data.high, 'total' : power_data.total}
 
 def Get(group, from_date = (datetime.now() - timedelta(days=7)), to_date =
         datetime.now()):
-    return PowerModel.query.join(GroupModel).\
+    group = GroupModel.query.filter(GroupModel.name == group).first()
+    if not group:
+        return False
+    
+    #icpes = [[icpe.macaddr for icpe in node.icpes] for node in group.nodes]
+    icpes = [node.icpe.macaddr for node in group.nodes]
+    
+    power_data = db.session.query(PowerModel, \
+                                  label('low', func.min(PowerModel.low)),
+                                  label('high', func.max(PowerModel.high)),
+                                  label('total', func.sum(PowerModel.average)),
+                                  label('date', PowerModel.date)).\
+            join(iCPEModel).\
+            filter(iCPEModel.macaddr.in_(*[icpes])).\
             filter(PowerModel.date > from_date).\
             filter(PowerModel.date < to_date).\
-            filter(GroupModel.name == group).all()
+            group_by(PowerModel.date).all()
 
-def Put(group, power, date = datetime.now()):
-    date = date.replace(minute=0, second=0, microsecond=0)
-    data, group = PowerModel.query.join(GroupModel).\
-            filter(PowerModel.date == date).\
-            filter(GroupModel.name == node).first()
-
-    if data:
-        if power > data.power:
-            data.high = power
-
-        if power < data.power:
-            data.low = power
-
-        data.average = (data.average + power) / 2
-        data.total = data.total + power
-        db.session.add(data)
-    else:
-        node.power.append(PowerModel(power, date))
-        db.session.add(node)
-    
-    db.session.commit()
-    return True
+    if not power_data:
+        return False
+    ret_json = {'group' : group.name}
+    ret_json['power'] = []
+    for data in power_data:
+        ret_json['power'].append({data.date : {'low' : data.low, 'high' : data.high,
+                                    'total' : data.total}})
+    return ret_json

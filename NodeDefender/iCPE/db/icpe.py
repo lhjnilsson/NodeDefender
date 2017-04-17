@@ -12,10 +12,10 @@ def Verify(topic, payload, mqttsrc = None):
         return iCPERedis.Get(topic.macaddr)
     else:
         if iCPESQL.Get(topic.macaddr):
-            if iCPE.Enabled(topic.macaddr):
+            if iCPESQL.Enabled(topic.macaddr):
                 return iCPERedis.Load(topic.macaddr)
             else:
-                iCPE.Enable(topic.macaddr **mqttconn)
+                iCPESQL.Enable(topic.macaddr **mqttconn)
                 iCPEMail.icpe_enabled.apply_async((topic.macaddr,
                                                mqttsrc['ipaddr'],
                                                mqttsrc['port']), countdown=30)

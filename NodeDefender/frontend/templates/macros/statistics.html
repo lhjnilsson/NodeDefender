@@ -117,10 +117,13 @@ new Morris.Line({
 </script>
 {% endmacro %}
 
-{% macro EventList(node = None, group = None, sensor = None) %}
-<h3>Events</h3>
-	<div class="box" style="padding: 0;">
-		<table class="table table-striped">
+{% macro EventList(events, eventlistId = eventList) %}
+<div class="panel panel-primary">	
+	<div class="panel-heading">
+		Events
+	</div>
+	<div class="panel-body">
+		<table class="table table-striped", id = "{{eventlistId}}">
 			<thead>
 				<tr>
 					<th>Event</th>
@@ -129,20 +132,20 @@ new Morris.Line({
 				</tr>
 			</thead>
 			<tbody>
-			{% for event in iCPE.events[-6:]|sort(attribute='created_on', reverse=True) %}
-				<tr>
-					<td>
-						<i class="fa fa-{{event.fonticon}}" aria-hidden="true"></i>
-					</td>
-					<td>
-						{{ event.productname }}
-					</td>
-					<td>
-						{{ moment(event.created_on).format('Do MMM YYYY, HH:mm:ss') }}
-					</td>
-				</tr>
-			{% endfor %}
 			</tbody>
 		</table>		
 	</div>
+</div>
+	<script>
+var events = ['hej', 'ok'];
+var id = "{{ eventlistId }}";
+var tableRef = document.getElementById(id);
+for (i = 0; i < events.length; i++) {
+	iconID = id + "icon" + i;
+	var newRow = tableRef.insertRow(i);
+	var iconCell = newRow.insertCell(0);
+	var iconText = document.createTextNode('icon');
+	iconCell.appendChild(iconText);
+}
+	</script>
 {% endmacro %}

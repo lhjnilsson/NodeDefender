@@ -23,12 +23,12 @@ def MQTT(topic, payload, mqttsrc):
         FieldRedis.Update(topic.macaddr, topic.sensorid, event.name,
                           event.value)
         FieldEvent(topic.macaddr, topic.sensorid, event.name,
-                      event.value)
+                      event.value, event.enabled)
         if event.classtype == 'power' or event.classtype == 'heat':
             eval('SQLData.' + event.classtype + '.Put')(topic.macaddr, topic.sensorid,
                                          event.value)
         else:
-            SQLData.event.Put(topic.macaddr, topic.sensorid, event.classname,
+            SQLData.event.Put(topic.macaddr, topic.sensorid, topic.cmdclass,
                           event.classtype, event.value)
 
     return True

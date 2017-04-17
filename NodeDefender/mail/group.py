@@ -34,7 +34,7 @@ def new_mqtt(group, mqttip, mqttport):
 
     msg = Message('MQTT {} added to {}'.format(mqtt.ipaddr, group.name), sender='noreply@nodedefender.com', recipients=[group.email])
     url = url_for('AdminView.AdminGroup', name = serializer.dumps(group.name))
-    msg.body = render_template('mail/group/new_mqtt.txt', group = group, url =
-                              url)
+    msg.body = render_template('mail/group/new_mqtt.txt', group = group,\
+                               mqtt = mqtt, url = url)
     mail.send(msg)
     return True

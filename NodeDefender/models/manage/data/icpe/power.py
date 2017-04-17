@@ -1,37 +1,45 @@
 from datetime import datetime, timedelta
 from ....SQL import PowerModel, iCPEModel
+from ..... import db
+from sqlalchemy import func
+from sqlalchemy.sql import label
 
 def Latest(icpe):
-    return PowerModel.query.join(iCPEModel).\
-            filter(iCPEModel.macaddr == icpe).first()
+    power_data = db.session.query(PowerModel, \
+                                  label('low', func.min(PowerModel.low)),
+                                  label('high', func.max(PowerModel.high)),
+                                  label('total', func.sum(PowerModel.average)),
+                                  label('date', PowerModel.date)).\
+            join(iCPEModel).\
+            filter(iCPEModel.macaddr == icpe).\
+            order_by(PowerModel.date.desc()).\
+            group_by(PowerModel.date).first()
+
+    if not power_data:
+        return False
+    
+    return {'icpe' : icpe, 'date' : power_data.date, 'low' : power_data.low,\
+            'high' : power_data.high, 'total' : power_data.total}
 
 def Get(icpe, from_date = (datetime.now() - timedelta(days=7)), to_date =
         datetime.now()):
-    return PowerModel.query.join(iCPEModel).\
+    power_data = db.session.query(PowerModel, \
+                                  label('low', func.min(PowerModel.low)),
+                                  label('high', func.max(PowerModel.high)),
+                                  label('total', func.sum(PowerModel.average)),
+                                  label('date', PowerModel.date)).\
+            join(iCPEModel).\
+            filter(iCPEModel.macaddr == icpe).\
             filter(PowerModel.date > from_date).\
             filter(PowerModel.date < to_date).\
-            filter(iCPEModel.macaddr == icpe).all()
+            group_by(PowerModel.date).all()
 
-def Put(icpe, power, date = datetime.now()):
-    date = date.replace(minute=0, second=0, microsecond=0)
-    data, icpe = PowerModel.query.join(iCPEModel).\
-            filter(PowerModel.date == date).\
-            filter(iCPEModel.macaddr == icpe).first()
+    if not power_data:
+        return False
 
-    if data:
-        if power > data.power:
-            data.high = power
-
-        if power < data.power:
-            data.low = power
-
-        data.average = (data.average + power) / 2
-        data.total = data.total + power
-        db.session.add(data)
-    else:
-        icpe.power.append(PowerModel(power, date))
-        db.session.add(icpe)
-    
-    db.session.commit()
-    for node in icpe.nodes:
-        NodeData.power.put(node.name, power, date)
+    ret_json = {'icpe' : icpe}
+    ret_json['power'] = []
+    for data in power_data:
+        ret_json['power'].append({data.date : {'low' : data.low, 'high' : data.high,
+                                    'total' : data.total}})
+    return ret_json
