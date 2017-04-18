@@ -21,7 +21,7 @@ class Config:
     SECRET_KEY = general_config.secret_key()
     SECRET_SALT = general_config.secret_salt()
     SERVER_NAME = general_config.server_name()
-    PORT = general_config.server_port()
+    PORT = int(general_config.server_port())
     WTF_CSRF_ENABLED = False
 
 class ProductionConfig(Config):

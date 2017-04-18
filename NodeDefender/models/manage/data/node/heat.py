@@ -1,20 +1,52 @@
 from datetime import datetime, timedelta
-from ....SQL import HeatModel
+from ....SQL import HeatModel, NodeModel, iCPEModel
+from ..... import db
+from sqlalchemy import func
+from sqlalchemy.sql import label
 
 def Latest(node):
-    return HeatModel.query.filter_by(name = node).first()
+    node = NodeModel.query.filter(NodeModel.name == node).first()
+    if not node:
+        return False
+
+    heat_data = db.session.query(HeatModel, \
+                                  label('low', func.min(HeatModel.low)),
+                                  label('high', func.max(HeatModel.high)),
+                                  label('total', func.sum(HeatModel.average)),
+                                  label('date', HeatModel.date)).\
+            join(iCPEModel).\
+            filter(iCPEModel.macaddr == node.icpe.macaddr).\
+            order_by(HeatModel.date.desc()).\
+            group_by(HeatModel.date).first()
+
+    if not heat_data:
+        return False
+    
+    return {'node' : node.name, 'date' : heat_data.date, 'low' : power_data.low,\
+            'high' : heat_data.high, 'total' : power_data.total}
 
 def Get(node, from_date = (datetime.now() - timedelta(days=7)), to_date =
         datetime.now()):
-    return session.query(HeatModel).filter(name == node, date > from_date, date
-                                            < to_date)
+    node = NodeModel.query.filter(NodeModel.name == node).first()
+    if not node:
+        return False
+    
+    heat_data = db.session.query(HeatModel, \
+                                  label('low', func.min(HeatModel.low)),
+                                  label('high', func.max(HeatModel.high)),
+                                  label('total', func.sum(HeatModel.average)),
+                                  label('date', HeatModel.date)).\
+            join(iCPEModel).\
+            filter(iCPEModel.macaddr == node.icpe.macaddr).\
+            filter(HeatModel.date > from_date).\
+            filter(HeatModel.date < to_date).\
+            group_by(HeatModel.date).all()
 
-def Put(node, heat, date):
-    data = session.query(HeatModel).filter(name == node, date == date)
-    if data:
-        heat = (data.heat / 2)
-        data.presision += 1
-    else:
-        heat = HeatModel(heat, date)
-    db.session.add(heat)
-    db.session.commit()
+    if not heat_data:
+        return False
+    ret_json = {'node' : node.name}
+    ret_json['heat'] = []
+    for data in heat_data:
+        ret_json['heat'].append({data.date : {'low' : data.low, 'high' : data.high,
+                                    'total' : data.total}})
+    return ret_json
