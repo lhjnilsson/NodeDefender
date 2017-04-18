@@ -18,7 +18,7 @@ def Latest(icpe):
     if not heat_data:
         return False
     
-    return {'icpe' : icpe, 'date' : heat_data.date, 'low' : power_data.low,\
+    return {'icpe' : icpe, 'date' : str(heat_data.date), 'low' : power_data.low,\
             'high' : heat_data.high, 'total' : power_data.total}
 
 def Get(icpe, from_date = (datetime.now() - timedelta(days=7)), to_date =
@@ -40,6 +40,6 @@ def Get(icpe, from_date = (datetime.now() - timedelta(days=7)), to_date =
     ret_json = {'icpe' : icpe}
     ret_json['heat'] = []
     for data in heat_data:
-        ret_json['heat'].append({data.date : {'low' : data.low, 'high' : data.high,
-                                    'total' : data.total}})
+        ret_json['heat'].append({'date' : str(data.date), 'low' : data.low, 'high' : data.high,
+                                    'total' : data.total})
     return ret_json

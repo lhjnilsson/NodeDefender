@@ -22,7 +22,7 @@ def Latest(node):
     if not power_data:
         return False
     
-    return {'node' : node.name, 'date' : power_data.date, 'low' : power_data.low,\
+    return {'node' : node.name, 'date' : str(power_data.date), 'low' : power_data.low,\
             'high' : power_data.high, 'total' : power_data.total}
 
 def Get(node, from_date = (datetime.now() - timedelta(days=7)), to_date =
@@ -47,6 +47,6 @@ def Get(node, from_date = (datetime.now() - timedelta(days=7)), to_date =
     ret_json = {'node' : node.name}
     ret_json['power'] = []
     for data in power_data:
-        ret_json['power'].append({data.date : {'low' : data.low, 'high' : data.high,
-                                    'total' : data.total}})
+        ret_json['power'].append({'date' : str(data.date), 'low' : data.low, 'high' : data.high,
+                                    'total' : data.total})
     return ret_json

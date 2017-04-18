@@ -25,7 +25,7 @@ var tableRef = document.getElementById("groupeventtable");
 var length = "{{length}}";
 console.log(group);
 
-dataSocket.on('groupEvents', function(events) {
+dataSocket.on('groupEventGet', function(events) {
 	for (i = 0; i < events.length; i++) {
 		var newRow = tableRef.insertRow(i);
 
@@ -46,7 +46,7 @@ dataSocket.on('groupEvents', function(events) {
 		dateCell.appendChild(dateText);
 	}
 });
-dataSocket.emit('groupEvents', {'group' : group, 'length' : length});
+dataSocket.emit('groupEventGet', {'group' : group, 'length' : length});
 	</script>
 {% endif %}
 {% endmacro %}

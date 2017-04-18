@@ -9,10 +9,11 @@
 </div>
 <script>
 var icpe = "{{iCPE.macaddr}}";
-dataSocket.on('icpePower', function(powerdata) {
+dataSocket.on('icpePowerGet', function(data) {
 	var powerData = [];
-	for (i = 0; i < powerdata.length; i++) {
-		powerData.push({'date' : powerdata[i].date, 'average' : powerdata[i].average, 'high' : powerdata[i].high, 'low' : powerdata[i].low})
+	power = data.power;
+	for (i = 0; i < power.length; i++) {
+		powerData.push({'date' : power[i].date, 'average' : power[i].total, 'high' : power[i].high, 'low' : power[i].low})
 	}
 	console.log(powerData);
 	new Morris.Line({
@@ -25,6 +26,6 @@ dataSocket.on('icpePower', function(powerdata) {
 });
 })
 
-dataSocket.emit('icpePower', {'icpe' : icpe});
+dataSocket.emit('icpePowerGet', {'icpe' : icpe});
 </script>
 {% endmacro %}

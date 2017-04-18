@@ -11,7 +11,7 @@ def Latest(icpe, sensor):
     if not heat_data:
         return False
 
-    return {'icpe' : icpe, 'sensor' : sensor, 'date' : heat_data.date,\
+    return {'icpe' : icpe, 'sensor' : sensor, 'date' : str(heat_data.date),\
             'low' : heat_data.low, 'high' : heat_data.high, \
             'total' : heat_data.total}
 
@@ -30,9 +30,9 @@ def Get(icpe, sensor, from_date = (datetime.now() - timedelta(days=7)), to_date 
     ret_json['sensor'] = sensor
     ret_json['heat'] = []
     for data in heat_data:
-        ret_json['heat'].append({data.date : {'low' : data.low, 'high' :
+        ret_json['heat'].append({'date' : str(data.date), 'low' : data.low, 'high' :
                                                data.high, 'total' :
-                                               data.total}})
+                                               data.total})
     return ret_json
 
 def Put(icpe, sensor, heat, date = datetime.now()):
