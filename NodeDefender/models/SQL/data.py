@@ -15,7 +15,7 @@ class HeatModel(db.Model):
     low = db.Column(db.Float)
     average = db.Column(db.Float)
 
-    def __init__(self, heat):
+    def __init__(self, heat, date = datetime.now()):
         self.high = heat
         self.low = heat
         self.average = heat

@@ -117,4 +117,4 @@ def PayloadSplitter(model=BaseModel):
     return decorate
 
 from . import db
-from .cmdclass import alarm, basic, meter
+from .cmdclass import alarm, basic, meter, msensor

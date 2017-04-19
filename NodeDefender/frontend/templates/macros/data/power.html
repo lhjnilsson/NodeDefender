@@ -1,3 +1,131 @@
+{% macro PowerGraph(user) %}
+<div class="panel panel-primary">
+	<div class="panel-heading">
+		Power Usage
+	</div>
+	<div class="panel-body" style="padding: 0; height: 250px">
+		<div id="iCPEPowerChart" style="height: 100%"></div>
+	</div>
+</div>
+<script>
+var icpe = "{{iCPE.macaddr}}";
+dataSocket.on('icpePowerGet', function(data) {
+	var powerData = [];
+	power = data.power;
+	for (i = 0; i < power.length; i++) {
+		powerData.push({'date' : power[i].date, 'average' : power[i].total, 'high' : power[i].high, 'low' : power[i].low})
+	}
+	console.log(powerData);
+	new Morris.Line({
+	// ID of the element in which to draw the chart.
+	element: 'iCPEPowerChart',
+	data : powerData,
+	xkey : 'date',
+	ykeys : ['average', 'high', 'low'],
+	labels : ['Average', 'High', 'Low']
+});
+})
+
+dataSocket.emit('icpePowerGet', {'icpe' : icpe});
+</script>
+{% endmacro %}
+
+{% macro GroupPowerGraph(Group) %}
+<div class="panel panel-primary">
+	<div class="panel-heading">
+		Power Usage
+	</div>
+	<div class="panel-body" style="padding: 0; height: 250px">
+		<div id="GroupPowerChart" style="height: 100%"></div>
+	</div>
+</div>
+<script>
+var icpe = "{{Group.name}}";
+dataSocket.on('icpePowerGet', function(data) {
+	var powerData = [];
+	power = data.power;
+	for (i = 0; i < power.length; i++) {
+		powerData.push({'date' : power[i].date, 'average' : power[i].total, 'high' : power[i].high, 'low' : power[i].low})
+	}
+	console.log(powerData);
+	new Morris.Line({
+	// ID of the element in which to draw the chart.
+	element: 'iCPEPowerChart',
+	data : powerData,
+	xkey : 'date',
+	ykeys : ['average', 'high', 'low'],
+	labels : ['Average', 'High', 'Low']
+});
+})
+
+dataSocket.emit('icpePowerGet', {'icpe' : icpe});
+</script>
+{% endmacro %}
+
+{% macro NodePowerGraph(iCPE) %}
+<div class="panel panel-primary">
+	<div class="panel-heading">
+		Power Usage
+	</div>
+	<div class="panel-body" style="padding: 0; height: 250px">
+		<div id="iCPEPowerChart" style="height: 100%"></div>
+	</div>
+</div>
+<script>
+var icpe = "{{iCPE.macaddr}}";
+dataSocket.on('icpePowerGet', function(data) {
+	var powerData = [];
+	power = data.power;
+	for (i = 0; i < power.length; i++) {
+		powerData.push({'date' : power[i].date, 'average' : power[i].total, 'high' : power[i].high, 'low' : power[i].low})
+	}
+	console.log(powerData);
+	new Morris.Line({
+	// ID of the element in which to draw the chart.
+	element: 'iCPEPowerChart',
+	data : powerData,
+	xkey : 'date',
+	ykeys : ['average', 'high', 'low'],
+	labels : ['Average', 'High', 'Low']
+});
+})
+
+dataSocket.emit('icpePowerGet', {'icpe' : icpe});
+</script>
+{% endmacro %}
+
+{% macro iCPEPowerGraph(iCPE) %}
+<div class="panel panel-primary">
+	<div class="panel-heading">
+		Power Usage
+	</div>
+	<div class="panel-body" style="padding: 0; height: 250px">
+		<div id="iCPEPowerChart" style="height: 100%"></div>
+	</div>
+</div>
+<script>
+var icpe = "{{iCPE.macaddr}}";
+dataSocket.on('icpePowerGet', function(data) {
+	var powerData = [];
+	power = data.power;
+	for (i = 0; i < power.length; i++) {
+		powerData.push({'date' : power[i].date, 'average' : power[i].total, 'high' : power[i].high, 'low' : power[i].low})
+	}
+	console.log(powerData);
+	new Morris.Line({
+	// ID of the element in which to draw the chart.
+	element: 'iCPEPowerChart',
+	data : powerData,
+	xkey : 'date',
+	ykeys : ['average', 'high', 'low'],
+	labels : ['Average', 'High', 'Low']
+});
+})
+
+dataSocket.emit('icpePowerGet', {'icpe' : icpe});
+</script>
+{% endmacro %}
+
 {% macro iCPEPowerGraph(iCPE) %}
 <div class="panel panel-primary">
 	<div class="panel-heading">

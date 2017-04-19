@@ -35,8 +35,9 @@ def Get(icpe, sensor, from_date = (datetime.now() - timedelta(days=7)), to_date 
                                                data.total})
     return ret_json
 
-def Put(icpe, sensor, power, date = datetime.now()):
-    date = date.replace(minute=0, second=0, microsecond=0)
+def Put(icpe, sensor, power, date = None):
+    if date is None:
+        date = datetime.now().replace(minute=0, second=0, microsecond=0)
     data = PowerModel.query.join(iCPEModel).join(SensorModel).\
             filter(PowerModel.date == date).\
             filter(iCPEModel.macaddr == icpe).\

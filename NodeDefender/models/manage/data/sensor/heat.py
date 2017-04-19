@@ -35,8 +35,9 @@ def Get(icpe, sensor, from_date = (datetime.now() - timedelta(days=7)), to_date 
                                                data.total})
     return ret_json
 
-def Put(icpe, sensor, heat, date = datetime.now()):
-    date = date.replace(minute=0, second=0, microsecond=0)
+def Put(icpe, sensor, heat, date = None):
+    if date is None:
+        date = datetime.now().replace(minute=0, second=0, microsecond=0)
     data = HeatModel.query.join(iCPEModel).join(SensorModel).\
             filter(HeatModel.date == date).\
             filter(iCPEModel.macaddr == icpe).\
@@ -53,7 +54,6 @@ def Put(icpe, sensor, heat, date = datetime.now()):
             data.low = heat
 
         data.average = (data.average + heat) / 2
-        data.total = data.total + heat
         db.session.add(data)
     else:
         data = HeatModel(heat, date)

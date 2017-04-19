@@ -4,5 +4,7 @@ def Fields():
 def Event(payload):
     payload.name = 'celsius'
     payload.classtype = 'heat'
-    payload.value = int(payload.data32, 0) / 10
+    if payload.unit != '0':
+        return False 
+    payload.value = int(payload.data, 0) / 10
     return payload

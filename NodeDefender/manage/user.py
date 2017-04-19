@@ -18,6 +18,7 @@ def create(email, password):
     try:
         user.Create(email)
         user.Password(email, password)
+        user.Enable(email)
     except ValueError:
         print("User already present")
         return
@@ -37,6 +38,36 @@ def delete(email):
         print("Error: ", e)
 
     print("User {} Successfully Deleted!".format(u.email))
+
+@manager.option('-n', '-e', '--email', dest='email', default=None)
+def enable(email):
+    "Enable User"
+    if email is None:
+        email = prompt('Email')
+
+    try:
+        u = user.Enable(email)
+    except LookupError as e:
+        print("Error: ", e)
+
+    print("User {} Successfully Enabled!".format(u.email))
+
+@manager.option('-n', '-e', '--email', dest='email', default=None)
+def lock(email):
+    "Lock User"
+    if email is None:
+        email = prompt('Email')
+
+    try:
+        u = user.Lock(email)
+    except LookupError as e:
+        print("Error: ", e)
+
+    print("User {} Successfully Locked!".format(u.email))
+
+
+
+
 
 @manager.command
 def list():

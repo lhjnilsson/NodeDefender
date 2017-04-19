@@ -32,14 +32,14 @@ def Enable(user):
     user.active = True
     db.session.add(user)
     db.session.commit()
-    return True
+    return user
 
 def Lock(user):
     user = Get(user)
     user.active = False
     db.session.add(user)
     db.session.commit()
-    return True
+    return user
 
 def Get(email):
     return UserModel.query.filter_by(email = email).first()
