@@ -31,22 +31,23 @@ def Get(node, from_date = (datetime.now() - timedelta(days=7)), to_date =
     if not node:
         return False
     
-    power_data = db.session.query(PowerModel, \
-                                  label('low', func.min(PowerModel.low)),
-                                  label('high', func.max(PowerModel.high)),
-                                  label('total', func.sum(PowerModel.average)),
-                                  label('date', PowerModel.date)).\
+    power_data = db.session.query(PowerModel).\
             join(iCPEModel).\
-            filter(iCPEModel.macaddr == node.icpe.macaddr).\
+            filter(iCPEModel == node.icpe).\
             filter(PowerModel.date > from_date).\
-            filter(PowerModel.date < to_date).\
-            group_by(PowerModel.date).all()
+            filter(PowerModel.date < to_date).all()
 
     if not power_data:
         return False
-    ret_json = {'node' : node.name}
+
+    grouped_data = [list(v) for k, v in groupby(power_data, lambda p: p.date)]
+    
+    ret_json = {'group' : group.name}
     ret_json['power'] = []
-    for data in power_data:
-        ret_json['power'].append({'date' : str(data.date), 'low' : data.low, 'high' : data.high,
-                                    'total' : data.total})
+    for group in grouped_data:
+        data = {'date' : str(group[0].date)}
+        for entry in group:
+            data[entry.sensor.sensorid] = entry.average
+        ret_json['power'].append(data)
+    
     return ret_json

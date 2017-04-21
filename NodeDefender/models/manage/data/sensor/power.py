@@ -38,13 +38,18 @@ def Get(icpe, sensor, from_date = (datetime.now() - timedelta(days=7)), to_date 
 def Put(icpe, sensor, power, date = None):
     if date is None:
         date = datetime.now().replace(minute=0, second=0, microsecond=0)
-    data = PowerModel.query.join(iCPEModel).join(SensorModel).\
-            filter(PowerModel.date == date).\
+    
+    icpe, sensor = db.session.query(iCPEModel, SensorModel).\
             filter(iCPEModel.macaddr == icpe).\
             filter(SensorModel.sensorid == sensor).first()
-    sensor = SensorModel.query.join(iCPEModel).\
-            filter(SensorModel.sensorid == sensor).\
-            filter(iCPEModel.macaddr == icpe).first()
+    
+    if not icpe or not sensor:
+        return False
+
+    data = db.session.query(PowerModel).\
+            filter(PowerModel.icpe == icpe,\
+                   PowerModel.sensor == sensor,\
+                   PowerModel.date == date).first()
 
     if data:
         if power > data.high:

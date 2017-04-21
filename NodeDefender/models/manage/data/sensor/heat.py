@@ -38,13 +38,19 @@ def Get(icpe, sensor, from_date = (datetime.now() - timedelta(days=7)), to_date 
 def Put(icpe, sensor, heat, date = None):
     if date is None:
         date = datetime.now().replace(minute=0, second=0, microsecond=0)
-    data = HeatModel.query.join(iCPEModel).join(SensorModel).\
-            filter(HeatModel.date == date).\
+    
+    icpe, sensor = db.session.query(iCPEModel, SensorModel).\
             filter(iCPEModel.macaddr == icpe).\
             filter(SensorModel.sensorid == sensor).first()
-    sensor = SensorModel.query.join(iCPEModel).\
-            filter(SensorModel.sensorid == sensor).\
-            filter(iCPEModel.macaddr == icpe).first()
+    
+    if not icpe or not sensor:
+        return False
+
+    data = db.session.query(HeatModel).\
+            filter(HeatModel.icpe == icpe,\
+                   HeatModel.sensor == sensor,\
+                   HeatModel.date == date).first()
+
 
     if data:
         if heat > data.high:
