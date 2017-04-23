@@ -42,7 +42,7 @@ def Get(node, from_date = (datetime.now() - timedelta(days=7)), to_date =
 
     grouped_data = [list(v) for k, v in groupby(power_data, lambda p: p.date)]
     
-    ret_json = {'group' : group.name}
+    ret_json = {'node' : node.name}
     ret_json['power'] = []
     for group in grouped_data:
         data = {'date' : str(group[0].date)}

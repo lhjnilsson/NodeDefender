@@ -26,11 +26,12 @@ def sensor_events(msg):
     return True
 
 # Power
-@socketio.on('groupPowerLatest', namespace='/data')
-def group_power_latest(msg):
-    power = DataSQL.group.power.Latest(msg['group'])
-    if power:
-        emit('groupPowerLatest', (power))
+@socketio.on('groupPowerNodes', namespace='/data')
+def group_power_latest():
+    data = {'x' :[1,2,3,4], 'y' :[10,20,30,40],'mode':'scatter', 'name'
+            :'henrik'}
+    layout = {'title' :'hello world'}
+    emit('groupPowerNodes', {'data': data, 'layout' : layout})
     return True
 
 @socketio.on('icpePowerLatest', namespace='/data')

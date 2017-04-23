@@ -1,0 +1,21 @@
+{% macro Chart(group) %}
+<div class="panel panel-primary">
+	<div class="panel-heading">
+		Power Usage {{ group.name }}
+	</div>
+	<div class="panel-body" style="padding: 0; height: 400px">
+		<div id="{{group.name}}PowerChart" style="height: 100%; width: 100%">
+		</div>
+	</div>
+</div>
+<script>
+chartElement = document.getElementById("{{group.name}}PowerChart");
+
+plotlySocket.on('groupPowerNodes', function(data) {
+	Plotly.newPlot(chartElement, data.data, data.layout)
+});
+	
+plotlySocket.emit('groupPowerNodes', {'group' : "{{group.name}}"});
+</script>
+{% endmacro %}
+

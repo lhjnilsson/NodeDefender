@@ -29,7 +29,7 @@ def Latest(group):
     return {'group' : group.name, 'date' : str(power_data.date), 'low' : power_data.low,\
             'high' : power_data.high, 'total' : power_data.total}
 
-def Get(group, from_date = None, to_date = None):
+def Nodes(group, from_date = None, to_date = None):
     if from_date is None:
         from_date = (datetime.now() - timedelta(days=7))
     if to_date is None:
@@ -51,14 +51,31 @@ def Get(group, from_date = None, to_date = None):
     if not power_data:
         return False
 
-    grouped_data = [list(v) for k, v in groupby(power_data, lambda p: p.date)]
-    
-    ret_json = {'group' : group.name}
-    ret_json['power'] = []
+    grouped_data = [list(v) for k, v in groupby(power_data, lambda p: p.icpe)]
+
+    ret_list = []
+    for data in grouped_data:
+        entry = {'node' : data[0].icpe.node.name}
+        entry['data'] = []
+        for power in data:
+            entry['data'].append({'date' : str(power.date), 'power' :
+                                 power.average})
+        ret_list.append(entry)
+
+    return ret_list
+
+
     for group in grouped_data:
         data = {'date' : str(group[0].date)}
         for entry in group:
-            data[entry.sensor.sensorid] = entry.average
+            name = entry.icpe.node.name
+            try:
+                data[name] = (data[name] + entry.average) / 2
+            except KeyError:
+                data[name] = entry.average
+
+            ret_json['nodes'].add(name)
         ret_json['power'].append(data)
-    
+    ret_json['nodes'] = list(ret_json['nodes'])
     return ret_json
+

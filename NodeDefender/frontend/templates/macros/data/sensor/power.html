@@ -1,0 +1,14 @@
+{% macro Chart(sensor) %}
+<div class="panel panel-primary">
+	<div class="panel-heading">
+		Power Usage {{ sensor.name }}
+	</div>
+	<div class="panel-body" style="padding: 0; height: 250px">
+		<div id="SensorPowerChart" style="height: 100%">
+		</div>
+	</div>
+</div>
+	<script>
+dataSocket.on('sensorPowerList', function(data) {
+	
+};

@@ -5,6 +5,8 @@ var iCPESocket = io.connect('http://' + document.domain + ':' + location.port + 
 var generalSocket = io.connect('http://' + document.domain + ':' + location.port + '/general');
 var adminSocket = io.connect('http://' + document.domain + ':' + location.port + '/admin');
 var dataSocket = io.connect('http://' + document.domain + ':' + location.port + '/data');
+var plotlySocket = io.connect('http://' + document.domain + ':' + location.port + '/plotly');
+
 
 generalSocket.on('reload', function() {
 	location.reload();
