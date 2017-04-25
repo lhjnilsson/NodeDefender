@@ -1,40 +1,42 @@
 from .. import DataView
 from .models import *
 from flask import request, render_template
+from ... import serializer
+from flask_login import login_required, current_user
+from ...models.manage import group as GroupSQL
 
-icpes = []
-stats = []
-
+#Power
 @DataView.route('/data/power')
+@login_required
 def DataPower():
     if request.method == 'GET':
-        return render_template('data/power.html', icpes = icpes)
+        if current_user.superuser:
+            groups = GroupSQL.List()
+        else:
+            groups = [group for group in current_user.groups]
+        return render_template('data/power.html', groups = groups)
 
-@DataView.route('/data/power/<mac>')
-def DataPoweriCPE(mac):
+@DataView.route('/data/power/group/<name>')
+def PowerGroup(name):
+    name = serializer.loads(name)
     if request.method == 'GET':
-        return render_template('data/powericpe.html', icpe = icpe)
+        group = GroupSQL.Get(name)
+        if group is None:
+            pass # Fix later..
+        return render_template('data/group/power.html', group = group)
 
-
-@DataView.route('/data/power/<mac>/<nodeid>')
-def DataPoweriCPENode(mac, nodeid):
+@DataView.route('/data/power/node/<name>')
+def PowerNode(mac, nodeid):
+    name = serializer.loads(name)
     if request.method == 'GET':
-        return render_template('data/powericpenode.html', icpe = icpe)
+        node = NodeSQL.Get(name)
+        return render_template('data/node/power.html', node = node)
 
-
-@DataView.route('/data/heat')
-def DataHeat():
+@DataView.route('/data/power/sensor/<icpe>/<sensorid>')
+def PowerSensor(mac, nodeid):
+    icpe = serializer.loads(icpe)
+    sensorid = serialize.loads(icpe)
     if request.method == 'GET':
-        return render_template('data/heat.html', stats = stats)
-
-@DataView.route('/data/heat/<mac>')
-def DataHeatiCPE(mac):
-    if request.method == 'GET':
-        return render_template('data/heaticpe.html', icpe = icpe)
-
-@DataView.route('/data/heat/<mac>/<nodeid>')
-def DataHeatiCPENode(mac, nodeid):
-    if request.method == 'GET':
-        return render_template('data/heaticpenode.html', icpe = icpe)
-
+        sensor = SensorSQL.Get(icpe, sensorid)
+        return render_template('data/sensor/power.html', sensor = sensor)
 
