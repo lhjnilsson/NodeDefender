@@ -8,21 +8,20 @@ power_layout = {'title' : '',
                'yaxis' : {'title' : 'Power'}
               }
 
-
-
-@socketio.on('groupPowerNodes', namespace='/plotly')
+@socketio.on('groupPowerChart', namespace='/plotly')
 def group_power_latest(msg):
+    groups = UserSQL.Groups(msg['user'])
+    chart_data = DataSQL.group.power.Chart([group.name for group in groups])
     data = []
-    power = DataSQL.group.power.Nodes(msg['group'])
-    for entry in power:
+    for chart in chart_data:
         d = {'name': entry['node']}
         d['x'] = []
         d['y'] = []
-        for x in entry['data']:
+        for x in chart['power']:
             d['x'].append(x['date'])
-            d['y'].append(x['power'])
+            d['y'].append(x['value'])
         data.append(d)
     layout = power_layout
-    layout['title'] = 'Node Power'
-    emit('groupPowerNodes', {'data': data, 'layout' : layout})
+    layout['title'] = 'Group Power'
+    emit('groupPowerChart', {'data': data, 'layout' : layout})
     return True
