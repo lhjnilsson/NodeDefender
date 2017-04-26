@@ -7,7 +7,7 @@ from itertools import groupby
 
 def Current(*groups):
     groups = GroupModel.query.filter(GroupModel.name.in_(*[groups])).all()
-    if groups is None:
+    if not len(groups):
         return False
     
     ret_data = []
@@ -33,8 +33,9 @@ def Current(*groups):
 
 def Average(*groups):
     groups = GroupModel.query.filter(GroupModel.name.in_(*[groups])).all()
-    if groups is None:
+    if not len(groups):
         return False
+
     min_ago = (datetime.now() - timedelta(hours=0.5))
     day_ago = (datetime.now() - timedelta(days=1))
     week_ago = (datetime.now() - timedelta(days=7))
@@ -105,8 +106,9 @@ def Chart(*groups):
     to_date = datetime.now()
     
     groups = GroupModel.query.filter(GroupModel.name.in_(*[groups])).all()
-    if groups is None:
+    if not len(groups):
         return False
+
     ret_data = []
     
     for group in groups:

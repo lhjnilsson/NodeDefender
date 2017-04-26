@@ -4,6 +4,7 @@ from flask import request, render_template
 from ... import serializer
 from flask_login import login_required, current_user
 from ...models.manage import group as GroupSQL
+from ...models.manage import node as NodeSQL
 
 #Power
 @DataView.route('/data/power')
@@ -26,7 +27,7 @@ def PowerGroup(name):
         return render_template('data/group/power.html', group = group)
 
 @DataView.route('/data/power/node/<name>')
-def PowerNode(mac, nodeid):
+def PowerNode(name):
     name = serializer.loads(name)
     if request.method == 'GET':
         node = NodeSQL.Get(name)

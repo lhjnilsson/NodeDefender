@@ -2,6 +2,7 @@ from flask_socketio import emit, send, disconnect, join_room, leave_room, \
         close_room, rooms
 from ... import socketio
 from ...models.manage import data as DataSQL
+from ...models.manage import user as UserSQL
 
 # Events
 @socketio.on('groupEventGet', namespace='/data')
@@ -26,9 +27,24 @@ def sensor_events(msg):
     return True
 
 # Power
-@socketion.on('powerAverage', namespace='/data')
-def power_average(msg):
-    pass
+@socketio.on('groupPowerAverage', namespace='/data')
+def group_power_average(msg):
+    data = DataSQL.group.power.Average(msg['name'])
+    emit('groupPowerAverage', (data))
+    return True
+
+@socketio.on('nodePowerAverage', namespace='/data')
+def node_power_average(msg):
+    data = DataSQL.node.power.Average(msg['name'])
+    emit('nodePowerAverage', (data))
+    return True
+
+@socketio.on('sensorPowerAverage', namespace='/data')
+def sensor_power_average(msg):
+    data = DataSQL.sensor.power.Average(msg['icpe'], msg['sensor'])
+    emit('sensorPowerAverage', (data))
+    return True
+
 
 # Heat
 @socketio.on('groupHeatLatest', namespace='/data')

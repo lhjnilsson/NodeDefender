@@ -15,7 +15,7 @@ plotlySocket.on('powerChart', function(data) {
 	Plotly.newPlot(chartElement, data.data, data.layout)
 });
 
-plotlySocket.emit('powerChart', {'user' : "{{user.email}}"});
+plotlySocket.emit('powerChart', {'user' : "{{current_user.email}}"});
 </script>
 {% endmacro %}
 
@@ -63,14 +63,16 @@ plotlySocket.emit('powerChart', {'user' : "{{user.email}}"});
 </div>
 	<script>
 $(document).ready(function() {
-	dataSocket.on('powerAverage', function(data) {
-		document.getElementById(data.name+"CurrentPower").text(data.current);
-		document.getElementById(data.name+"DailyPower").text(data.daily);
-		document.getElementById(data.name+"WeeklyPower").text(data.weekly);
-		document.getElementById(data.name+"MonthlyPower").text(data.monthly);
+	dataSocket.on('groupPowerAverage', function(data) {
+		if (data) {
+			document.getElementById(data.name+"CurrentPower").innerHTML = data.current;
+			document.getElementById(data.name+"DailyPower").innerHTML = data.daily;
+			document.getElementById(data.name+"WeeklyPower").innerHTML = data.weekly;
+			document.getElementById(data.name+"MonthlyPower").innerHTML = data.monthly;
+		}
 	});
 	{% for group in groups %}
-		dataSocket.emit('powerAverage', {'name': "{{group.name}}"});
+	dataSocket.emit('groupPowerAverage', {'name': "{{group.name}}"});
 	{% endfor %}
 });
 	</script>
