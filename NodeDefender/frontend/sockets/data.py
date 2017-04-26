@@ -26,48 +26,9 @@ def sensor_events(msg):
     return True
 
 # Power
-@socketio.on('groupPowerNodes', namespace='/data')
-def group_power_latest():
-    data = {'x' :[1,2,3,4], 'y' :[10,20,30,40],'mode':'scatter', 'name'
-            :'henrik'}
-    layout = {'title' :'hello world'}
-    emit('groupPowerNodes', {'data': data, 'layout' : layout})
-    return True
-
-@socketio.on('icpePowerLatest', namespace='/data')
-def icpe_power_latest(msg):
-    power = DataSQL.icpe.power.Latest(msg['icpe'])
-    if power:
-        emit('icpePowerLatest', (power))
-    return True
-
-@socketio.on('sensorPowerLatest', namespace='/data')
-def sensor_power_latest(msg):
-    power = DataSQL.sensor.power.Latest(msg['icpe'], msg['sensor'])
-    if power:
-        emit('sensorPowerLatest', (power))
-    return True
-
-@socketio.on('groupPowerGet', namespace='/data')
-def group_power_get(msg):
-    power = DataSQL.group.power.Get(msg['group'])
-    if power:
-        emit('groupPowerGet', (power))
-    return True
-
-@socketio.on('icpePowerGet', namespace='/data')
-def icpe_power_get(msg):
-    power = DataSQL.icpe.power.Get(msg['icpe'])
-    if power:
-        emit('icpePowerGet', (power))
-    return True
-
-@socketio.on('sensorPowerGet', namespace='/data')
-def sensor_power_get(msg):
-    power = DataSQL.icpe.power.Get(msg['icpe'], msg['sensor'])
-    if power:
-        emit('sensorPowerGet', (power))
-    return True
+@socketion.on('powerAverage', namespace='/data')
+def power_average(msg):
+    pass
 
 # Heat
 @socketio.on('groupHeatLatest', namespace='/data')

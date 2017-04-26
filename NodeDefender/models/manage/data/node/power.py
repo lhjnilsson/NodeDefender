@@ -1,53 +1,165 @@
 from datetime import datetime, timedelta
-from ....SQL import PowerModel, NodeModel, iCPEModel
+from ....SQL import PowerModel, NodeModel, iCPEModel, GroupModel, SensorModel
 from ..... import db
 from sqlalchemy import func
 from sqlalchemy.sql import label
+from itertools import groupby
 
-def Latest(node):
-    node = NodeModel.query.filter(NodeModel.name == node).first()
-    if not node:
-        return False
-
-    power_data = db.session.query(PowerModel, \
-                                  label('low', func.min(PowerModel.low)),
-                                  label('high', func.max(PowerModel.high)),
-                                  label('total', func.sum(PowerModel.average)),
-                                  label('date', PowerModel.date)).\
-            join(iCPEModel).\
-            filter(iCPEModel.macaddr == node.icpe.macaddr).\
-            order_by(PowerModel.date.desc()).\
-            group_by(PowerModel.date).first()
-
-    if not power_data:
+def Current(node):
+    node = db.session.query(NodeModel).filter(NodeModel.name ==
+                                                node).first()
+    if node is None:
         return False
     
-    return {'node' : node.name, 'date' : str(power_data.date), 'low' : power_data.low,\
-            'high' : power_data.high, 'total' : power_data.total}
+    ret_data = []
+    for sensor in node.icpe.sensors:
+        if not sensor.power:
+            continue
 
-def Get(node, from_date = (datetime.now() - timedelta(days=7)), to_date =
-        datetime.now()):
-    node = NodeModel.query.filter(NodeModel.name == node).first()
-    if not node:
+        sensor_data = {}
+        sensor_data['name'] = sensor.name
+        sensor_data['sensorid'] = sensor.sensorid
+        sensor_data['icpe'] = sensor.icpe.macaddr
+        
+        min_ago = (datetime.now() - timedelta(hours=0.5))
+        latest_power =  db.session.query(PowerModel,\
+                    label('sum', func.sum(PowerModel.average)),
+                    label('count', func.count(PowerModel.average))).\
+                    join(iCPEModel).\
+                    filter(iCPEModel.macaddr == node.icpe.macaddr).\
+                    filter(SensorModel.sensorid == sensor.sensorid).\
+                    filter(PowerModel.date > min_ago).first()
+        
+        if latest_power.count:
+            sensor_data['power'] = latest_power.sum / latest_power.count
+        else:
+            sensor_data['power'] = 0.0
+
+        ret_data.append(sensor_data)
+
+    return ret_data
+
+def Average(node):
+    node = db.session.query(NodeModel).filter(NodeModel.name ==
+                                               node).first()
+    if node is None:
         return False
-    
-    power_data = db.session.query(PowerModel).\
-            join(iCPEModel).\
-            filter(iCPEModel == node.icpe).\
-            filter(PowerModel.date > from_date).\
-            filter(PowerModel.date < to_date).all()
 
-    if not power_data:
+    min_ago = (datetime.now() - timedelta(hours=0.5))
+    day_ago = (datetime.now() - timedelta(days=1))
+    week_ago = (datetime.now() - timedelta(days=7))
+    month_ago = (datetime.now() - timedelta(days=30))
+    ret_data = []
+    for sensor in node.icpe.sensors:
+        if not sensor.power:
+            continue
+        
+        sensor_data = {}
+        sensor_data['name'] = sensor.name
+        sensor_data['sensorid'] = sensor.sensorid
+        sensor_data['icpe'] = sensor.icpe.macaddr
+        
+
+        current_power = db.session.query(PowerModel,\
+                    label('sum', func.sum(PowerModel.average)),
+                    label('count', func.count(PowerModel.average))).\
+                    join(iCPEModel).\
+                    filter(iCPEModel.macaddr == node.icpe.macaddr).\
+                    filter(SensorModel.sensorid == sensor.sensorid).\
+                    filter(PowerModel.date > min_ago).first()
+        
+        daily_power = db.session.query(PowerModel,\
+                    label('sum', func.sum(PowerModel.average)),
+                    label('count', func.count(PowerModel.average))).\
+                    join(iCPEModel).\
+                    filter(iCPEModel.macaddr == node.icpe.macaddr).\
+                    filter(SensorModel.sensorid == sensor.sensorid).\
+                    filter(PowerModel.date > day_ago).first()
+        
+        weekly_power = db.session.query(PowerModel,\
+                    label('sum', func.sum(PowerModel.average)),
+                    label('count', func.count(PowerModel.average))).\
+                    join(iCPEModel).\
+                    filter(iCPEModel.macaddr == node.icpe.macaddr).\
+                    filter(SensorModel.sensorid == sensor.sensorid).\
+                    filter(PowerModel.date > week_ago).first()
+
+        monthly_power = db.session.query(PowerModel,\
+                    label('sum', func.sum(PowerModel.average)),
+                    label('count', func.count(PowerModel.average))).\
+                    join(iCPEModel).\
+                    filter(iCPEModel.macaddr == node.icpe.macaddr).\
+                    filter(SensorModel.sensorid == sensor.sensorid).\
+                    filter(PowerModel.date > month_ago).first()
+        
+        if current_power.count:
+            current_power = (current_power.sum / current_power.count)
+        else:
+            current_power = 0.0
+
+        if daily_power.count:
+            daily_power = (daily_power.sum / daily_power.count)
+        else:
+            daily_power = 0.0
+
+        if weekly_power.count:
+            weekly_power = (weekly_power.sum / weekly_power.count)
+        else:
+            weekly_power = 0.0
+
+        if monthly_power.count:
+            monthly_power = (monthly_power.sum / monthly_power.count)
+        else:
+            monthly_power = 0.0
+
+        sensor_data['current'] = current_power
+        sensor_data['daily'] = daily_power
+        sensor_data['weekly'] = weekly_power
+        sensor_data['monthly'] = monthly_power
+        ret_data.append(sensor_data)
+
+    return ret_data
+
+def Chart(node):    
+    from_date = (datetime.now() - timedelta(days=7))
+    to_date = datetime.now()
+    
+    node = db.session.query(NodeModel).filter(NodeModel.name ==
+                                                node).first()
+    if node is None:
         return False
 
-    grouped_data = [list(v) for k, v in groupby(power_data, lambda p: p.date)]
+    ret_data = []
     
-    ret_json = {'node' : node.name}
-    ret_json['power'] = []
-    for group in grouped_data:
-        data = {'date' : str(group[0].date)}
-        for entry in group:
-            data[entry.sensor.sensorid] = entry.average
-        ret_json['power'].append(data)
+    for sensor in node.icpe.sensors:
+        power_data = db.session.query(PowerModel).\
+                join(iCPEModel).\
+                filter(iCPEModel.macaddr == node.icpe.macaddr).\
+                filter(SensorModel.sensorid == sensor.sensorid).\
+                filter(PowerModel.date > from_date).\
+                filter(PowerModel.date < to_date).all()
+
+        if not power_data:
+            continue
+        
+        sensor_data = {}
+        sensor_data['name'] = sensor.name
+        sensor_data['sensorid'] = sensor.sensorid
+        sensor_data['icpe'] = sensor.icpe.macaddr
+
+        sensor_data['power'] = []
+        grouped_data = [list(v) for k, v in groupby(power_data, lambda p:
+                                                    p.date)]
+
+        for data in grouped_data:
+            entry = {'date' : str(data[0].date)}
+            for power in data:
+                try:
+                    entry['value'] = (power.average + entry['power']) / 2
+                except KeyError:
+                    entry['value'] = power.average
+            sensor_data['power'].append(entry)
+
+        ret_data.append(sensor_data)
     
-    return ret_json
+    return ret_data

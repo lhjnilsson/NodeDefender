@@ -1,7 +1,7 @@
-{% macro Chart(user) %}
+{% macro Chart(group) %}
 <div class="panel panel-primary">
 	<div class="panel-heading">
-		Power Chart
+		{{group.name}} Power Chart
 	</div>
 	<div class="panel-body" style="padding: 0; height: 400px">
 		<div id="GroupsPowerChart" style="height: 100%; width: 100%">
@@ -15,11 +15,11 @@ plotlySocket.on('groupPowerChart', function(data) {
 	Plotly.newPlot(chartElement, data.data, data.layout)
 });
 
-plotlySocket.emit('groupPowerChart', {'user' : "{{user.email}}"});
+plotlySocket.emit('groupPowerChart', {'user' : "{{group.name}}"});
 </script>
 {% endmacro %}
 
-{% macro List(groups) %}
+{% macro List(nodes) %}
 <div class="panel panel-default">
 	<div class="panel-heading">
 		Group List
@@ -36,24 +36,24 @@ plotlySocket.emit('groupPowerChart', {'user' : "{{user.email}}"});
 				</tr>
 			</thead>
 			<tbody>
-				{% for group in groups %}
+				{% for node in nodes %}
 				<tr>
 					<td>
-						<a href="{{ url_for('DataView.PowerGroup', name = serialize(group.name)) }}">
+						<a href="{{ url_for('DataView.PowerNode', name = serialize(node.name)) }}">
 							{{group.name}}	
 						</a>
 					</td>
 					<td>
-						<p id="{{group.name}}CurrentPower">0.0</p>	
+						<p id="{{node.name}}CurrentPower">0.0</p>	
 					</td>
 					<td>
-						<p id="{{group.name}}DailyPower">0.0</p>	
+						<p id="{{node.name}}DailyPower">0.0</p>	
 					</td>
 					<td>
-						<p id="{{group.name}}WeeklyPower">0.0</p>	
+						<p id="{{node.name}}WeeklyPower">0.0</p>	
 					</td>
 					<td>
-						<p id="{{group.name}}MonthlyPower">0.0</p>
+						<p id="{{node.name}}MonthlyPower">0.0</p>
 					</td>
 				</a>
 			{% endfor %}
@@ -70,7 +70,7 @@ $(document).ready(function() {
 		document.getElementById(data.name+"MonthlyPower").text(data.monthly);
 	});
 	{% for group in groups %}
-		dataSocket.emit('groupPowerAverage', {'name': "{{group.name}}"});
+		dataSocket.emit('nodePowerAverage', {'name': "{{node.name}}"});
 	{% endfor %}
 });
 	</script>

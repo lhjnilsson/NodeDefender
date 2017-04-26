@@ -1,79 +1,76 @@
 from datetime import datetime, timedelta
-from ....SQL import PowerModel, NodeModel, iCPEModel, GroupModel
-from ..... import db
+from ...SQL import PowerModel, GroupModel, iCPEModel
+from .... import db
 from sqlalchemy import func
 from sqlalchemy.sql import label
 from itertools import groupby
 
-def Current(group):
-    group = db.session.query(GroupModel).filter(GroupModel.name ==
-                                                group).first()
-    if group is None:
+def Current(*groups):
+    groups = GroupModel.query.filter(GroupModel.name.in_(*[groups])).all()
+    if groups is None:
         return False
     
     ret_data = []
-    for node in group.nodes:
-        node_data = {}
-        node_data['name'] = node.name
-        
+    for group in groups:
+        group_data = {}
+        group_data['name'] = group.name
+        icpes = [node.icpe.macaddr for node in group.nodes]
         min_ago = (datetime.now() - timedelta(hours=0.5))
         latest_power =  db.session.query(PowerModel,\
                     label('sum', func.sum(PowerModel.average)),
                     label('count', func.count(PowerModel.average))).\
                     join(iCPEModel).\
-                    filter(iCPEModel.macaddr == node.icpe.macaddr).\
+                    filter(iCPEModel.macaddr.in_(*[icpes])).\
                     filter(PowerModel.date > min_ago).first()
-        
         if latest_power.count:
-            node_data['power'] = latest_power.sum / latest_power.count
+            group_data['power'] = latest_power.sum / latest_power.count
         else:
-            node_data['power'] = 0.0
+            group_data['power'] = 0.0
 
-        ret_data.append(node_data)
+        ret_data.append(group_data)
 
     return ret_data
 
-def Average(group):
-    group = db.session.query(GroupModel).filter(GroupModel.name ==
-                                               group).first()
-    if group is None:
+def Average(*groups):
+    groups = GroupModel.query.filter(GroupModel.name.in_(*[groups])).all()
+    if groups is None:
         return False
-
     min_ago = (datetime.now() - timedelta(hours=0.5))
     day_ago = (datetime.now() - timedelta(days=1))
     week_ago = (datetime.now() - timedelta(days=7))
     month_ago = (datetime.now() - timedelta(days=30))
     ret_data = []
-    for node in group.nodes:
-        node_data = {}
-        node_data['name'] = node.name
+    for group in groups:
+        group_data = {}
+        group_data['name'] = group.name
+        icpes = [node.icpe.macaddr for node in group.nodes]
         
         current_power = db.session.query(PowerModel,\
                     label('sum', func.sum(PowerModel.average)),
                     label('count', func.count(PowerModel.average))).\
                     join(iCPEModel).\
-                    filter(iCPEModel.macaddr == node.icpe.macaddr).\
+                    filter(iCPEModel.macaddr.in_(*[icpes])).\
                     filter(PowerModel.date > min_ago).first()
         
         daily_power = db.session.query(PowerModel,\
                     label('sum', func.sum(PowerModel.average)),
                     label('count', func.count(PowerModel.average))).\
                     join(iCPEModel).\
-                    filter(iCPEModel.macaddr == node.icpe.macaddr).\
+                    filter(iCPEModel.macaddr.in_(*[icpes])).\
                     filter(PowerModel.date > day_ago).first()
         
         weekly_power = db.session.query(PowerModel,\
                     label('sum', func.sum(PowerModel.average)),
                     label('count', func.count(PowerModel.average))).\
                     join(iCPEModel).\
-                    filter(iCPEModel.macaddr == node.icpe.macaddr).\
+                    filter(iCPEModel.macaddr.in_(*[icpes])).\
                     filter(PowerModel.date > week_ago).first()
 
         monthly_power = db.session.query(PowerModel,\
                     label('sum', func.sum(PowerModel.average)),
                     label('count', func.count(PowerModel.average))).\
                     join(iCPEModel).\
-                    filter(iCPEModel.macaddr == node.icpe.macaddr).\
+                    filter(iCPEModel.macaddr.in_(*[icpes])).\
                     filter(PowerModel.date > month_ago).first()
         
         if current_power.count:
@@ -96,38 +93,37 @@ def Average(group):
         else:
             monthly_power = 0.0
 
-        node_data['current'] = current_power
-        node_data['daily'] = daily_power
-        node_data['weekly'] = weekly_power
-        node_data['monthly'] = monthly_power
-        ret_data.append(node_data)
+        group_data['daily'] = daily_power
+        group_data['weekly'] = weekly_power
+        group_data['monthly'] = monthly_power
+        ret_data.append(group_data)
 
     return ret_data
 
-def Chart(group):    
+def Chart(*groups):    
     from_date = (datetime.now() - timedelta(days=7))
     to_date = datetime.now()
     
-    group = db.session.query(GroupModel).filter(GroupModel.name ==
-                                                group).first()
-    if group is None:
+    groups = GroupModel.query.filter(GroupModel.name.in_(*[groups])).all()
+    if groups is None:
         return False
-
     ret_data = []
     
-    for node in group.nodes:
+    for group in groups:
+        icpes = [node.icpe.macaddr for node in group.nodes]
+        
         power_data = db.session.query(PowerModel).\
                 join(iCPEModel).\
-                filter(iCPEModel.macaddr == node.icpe.macaddr).\
+                filter(iCPEModel.macaddr.in_(*[icpes])).\
                 filter(PowerModel.date > from_date).\
                 filter(PowerModel.date < to_date).all()
 
         if not power_data:
             return False
         
-        node_data = {}
-        node_data['name'] = node.name
-        node_data['power'] = []
+        group_data = {}
+        group_data['name'] = group.name
+        group_data['power'] = []
         grouped_data = [list(v) for k, v in groupby(power_data, lambda p:
                                                     p.date)]
 
@@ -138,8 +134,8 @@ def Chart(group):
                     entry['value'] = (power.average + entry['power']) / 2
                 except KeyError:
                     entry['value'] = power.average
-            node_data['power'].append(entry)
+            group_data['power'].append(entry)
 
-        ret_data.append(node_data)
+        ret_data.append(group_data)
     
     return ret_data
