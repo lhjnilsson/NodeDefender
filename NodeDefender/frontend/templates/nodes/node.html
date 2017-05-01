@@ -86,13 +86,13 @@ var socket = io.connect('http://' + document.domain + ':' + location.port + name
 	{% endif %}
 </div>
 {% from "macros/statistics.html" import PowerGraph, HeatGraph, EventList with context %}
-{% from "macros/data/event.html" import iCPEEventList %}
-{% from "macros/data/power.html" import iCPEPowerGraph %}
+{% from "macros/data/node/power.html" import Chart %}
+{% from "macros/data/node/event.html" import EventList %}
 <div class="row">
 	<div class="col-lg-12">
     {% if iCPE.power %}
     <div class="col-lg-4">
-			{{ iCPEPowerGraph(iCPE) }}
+			{{ Chart(Node) }}
 		</div>
     {% endif %}
     {% if iCPE.heatstat %}
@@ -102,7 +102,7 @@ var socket = io.connect('http://' + document.domain + ':' + location.port + name
     {% endif %}
 		{% if iCPE.events %}
 		<div class="col-lg-4">
-			{{ iCPEEventList(iCPE) }}			
+			{{ EventList(Node) }}			
 		</div>
 		{% endif %}
 	</div>
@@ -121,6 +121,12 @@ $('#location').prepend('<a style="color: #FFFFFF; margin: 0 5px;" href="#" data-
 
 });
 function sensorModal(iCPE, sensor) {
+	sensorSocket.emit('info', {'icpe' : iCPE, 'sensor' : sensor});
+	dataSocket.emit('sensorEvents', {'icpe' : iCPE, 'sensor' : sensor});
+	
+	while (sensorEventTable.rows.length > 0)
+		sensorEventTable.deleteRow(0);
+	
 	$('#SensorModal').modal('show');
 }
 </script>

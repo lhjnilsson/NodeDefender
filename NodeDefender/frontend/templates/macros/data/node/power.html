@@ -40,7 +40,7 @@ plotlySocket.emit('nodePowerChart', {'name' : "{{node.name}}"});
 				{% if sensor.power %}
 				<tr>
 					<td>
-						<a href="{{ url_for('DataView.PowerSensor', icpe = serialize(node.icpe.macaddr), sensorid = sensor.sensorid) }}">
+						<a href="{{ url_for('DataView.PowerSensor', icpe = serialize(node.icpe.macaddr), sensor = sensor.sensorid) }}">
 							{{sensor.name}}
 						</a>
 					</td>

@@ -29,6 +29,7 @@ def Current(node):
                     label('sum', func.sum(PowerModel.average)),
                     label('count', func.count(PowerModel.average))).\
                     join(iCPEModel).\
+                    join(SensorModel).\
                     filter(iCPEModel.macaddr == node.icpe.macaddr).\
                     filter(SensorModel.sensorid == sensor.sensorid).\
                     filter(PowerModel.date > min_ago).first()
@@ -137,6 +138,7 @@ def Chart(node):
         
         power_data = db.session.query(PowerModel).\
                 join(iCPEModel).\
+                join(SensorModel).\
                 filter(iCPEModel.macaddr == node.icpe.macaddr).\
                 filter(SensorModel.sensorid == sensor.sensorid).\
                 filter(PowerModel.date > from_date).\

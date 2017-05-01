@@ -33,7 +33,8 @@ from geopy.geocoders import Nominatim
 
 @socketio.on('nodes', namespace='/node')
 def icpeevent(msg):
-    return emit('nodes', [node.to_json() for node in NodeSQL.List(msg)])
+    emit('nodes', ([node.to_json() for node in NodeSQL.List(msg)]))
+    return True
 
 @socketio.on('location', namespace='/node')
 def Location(msg):

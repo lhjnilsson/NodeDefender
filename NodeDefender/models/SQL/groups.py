@@ -47,6 +47,10 @@ class GroupModel(db.Model):
         self.email = email
         self.description = str(description)
         self.created_on = datetime.now()
+    
+    def to_json(self):
+        return {'name' : self.name, 'email' : self.email, 'created' :
+                str(self.created_on), 'description' : self.description}
 
 class GroupMessageModel(db.Model):
     '''

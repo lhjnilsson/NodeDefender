@@ -96,9 +96,9 @@
 </form>
 <script>
 $(document).ready(function() {
-	groupSocket.emit('groups', {'user' : '{{user.email}}'});
+	groupSocket.emit('groups', ('{{user.email}}'));
 
-	groupSocket.on('groupsrsp', function(groups) {
+	groupSocket.on('groups', function(groups) {
 		var glength = groups.length;
 		if (glength < 1) {
 			return 

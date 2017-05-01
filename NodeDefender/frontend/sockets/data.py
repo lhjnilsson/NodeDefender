@@ -9,21 +9,21 @@ from ...models.manage import user as UserSQL
 def group_events(msg):
     events = DataSQL.group.event.Get(msg['group'], msg['length'])
     if events:
-        emit('groupEventGet', (events))
+        emit('groupEventGet', ([event.to_json() for event in events]))
     return True
 
-@socketio.on('icpeEventGet', namespace='/data')
+@socketio.on('nodeEvents', namespace='/data')
 def icpe_events(msg):
-    events = DataSQL.icpe.event.Get(msg['iCPE'], msg['length'])
+    events = DataSQL.node.event.Get(msg['node'], msg['length'])
     if events:
-        emit('icpeEventGet', (events))
+        emit('nodeEvents', ([event.to_json() for event in events]))
     return True
 
-@socketio.on('sensorEventGet', namespace='/data')
+@socketio.on('sensorEvents', namespace='/data')
 def sensor_events(msg):
-    events = DataSQL.sensor.event.Get(msg['iCPE'], msg['sensor'])
+    events = DataSQL.sensor.event.Get(msg['icpe'], msg['sensor'])
     if events:
-        emit('sensorEventGet', (events))
+        emit('sensorEvents', ([event.to_json() for event in events]))
     return True
 
 # Power

@@ -46,11 +46,9 @@ var nodes = "{{nodes}}";
 {% endif %}
 
 groupSocket.on("groups", function(groups) {
-	nodeSocket.emit("nodes", groups)
+	for (var i = 0; i < groups.length; i++)
+		nodeSocket.emit("nodes", groups[i].name);
 });
-
-
-
 
 nodeSocket.on("nodes", function(nodes) {
 	for (var i = 0; i < nodes.length; i++) {

@@ -100,6 +100,10 @@ class SensorModel(db.Model):
                 setattr(self, key.lower(), value)
 
             self.productname = self.name
+    
+    def to_json(self):
+        return {'name' : self.name, 'sensorId' : self.sensorid,\
+                'brand' : self.brand, 'productName' : str(self.productname)}
 
 class SensorClassModel(db.Model):
     __tablename__ = 'sensorclass'

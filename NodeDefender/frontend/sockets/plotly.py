@@ -19,6 +19,9 @@ def power_chart(msg):
         groups = [group.name for group in user.groups]
 
     chart_data = DataSQL.power.Chart(*groups)
+    if not chart_data:
+        return False
+
     data = []
     for chart in chart_data:
         d = {'name': chart['name']}
@@ -36,6 +39,8 @@ def power_chart(msg):
 @socketio.on('groupPowerChart', namespace='/plotly')
 def group_power_chart(msg):
     chart_data = DataSQL.group.power.Chart(msg['name'])
+    if not chart_data:
+        return False
 
     data = []
     for chart in chart_data:
@@ -54,6 +59,8 @@ def group_power_chart(msg):
 @socketio.on('nodePowerChart', namespace='/plotly')
 def node_power_chart(msg):
     chart_data = DataSQL.node.power.Chart(msg['name'])
+    if not chart_data:
+        return False
 
     data = []
     for chart in chart_data:
@@ -67,4 +74,38 @@ def node_power_chart(msg):
     layout = power_layout
     layout['title'] = 'Node Power'
     emit('nodePowerChart', {'data': data, 'layout' : layout})
+    return True
+
+@socketio.on('sensorPowerChart', namespace='/plotly')
+def sensor_power_chart(msg):
+    chart_data = DataSQL.sensor.power.Chart(msg['icpe'], msg['sensor'])
+    if not chart_data:
+        return False
+
+    data = []
+    high = {'name': 'high'}
+    low = {'name': 'low'}
+    average = {'name': 'average'}
+
+    high['x'] = []
+    low['x'] = []
+    average['x'] = []
+                 
+    high['y'] = []
+    low['y'] = []
+    average['y'] = []
+    for x in chart['power']:
+        high['x'].append(x['date'])
+        low['x'].append(x['date'])
+        average['x'].append(x['date'])
+        
+        high['y'].append(x['high'])
+        low['y'].append(x['low'])
+        average['y'].append(x['average'])
+    
+    data.append(high, low, average)
+    
+    layout = power_layout
+    layout['title'] = 'sensor Power'
+    emit('sensorPowerChart', {'data': data, 'layout' : layout})
     return True

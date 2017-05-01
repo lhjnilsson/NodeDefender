@@ -11,6 +11,6 @@ def Get(group, limit = 20):
     if not group:
         return False
     return EventModel.query.join(NodeModel).\
-            filter(NodeModel.name.in_([name for name in group.nodes])).\
+            filter(NodeModel.name.in_([node.name for node in group.nodes])).\
             order_by(EventModel.date.desc()).limit(int(limit)).all()
 

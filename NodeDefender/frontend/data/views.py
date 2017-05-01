@@ -5,6 +5,7 @@ from ... import serializer
 from flask_login import login_required, current_user
 from ...models.manage import group as GroupSQL
 from ...models.manage import node as NodeSQL
+from ...models.manage import sensor as SensorSQL
 
 #Power
 @DataView.route('/data/power')
@@ -33,11 +34,11 @@ def PowerNode(name):
         node = NodeSQL.Get(name)
         return render_template('data/node/power.html', node = node)
 
-@DataView.route('/data/power/sensor/<icpe>/<sensorid>')
-def PowerSensor(mac, nodeid):
+@DataView.route('/data/power/sensor/<icpe>/<sensor>')
+def PowerSensor(icpe, sensor):
     icpe = serializer.loads(icpe)
-    sensorid = serialize.loads(icpe)
+    
     if request.method == 'GET':
-        sensor = SensorSQL.Get(icpe, sensorid)
+        sensor = SensorSQL.Get(icpe, sensor)
         return render_template('data/sensor/power.html', sensor = sensor)
 

@@ -26,6 +26,14 @@
 		</h4>
 	</div>
 </div>
+	<script>
+dataSocket.on('averageHeat', function(data) {
+	document.getElementById('heatGroupName') = data.group.name;
+	document.getElementById('heatHigh') = data.high;
+	document.getElementById('heatLow') = data.high;
+	document.getElementById('heatAverage') = data.high;
+})
+	</script>
 {% endmacro %}
 
 {% macro AveragePower(node = None, group = None, sensor = None) %}

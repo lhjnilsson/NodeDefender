@@ -11,10 +11,11 @@ def Latest(icpe, sensor):
             filter(SensorModel.macaddr == sensor).first()
 
 def Get(icpe, sensor, limit = 20):
-    return EventModel.query.join(iCPEModel).join(SensorModel).\
+    return db.session.query(EventModel).join(SensorModel).\
+            join(iCPEModel).\
             filter(iCPEModel.macaddr == icpe).\
             filter(SensorModel.sensorid == sensor).\
-            order_by(EventModel.date.desc()).limit(int(limit))
+            order_by(EventModel.date.desc()).limit(int(limit)).all()
 
 def Put(icpe, sensor, cmdclass, classtype, value):
     icpe = iCPESQL.Get(icpe)

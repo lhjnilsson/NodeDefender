@@ -25,34 +25,18 @@ SOFTWARE.
 from flask_socketio import emit, send, disconnect, join_room, leave_room, \
         close_room, rooms
 from ... import socketio
-from ...models.manage import group as GroupSQL
-from ...models.manage import user as UserSQL
+from ...models.manage import icpe as iCPESQL
+from ...models.manage import sensor as SensorSQL
 
-@socketio.on('groups', namespace='/group')
-def Groups(user):
-    user = UserSQL.Get(user)
-    if user is None:
-        return
-    if user.superuser:
-        emit('groups', ([group.to_json() for group in GroupSQL.List()]))
-    else:
-        emit('groups', ([group.to_json() for group in user.groups]))
+@socketio.on('list', namespace='/sensor')
+def List(msg):
+    icpes = [sensor.to_json() for sensor in SensorSQLSQL.List(msg['icpe'])]
     return True
 
-@socketio.on('groupInfoGet', namespace='/group')
-def GroupInfo(msg):
-    group = GroupSQL.Get(msg['name'])
-    info = {'name' : group.name,
-            'description' : group.description,
-            'users' : str(len(group.users)),
-            'nodes' : str(len(group.nodes)),
-            'created_on' : str(group.created_on),
-           }
-    emit('groupInfoRsp', (info))
+@socketio.on('info', namespace='/sensor')
+def Info(msg):
+    sensor = SensorSQL.Get(msg['icpe'], msg['sensor'])
+    if sensor:
+        emit('info', (sensor.to_json()))
     return True
 
-@socketio.on('addToGroup', namespace='/group')
-def AddToGroup(msg):
-    UserSQL.Join(msg['user'], msg['group'])
-    emit('Reload')
-    return True
