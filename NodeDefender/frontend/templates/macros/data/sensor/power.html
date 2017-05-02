@@ -9,13 +9,14 @@
 	</div>
 </div>
 <script>
-chartElement = document.getElementById("SensorsPowerChart");
+var chartElement = document.getElementById("SensorPowerChart");
 
 plotlySocket.on('sensorPowerChart', function(data) {
+	console.log(data);
 	Plotly.newPlot(chartElement, data.data, data.layout)
 });
 
-plotlySocket.emit('sensorPowerChart', {'icpe' : "{{sensor.icpe.macaddr}}", 'sensor' : '{{sensor.sensorid}}' }});
+plotlySocket.emit('sensorPowerChart', {'icpe' : "{{sensor.icpe.macaddr}}", 'sensor' : '{{sensor.sensorid}}' });
 </script>
 {% endmacro %}
 

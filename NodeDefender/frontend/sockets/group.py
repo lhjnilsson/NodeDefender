@@ -34,9 +34,9 @@ def Groups(user):
     if user is None:
         return
     if user.superuser:
-        emit('groups', ([group.to_json() for group in GroupSQL.List()]))
+        emit('list', ([group.to_json() for group in GroupSQL.List()]))
     else:
-        emit('groups', ([group.to_json() for group in user.groups]))
+        emit('list', ([group.to_json() for group in user.groups]))
     return True
 
 @socketio.on('info', namespace='/group')

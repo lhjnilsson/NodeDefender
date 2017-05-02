@@ -9,10 +9,10 @@
 	</div>
 </div>
 <script>
-chartElement = document.getElementById("SensorsPowerChart");
+powerChart = document.getElementById("SensorsPowerChart");
 
 plotlySocket.on('nodePowerChart', function(data) {
-	Plotly.newPlot(chartElement, data.data, data.layout)
+	Plotly.newPlot(powerChart, data.data, data.layout)
 });
 
 plotlySocket.emit('nodePowerChart', {'name' : "{{node.name}}"});

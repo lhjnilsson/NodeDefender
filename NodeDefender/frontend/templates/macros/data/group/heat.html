@@ -1,7 +1,7 @@
-{% macro Chart(user) %}
+{% macro Chart(group) %}
 <div class="panel panel-primary">
 	<div class="panel-heading">
-		Heat Chart
+		{{group.name}} Heat Chart
 	</div>
 	<div class="panel-body" style="padding: 0; height: 400px">
 		<div id="GroupsHeatChart" style="height: 100%; width: 100%">
@@ -11,18 +11,18 @@
 <script>
 chartElement = document.getElementById("GroupsHeatChart");
 
-plotlySocket.on('heatChart', function(data) {
+plotlySocket.on('groupHeatChart', function(data) {
 	Plotly.newPlot(chartElement, data.data, data.layout)
 });
 
-plotlySocket.emit('heatChart', {'user' : "{{current_user.email}}"});
+plotlySocket.emit('groupHeatChart', {'name' : "{{group.name}}"});
 </script>
 {% endmacro %}
 
-{% macro List(groups) %}
+{% macro List(group) %}
 <div class="panel panel-default">
 	<div class="panel-heading">
-		Group List
+		Node List
 	</div>
 	<div class="panel-body" style="padding: 0;">
 		<table class="table table-hover">
@@ -36,24 +36,24 @@ plotlySocket.emit('heatChart', {'user' : "{{current_user.email}}"});
 				</tr>
 			</thead>
 			<tbody>
-				{% for group in groups %}
+				{% for node in group.nodes %}
 				<tr>
 					<td>
-						<a href="{{ url_for('DataView.HeatGroup', name = serialize(group.name)) }}">
-							{{group.name}}	
+						<a href="{{ url_for('DataView.HeatNode', name = serialize(node.name)) }}">
+							{{node.name}}	
 						</a>
 					</td>
 					<td>
-						<p id="{{group.name}}CurrentHeat">0.0</p>	
+						<p id="{{node.name}}CurrentHeat">0.0</p>	
 					</td>
 					<td>
-						<p id="{{group.name}}DailyHeat">0.0</p>	
+						<p id="{{node.name}}DailyHeat">0.0</p>	
 					</td>
 					<td>
-						<p id="{{group.name}}WeeklyHeat">0.0</p>	
+						<p id="{{node.name}}WeeklyHeat">0.0</p>	
 					</td>
 					<td>
-						<p id="{{group.name}}MonthlyHeat">0.0</p>
+						<p id="{{node.name}}MonthlyHeat">0.0</p>
 					</td>
 				</a>
 			{% endfor %}
@@ -63,16 +63,14 @@ plotlySocket.emit('heatChart', {'user' : "{{current_user.email}}"});
 </div>
 	<script>
 $(document).ready(function() {
-	dataSocket.on('groupHeatAverage', function(data) {
-		if (data) {
-			document.getElementById(data.name+"CurrentHeat").innerHTML = data.current;
-			document.getElementById(data.name+"DailyHeat").innerHTML = data.daily;
-			document.getElementById(data.name+"WeeklyHeat").innerHTML = data.weekly;
-			document.getElementById(data.name+"MonthlyHeat").innerHTML = data.monthly;
-		}
+	dataSocket.on('nodeHeatAverage', function(data) {
+		document.getElementById(data.name+"CurrentHeat").innerHTML = data.current;
+		document.getElementById(data.name+"DailyHeat").innerHTML = data.daily;
+		document.getElementById(data.name+"WeeklyHeat").innerHTML = data.weekly;
+		document.getElementById(data.name+"MonthlyHeat").innerHTML = data.monthly;
 	});
-	{% for group in groups %}
-	dataSocket.emit('groupHeatAverage', {'name': "{{group.name}}"});
+	{% for node in group.nodes %}
+		dataSocket.emit('nodeHeatAverage', {'name': "{{node.name}}"});
 	{% endfor %}
 });
 	</script>

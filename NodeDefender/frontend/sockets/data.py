@@ -47,44 +47,23 @@ def sensor_power_average(msg):
 
 
 # Heat
-@socketio.on('groupHeatLatest', namespace='/data')
-def group_heat_latest(msg):
-    heat = DataSQL.group.heat.Latest(msg['group'])
-    if heat:
-        emit('groupHeatLatest', (heat))
+@socketio.on('groupHeatAverage', namespace='/data')
+def group_heat_average(msg):
+    data = DataSQL.group.heat.Average(msg['name'])
+    emit('groupHeatAverage', (data))
     return True
 
-@socketio.on('icpeHeatLatest', namespace='/data')
-def icpe_heat_latest(msg):
-    heat = DataSQL.icpe.heat.Latest(msg['icpe'])
-    if heat:
-        emit('icpeHeatLatest', (heat))
+@socketio.on('nodeHeatAverage', namespace='/data')
+def node_heat_average(msg):
+    data = DataSQL.node.heat.Average(msg['name'])
+    emit('nodeHeatAverage', (data))
     return True
 
-@socketio.on('sensorHeatLatest', namespace='/data')
-def sensor_heat_latest(msg):
-    heat = DataSQL.sensor.heat.Latest(msg['icpe'], msg['sensor'])
-    if heat:
-        emit('sensorHeatLatest', (heat))
+@socketio.on('sensorHeatAverage', namespace='/data')
+def sensor_heat_average(msg):
+    data = DataSQL.sensor.heat.Average(msg['icpe'], msg['sensor'])
+    emit('sensorHeatAverage', (data))
     return True
 
-@socketio.on('groupHeatGet', namespace='/data')
-def group_heat_get(msg):
-    heat = DataSQL.group.heat.Get(msg['group'])
-    if heat:
-        emit('groupHeatGet', (heat))
-    return True
 
-@socketio.on('icpeHeatGet', namespace='/data')
-def icpe_heat_get(msg):
-    heat = DataSQL.icpe.heat.Get(msg['icpe'])
-    if heat:
-        emit('icpeHeatGet', (heat))
-    return True
 
-@socketio.on('sensorHeatGet', namespace='/data')
-def icpe_het_get(msg):
-    heat = DataSQL.sensor.heat.Get(msg['icpe'], msg['sensor'])
-    if heat:
-        emit('icpePowerGet', (heat))
-    return True

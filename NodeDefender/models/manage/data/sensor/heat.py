@@ -1,70 +1,161 @@
 from datetime import datetime, timedelta
-from ....SQL import HeatModel, iCPEModel, SensorModel
-from .. import icpe as iCPEData
+from ....SQL import HeatModel, NodeModel, iCPEModel, GroupModel, SensorModel
 from ..... import db
+from sqlalchemy import func
+from sqlalchemy.sql import label
+from itertools import groupby
 
-def Latest(icpe, sensor):
-    heat_data = HeatModel.query.join(iCPEModel).join(SensorModel).\
+def Current(icpe, sensor):
+    sensor = db.session.query(SensorModel).\
+            join(iCPEModel).\
             filter(iCPEModel.macaddr == icpe).\
             filter(SensorModel.sensorid == sensor).first()
 
-    if not heat_data:
+    if sensor is None or sensor.heat is None:
         return False
-
-    return {'icpe' : icpe, 'sensor' : sensor, 'date' : str(heat_data.date),\
-            'low' : heat_data.low, 'high' : heat_data.high, \
-            'total' : heat_data.total}
-
-def Get(icpe, sensor, from_date = (datetime.now() - timedelta(days=7)), to_date =
-        datetime.now()):
-    heat_data =  HeatModel.query.join(iCPEModel).join(SensorModel).\
-            filter(HeatModel.date > from_date).\
-            filter(HeatModel.date < to_date).\
-            filter(iCPEModel.macaddr == icpe).\
-            filter(SensorModel.sensorid == sensor).all()
-
-    if not heat_data:
-        return False
-
-    ret_json = {'icpe' : icpe}
-    ret_json['sensor'] = sensor
-    ret_json['heat'] = []
-    for data in heat_data:
-        ret_json['heat'].append({'date' : str(data.date), 'low' : data.low, 'high' :
-                                               data.high, 'total' :
-                                               data.total})
-    return ret_json
-
-def Put(icpe, sensor, heat, date = None):
-    if date is None:
-        date = datetime.now().replace(minute=0, second=0, microsecond=0)
     
-    icpe, sensor = db.session.query(iCPEModel, SensorModel).\
-            filter(iCPEModel.macaddr == icpe).\
-            filter(SensorModel.sensorid == sensor).first()
+    sensor_data = {}
+    sensor_data['name'] = sensor.name
+    sensor_data['sensor'] = sensor.sensorid
+    sensor_data['icpe'] = sensor.icpe.macaddr
     
-    if not icpe or not sensor:
-        return False
-
-    data = db.session.query(HeatModel).\
-            filter(HeatModel.icpe == icpe,\
-                   HeatModel.sensor == sensor,\
-                   HeatModel.date == date).first()
-
-
-    if data:
-        if heat > data.high:
-            data.high = heat
-        
-        if heat < data.low or data.low == 0:
-            data.low = heat
-
-        data.average = (data.average + heat) / 2
-        db.session.add(data)
+    min_ago = (datetime.now() - timedelta(hours=0.5))
+    latest_heat =  db.session.query(HeatModel,\
+                label('sum', func.sum(HeatModel.average)),
+                label('count', func.count(HeatModel.average))).\
+                join(iCPEModel).\
+                filter(iCPEModel.macaddr == sensor.icpe.macaddr).\
+                filter(SensorModel.sensorid == sensor.sensorid).\
+                filter(HeatModel.date > min_ago).first()
+    
+    if latest_heat.count:
+        sensor_data['heat'] = latest_heat.sum / latest_heat.count
+        sensor_data['heat'] += sensor_data['heat']
     else:
-        data = HeatModel(heat, date)
-        data.sensor = sensor
-        data.icpe = sensor.icpe
-        db.session.add(data)
+        sensor_data['heat'] = 0.0
 
-    db.session.commit()
+    return sensor_data
+
+def Average(icpe, sensor):
+    sensor = db.session.query(SensorModel).join(iCPEModel).\
+            filter(iCPEModel.macaddr == icpe).\
+            filter(SensorModel.sensorid == sensor).first()
+    
+    if sensor is None or sensor.heat is None:
+        return False
+
+    min_ago = (datetime.now() - timedelta(hours=0.5))
+    day_ago = (datetime.now() - timedelta(days=1))
+    week_ago = (datetime.now() - timedelta(days=7))
+    month_ago = (datetime.now() - timedelta(days=30))
+    sensor_data = {}
+    sensor_data['icpe'] = sensor.icpe.macaddr
+    sensor_data['sensor'] = sensor.sensorid
+    sensor_data['name'] = sensor.name
+    sensor_data['current'] = 0.0
+    sensor_data['daily'] = 0.0
+    sensor_data['weekly'] = 0.0
+    sensor_data['monthly'] = 0.0 
+
+    current_heat = db.session.query(HeatModel,\
+                label('sum', func.sum(HeatModel.average)),
+                label('count', func.count(HeatModel.average))).\
+                join(iCPEModel).\
+                join(SensorModel).\
+                filter(iCPEModel.macaddr == sensor.icpe.macaddr).\
+                filter(SensorModel.sensorid == sensor.sensorid).\
+                filter(HeatModel.date > min_ago).first()
+    
+    daily_heat = db.session.query(HeatModel,\
+                label('sum', func.sum(HeatModel.average)),
+                label('count', func.count(HeatModel.average))).\
+                join(iCPEModel).\
+                join(SensorModel).\
+                filter(iCPEModel.macaddr == sensor.icpe.macaddr).\
+                filter(SensorModel.sensorid == sensor.sensorid).\
+                filter(HeatModel.date > day_ago).first()
+    
+    weekly_heat = db.session.query(HeatModel,\
+                label('sum', func.sum(HeatModel.average)),
+                label('count', func.count(HeatModel.average))).\
+                join(iCPEModel).\
+                join(SensorModel).\
+                filter(iCPEModel.macaddr == sensor.icpe.macaddr).\
+                filter(SensorModel.sensorid == sensor.sensorid).\
+                filter(HeatModel.date > week_ago).first()
+
+    monthly_heat = db.session.query(HeatModel,\
+                label('sum', func.sum(HeatModel.average)),
+                label('count', func.count(HeatModel.average))).\
+                join(iCPEModel).\
+                join(SensorModel).\
+                filter(iCPEModel.macaddr == sensor.icpe.macaddr).\
+                filter(SensorModel.sensorid == sensor.sensorid).\
+                filter(HeatModel.date > month_ago).first()
+    
+    if current_heat.count:
+        current_heat = (current_heat.sum / current_heat.count)
+    else:
+        current_heat = 0.0
+
+    if daily_heat.count:
+        daily_heat = (daily_heat.sum / daily_heat.count)
+    else:
+        daily_heat = 0.0
+
+    if weekly_heat.count:
+        weekly_heat = (weekly_heat.sum / weekly_heat.count)
+    else:
+        weekly_heat = 0.0
+
+    if monthly_heat.count:
+        monthly_heat = (monthly_heat.sum / monthly_heat.count)
+    else:
+        monthly_heat = 0.0
+
+    sensor_data['current'] = current_heat
+
+    sensor_data['daily'] = daily_heat
+
+    sensor_data['weekly'] = weekly_heat
+
+    sensor_data['monthly'] = monthly_heat
+
+    return sensor_data
+
+def Chart(icpe, sensor):    
+    from_date = (datetime.now() - timedelta(days=30))
+    to_date = datetime.now()
+    
+    sensor = db.session.query(SensorModel).\
+            join(iCPEModel).\
+            filter(iCPEModel.macaddr == icpe).\
+            filter(SensorModel.sensorid == sensor).first()
+    
+    if sensor is None or sensor.heat is None:
+        return False
+
+    
+    heat_data = db.session.query(HeatModel).\
+            join(iCPEModel).\
+            join(SensorModel).\
+            filter(iCPEModel.macaddr == sensor.icpe.macaddr).\
+            filter(SensorModel.sensorid == sensor.sensorid).\
+            filter(HeatModel.date > from_date).\
+            filter(HeatModel.date < to_date).all()
+    
+    sensor_data = {}
+    sensor_data['name'] = sensor.name
+    sensor_data['sensor'] = sensor.sensorid
+    sensor_data['icpe'] = sensor.icpe.macaddr
+
+    sensor_data['heat'] = []
+    
+    for data in heat_data:
+        entry = {'date' : str(data.date)}
+        entry['high'] = data.high
+        entry['low'] = data.low
+        entry['average'] = data.average
+        sensor_data['heat'].append(entry)
+
+    return sensor_data

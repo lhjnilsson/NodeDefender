@@ -1,58 +1,157 @@
 from datetime import datetime, timedelta
-from ....SQL import HeatModel, GroupModel, iCPEModel
+from ....SQL import HeatModel, NodeModel, iCPEModel, GroupModel
 from ..... import db
 from sqlalchemy import func
 from sqlalchemy.sql import label
+from itertools import groupby
 
-def Latest(group):
-    group = GroupModel.query.filter(GroupModel.name == group).first()
-    if not group:
+def Current(group):
+    group = db.session.query(GroupModel).filter(GroupModel.name ==
+                                                group).first()
+    if group is None:
+        return False
+    
+    ret_data = []
+    group_data = {}
+    group_data['name'] = group.name
+    group_data['heat'] = 0.0
+    for node in group.nodes:
+        node_data = {}
+        node_data['name'] = node.name
+        
+        min_ago = (datetime.now() - timedelta(hours=0.5))
+        latest_heat =  db.session.query(HeatModel,\
+                    label('sum', func.sum(HeatModel.average)),
+                    label('count', func.count(HeatModel.average))).\
+                    join(iCPEModel).\
+                    filter(iCPEModel.macaddr == node.icpe.macaddr).\
+                    filter(HeatModel.date > min_ago).first()
+        
+        if latest_heat.count:
+            node_data['heat'] = latest_heat.sum / latest_heat.count
+            group_data['heat'] += node_data['heat']
+        else:
+            node_data['heat'] = 0.0
+        
+        ret_data.append(node_data)
+
+    ret_data.append(group_data)
+    return ret_data
+
+def Average(group):
+    group = db.session.query(GroupModel).filter(GroupModel.name ==
+                                               group).first()
+    if group is None:
         return False
 
-    #icpes = [[icpe.macaddr for icpe in node.icpes] for node in group.nodes]
+    min_ago = (datetime.now() - timedelta(hours=0.5))
+    day_ago = (datetime.now() - timedelta(days=1))
+    week_ago = (datetime.now() - timedelta(days=7))
+    month_ago = (datetime.now() - timedelta(days=30))
+    group_data = {}
+    group_data['name'] = group.name
+    group_data['current'] = 0.0
+    group_data['daily'] = 0.0
+    group_data['weekly'] = 0.0
+    group_data['monthly'] = 0.0
+    
     icpes = [node.icpe.macaddr for node in group.nodes]
-
-    heat_data = db.session.query(HeatModel, \
-                                  label('low', func.min(HeatModel.low)),
-                                  label('high', func.max(HeatModel.high)),
-                                  label('total', func.sum(HeatModel.average)),
-                                  label('date', HeatModel.date)).\
-            join(iCPEModel).\
-            filter(iCPEModel.macaddr.in_(*[icpes])).\
-            order_by(HeatModel.date.desc()).\
-            group_by(HeatModel.date).first()
-
-    if not heat_data:
-        return False
     
-    return {'group' : group.name, 'date' : str(heat_data.date), 'low' : power_data.low,\
-            'high' : heat_data.high, 'total' : power_data.total}
-
-def Get(group, from_date = (datetime.now() - timedelta(days=7)), to_date =
-        datetime.now()):
-    group = GroupModel.query.filter(GroupModel.name == group).first()
-    if not group:
-        return False
+    current_heat = db.session.query(HeatModel,\
+                label('sum', func.sum(HeatModel.average)),
+                label('count', func.count(HeatModel.average))).\
+                join(iCPEModel).\
+                filter(iCPEModel.macaddr.in_(*[icpes])).\
+                filter(HeatModel.date > min_ago).first()
     
-    #icpes = [[icpe.macaddr for icpe in node.icpes] for node in group.nodes]
-    icpes = [node.icpe.macaddr for node in group.nodes]
+    daily_heat = db.session.query(HeatModel,\
+                label('sum', func.sum(HeatModel.average)),
+                label('count', func.count(HeatModel.average))).\
+                join(iCPEModel).\
+                filter(iCPEModel.macaddr.in_(*[icpes])).\
+                filter(HeatModel.date > day_ago).first()
     
-    heat_data = db.session.query(HeatModel, \
-                                  label('low', func.min(HeatModel.low)),
-                                  label('high', func.max(HeatModel.high)),
-                                  label('total', func.sum(HeatModel.average)),
-                                  label('date', HeatModel.date)).\
-            join(iCPEModel).\
-            filter(iCPEModel.macaddr.in_(*[icpes])).\
-            filter(HeatModel.date > from_date).\
-            filter(HeatModel.date < to_date).\
-            group_by(HeatModel.date).all()
+    weekly_heat = db.session.query(HeatModel,\
+                label('sum', func.sum(HeatModel.average)),
+                label('count', func.count(HeatModel.average))).\
+                join(iCPEModel).\
+                filter(iCPEModel.macaddr.in_(*[icpes])).\
+                filter(HeatModel.date > week_ago).first()
 
-    if not heat_data:
+    monthly_heat = db.session.query(HeatModel,\
+                label('sum', func.sum(HeatModel.average)),
+                label('count', func.count(HeatModel.average))).\
+                join(iCPEModel).\
+                filter(iCPEModel.macaddr.in_(*[icpes])).\
+                filter(HeatModel.date > month_ago).first()
+    
+    if current_heat.count:
+        current_heat = (current_heat.sum / current_heat.count)
+    else:
+        current_heat = 0.0
+
+    if daily_heat.count:
+        daily_heat = (daily_heat.sum / daily_heat.count)
+    else:
+        daily_heat = 0.0
+
+    if weekly_heat.count:
+        weekly_heat = (weekly_heat.sum / weekly_heat.count)
+    else:
+        weekly_heat = 0.0
+
+    if monthly_heat.count:
+        monthly_heat = (monthly_heat.sum / monthly_heat.count)
+    else:
+        monthly_heat = 0.0
+
+    group_data['current'] = current_heat
+
+    group_data['daily'] = daily_heat
+
+    group_data['weekly'] = weekly_heat
+
+    group_data['monthly'] = monthly_heat
+
+    return group_data
+
+def Chart(group):    
+    from_date = (datetime.now() - timedelta(days=30))
+    to_date = datetime.now()
+    
+    group = db.session.query(GroupModel).filter(GroupModel.name ==
+                                                group).first()
+    if group is None:
         return False
-    ret_json = {'group' : group.name}
-    ret_json['heat'] = []
-    for data in heat_data:
-        ret_json['heat'].append({'date' : str(data.date), 'low' : data.low, 'high' : data.high,
-                                    'total' : data.total})
-    return ret_json
+
+    ret_data = []
+    
+    for node in group.nodes:
+        
+        heat_data = db.session.query(HeatModel).\
+                join(iCPEModel).\
+                filter(iCPEModel.macaddr == node.icpe.macaddr).\
+                filter(HeatModel.date > from_date).\
+                filter(HeatModel.date < to_date).all()
+
+        if not heat_data:
+            return False
+        
+        node_data = {}
+        node_data['name'] = node.name
+        node_data['heat'] = []
+        grouped_data = [list(v) for k, v in groupby(heat_data, lambda p:
+                                                    p.date)]
+
+        for data in grouped_data:
+            entry = {'date' : str(data[0].date)}
+            for heat in data:
+                try:
+                    entry['value'] = (heat.average + entry['heat']) / 2
+                except KeyError:
+                    entry['value'] = heat.average
+            node_data['heat'].append(entry)
+
+        ret_data.append(node_data)
+    
+    return ret_data

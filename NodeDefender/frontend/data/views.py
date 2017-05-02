@@ -42,3 +42,37 @@ def PowerSensor(icpe, sensor):
         sensor = SensorSQL.Get(icpe, sensor)
         return render_template('data/sensor/power.html', sensor = sensor)
 
+#Heat
+@DataView.route('/data/heat')
+@login_required
+def DataHeat():
+    if request.method == 'GET':
+        if current_user.superuser:
+            groups = GroupSQL.List()
+        else:
+            groups = [group for group in current_user.groups]
+        return render_template('data/heat.html', groups = groups)
+
+@DataView.route('/data/heat/group/<name>')
+def HeatGroup(name):
+    name = serializer.loads(name)
+    if request.method == 'GET':
+        group = GroupSQL.Get(name)
+        if group is None:
+            pass # Fix later..
+        return render_template('data/group/heat.html', group = group)
+
+@DataView.route('/data/heat/node/<name>')
+def HeatNode(name):
+    name = serializer.loads(name)
+    if request.method == 'GET':
+        node = NodeSQL.Get(name)
+        return render_template('data/node/heat.html', node = node)
+
+@DataView.route('/data/heat/sensor/<icpe>/<sensor>')
+def HeatSensor(icpe, sensor):
+    icpe = serializer.loads(icpe)
+    
+    if request.method == 'GET':
+        sensor = SensorSQL.Get(icpe, sensor)
+        return render_template('data/sensor/heat.html', sensor = sensor)

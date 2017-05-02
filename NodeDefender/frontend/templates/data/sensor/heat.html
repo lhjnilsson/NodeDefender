@@ -3,7 +3,7 @@
 <div class="row">
     <div class="col-lg-12">
         <h1 class="page-header">
-            Data <small>Power</small>
+            Data <small>Heat</small>
         </h1>
              <ol class="breadcrumb">
            <li class="active">
@@ -12,11 +12,14 @@
        </ol>
     </div>
 </div>
+{% from "macros/data/sensor/heat.html" import Chart, List with context %}
 <div class="row">
 	<div class="col-lg-12">
-		<h1>Graph</h1>
-			
+		{{ Chart(sensor)}}
 	</div>
 </div>
+
+<script>
+</script>
 
 {% endblock %}

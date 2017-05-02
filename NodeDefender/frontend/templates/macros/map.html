@@ -37,7 +37,7 @@ function addMarker(node) {
 var nodes = "{{nodes}}";
 
 {% if nodes == None %}
-	groupSocket.emit("groups", current_email)
+	groupSocket.emit("list", current_email)
 {% else %}
 	{% for node in nodes %}
 	var marker = L.marker([{{node.location.latitude}}, {{node.location.longitude}}]).addTo(map);
@@ -45,7 +45,7 @@ var nodes = "{{nodes}}";
 {% endfor %}
 {% endif %}
 
-groupSocket.on("groups", function(groups) {
+groupSocket.on("list", function(groups) {
 	for (var i = 0; i < groups.length; i++)
 		nodeSocket.emit("nodes", groups[i].name);
 });
