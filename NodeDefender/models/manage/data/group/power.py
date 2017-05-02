@@ -61,21 +61,21 @@ def Average(group):
                 label('sum', func.sum(PowerModel.average)),
                 label('count', func.count(PowerModel.average))).\
                 join(iCPEModel).\
-                filter(iCPEModel.macaddr.in_([*icpes])).\
+                filter(iCPEModel.macaddr.in_(*[icpes])).\
                 filter(PowerModel.date > min_ago).first()
     
     daily_power = db.session.query(PowerModel,\
                 label('sum', func.sum(PowerModel.average)),
                 label('count', func.count(PowerModel.average))).\
                 join(iCPEModel).\
-                filter(iCPEModel.macaddr.in_([*icpes])).\
+                filter(iCPEModel.macaddr.in_(*[icpes])).\
                 filter(PowerModel.date > day_ago).first()
     
     weekly_power = db.session.query(PowerModel,\
                 label('sum', func.sum(PowerModel.average)),
                 label('count', func.count(PowerModel.average))).\
                 join(iCPEModel).\
-                filter(iCPEModel.macaddr.in_([*icpes])).\
+                filter(iCPEModel.macaddr.in_(*[icpes])).\
                 filter(PowerModel.date > week_ago).first()
 
     monthly_power = db.session.query(PowerModel,\
@@ -116,7 +116,7 @@ def Average(group):
     return group_data
 
 def Chart(group):    
-    from_date = (datetime.now() - timedelta(days=7))
+    from_date = (datetime.now() - timedelta(days=30))
     to_date = datetime.now()
     
     group = db.session.query(GroupModel).filter(GroupModel.name ==

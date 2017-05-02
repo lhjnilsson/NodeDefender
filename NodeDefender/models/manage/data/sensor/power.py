@@ -124,7 +124,7 @@ def Average(icpe, sensor):
     return sensor_data
 
 def Chart(icpe, sensor):    
-    from_date = (datetime.now() - timedelta(days=7))
+    from_date = (datetime.now() - timedelta(days=30))
     to_date = datetime.now()
     
     sensor = db.session.query(SensorModel).\

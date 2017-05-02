@@ -22,7 +22,7 @@ plotlySocket.emit('groupPowerChart', {'name' : "{{group.name}}"});
 {% macro List(group) %}
 <div class="panel panel-default">
 	<div class="panel-heading">
-		Group List
+		Node List
 	</div>
 	<div class="panel-body" style="padding: 0;">
 		<table class="table table-hover">
@@ -40,7 +40,7 @@ plotlySocket.emit('groupPowerChart', {'name' : "{{group.name}}"});
 				<tr>
 					<td>
 						<a href="{{ url_for('DataView.PowerNode', name = serialize(node.name)) }}">
-							{{group.name}}	
+							{{node.name}}	
 						</a>
 					</td>
 					<td>

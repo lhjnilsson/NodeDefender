@@ -122,7 +122,7 @@ def Average(node):
     return node_data
 
 def Chart(node):    
-    from_date = (datetime.now() - timedelta(days=7))
+    from_date = (datetime.now() - timedelta(days=30))
     to_date = datetime.now()
     
     node = db.session.query(NodeModel).filter(NodeModel.name ==

@@ -28,7 +28,7 @@ from ... import socketio
 from ...models.manage import group as GroupSQL
 from ...models.manage import user as UserSQL
 
-@socketio.on('groups', namespace='/group')
+@socketio.on('list', namespace='/group')
 def Groups(user):
     user = UserSQL.Get(user)
     if user is None:
@@ -39,16 +39,10 @@ def Groups(user):
         emit('groups', ([group.to_json() for group in user.groups]))
     return True
 
-@socketio.on('groupInfoGet', namespace='/group')
+@socketio.on('info', namespace='/group')
 def GroupInfo(msg):
     group = GroupSQL.Get(msg['name'])
-    info = {'name' : group.name,
-            'description' : group.description,
-            'users' : str(len(group.users)),
-            'nodes' : str(len(group.nodes)),
-            'created_on' : str(group.created_on),
-           }
-    emit('groupInfoRsp', (info))
+    emit('info', (grouo.to_json()))
     return True
 
 @socketio.on('addToGroup', namespace='/group')

@@ -102,7 +102,7 @@ def Average(*groups):
     return ret_data
 
 def Chart(*groups):    
-    from_date = (datetime.now() - timedelta(days=7))
+    from_date = (datetime.now() - timedelta(days=30))
     to_date = datetime.now()
     
     groups = GroupModel.query.filter(GroupModel.name.in_(*[groups])).all()
