@@ -39,6 +39,12 @@ def node_power_average(msg):
     emit('nodePowerAverage', (data))
     return True
 
+@socketio.on('nodePowerCurrent', namespace='/data')
+def node_power_current(msg):
+    data = DataSQL.node.power.Current(msg['name'])
+    emit('nodePowerCurrent', (data))
+    return True
+
 @socketio.on('sensorPowerAverage', namespace='/data')
 def sensor_power_average(msg):
     data = DataSQL.sensor.power.Average(msg['icpe'], msg['sensor'])
@@ -57,6 +63,12 @@ def group_heat_average(msg):
 def node_heat_average(msg):
     data = DataSQL.node.heat.Average(msg['name'])
     emit('nodeHeatAverage', (data))
+    return True
+
+@socketio.on('nodeHeatCurrent', namespace='/data')
+def node_heat_current(msg):
+    data = DataSQL.node.heat.Current(msg['name'])
+    emit('nodeHeatCurrent', (data))
     return True
 
 @socketio.on('sensorHeatAverage', namespace='/data')

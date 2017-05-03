@@ -1,3 +1,22 @@
+{% macro Current(node) %}
+<p><strong>Current Heat</strong></p>
+<p id="nodeCurrentHeat">0.0 C</p>
+	<script>
+$(document).ready(function() {
+	node = "{{node.name}}";
+
+	dataSocket.on('nodeHeatCurrent', function(heat) {
+		document.getElementById('nodeCurrentHeat').innerHTML = heat.heat;
+	});
+	var loopNodeHeatCurrent = function() {
+		dataSocket.emit('nodeHeatCurrent', {'name' : node});
+	}
+	loopNodeHeatCurrent();
+	setInterval(loopNodeHeatCurrent, 5000);
+});
+	</script>
+{% endmacro %}
+
 {% macro Chart(node) %}
 <div class="panel panel-primary">
 	<div class="panel-heading">

@@ -44,6 +44,14 @@ def Unassigned(msg):
 def Info(msg):
     icpe = iCPESQL.Get(msg['macaddr'])
     if icpe:
-        emit('infoRsp', (icpe.to_json()))
+        emit('info', (icpe.to_json()))
         return True
 
+@socketio.on('connection', namespace='/icpe')
+def connection(msg):
+    emit('connection', {'address' : '127.0.0.1', 'type' : 'wired'})
+    return True
+
+@socketio.on('power', namespace='/icpe')
+def power(msg):
+    emit('power', {'source' : 'wired', 'battery' : 'none'})

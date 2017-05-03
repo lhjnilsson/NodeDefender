@@ -35,7 +35,7 @@ class iCPEModel(db.Model):
         return '<Name %r, Mac %r>' % (self.name, self.macaddr)
 
     def to_json(self):
-        icpe = {'mac' : self.macaddr,
+        icpe = {'macAddress' : self.macaddr,
                 'ipaddr' : self.ipaddr,
                 'createdOn' : str(self.created_on),
                 'sensors' : str(len(self.sensors)),

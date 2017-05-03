@@ -43,7 +43,7 @@ def Current(node):
         ret_data.append(sensor_data)
 
     ret_data.append(node_data)
-    return ret_data
+    return node_data
 
 def Average(node):
     node = db.session.query(NodeModel).filter(NodeModel.name ==

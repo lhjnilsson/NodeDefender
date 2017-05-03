@@ -56,7 +56,7 @@ var socket = io.connect('http://' + document.domain + ':' + location.port + name
 		<div class="panel panel-primary">
 			<div class="panel-heading">
 				{{iCPE.name}}, {{iCPE.macaddr}}
-				<div class="floatRight" id="technical">
+				<div class="floatRight" id="iCPEModals">
 				</div>
 			</div>
 			<div class="panel-body" style="height: 200px;">
@@ -115,6 +115,7 @@ var socket = io.connect('http://' + document.domain + ':' + location.port + name
 $(document).ready(function() {
 $('#general').prepend('<a style="color: #FFFFFF; margin: 0 5px;" href="#" data-toggle="modal" data-target="#groupList"><i class="fa fa-users" aria-hidden="true"></i></a>');
 $('#general').prepend('<a style="color: #FFFFFF; margin: 0 5px;" href="#" data-toggle="modal" data-target="#nodeInfo"><i class="fa fa-info" aria-hidden="true"></i></a>');
+$('#iCPEModals').prepend('<a style="color: #FFFFFF; margin: 0 5px;" href="#" onclick='iCPEModal("{{iCPE.macaddr}}")'><i class="fa fa-info" aria-hidden="true"></i></a>');
 
 {% if current_user.has_role("technician") %}
 $('#location').prepend('<a style="color: #FFFFFF; margin: 0 5px;" href="#" data-toggle="modal" data-target="#modifyLocation"><i class="fa fa-pencil" aria-hidden="true"></i></a>');
@@ -130,6 +131,13 @@ function sensorModal(iCPE, sensor) {
 	
 	$('#SensorModal').modal('show');
 }
+function iCPEModal(iCPE) {
+	iCPESocket.emit('info', {'icpe' : iCPE});
+	
+	$('#iCPEModal').modal('show');
+}
+
+
 </script>
 {{ ModalGrouplist(Node.groups) }}
 {{ NodeInformation(Node) }}
