@@ -13,6 +13,12 @@ def secret_key():
 def secret_salt():
     return parser['GENERAL']['SALT']
 
+def server_name():
+    return parser['GENERAL']['SERVERNAME']
+
+def server_port():
+    return parser['GENERAL']['PORT']
+
 def get_cfg(key):
     return parser['GENERAL'][key]
 

@@ -3,10 +3,12 @@ from flask import Flask
 from celery import Celery
 from flask_moment import Moment
 from itsdangerous import URLSafeSerializer
+from flask_wtf.csrf import CSRFProtect
 from . import config
 import os
 
 moment = Moment()
+csfr = CSRFProtect()
 
 def CreateApp():
     app = Flask(__name__)
@@ -14,8 +16,8 @@ def CreateApp():
         mode = os.environ['NodeDefender_Mode']
         pass
     except KeyError:
-        print('NodeDefender_Mode not set, running as Testing.')
-        mode = 'Testing'
+        print('NodeDefender_Mode not set, running as Production.')
+        mode = 'Production'
         
     app.config.from_object('NodeDefender.config.'+mode+'Config')
     app.template_folder = "frontend/templates"
@@ -75,5 +77,5 @@ class Serializer:
         return self.serializer.loads(token, salt=self.salt)
 
     def dumps_salted(self, string):
-        return self.serializer.dumps(token, salt=self.salt)
+        return self.serializer.dumps(string, salt=self.salt)
 

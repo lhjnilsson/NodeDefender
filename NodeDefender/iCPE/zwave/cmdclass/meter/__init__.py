@@ -1,6 +1,7 @@
 from ... import BaseModel, PayloadSplitter, DataDescriptor, ClassInfo
 
 mtype = {'1' : 'Electric'}
+icons = {'Electric' : 'fa fa-plug'}
 
 class MeterModel:
     unit = DataDescriptor('unit')

@@ -66,7 +66,7 @@ def iCPE(macaddr):
     pass
 
 def Get(ipaddr, port):
-    return MQTTModel.query.first()
+    return MQTTModel.query.filter_by(ipaddr = ipaddr, port = port).first()
 
 def Save(model):
     db.session.add(model)

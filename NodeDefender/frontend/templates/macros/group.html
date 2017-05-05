@@ -55,8 +55,9 @@
 <div class="row">
 	{{Field('Name', Group.name)}}
 	{{Field('Description', Group.description)}}
-	{{Field('Street', NA)}}
-	{{Field('City', NA)}}
+	{{Field('Street', Group.location.street)}}
+	{{Field('City', Group.location.city)}}
+	{{Field('Created', Group.created_on)}}
 </div>
 {% endmacro %}
 
@@ -95,9 +96,9 @@
 </form>
 <script>
 $(document).ready(function() {
-	groupSocket.emit('groups', {'user' : '{{user.email}}'});
+	groupSocket.emit('groups', ('{{user.email}}'));
 
-	groupSocket.on('groupsrsp', function(groups) {
+	groupSocket.on('groups', function(groups) {
 		var glength = groups.length;
 		if (glength < 1) {
 			return 

@@ -1,4 +1,5 @@
 {% macro SensorModal() %}
+{% from "macros/info.html" import FieldID %}
 <div class="modal fade" id="SensorModal" role="dialog">
 	<div class="modal-dialog">
 		<div class="modal-content">
@@ -9,15 +10,31 @@
 			<div class="modal-body">
 				<ul class="nav nav-pills nav-justified">
 					<li class="active"><a data-toggle="pill" href="#SensorModalInfo">Information</a></li>
-					<li><a data-toggle="pill" href="#SensorModalRules">Rules</a></li>
+					<li><a data-toggle="pill" href="#SensorModalRules">Events</a></li>
 					<li><a data-toggle="pill" href="#SensorModalConfig">Configure</a></li>
 				</ul>
 				<div class="tab-content">
 					<div id="SensorModalInfo" class="tab-pane fade in active">
-						<h3>Info</h3>
+						<div class="row">
+							{{ FieldID("Name", "-", "sensorName") }}
+							{{ FieldID("Sensor Id", "-", "sensorId") }}
+							{{ FieldID("Brand", "-", "sensorBrand") }}
+							{{ FieldID("Product Name", "-", "sensorProductName") }}
+							{{ FieldID("Library Type", "-", "sensorLibtype") }}
+							{{ FieldID("Device Type", "-", "sensorDevtype") }}
+						</div>
 					</div>
 					<div id="SensorModalRules" class="tab-pane fade">
-						<h3>Rules</h3>
+						<table class="table table-striped" id="sensoreventtable">
+							<thead>
+								<tr>
+									<th>Event</th>
+									<th>Date</th>
+								</tr>
+							</thead>
+							<tbody id="sensoreventbody">
+							</tbody>
+						</table>
 					</div>
 					<div id="SensorModalConfig" class="tab-pane fade">
 						<h3>Config</h3>
@@ -30,4 +47,31 @@
 		</div>
 	</div>
 </div>
+	<script>
+var sensorEventTable = document.getElementById('sensoreventtable');
+var sensorEventBody = document.getElementById('sensoreventbody');
+
+sensorSocket.on('info', function(info) {
+	document.getElementById("sensorName").innerHTML = info.name;
+	document.getElementById("sensorId").innerHTML = info.sensorId;
+	document.getElementById("sensorBrand").innerHTML = info.brand;
+	document.getElementById("sensorProductName").innerHTML = info.productName;
+	document.getElementById("sensorLibtype").innerHTML = info.librarytype;
+	document.getElementById("sensorDevtype").innerHTML = info.devicetype;
+});
+
+dataSocket.on('sensorEvents', function(events) {
+	for (var i = 0; i < events.length; i++) {
+		var newRow = sensorEventBody.insertRow(i);
+
+		var eventCell = newRow.insertCell(0);
+		var eventText = document.createTextNode(events[i].value);
+		eventCell.appendChild(eventText);
+		
+		var dateCell = newRow.insertCell(1);
+		var dateText = document.createTextNode(moment(events[i].date, "YYYYMMDD, hh:mm:ss").fromNow());
+		dateCell.appendChild(dateText);
+	}
+});
+	</script>
 {% endmacro %}

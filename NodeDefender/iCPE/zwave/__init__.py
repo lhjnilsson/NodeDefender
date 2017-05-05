@@ -78,7 +78,9 @@ class BaseModel:
     pid = DataDescriptor('pid')
     classnumber = DataDescriptor('classnumber')
     classname = DataDescriptor('classname')
+    classtype = DataDescriptor('classtype')
     subfunc = DataDescriptor('subfunc')
+    enabled = DataDescriptor('enabled')
 
     def __init__(self):
         self.sensorid = None
@@ -89,7 +91,9 @@ class BaseModel:
         self.classnumber = None
         self.classname = None
         self.subfunc = None
+        self.classtype = None
         self.value = None
+        self.enabled = False
     
     def __call__(self):
         return self._retdata
@@ -113,4 +117,4 @@ def PayloadSplitter(model=BaseModel):
     return decorate
 
 from . import db
-from .cmdclass import alarm, basic, meter
+from .cmdclass import alarm, basic, meter, msensor

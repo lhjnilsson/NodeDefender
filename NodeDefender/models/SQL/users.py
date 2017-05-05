@@ -1,4 +1,4 @@
-from ... import db
+from ... import db, bcrypt
 from datetime import datetime
 
 class UserModel(db.Model):
@@ -17,15 +17,17 @@ class UserModel(db.Model):
     lastname = db.Column(db.String(40))
     email = db.Column(db.String(255), unique=True)
     password = db.Column(db.String(120))
+    
     active = db.Column(db.Boolean())
     confirmed_at = db.Column(db.DateTime)
+    registered_at = db.Column(db.DateTime)
+    
     last_login_at = db.Column(db.DateTime)
     current_login_at = db.Column(db.DateTime)
     last_login_ip = db.Column(db.String(100))
     current_login_ip = db.Column(db.String(100))
     login_count = db.Column(db.Integer)
-    registered_at = db.Column(db.DateTime)
-    
+   
     technician = db.Column(db.Boolean)
     administrator = db.Column(db.Boolean)
     superuser = db.Column(db.Boolean)
@@ -63,9 +65,16 @@ class UserModel(db.Model):
     def is_anonymous(self):
         return False
 
+    def verify_password(self, password):
+        if bcrypt.check_password_hash(self.password, password):
+            return True
+        else:
+            return False
+    
+
     def has_role(self, role):
         try:
-            return getattr(self, role)
+            return getattr(self, role.lower())
         except AttributeError:
             print(role)
 

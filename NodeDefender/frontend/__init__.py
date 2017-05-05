@@ -1,4 +1,4 @@
-from .. import app, LoginMan
+from .. import app, LoginMan, serializer
 from flask_login import login_required, current_user
 from flask import Blueprint, render_template
 from ..models.manage import node as NodeManage
@@ -24,27 +24,28 @@ def load_user(id):
 
 @app.context_processor
 def inject_user():      # Adds general data to base-template
-    if current_user.is_authenticated:
+    if current_user:
         # Return Message- inbox for user if authenticated
         return dict(current_user = current_user)
     else:
         # If not authenticated user get Guest- ID(That cant be used).
-        return dict(current_user = current_user)
+        return dict(current_user = None)
 
 
 @app.context_processor
 def inject_serializer():
     def serialize(name):
-        serializer = URLSafeSerializer(app.config['SECRET_KEY'])
         return serializer.dumps(name)
-    return dict(serialize = serialize)
+    def serialize_salted(name):
+        return serializer.dumps_salted(name)
+    return dict(serialize = serialize, serialize_salted = serialize_salted)
 
 @app.route('/')
 @app.route('/index')
 @login_required
 def index():
     nodes = NodeManage.List(current_user.email)
-    data = DataManage.Get(current_user.email)
+    data = []
     events = [] 
     return render_template('dashboard/index.html', node=nodes, data = data, messages =
                           [], events = [])

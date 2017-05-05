@@ -18,10 +18,15 @@ class NodeModel(db.Model):
     name = db.Column(db.String(40), unique=True)
     location = db.relationship('LocationModel', uselist=False, backref='node')
     created_on = db.Column(db.DateTime)
-    statistics = db.relationship('StatisticsModel', backref='node', uselist=False)
     notes = db.relationship('NodeNotesModel', backref='node')
     notesticky = db.Column(db.String(150))
     icpe = db.relationship('iCPEModel', backref='node', uselist=False)
+    heat = db.relationship('HeatModel', backref="node",
+                           cascade="save-update, merge, delete")
+    power = db.relationship('PowerModel', backref="node",
+                           cascade="save-update, merge, delete")
+    events = db.relationship('EventModel', backref="node",
+                           cascade="save-update, merge, delete")
 
     def __init__(self, name, location):
         self.name = name
@@ -43,6 +48,7 @@ class LocationModel(db.Model):
     __tablename__ = 'location'
     id = db.Column(db.Integer, primary_key=True)
     node_id = db.Column(db.Integer, db.ForeignKey('node.id'))
+    group_id = db.Column(db.Integer, db.ForeignKey('group.id'))
     street = db.Column(db.String(30))
     city = db.Column(db.String(30))
     latitude = db.Column(db.String(10))

@@ -18,6 +18,7 @@ def create(email, password):
     try:
         user.Create(email)
         user.Password(email, password)
+        user.Enable(email)
     except ValueError:
         print("User already present")
         return
@@ -25,19 +26,48 @@ def create(email, password):
     print("User {} Successfully added!".format(email))
 
 
-@manager.option('-i', '--index', dest='index', default=None)
 @manager.option('-n', '-e', '--email', dest='email', default=None)
-def delete(email, index):
+def delete(email):
     "Deltes User"
-    if email is None and index is None:
-        email = prompt('Email or Index')
+    if email is None:
+        email = prompt('Email')
 
     try:
-        u = user.Delete((email if email else index))
+        u = user.Delete(email)
     except LookupError as e:
         print("Error: ", e)
 
     print("User {} Successfully Deleted!".format(u.email))
+
+@manager.option('-n', '-e', '--email', dest='email', default=None)
+def enable(email):
+    "Enable User"
+    if email is None:
+        email = prompt('Email')
+
+    try:
+        u = user.Enable(email)
+    except LookupError as e:
+        print("Error: ", e)
+
+    print("User {} Successfully Enabled!".format(u.email))
+
+@manager.option('-n', '-e', '--email', dest='email', default=None)
+def lock(email):
+    "Lock User"
+    if email is None:
+        email = prompt('Email')
+
+    try:
+        u = user.Lock(email)
+    except LookupError as e:
+        print("Error: ", e)
+
+    print("User {} Successfully Locked!".format(u.email))
+
+
+
+
 
 @manager.command
 def list():

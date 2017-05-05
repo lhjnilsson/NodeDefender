@@ -1,5 +1,6 @@
 from ... import db
 from datetime import datetime
+from .nodes import LocationModel
 
 user_list = db.Table('user_list',
                      db.Column('group_id', db.Integer,
@@ -12,6 +13,13 @@ node_list = db.Table('node_list',
                                db.ForeignKey('group.id')),
                      db.Column('node_id', db.Integer,
                                db.ForeignKey('node.id'))
+                    )
+
+mqtt_list = db.Table('mqtt_list',
+                     db.Column('group_id', db.Integer,
+                               db.ForeignKey('group.id')),
+                     db.Column('mqtt_id', db.Integer,
+                               db.ForeignKey('mqtt.id'))
                     )
 
 class GroupModel(db.Model):
@@ -27,14 +35,22 @@ class GroupModel(db.Model):
     users = db.relationship('UserModel', secondary=user_list,
                             backref=db.backref('groups', lazy='dynamic'))
     messages = db.relationship('GroupMessageModel', backref='groupmessages')
+    mqtts = db.relationship('MQTTModel', secondary=mqtt_list,
+                            backref=db.backref('groups', lazy='dynamic'))
     nodes = db.relationship('NodeModel', secondary=node_list,
                             backref=db.backref('groups', lazy='dynamic'))
-    statistics = db.relationship('StatisticsModel', backref='groups', uselist=False)
-   
-    def __init__(self, name, description):
+    location = db.relationship('LocationModel', uselist=False,
+                               backref='group')
+
+    def __init__(self, name, email, description):
         self.name = name
-        self.description = description
+        self.email = email
+        self.description = str(description)
         self.created_on = datetime.now()
+    
+    def to_json(self):
+        return {'name' : self.name, 'email' : self.email, 'created' :
+                str(self.created_on), 'description' : self.description}
 
 class GroupMessageModel(db.Model):
     '''

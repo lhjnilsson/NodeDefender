@@ -1,0 +1,6 @@
+
+MQTT Connection to {{ mqtt.ipaddr }} has been added to group {{ group.name }}
+
+url {{ url }}
+
+Best Regards,

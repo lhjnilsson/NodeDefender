@@ -1,5 +1,6 @@
 {% macro NodeInfo(node) %}
-{% from "macros/statistics.html" import CurrentPower, CurrentHeat %}
+{% from "macros/data/node/power.html" import Current as CurrentPower %}
+{% from "macros/data/node/heat.html" import Current as CurrentHeat %}
 <div class="row" style="height: 50%;">
 	<div class="col-lg-4 textCenter">
 		<a href="#">
@@ -22,10 +23,10 @@
 </div>
 <div class="row" style="height: 50%;">
 	<div class="col-lg-6">
-		{{ CurrentPower(node = node.name) }}
+		{{ CurrentPower(node) }}
 	</div>
 	<div class="col-lg-6">
-		{{ CurrentHeat(node = node.name) }}
+		{{ CurrentHeat(node) }}
 	</div>
 </div>
 {% endmacro %}
@@ -70,17 +71,17 @@ $(document).ready(function() {
 	includeButton = $('#include-icpe');
 	excludeButton = $('#exclude-icpe');
 
-	iCPESocket.on('connectionInfo', function(conn) {
-		$("#connectionType").text(conn.type);
-		$("#connectionAddr").text(conn.addr);
+	iCPESocket.on('connection', function(conn) {
+		document.getElementById('connectionType').innerHTML = conn.type;
+		document.getElementById('connectionAddr').innerHTML = conn.address;
 	});
-	iCPESocket.on('powerInfo', function(pwr) {
-		$("#powerSource").text(pwr.source);
-		$("#powerLevel").text(pwr.level);
+	iCPESocket.on('power', function(power) {
+		document.getElementById('powerSource').innerHTML = power.source;
+		document.getElementById('powerLevel').innerHTML = power.battery;
 	});
 
-	iCPESocket.emit('connectionInfo', {'iCPE' : iCPE});
-	iCPESocket.emit('powerInfo', {'iCPE' : iCPE});
+	iCPESocket.emit('connection', {'iCPE' : iCPE});
+	iCPESocket.emit('power', {'iCPE' : iCPE});
 	
 	updateButton.click(function() {
 		iCPESocket('updateSensors', {'iCPE' : iCPE});

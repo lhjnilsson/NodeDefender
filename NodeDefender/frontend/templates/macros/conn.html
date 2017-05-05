@@ -1,4 +1,5 @@
 {% macro ListMQTT(mqtts, Form) %}
+{% from "macros/info.html" import FieldID %}
 <table class="table table-hover">
 	<thead>
 		<tr>
@@ -34,12 +35,33 @@
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal">&times;</button>
-				<h2 class="modal-title">MQTT Info</h2>
+				<h2 class="modal-title">MQTT <div id="mqttTitle"></div></h2>
 			</div>
 			<div class="modal-body">
+				<ul class="nav nav-pills nav-justified">
+					<li class="active"><a data-toggle="pill" href="#MQTTModalInfo">Information</a></li>
+					<li><a data-toggle="pill" href="#MQTTModaliCPEs">iCPEs</a></li>
+					<li><a data-toggle="pill" href="#MQTTModalGroups">Groups</a></li>
+				</ul>
+				<div class="tab-content">
+					<div id="MQTTModalInfo" class="tab-pane fade in active">
+						<div class="row">
+							{{ FieldID("Address", "-", "mqttInfoAddress") }}
+							{{ FieldID("Port", "-", "mqttInfoPort") }}
+							{{ FieldID("Online", "-", "mqttInfoOnline") }}
+							{{ FieldID("Created On", "-", "mqttInfoCreatedOn") }}
+						</div>
+					</div>
+					<div id="MQTTModaliCPEs" class="tab-pane fade">
+						<h3>iCPEs</h3>
+					</div>
+					<div id="MQTTModalGroups" class="tab-pane fade">
+						<h3>Groups</h3>
+					</div>
+				</div>
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-default" data-dissmiss="modal">Close</button>
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 			</div>
 		</div>
 	</div>
@@ -47,7 +69,15 @@
 <script>
 function MQTTInfo(ipaddress, port) {
 	$('#MQTTInfoModal').modal('show');
+	adminSocket.emit("mqttInfo", {'ipaddr' : ipaddress, 'port' : port});
+	$("#mqttTitle").text(ipaddress);
 }
+adminSocket.on("mqttInfo", function(info) {
+	$("#mqttInfoAddress").text(info.ipaddr);
+	$("#mqttInfoPort").text(info.port);
+	$("#mqttInfoOnline").text(info.online);
+	$("#mqttInfoCreatedAt").text(info.createdAt);
+});
 </script>
 {% endmacro %}
 

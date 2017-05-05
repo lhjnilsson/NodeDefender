@@ -14,7 +14,8 @@
     </div>
 </div>
 {% include "flash.html" %}
-{% from "macros/group.html" import ListGroups, CreateGroup with context %}
+{% from "macros/group.html" import ListGroups with context %}
+{% from "admin/modals/group.html" import CreateGroup with context %}
 <div class="row">
 	 <div class="col-lg-12">
 		 <div class="panel panel-primary">
@@ -28,19 +29,7 @@
 		</div>
   </div>
 </div>
-<div class="modal fade" id="createGroupModal" role="dialog">
-	<div class="modal-dialog">
-		
-		<div class="modal-content">
-			<div class="modal-header">
-				<h2 class="modal-title">Add new node</h2>
-			</div>
-			<div class="modal-body">
-				{{ CreateGroup(CreateGroupForm) }}
-		</div>
-	</div>
-</div>	
-
+{{ CreateGroup() }}
 <script>
 $(document).ready(function() {
 	{% if current_user.has_role("superuser") %}

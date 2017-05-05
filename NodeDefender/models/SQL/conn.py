@@ -17,7 +17,6 @@ class MQTTModel(db.Model):
 
     icpes = db.relationship('iCPEModel', secondary=mqtt_icpe,
                             backref=db.backref('mqtt', lazy='dynamic'))
-
     created_at = db.Column(db.DateTime)
 
     def __init__(self, ipaddr, port, username = None, password = None):
@@ -26,3 +25,7 @@ class MQTTModel(db.Model):
         self.username = username
         self.password = password
         self.created_at = datetime.now()
+
+    def to_json(self):
+        return {'ipaddr' : self.ipaddr, 'port' : self.port, 'createdAt' :
+                str(self.created_at), 'online' : True}

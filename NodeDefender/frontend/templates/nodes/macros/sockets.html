@@ -39,9 +39,8 @@ function switchChange(box, macaddr, sensorid, cmdclass, classtype) {
 	}
 }
 
-function switchEvent(field, value) {
-	console.log('Switch Event ' + value);
-	if (value) {
+function switchEvent(field, enabled) {
+	if (enabled) {
 		field.attr("checked", true);
 	} else {
 		field.attr("checked", false);
@@ -49,9 +48,8 @@ function switchEvent(field, value) {
 }
 
 
-function boxEvent(box, value) {
-	console.log('Box Event ' + value);
- if(value) {
+function boxEvent(box, enabled) {
+ if(enabled) {
 	 $(box).addClass('lightboxlight');
  } else {
 	 $(box).removeClass('lightboxlight');
@@ -59,19 +57,18 @@ function boxEvent(box, value) {
 }
 
 function valueEvent(box, value) {
-	console.log('Value Event ' + value);
 	$(box).text(value);
 }
 
 
 
-eventsocket.on('FieldEvent', function(sensor, field, value) {
+eventsocket.on('FieldEvent', function(sensor, field, value, enabled) {
 	f = document.getElementById(sensor.sensorid+field.name);
 	console.log('event..');
 	if (field.type == 'switch') {
-		switchEvent(f, value);
+		switchEvent(f, enabled);
 	} else if (field.type == 'box') {
-		boxEvent(f, value);
+		boxEvent(f, enabled);
 	} else if (field.type == 'value') {
 		valueEvent(f, value);
 	}

@@ -22,9 +22,23 @@ def Delete(email):
     user = UserModel.query.filter_by(email = email).first()
     if user is None:
         raise LookupError('Cant find user')
-    db.sesion.delete(user)
+    db.session.delete(user)
     db.session.commit()
     logger.info("Deleted user: {}".format(user.email))
+    return user
+
+def Enable(user):
+    user = Get(user)
+    user.active = True
+    db.session.add(user)
+    db.session.commit()
+    return user
+
+def Lock(user):
+    user = Get(user)
+    user.active = False
+    db.session.add(user)
+    db.session.commit()
     return user
 
 def Get(email):

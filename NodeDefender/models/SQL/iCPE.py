@@ -11,7 +11,7 @@ class iCPEModel(db.Model):
     name = db.Column(db.String(64))
     macaddr = db.Column(db.String(12), unique=True)
     ipaddr = db.Column(db.String(32))
-    online =  db.Column(db.Boolean)
+    enabled =  db.Column(db.Boolean)
     created_on = db.Column(db.DateTime)
     last_online = db.Column(db.DateTime)
     sensors = db.relationship('SensorModel', backref='icpe',
@@ -19,16 +19,23 @@ class iCPEModel(db.Model):
     notesticky = db.Column(db.String(150))
     fields = db.relationship('FieldModel', backref='icpe',
                                 cascade='save-update, merge, delete')
+    heat = db.relationship('HeatModel', backref="icpe",
+                           cascade="save-update, merge, delete")
+    power = db.relationship('PowerModel', backref="icpe",
+                           cascade="save-update, merge, delete")
+    events = db.relationship('EventModel', backref="icpe",
+                           cascade="save-update, merge, delete")
 
     def __init__(self, macaddr):
         self.macaddr = macaddr.upper()
+        self.enabled = False
         self.created_on = datetime.now()
 
     def __repr__(self):
         return '<Name %r, Mac %r>' % (self.name, self.macaddr)
 
     def to_json(self):
-        icpe = {'mac' : self.macaddr,
+        icpe = {'macAddress' : self.macaddr,
                 'ipaddr' : self.ipaddr,
                 'createdOn' : str(self.created_on),
                 'sensors' : str(len(self.sensors)),
@@ -77,6 +84,13 @@ class SensorModel(db.Model):
                                 cascade='save-update, merge, delete')
     fields = db.relationship('FieldModel', backref='sensor',
                                 cascade='save-update, merge, delete')
+    heat = db.relationship('HeatModel', backref="sensor",
+                           cascade="save-update, merge, delete")
+    power = db.relationship('PowerModel', backref="sensor",
+                           cascade="save-update, merge, delete")
+    events = db.relationship('EventModel', backref="sensor",
+                           cascade="save-update, merge, delete")
+
 
     def __init__(self, sensorid, sensorinfo):
         self.sensorid = str(sensorid)
@@ -86,6 +100,10 @@ class SensorModel(db.Model):
                 setattr(self, key.lower(), value)
 
             self.productname = self.name
+    
+    def to_json(self):
+        return {'name' : self.name, 'sensorId' : self.sensorid,\
+                'brand' : self.brand, 'productName' : str(self.productname)}
 
 class SensorClassModel(db.Model):
     __tablename__ = 'sensorclass'
@@ -96,6 +114,8 @@ class SensorClassModel(db.Model):
     classtypes = db.Column(db.String(200))
     fields = db.relationship('FieldModel', backref='sensorclass',
                                 cascade='save-update, merge, delete')
+    events = db.relationship('EventModel', backref="sensorclass",
+                           cascade="save-update, merge, delete")
 
     def __init__(self, classnumber, classname):
         self.classnumber = classnumber

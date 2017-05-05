@@ -3,6 +3,10 @@ from ... import socketio, settings, config
 from ...models.manage import group as GroupSQL
 from ...models.manage import user as UserSQL
 from ...models.manage import mqtt as MQTTSQL
+from ...models.manage import role as RoleSQL
+from ...mail import group as GroupMail
+from ...mail import user as UserMail
+from ...conn.mqtt import Load as LoadMQTT
 
 @socketio.on('createMQTT', namespace='/admin')
 def create_mqtt(msg):
@@ -10,8 +14,18 @@ def create_mqtt(msg):
     if len(msg['username']):
         mqtt.username = msg['username']
         mqtt.password = msg['password']
+    group = GroupSQL.Get(msg['group'])
+    mqtt.groups.append(group)
     MQTTSQL.Save(mqtt)
+    GroupMail.new_mqtt.delay(group.name, mqtt.ipaddr, mqtt.port)
+    LoadMQTT([mqtt])
     emit('reload', namespace='/general')
+    return True
+
+@socketio.on('mqttInfo', namespace='/admin')
+def mqtt_info(msg):
+    mqtt = MQTTSQL.Get(**msg)
+    emit('mqttInfo', mqtt.to_json())
     return True
 
 @socketio.on('groups', namespace='/adminusers')
@@ -19,6 +33,39 @@ def Groups(msg):
     groups = GroupSQL.List()
     groupsnames = [group.name for group in groups]
     emit('groupsrsp', (groupsnames))
+    return True
+
+@socketio.on('createGroup', namespace='/admin')
+def create_group(info):
+    if GroupSQL.Get(info['name']):
+        emit('error', ('Group exsists'), namespace='/general')
+        return False
+    group = GroupSQL.Create(info['name'], info['mail'], info['description'])
+    GroupSQL.Location(group, info['street'], info['city'])
+    GroupMail.new_group.delay(group.name)
+    emit('reload', namespace='/general')
+    return True
+
+@socketio.on('createUser', namespace='/admin')
+def create_user(info):
+    user = UserSQL.Create(info['email'])
+    user.firstname = info['firstname']
+    user.lastname = info['lastname']
+    UserSQL.Save(user)
+    UserSQL.Lock(info['email'])
+    UserSQL.Join(info['email'], info['group'])
+    RoleSQL.AddRole(info['email'], info['role'])
+    UserMail.create_user.delay(user.email)
+    emit('reload', namespace='/general')
+    return True
+
+@socketio.on('resetUserPassword', namespace='/admin')
+def reset_password(info):
+    user = UserSQL.Get(info['email'])
+    if user is None:
+        emit('error', ('user not found'), namespace='/general')
+    UserMail.reset_password.delay(user.email)
+    emit('reload', namespace='/general')
     return True
 
 @socketio.on('groupInfoGet', namespace='/adminusers')

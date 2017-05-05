@@ -27,12 +27,14 @@ from flask_socketio import emit, send, disconnect, join_room, leave_room, \
 from ... import socketio
 from ...models.manage import node as NodeSQL
 from ...models.manage import icpe as iCPESQL
+from ...mail import node as NodeMail
 from flask import jsonify
 from geopy.geocoders import Nominatim
 
 @socketio.on('nodes', namespace='/node')
 def icpeevent(msg):
-    return emit('nodes', [node.to_json() for node in NodeSQL.List(msg)])
+    emit('nodes', ([node.to_json() for node in NodeSQL.List(msg)]))
+    return True
 
 @socketio.on('location', namespace='/node')
 def Location(msg):
@@ -76,5 +78,6 @@ def Create(msg):
     except LookupError:
         iCPESQL.Create(msg['macaddr'])
         iCPESQL.Join(msg['macaddr'], node.name)
+    NodeMail.new_node.delay(msg['group'], msg['node'])
     emit('reload', namespace='/general')
     return True

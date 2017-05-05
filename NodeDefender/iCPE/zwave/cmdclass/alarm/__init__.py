@@ -1,5 +1,7 @@
 from ... import BaseModel, PayloadSplitter, DataDescriptor, ClassInfo
 zalm = {'06' : 'AccessControl'}
+icons = {'AccessControl' : {'16' : 'fa fa-bell', '17' : 'fa fa-bell-slash-o',\
+         '1' : 'fa fa-bell', '0' : 'fa fa-bell-slash-o'}}
 
 class AlarmModel:
     v1alm = DataDescriptor('v1alm')
@@ -36,6 +38,10 @@ def Info(classtype = None):
             print("Unable to add {} for class {}".format(classtype,
                                                          classinfo.classname))
     return classinfo
+
+
+def Icon(value, classtype):
+    return icons[classtype][value]
 
 def Load():
     return {'notification': None}
