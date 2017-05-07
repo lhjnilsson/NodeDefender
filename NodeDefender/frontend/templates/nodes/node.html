@@ -110,18 +110,21 @@ var socket = io.connect('http://' + document.domain + ':' + location.port + name
 </div>
 {% from "nodes/modals/node.html" import ModalGrouplist, ModifyLocation, ModifyGeneral with context %}
 {% from "nodes/modals/node.html" import NodeInformation with context %}
+{% from "nodes/modals/icpe.html" import iCPEModal %}
 {% from "nodes/modals/sensor.html" import SensorModal %}
 <script>
 $(document).ready(function() {
+icpeMac = "{{iCPE.macaddr}}";
 $('#general').prepend('<a style="color: #FFFFFF; margin: 0 5px;" href="#" data-toggle="modal" data-target="#groupList"><i class="fa fa-users" aria-hidden="true"></i></a>');
 $('#general').prepend('<a style="color: #FFFFFF; margin: 0 5px;" href="#" data-toggle="modal" data-target="#nodeInfo"><i class="fa fa-info" aria-hidden="true"></i></a>');
-$('#iCPEModals').prepend('<a style="color: #FFFFFF; margin: 0 5px;" href="#" onclick='iCPEModal("{{iCPE.macaddr}}")'><i class="fa fa-info" aria-hidden="true"></i></a>');
+$('#iCPEModals').prepend('<a style="color: #FFFFFF; margin: 0 5px;" href="#" onclick="iCPEModal(icpeMac)"><i class="fa fa-info" aria-hidden="true"></i></a>');
 
 {% if current_user.has_role("technician") %}
 $('#location').prepend('<a style="color: #FFFFFF; margin: 0 5px;" href="#" data-toggle="modal" data-target="#modifyLocation"><i class="fa fa-pencil" aria-hidden="true"></i></a>');
 {% endif %}
 
 });
+
 function sensorModal(iCPE, sensor) {
 	sensorSocket.emit('info', {'icpe' : iCPE, 'sensor' : sensor});
 	dataSocket.emit('sensorEvents', {'icpe' : iCPE, 'sensor' : sensor});
@@ -148,5 +151,6 @@ function iCPEModal(iCPE) {
 {% endif %}
 
 {{ Lookup(iCPE) }}
+{{ iCPEModal() }}
 {{ SensorModal() }}
 {% endblock %}

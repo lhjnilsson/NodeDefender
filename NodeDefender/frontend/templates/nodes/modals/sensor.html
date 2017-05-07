@@ -17,6 +17,7 @@
 					<div id="SensorModalInfo" class="tab-pane fade in active">
 						<div class="row">
 							{{ FieldID("Name", "-", "sensorName") }}
+							{{ FieldID("iCPE", "-", "sensoriCPE") }}
 							{{ FieldID("Sensor Id", "-", "sensorId") }}
 							{{ FieldID("Brand", "-", "sensorBrand") }}
 							{{ FieldID("Product Name", "-", "sensorProductName") }}
@@ -42,6 +43,7 @@
 				</div>
 			</div>
 			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" id="updateSensorFields">Update Fields</button>
 				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 			</div>
 		</div>
@@ -51,9 +53,15 @@
 var sensorEventTable = document.getElementById('sensoreventtable');
 var sensorEventBody = document.getElementById('sensoreventbody');
 
+document.getElementById('updateSensorFields').addEventListener('click', function() {
+	sensorSocket.emit('updateFields', {'icpe' : document.getElementById('sensoriCPE').innerHTML,
+		'sensor' : document.getElementById('sensorId').innerHTML});
+});
+
 sensorSocket.on('info', function(info) {
 	document.getElementById("sensorName").innerHTML = info.name;
 	document.getElementById("sensorId").innerHTML = info.sensorId;
+	document.getElementById("sensoriCPE").innerHTML = info.icpe;
 	document.getElementById("sensorBrand").innerHTML = info.brand;
 	document.getElementById("sensorProductName").innerHTML = info.productName;
 	document.getElementById("sensorLibtype").innerHTML = info.librarytype;

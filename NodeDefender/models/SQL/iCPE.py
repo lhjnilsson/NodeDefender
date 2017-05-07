@@ -35,9 +35,10 @@ class iCPEModel(db.Model):
         return '<Name %r, Mac %r>' % (self.name, self.macaddr)
 
     def to_json(self):
-        icpe = {'macAddress' : self.macaddr,
+        icpe = {'name' : self.name,
+                'macAddress' : self.macaddr,
                 'ipaddr' : self.ipaddr,
-                'createdOn' : str(self.created_on),
+                'createdAt' : str(self.created_on),
                 'sensors' : str(len(self.sensors)),
                 'mqttConnection' : self.mqtt[0].ipaddr}
         return icpe
@@ -103,6 +104,7 @@ class SensorModel(db.Model):
     
     def to_json(self):
         return {'name' : self.name, 'sensorId' : self.sensorid,\
+                'icpe' : self.icpe.macaddr,\
                 'brand' : self.brand, 'productName' : str(self.productname)}
 
 class SensorClassModel(db.Model):

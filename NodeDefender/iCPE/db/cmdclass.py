@@ -41,8 +41,8 @@ def Add(topic, payload, classnum = None):
     for field in classinfo.fields:
         if not len(field):
             continue
-        FieldRedis.Load(FieldSQL.Add(topic.macaddr, topic.sensorid, classinfo.classname,
-                            **field))
+        FieldRedis.Load(FieldSQL.Add(topic.macaddr, topic.sensorid,\
+                                     classinfo.classname, **field))
     return CmdclassRedis.Load(topic.macaddr, topic.sensorid, classinfo.classname)
 
 def AddTypes(topic, payload):

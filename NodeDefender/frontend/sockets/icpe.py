@@ -42,7 +42,7 @@ def Unassigned(msg):
 
 @socketio.on('info', namespace='/icpe')
 def Info(msg):
-    icpe = iCPESQL.Get(msg['macaddr'])
+    icpe = iCPESQL.Get(msg['icpe'])
     if icpe:
         emit('info', (icpe.to_json()))
         return True
