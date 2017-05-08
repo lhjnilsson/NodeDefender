@@ -96,21 +96,21 @@
 </form>
 <script>
 $(document).ready(function() {
-	groupSocket.emit('groups', ('{{user.email}}'));
+	groupSocket.emit('list', ('{{user.email}}'));
 
-	groupSocket.on('groups', function(groups) {
+	groupSocket.on('list', function(groups) {
 		var glength = groups.length;
 		if (glength < 1) {
 			return 
 		}
 		
 		for (var i = 0; i < glength; i++) {
-			$('#GroupsList').append('<option>'+  groups[i] + '</option>');
+			$('#GroupsList').append('<option>'+  groups[i].name + '</option>');
 		}
-		groupSocket.emit('groupInfoGet', {'name' : groups[0]});
+		groupSocket.emit('info', {'name' : groups[0].name});
 	});
 
-	groupSocket.on('groupInfoRsp', function(group) {
+	groupSocket.on('info', function(group) {
 		$('#Groupname').text(group.name);
 		$('#Groupdesc').text(group.description);
 		$('#Groupusers').text(group.users);
@@ -119,7 +119,7 @@ $(document).ready(function() {
 
 	$('#GroupsList').change(function() {
 		var name = $('#GroupsList option:selected').text();
-		groupSocket.emit('groupInfoGet', {'name' : name});
+		groupSocket.emit('info', {'name' : name});
 	});
 
 	function addToGroup() {

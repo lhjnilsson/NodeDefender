@@ -27,10 +27,22 @@ from flask_socketio import emit, send, disconnect, join_room, leave_room, \
 from ... import socketio
 from ...models.manage import group as GroupSQL
 from ...models.manage import user as UserSQL
+from flask_login import current_user
+
+@socketio.on('create', namespace='/group')
+def create(info):
+    if GroupSQL.Get(info['name']):
+        emit('error', ('Group exsists'), namespace='/general')
+        return False
+    group = GroupSQL.Create(info['name'], info['mail'], info['description'])
+    GroupSQL.Location(group, info['street'], info['city'])
+    GroupMail.new_group.delay(group.name)
+    emit('reload', namespace='/general')
+    return True
 
 @socketio.on('list', namespace='/group')
-def Groups(user):
-    user = UserSQL.Get(user)
+def list(user):
+    user = current_user
     if user is None:
         return
     if user.superuser:
@@ -40,13 +52,13 @@ def Groups(user):
     return True
 
 @socketio.on('info', namespace='/group')
-def GroupInfo(msg):
+def info(msg):
     group = GroupSQL.Get(msg['name'])
-    emit('info', (grouo.to_json()))
+    emit('info', (group.to_json()))
     return True
 
-@socketio.on('addToGroup', namespace='/group')
-def AddToGroup(msg):
+@socketio.on('addUser', namespace='/group')
+def add_user(msg):
     UserSQL.Join(msg['user'], msg['group'])
     emit('Reload')
     return True

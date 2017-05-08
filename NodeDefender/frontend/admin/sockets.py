@@ -35,17 +35,6 @@ def Groups(msg):
     emit('groupsrsp', (groupsnames))
     return True
 
-@socketio.on('createGroup', namespace='/admin')
-def create_group(info):
-    if GroupSQL.Get(info['name']):
-        emit('error', ('Group exsists'), namespace='/general')
-        return False
-    group = GroupSQL.Create(info['name'], info['mail'], info['description'])
-    GroupSQL.Location(group, info['street'], info['city'])
-    GroupMail.new_group.delay(group.name)
-    emit('reload', namespace='/general')
-    return True
-
 @socketio.on('createUser', namespace='/admin')
 def create_user(info):
     user = UserSQL.Create(info['email'])
@@ -53,7 +42,8 @@ def create_user(info):
     user.lastname = info['lastname']
     UserSQL.Save(user)
     UserSQL.Lock(info['email'])
-    UserSQL.Join(info['email'], info['group'])
+    if len(info['group']):
+        UserSQL.Join(info['email'], info['group'])
     RoleSQL.AddRole(info['email'], info['role'])
     UserMail.create_user.delay(user.email)
     emit('reload', namespace='/general')
