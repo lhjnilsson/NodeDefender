@@ -8,8 +8,14 @@ var dataSocket = io.connect('http://' + document.domain + ':' + location.port + 
 var plotlySocket = io.connect('http://' + document.domain + ':' + location.port + '/plotly');
 var sensorSocket = io.connect('http://' + document.domain + ':' + location.port + '/sensor');
 
-
-
 generalSocket.on('reload', function() {
 	location.reload();
 })
+
+generalSocket.on('redirect', function(url) {
+	location.href = url;
+});
+
+generalSocket.on('error', function(msg) {
+	toastr.error(msg)
+});

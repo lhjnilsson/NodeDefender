@@ -28,48 +28,6 @@ def mqtt_info(msg):
     emit('mqttInfo', mqtt.to_json())
     return True
 
-@socketio.on('groups', namespace='/adminusers')
-def Groups(msg):
-    groups = GroupSQL.List()
-    groupsnames = [group.name for group in groups]
-    emit('groupsrsp', (groupsnames))
-    return True
-
-@socketio.on('createUser', namespace='/admin')
-def create_user(info):
-    user = UserSQL.Create(info['email'])
-    user.firstname = info['firstname']
-    user.lastname = info['lastname']
-    UserSQL.Save(user)
-    UserSQL.Lock(info['email'])
-    if len(info['group']):
-        UserSQL.Join(info['email'], info['group'])
-    RoleSQL.AddRole(info['email'], info['role'])
-    UserMail.create_user.delay(user.email)
-    emit('reload', namespace='/general')
-    return True
-
-@socketio.on('resetUserPassword', namespace='/admin')
-def reset_password(info):
-    user = UserSQL.Get(info['email'])
-    if user is None:
-        emit('error', ('user not found'), namespace='/general')
-    UserMail.reset_password.delay(user.email)
-    emit('reload', namespace='/general')
-    return True
-
-@socketio.on('groupInfoGet', namespace='/adminusers')
-def GroupInfo(msg):
-    group = GroupSQL.Get(msg['name'])
-    info = {'name' : group.name,
-            'description' : group.description,
-            'users' : str(len(group.users)),
-            'nodes' : str(len(group.nodes)),
-            'created_on' : str(group.created_on),
-           }
-    emit('groupInfoRsp', (info))
-    return True
-
 @socketio.on('addToGroup', namespace='/adminusers')
 def AddToGroup(msg):
     UserSQL.Join(msg['user'], msg['group'])
