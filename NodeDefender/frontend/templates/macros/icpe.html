@@ -75,3 +75,66 @@ $(document).ready(function() {
 });
 </script>
 {% endmacro %}
+
+{% macro iCPEList(icpes = None) %}
+<table class="table table-hover" id="iCPEtable">
+	<thead>
+		<tr>
+			<th>MAC Address</th>
+			<th>Node</th>
+			<th>Online</th>
+		</tr>
+	</thead>
+	<tbody id="iCPEtbody">
+		{% for icpe in icpe %}
+		<tr>
+			<td>
+				<a href="#">
+					{{icpe.macaddr}}
+				</a>
+			</td>
+			<td>
+				<a href="#">
+					{{icpe.node.name}}
+				</a>
+			</td>
+			<td>
+				<a href="#">
+					{{icpe.online}}
+				</a>
+			</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+	<script>
+iCPEtbody = document.getElementById('iCPEtbody');
+iCPEtable = document.getElementById('iCPEtable');
+	function iCPEList(icpes) {
+		for (var i = 0; i < icpes.length; i++) {
+			iCPESocket.emit(icpes[i]);
+		}
+	};
+
+	function cleariCPEList() {
+		while (iCPEtable.length > 0)
+			iCPETable.deleteRow(0);
+	};
+
+	iCPESocket.on('info', function(icpe) {
+		var newRow = iCPEtbody.insertRow(0);
+
+		var macCell = newRow.insertCell(0);
+		var macText = document.createTextNode(icpe.macAddress);
+		macCell.appendChild(macText);
+
+		var nodeCell = newRow.insertCell(1);
+		var nodeText = document.createTextNode(icpe.node);
+		nodeCell.appendChild(nodeText);
+
+		var onlineCell = newRow.insertCell(2);
+		var onlineText = document.createTextNode(icpe.online);
+		onlineCell.appendChild(onlineText);
+	};
+	</script>
+{% endmacro %}

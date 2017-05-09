@@ -1,4 +1,4 @@
-{% macro ListGroups(groups) %}
+{% macro ListGroups(groups = None) %}
 <table class="table table-hover">
 	<thead>
 		<tr>
@@ -35,6 +35,36 @@
 		{% endfor %}
 	</tbody>
 </table>
+	<script>
+grouptbody = document.getElementById('grouptbody');
+grouptable = document.getElementById('grouptable');
+	function groupList(groups) {
+		for (var i = 0; i < groups.length; i++) {
+			groupSocket.emit('info', (groups[i]));
+		}
+	};
+
+	function clearGroupList() {
+		while (grouptable.length > 0)
+			groupable.deleteRow(0);
+	};
+
+	groupSocket.on('info', function(icpe) {
+		var newRow = grouptbody.insertRow(0);
+
+		var nameCell = newRow.insertCell(0);
+		var nameText = document.createTextNode(group.name);
+		nameCell.appendChild(nameText);
+
+		var descCell = newRow.insertCell(1);
+		var descText = document.createTextNode(group.description);
+		descCell.appendChild(descText);
+
+		var onlineCell = newRow.insertCell(2);
+		var onlineText = document.createTextNode(icpe.online);
+		onlineCell.appendChild(onlineText);
+	};
+	</script>
 
 {% endmacro %}
 

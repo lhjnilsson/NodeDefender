@@ -30,6 +30,8 @@
 		{% endfor %}
 	</tbody>
 </table>
+{% from "macros/icpe.html" import iCPEList %}
+{% from "macros/group.html" import GroupList %}
 <div class="modal fade" id="MQTTInfoModal" role="dialog">
 	<div class="modal-dialog">
 		<div class="modal-content">
@@ -53,10 +55,10 @@
 						</div>
 					</div>
 					<div id="MQTTModaliCPEs" class="tab-pane fade">
-						<h3>iCPEs</h3>
+						{{ iCPEList() }}
 					</div>
 					<div id="MQTTModalGroups" class="tab-pane fade">
-						<h3>Groups</h3>
+						{{ GroupsList() }}
 					</div>
 				</div>
 			</div>
@@ -72,11 +74,17 @@ function MQTTInfo(ipaddress, port) {
 	adminSocket.emit("mqttInfo", {'ipaddr' : ipaddress, 'port' : port});
 	$("#mqttTitle").text(ipaddress);
 }
-adminSocket.on("mqttInfo", function(info) {
+mqttSocket.on("mqttInfo", function(info) {
+	cleariCPEList();
+	clearGroupList();
+
 	$("#mqttInfoAddress").text(info.ipaddr);
 	$("#mqttInfoPort").text(info.port);
 	$("#mqttInfoOnline").text(info.online);
 	$("#mqttInfoCreatedAt").text(info.createdAt);
+
+	iCPEList(info.icpes);
+	groupList(info.groups);
 });
 </script>
 {% endmacro %}
