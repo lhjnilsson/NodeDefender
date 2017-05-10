@@ -86,7 +86,8 @@ $(document).ready(function() {
 		</tr>
 	</thead>
 	<tbody id="iCPEtbody">
-		{% for icpe in icpe %}
+		{% if icpes %}
+		{% for icpe in icpes %}
 		<tr>
 			<td>
 				<a href="#">
@@ -105,6 +106,7 @@ $(document).ready(function() {
 			</td>
 		</tr>
 		{% endfor %}
+		{% endif %}
 	</tbody>
 </table>
 	<script>
@@ -135,6 +137,6 @@ iCPEtable = document.getElementById('iCPEtable');
 		var onlineCell = newRow.insertCell(2);
 		var onlineText = document.createTextNode(icpe.online);
 		onlineCell.appendChild(onlineText);
-	};
+	});
 	</script>
 {% endmacro %}

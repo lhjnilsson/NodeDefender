@@ -1,5 +1,5 @@
 {% macro ListGroups(groups = None) %}
-<table class="table table-hover">
+<table class="table table-hover" id="grouptable">
 	<thead>
 		<tr>
 			<th>Name</th>
@@ -8,7 +8,8 @@
 			<th>Nodes</th>
 		</tr>
 	</thead>
-	<tbody>
+	<tbody id="grouptbody">
+		{% if groups %}
 		{% for group in groups %}
 		<tr>
 			<td>
@@ -33,6 +34,7 @@
 			</td>
 		</tr>
 		{% endfor %}
+		{% endif %}
 	</tbody>
 </table>
 	<script>
@@ -49,7 +51,7 @@ grouptable = document.getElementById('grouptable');
 			groupable.deleteRow(0);
 	};
 
-	groupSocket.on('info', function(icpe) {
+	groupSocket.on('info', function(group) {
 		var newRow = grouptbody.insertRow(0);
 
 		var nameCell = newRow.insertCell(0);
@@ -63,7 +65,7 @@ grouptable = document.getElementById('grouptable');
 		var onlineCell = newRow.insertCell(2);
 		var onlineText = document.createTextNode(icpe.online);
 		onlineCell.appendChild(onlineText);
-	};
+	});
 	</script>
 
 {% endmacro %}

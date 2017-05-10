@@ -31,7 +31,7 @@
 	</tbody>
 </table>
 {% from "macros/icpe.html" import iCPEList %}
-{% from "macros/group.html" import GroupList %}
+{% from "macros/group.html" import ListGroups %}
 <div class="modal fade" id="MQTTInfoModal" role="dialog">
 	<div class="modal-dialog">
 		<div class="modal-content">
@@ -58,7 +58,7 @@
 						{{ iCPEList() }}
 					</div>
 					<div id="MQTTModalGroups" class="tab-pane fade">
-						{{ GroupsList() }}
+						{{ ListGroups() }}
 					</div>
 				</div>
 			</div>
