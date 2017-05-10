@@ -50,7 +50,9 @@ class GroupModel(db.Model):
     
     def to_json(self):
         return {'name' : self.name, 'email' : self.email, 'created' :
-                str(self.created_on), 'description' : self.description}
+                str(self.created_on), 'description' : self.description,
+                'users' : [user.email for user in self.users],
+                'nodes' : [node.name for node in self.nodes]}
 
 class GroupMessageModel(db.Model):
     '''

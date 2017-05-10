@@ -114,13 +114,13 @@ iCPEtbody = document.getElementById('iCPEtbody');
 iCPEtable = document.getElementById('iCPEtable');
 	function iCPEList(icpes) {
 		for (var i = 0; i < icpes.length; i++) {
-			iCPESocket.emit(icpes[i]);
+			iCPESocket.emit('info', {'icpe' : icpes[i]});
 		}
 	};
 
 	function cleariCPEList() {
-		while (iCPEtable.length > 0)
-			iCPETable.deleteRow(0);
+		while (iCPEtable.rows.length > 0)
+			iCPEtable.deleteRow(0);
 	};
 
 	iCPESocket.on('info', function(icpe) {

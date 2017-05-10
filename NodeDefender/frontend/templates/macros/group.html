@@ -42,13 +42,13 @@ grouptbody = document.getElementById('grouptbody');
 grouptable = document.getElementById('grouptable');
 	function groupList(groups) {
 		for (var i = 0; i < groups.length; i++) {
-			groupSocket.emit('info', (groups[i]));
+			groupSocket.emit('info', ({'name' : groups[i]}));
 		}
 	};
 
 	function clearGroupList() {
-		while (grouptable.length > 0)
-			groupable.deleteRow(0);
+		while (grouptable.rows.length > 0)
+			grouptable.deleteRow(0);
 	};
 
 	groupSocket.on('info', function(group) {
@@ -62,9 +62,13 @@ grouptable = document.getElementById('grouptable');
 		var descText = document.createTextNode(group.description);
 		descCell.appendChild(descText);
 
-		var onlineCell = newRow.insertCell(2);
-		var onlineText = document.createTextNode(icpe.online);
-		onlineCell.appendChild(onlineText);
+		var usersCell = newRow.insertCell(2);
+		var usersText = document.createTextNode(group.users.length);
+		usersCell.appendChild(usersText);
+		
+		var nodesCell = newRow.insertCell(3);
+		var nodesText = document.createTextNode(group.nodes.length);
+		nodesCell.appendChild(nodesText);
 	});
 	</script>
 

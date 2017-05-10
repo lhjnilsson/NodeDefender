@@ -71,10 +71,10 @@
 <script>
 function MQTTInfo(ipaddress, port) {
 	$('#MQTTInfoModal').modal('show');
-	adminSocket.emit("mqttInfo", {'ipaddr' : ipaddress, 'port' : port});
+	mqttSocket.emit("info", {'ipaddr' : ipaddress, 'port' : port});
 	$("#mqttTitle").text(ipaddress);
 }
-mqttSocket.on("mqttInfo", function(info) {
+mqttSocket.on("info", function(info) {
 	cleariCPEList();
 	clearGroupList();
 

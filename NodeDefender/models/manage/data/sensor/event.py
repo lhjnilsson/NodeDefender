@@ -10,9 +10,12 @@ def Latest(icpe, sensor):
             filter(iCPEModel.macaddr == icpe).\
             filter(SensorModel.macaddr == sensor).first()
 
-def Get(icpe, sensor, limit = 20):
-    return db.session.query(EventModel).join(SensorModel).\
-            join(iCPEModel).\
+def Get(icpe, sensor, limit = None):
+    if limit is None:
+        limit = 10
+    return db.session.query(EventModel).\
+            join(EventModel.sensor).\
+            join(EventModel.icpe).\
             filter(iCPEModel.macaddr == icpe).\
             filter(SensorModel.sensorid == sensor).\
             order_by(EventModel.date.desc()).limit(int(limit)).all()

@@ -28,4 +28,6 @@ class MQTTModel(db.Model):
 
     def to_json(self):
         return {'ipaddr' : self.ipaddr, 'port' : self.port, 'createdAt' :
-                str(self.created_at), 'online' : True}
+                str(self.created_at), 'online' : True,
+                'groups' : [group.name for group in self.groups],
+                'icpes' : [icpe.macaddr for icpe in self.icpes]}
