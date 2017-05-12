@@ -113,7 +113,7 @@ class SensorClassModel(db.Model):
     __tablename__ = 'sensorclass'
     id = db.Column(db.Integer, primary_key=True)
     sensor_id = db.Column(db.Integer, db.ForeignKey('sensor.id'))
-    classnumber = db.Column(db.String(20))
+    classnumber = db.Column(db.String(2))
     classname = db.Column(db.String(20))
     classtypes = db.Column(db.String(200))
     fields = db.relationship('FieldModel', backref='sensorclass',
@@ -121,6 +121,5 @@ class SensorClassModel(db.Model):
     events = db.relationship('EventModel', backref="sensorclass",
                            cascade="save-update, merge, delete")
 
-    def __init__(self, classnumber, classname):
-        self.classnumber = classnumber
-        self.classname = classname
+    def __init__(self, classnumber):
+        self.classnumber = classnumber[:2]

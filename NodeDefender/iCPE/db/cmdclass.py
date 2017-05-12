@@ -11,39 +11,43 @@ from .. import logger
 def Verify(topic, payload, mqttsrc = None):
     if len(CmdclassRedis.Get(topic.macaddr, topic.sensorid, topic.cmdclass)):
         return True
-    
+
     if CmdclassRedis.Load(topic.macaddr, topic.sensorid, topic.cmdclass):
         return True
-
-    if not zwave.Supported(topic.cmdclass):
-        return False
     
     icpe.Verify(topic, payload, mqttsrc)
     sensor.Verify(topic, payload, mqttsrc)
     return Add(topic, payload)
 
-def Add(topic, payload, classnum = None):
-    if classnum:
-        try:
-            topic.cmdclass = zwave.NumToName(classnum)
-        except NotImplementedError:
-            return False
+@ParsePayload
+def Add(topic, payload):
     try:
-        classinfo = zwave.Info(topic.cmdclass)
-    except NotImplementedError:
-        return False
-    
-    if classinfo.types:
-        mqtt.sensor.Sup(topic.macaddr, topic.sensorid, classinfo.classname)
+        cmdclasses = payload.clslist_0
+    except AttributeError:
+        cmdclasses = list(payload.cls[-2:])
 
-    CmdclassSQL.Add(topic.macaddr, topic.sensorid, classinfo.classnumber,
-                    classinfo.classname)
-    for field in classinfo.fields:
-        if not len(field):
+    for cmdclass in cmdclasses:
+        cls = CmdclassSQL.Add(topic.macaddr, topic.sensorid, cmdclass)
+
+        classinfo = zwave.Info(topic.cmdclass)
+        if not classinfo:
             continue
-        FieldRedis.Load(FieldSQL.Add(topic.macaddr, topic.sensorid,\
+        if classinfo.types:
+            mqtt.sensor.Sup(topic.macaddr, topic.sensorid,
+                            classinfo.classname)
+
+        cls.classname = classinfo.classname
+        cls.supported = True
+
+        for field in classinfo.fields:
+            if not len(field):
+                continue
+            FieldRedis.Load(FieldSQL.Add(topic.macaddr, topic.sensorid,\
                                      classinfo.classname, **field))
-    return CmdclassRedis.Load(topic.macaddr, topic.sensorid, classinfo.classname)
+        CmdclassRedis.Load(topic.macaddr, topic.sensorid, classinfo.classname)
+        CmdclassSQL.Save(cls)
+
+    return True
 
 def AddTypes(topic, payload):
     try:
