@@ -17,9 +17,6 @@
 
 {% macro SensorSockets(sensors) %}
 <script>
-namespace = '/icpe';
-var icpesocket = io.connect('http://' + document.domain + ':' location.port + namespace);
-
 function checkboxClick(box, icpe, nodeid, cmdclass) {
 	$(box).addClass('disabled');
 	if (box.checked) {
@@ -30,11 +27,11 @@ function checkboxClick(box, icpe, nodeid, cmdclass) {
 	$(box).removeClass('disabled');
 }
 
-icpesocket.on('connect', function() {
+iCPESocket.on('connect', function() {
 	icpesocket.emit('JoiniCPE', {icpe : '{{sensors[0].icpe.macaddraddr}}');
 });
 
-icpesocket.on('iCPEEvent', function(msg) {
+iCPESocket.on('iCPEEvent', function(msg) {
 	console.log(msg);
 });
 

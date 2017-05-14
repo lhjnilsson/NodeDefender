@@ -34,7 +34,6 @@ class GroupModel(db.Model):
     created_on = db.Column(db.DateTime)
     users = db.relationship('UserModel', secondary=user_list,
                             backref=db.backref('groups', lazy='dynamic'))
-    messages = db.relationship('GroupMessageModel', backref='groupmessages')
     mqtts = db.relationship('MQTTModel', secondary=mqtt_list,
                             backref=db.backref('groups', lazy='dynamic'))
     nodes = db.relationship('NodeModel', secondary=node_list,
@@ -53,20 +52,3 @@ class GroupModel(db.Model):
                 str(self.created_on), 'description' : self.description,
                 'users' : [user.email for user in self.users],
                 'nodes' : [node.name for node in self.nodes]}
-
-class GroupMessageModel(db.Model):
-    '''
-    Common messages for a group
-    '''
-    __tablename__ = 'groupmessage'
-    id = db.Column(db.Integer, primary_key=True)
-    parent_id = db.Column(db.Integer, db.ForeignKey('group.id'))
-    created_on = db.Column(db.DateTime)
-    author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    author = db.relationship('UserModel', backref='groupmessageauthor')
-    subject = db.Column(db.String(50))
-    message = db.Column(db.String(300))
-
-    def __init__(self, author, subject, message):
-        self.author = author
-        self.message = message

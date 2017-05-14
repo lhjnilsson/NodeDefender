@@ -27,7 +27,7 @@ from flask_socketio import emit, send, disconnect, join_room, leave_room, \
 from ... import socketio
 from ...models.manage import icpe as iCPESQL
 from ...models.manage import sensor as SensorSQL
-from ...iCPE import mqtt
+from ... import iCPE
 
 @socketio.on('list', namespace='/sensor')
 def List(msg):
@@ -41,10 +41,12 @@ def Info(msg):
         emit('info', (sensor.to_json()))
     return True
 
-@socketio.on('updateFields', namespace='/sensor')
+@socketio.on('update', namespace='/sensor')
 def update_fields(sensor):
-    #SensrSQL.clear_fields(**sensor)
-    mqtt.sensor.Query(sensor['icpe'], sensor['sensor'])
+    iCPE.db.sensor.Update(sensor['icpe'], sensor['sensor'])
     return True
 
+@socketio.on('fields', namespace='/sensor')
+def fields(msg):
+    pass
 

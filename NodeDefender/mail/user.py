@@ -12,14 +12,13 @@ def create_user(user):
 
     if user.email == None:
         return False
-    with app.app_context():
-        msg = Message('Welcome to NodeDefender', sender='noreply@nodedefender.com',
-                      recipients=[user.email])
-        url = url_for('AuthView.Register',\
-                      token = serializer.dumps_salted(user.email))
-        msg.body = render_template('mail/user/create_user.txt', user = user, url =
-                                  url)
-        mail.send(msg)
+    msg = Message('Welcome to NodeDefender', sender='noreply@nodedefender.com',
+                  recipients=[user.email])
+    url = url_for('AuthView.Register',\
+                  token = serializer.dumps_salted(user.email))
+    msg.body = render_template('mail/user/create_user.txt', user = user, url =
+                              url)
+    mail.send(msg)
     return True
 
 

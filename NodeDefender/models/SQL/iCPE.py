@@ -35,13 +35,18 @@ class iCPEModel(db.Model):
         return '<Name %r, Mac %r>' % (self.name, self.macaddr)
 
     def to_json(self):
+        if self.node:
+            node = self.node.name
+        else:
+            node = 'Not assigned'
+
         icpe = {'name' : self.name,
                 'macAddress' : self.macaddr,
                 'ipaddr' : self.ipaddr,
                 'createdAt' : str(self.created_on),
                 'sensors' : str(len(self.sensors)),
                 'mqttConnection' : self.mqtt[0].ipaddr,
-                'node' : self.node.name,
+                'node' : node,
                 'online' : 'false'}
         return icpe
 
@@ -72,16 +77,16 @@ class SensorModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     icpe_id = db.Column(db.Integer, db.ForeignKey('icpe.id'))
     
-    name = db.Column(db.String(32))
+    name = db.Column(db.String(64))
     sensorid = db.Column(db.String(4))
     
-    brand = db.Column(db.String(32))
-    productname = db.Column(db.String(32))
+    brand = db.Column(db.String(64))
+    productname = db.Column(db.String(64))
     manufacturerid = db.Column(db.String(16))
     productid = db.Column(db.String(16))
     producttypeid = db.Column(db.String(16))
-    librarytype = db.Column(db.String(32))
-    devicetype = db.Column(db.String(32))
+    librarytype = db.Column(db.String(64))
+    devicetype = db.Column(db.String(64))
   
     cmdclasses = db.relationship('SensorClassModel', backref='sensor',
                                 cascade='save-update, merge, delete')
@@ -116,6 +121,7 @@ class SensorClassModel(db.Model):
     classnumber = db.Column(db.String(2))
     classname = db.Column(db.String(20))
     classtypes = db.Column(db.String(200))
+    supported = db.Column(db.Boolean)
     fields = db.relationship('FieldModel', backref='sensorclass',
                                 cascade='save-update, merge, delete')
     events = db.relationship('EventModel', backref="sensorclass",
@@ -123,3 +129,4 @@ class SensorClassModel(db.Model):
 
     def __init__(self, classnumber):
         self.classnumber = classnumber[:2]
+        self.supported = False

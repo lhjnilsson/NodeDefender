@@ -50,8 +50,8 @@ $(document).ready(function() {
 		}
 	});
 	
-	iCPESocket.on('infoRsp', function(icpe) {
-		$('#icpemac').text(icpe.mac);
+	iCPESocket.on('info', function(icpe) {
+		$('#icpemac').text(icpe.macAddress);
 		$('#icpesensors').text(icpe.sensors);
 		$('#icpecreated').text(icpe.createdAt);
 		$('#icpemqtt').text(icpe.mqttConnection);
@@ -67,7 +67,7 @@ $(document).ready(function() {
 			$("#manual").hide();
 			$("#unassigned").show();
 			$("#manualMAC").text('');
-			iCPESocket.emit('info', {'macaddr' : macaddr});
+			iCPESocket.emit('info', {'icpe' : macaddr});
 		}
 	});
 	$("#unassigned").hide();

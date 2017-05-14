@@ -1,13 +1,13 @@
 from ...models.manage import sensor as SensorSQL
 from ...models.redis import sensor as SensorRedis
-from . import redisconn, icpe
+from . import redisconn, icpe, cmdclass
 from .. import mqtt, zwave
 from ... import celery
 from datetime import datetime
 from .. import logger
-from ..decorators import CommonPayload
+from ..decorators import ParsePayload
 
-@CommonPayload
+@ParsePayload
 def Verify(topic, payload, mqttsrc = None):
     if len(SensorRedis.Get(topic.macaddr, topic.sensorid)):
         return True
@@ -23,4 +23,13 @@ def Add(topic, payload):
     zinfo = zwave.db.SensorInfo(payload.vid, payload.pid)
     SensorSQL.Create(topic.macaddr, topic.sensorid, zinfo)
     SensorRedis.Load(topic.macaddr, topic.sensorid)
+    return True
+
+def Update(macaddr, sensorid):
+    sensor = SensorSQL.Get(macaddr, sensorid)
+    if not sensor.cmdclasses:
+        mqtt.sensor.Query(macaddr, sensorid)
+        return True
+    for cls in sensor.cmdclasses:
+        cmdclass.Update(cls)
     return True

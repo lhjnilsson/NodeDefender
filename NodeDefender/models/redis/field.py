@@ -24,7 +24,6 @@ def Load(field, conn):
 
 @redisconn
 def Update(mac, sensorid, name, value, conn):
-    print(mac, sensorid, name, value)
     conn.hmset(mac + sensorid + name, {'value' : str(value)})
     conn.hmset(mac + sensorid + name, {'last_updated' : str(datetime.now())})
     return conn.hgetall(mac + sensorid + name)

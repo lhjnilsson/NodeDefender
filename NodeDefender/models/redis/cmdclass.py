@@ -15,10 +15,10 @@ Common Format
 @LookupCmdclass
 @redisconn
 def Load(cmdclass, conn):
-    if cmdclass is None:
+    if not cmdclass:
         return None
-    if cmdclass.classname is None:
-        raise NotImplementedError('Classname undefined')
+    if not cmdclass.supported:
+        return False
 
     conn.sadd(cmdclass.sensor.icpe.macaddr + cmdclass.sensor.sensorid +\
               ":classes", cmdclass.classname)

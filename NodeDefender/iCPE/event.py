@@ -1,6 +1,6 @@
 from .. import celery
 from . import zwave, db, mqtt
-from .decorators import TopicToTuple
+from .decorators import ParseTopic
 from ..models.redis import cmdclass as CmdclassRedis
 from ..models.redis import field as FieldRedis
 from .zwave import ZWaveEvent
@@ -13,22 +13,27 @@ def WebSocket(macaddr, sensorid, cmdclass, value):
     return True
 
 @celery.task
-@TopicToTuple
+@ParseTopic
 def MQTT(topic, payload, mqttsrc):
     if topic.msgtype == 'cmd':
         return
     event = eval(topic.msgtype + '.' + topic.action)(topic, payload,
                                                               mqttsrc)
     if 'value' in dir(event):
-        FieldRedis.Update(topic.macaddr, topic.sensorid, event.name,
-                          event.value)
-        FieldEvent(topic.macaddr, topic.sensorid, event.name,
-                      event.value, event.enabled)
-        if event.classtype == 'power' or event.classtype == 'heat':
-            eval('SQLData.' + event.classtype + '.Put')(topic.macaddr, topic.sensorid,
-                                         event.value)
+        FieldRedis.Update(topic.macaddr, topic.sensorid,\
+                          event.name,event.value)
+
+        FieldEvent(topic.macaddr, topic.sensorid, event.name,\
+                   event.value, event.enabled)
+        
+        if event.classtype == 'power':
+            SQLData.power.Put(topic.macaddr, topic.sensorid, event.value)
+        
+        elif event.classtype == 'heat':
+            SQLData.heat.Put(topic.macaddr, topic.sensorid, event.value)
+        
         else:
-            SQLData.event.Put(topic.macaddr, topic.sensorid, topic.cmdclass,
+            SQLData.event.Put(topic.macaddr, topic.sensorid, event.cls,
                           event.classtype, event.value)
 
     return True

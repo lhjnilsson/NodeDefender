@@ -1,6 +1,6 @@
 from functools import wraps
 
-supported = {'20' : 'basic', '71' : 'alarm'}
+supported = {'20' : 'basic', '25' : 'bswitch', '32' : 'meter', '71' : 'alarm'}
 
 def NumToName(classnum):
     try:
@@ -13,20 +13,24 @@ def Supported(classname):
     Return True if the classname is Known
     '''
     try:
-        return eval(classname + '.Info')()
+        return eval('cmdclass.' + classname + '.Info')()
     except NameError:
         return False
 
-def Info(classname, classtypes = None):
+def Info(classnumber, classtypes = None):
     '''
     Returns Classname, flag if Class- types and Fields for Web
     '''
+    if classnumber not in supported:
+        return False
+
+    classname = supported[classnumber]
     try:
         if classtypes:
-            return eval(classname + '.Info')(classtypes)
+            return eval('cmdclass.' + classname + '.Info')(classtypes)
         else:
-            return eval(classname + '.Info')()
-    except NameError:
+            return eval('cmdclass.' + classname + '.Info')()
+    except AttributeError:
         raise NotImplementedError
 
 def Event(topic, payload):
@@ -34,8 +38,8 @@ def Event(topic, payload):
     Z-Wave event. Tries to lookup if the event is known(supported) or not
     '''
     try:
-        return eval(topic.cmdclass + '.Event')(payload)
-    except NameError as e:
+        return eval('cmdclass.' + topic.cmdclass + '.Event')(payload)
+    except AttributeError as e:
         print(topic.cmdclass + str(e))
     except KeyError:
         print("Descr not found")
@@ -76,7 +80,7 @@ class BaseModel:
     vid = DataDescriptor('vid')
     ptype = DataDescriptor('ptype')
     pid = DataDescriptor('pid')
-    classnumber = DataDescriptor('classnumber')
+    cls = DataDescriptor('cls')
     classname = DataDescriptor('classname')
     classtype = DataDescriptor('classtype')
     subfunc = DataDescriptor('subfunc')
@@ -88,7 +92,7 @@ class BaseModel:
         self.vid = None
         self.ptype = None
         self.pid = None
-        self.classnumber = None
+        self.cls = None
         self.classname = None
         self.subfunc = None
         self.classtype = None
@@ -109,12 +113,13 @@ def PayloadSplitter(model=BaseModel):
             ZWaveEvent = type('ZWaveEvent', (model, BaseModel), dict())()
             for key in dir(payload):
                 if '_' in key:
-                    pass
+                    continue
+                if key == 'class':
+                    setattr(ZWaveEvent, 'cls', getattr(payload, key))
                 else:
                     setattr(ZWaveEvent, key, getattr(payload, key))
             return func(ZWaveEvent)
         return wrapper
     return decorate
 
-from . import db
-from .cmdclass import alarm, basic, meter, msensor
+from . import db, cmdclass

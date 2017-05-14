@@ -44,6 +44,7 @@ def List(icpe = None):
 
 
 def Get(icpe, sensor):
-    return SensorModel.query.join(iCPEModel).\
-                filter(SensorModel.sensorid == int(sensor)).\
-                filter(iCPEModel.macaddr == icpe).first()
+    return db.session.query(SensorModel).\
+            join(SensorModel.icpe).\
+            filter(SensorModel.sensorid == str(sensor)).\
+            filter(iCPEModel.macaddr == icpe).first()

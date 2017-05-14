@@ -1,21 +1,21 @@
 from .. import db, zwave
-from ..decorators import CommonPayload
+from ..decorators import ParsePayload
 from .decorators import VerifyCmdclass, VerifySensor
 
 @VerifyCmdclass
-@CommonPayload
+@ParsePayload
 def status(topic, payload, mqttsrc):
     if topic.subfunc:
         return sup(topic, payload, mqttsrc)
     return zwave.Event(topic, payload)
 
 @VerifyCmdclass
-@CommonPayload
+@ParsePayload
 def event(topic, payload, mqttsrc):
     return zwave.Event(topic, payload)
 
 @VerifyCmdclass
-@CommonPayload
+@ParsePayload
 def sup(topic, payload, mqttsrc):
     try:
         db.cmdclass.AddTypes(topic, payload)
@@ -25,7 +25,7 @@ def sup(topic, payload, mqttsrc):
     return None, None
 
 @VerifySensor
-@CommonPayload
+@ParsePayload
 def get(topic, payload, mqttsrc):
     if topic.subfunc:
         return eval(topic.subfunc)(topic, payload, mqttsrc)

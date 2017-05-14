@@ -22,3 +22,5 @@ Redis
 flask_assets
 flask_security
 redlock
+psycopg2
+pymysql

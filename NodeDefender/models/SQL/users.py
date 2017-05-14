@@ -15,8 +15,8 @@ class UserModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     firstname = db.Column(db.String(30))
     lastname = db.Column(db.String(40))
-    email = db.Column(db.String(255), unique=True)
-    password = db.Column(db.String(120))
+    email = db.Column(db.String(191), unique=True)
+    password = db.Column(db.String(191))
     
     active = db.Column(db.Boolean())
     confirmed_at = db.Column(db.DateTime)

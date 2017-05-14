@@ -37,6 +37,9 @@
 		{% endif %}
 	</tbody>
 </table>
+{% if groups %}
+
+{% else %}
 	<script>
 grouptbody = document.getElementById('grouptbody');
 grouptable = document.getElementById('grouptable');
@@ -71,7 +74,7 @@ grouptable = document.getElementById('grouptable');
 		nodesCell.appendChild(nodesText);
 	});
 	</script>
-
+{% endif %}
 {% endmacro %}
 
 {% macro CreateGroup(Form) %}
@@ -98,36 +101,17 @@ grouptable = document.getElementById('grouptable');
 {% endmacro %}
 
 {% macro SelectGroup(user) %}
+{% from "macros/info.html" import FieldID %}
 <div class="form-group">
 	<label for="sell">Avalible Groups: </label>
 	<select class="form-control" id="GroupsList"></select>
 </div>
 <form class="form-horizontal">
 	<div class="row">
-		<div class="col-md-6">
-			<p><strong>Name</strong></p>
-		</div>
-		<div class="col-md-6">
-			<p id="Groupname">None</p>
-		</div>
-		<div class="col-md-6">
-			<p><strong>Description</strong></p>
-		</div>
-		<div class="col-md-6">
-			<p id="Groupdesc">None</p>
-		</div>
-		<div class="col-md-6">
-			<p><strong>Users</strong></p>
-		</div>
-		<div class="col-md-6">
-			<p id="Groupusers">None</p>
-		</div>
-		<div class="col-md-6">
-			<p><strong>Nodes</strong></p>
-		</div>
-		<div class="col-md-6">
-			<p id="Groupnodes">None</p>
-		</div>
+		{{ FieldID('Name', '-', 'Groupname') }}
+		{{ FieldID('Description', '-', 'Groupdesc') }}
+		{{ FieldID('Users', '-', 'Groupusers') }}
+		{{ FieldID('Nodes', '-', 'Groupnodes') }}
 	</div>
 </form>
 <script>
@@ -149,8 +133,8 @@ $(document).ready(function() {
 	groupSocket.on('info', function(group) {
 		$('#Groupname').text(group.name);
 		$('#Groupdesc').text(group.description);
-		$('#Groupusers').text(group.users);
-		$('#Groupnodes').text(group.nodes);
+		$('#Groupusers').text(group.users.length);
+		$('#Groupnodes').text(group.nodes.length);
 	});
 
 	$('#GroupsList').change(function() {
@@ -158,14 +142,18 @@ $(document).ready(function() {
 		groupSocket.emit('info', {'name' : name});
 	});
 
-	function addToGroup() {
+	var addToGroup = function() {
 		groupname = $('#Groupname').text();
-		groupSocket.emit('addToGroup', {'user' : '{{user.email}}', 'group' : groupname});
+		console.log('addtogroooup');
+		groupSocket.emit('addUser', {'user' : '{{user.email}}', 'group' : groupname});
 	}
 
-	groupSocket.on('Reload', function() {
-		window.location.reload();
-	});
+	try {
+		document.getElementById('addToGroup').onclick = function() {addToGroup();};
+	}
+	catch (err) {
+		console.log('addToGroup not found');
+	}
 });
 </script>
 

@@ -61,8 +61,8 @@ class EventModel(db.Model):
     sensor_id = db.Column(db.Integer, db.ForeignKey('sensor.id'))
     cmdclass_id = db.Column(db.Integer, db.ForeignKey('sensorclass.id'))
     
-    classtype = db.Column(db.String(8))
-    value = db.Column(db.String(8))
+    classtype = db.Column(db.String(32))
+    value = db.Column(db.String(16))
     enabled = db.Column(db.Boolean)
 
     critcial = db.Column(db.Boolean)

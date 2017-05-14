@@ -28,6 +28,7 @@ from ... import socketio
 from ...models.manage import group as GroupSQL
 from ...models.manage import user as UserSQL
 from flask_login import current_user
+from ...mail import group as GroupMail
 
 @socketio.on('create', namespace='/group')
 def create(info):

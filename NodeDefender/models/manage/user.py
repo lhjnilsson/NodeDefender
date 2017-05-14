@@ -14,7 +14,7 @@ def Create(email):
 
 def Password(email, password):
     user = Get(email)
-    user.password = bcrypt.generate_password_hash(password)
+    user.password = bcrypt.generate_password_hash(password).decode('utf-8')
     db.session.add(user)
     db.session.commit()
 

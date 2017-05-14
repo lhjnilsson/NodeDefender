@@ -10,6 +10,7 @@ var sensorSocket = io.connect('http://' + document.domain + ':' + location.port 
 var mqttSocket = io.connect('http://' + document.domain + ':' + location.port + '/mqtt');
 
 generalSocket.on('reload', function() {
+	console.log('Reloading..');
 	location.reload();
 })
 

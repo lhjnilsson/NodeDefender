@@ -42,45 +42,5 @@ def Load(icpes = None):
         FieldRedis.Load(field)
     return True
 
-
-class TopicDescriptor:
-    '''
-    Metaclass to store MQTT Topic
-    '''
-    def __init__(self, name):
-        self.name = name
-
-    def __get__(self, instance, cls):
-        if instance is None:
-            return self
-        else:
-            return instance.__dict__[self.name]
-
-    def __set__(self, instance, value):
-        instance.__dict__[self.name] = value
-
-    def __delete__(self, instance):
-        raise AttributeError("Can't delete me")
-
-class Topic:
-    '''
-    Stores the data from topic
-    '''
-    macaddr = TopicDescriptor("macaddr")
-    msgtype = TopicDescriptor("msgtype")
-    sensorid = TopicDescriptor("sensorid")
-    endpoint = TopicDescriptor("endpoint")
-    cmdclass = TopicDescriptor("cmdclass")
-    subfunc = TopicDescriptor("subfunc")
-    action = TopicDescriptor("action")
-    def __init__(self):
-        self.macaddr = None
-        self.msgtype = None
-        self.sensorid = None
-        self.endpoint = None
-        self.cmdclass = None
-        self.subfunc = None
-        self.action = None
-
 from . import db, event, decorators
 from .msgtype import cmd, err, rpt, rsp
