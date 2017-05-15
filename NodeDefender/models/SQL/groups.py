@@ -41,6 +41,9 @@ class GroupModel(db.Model):
     location = db.relationship('LocationModel', uselist=False,
                                backref='group')
 
+    messages = db.relationship('MessageModel', backref='group',
+                               cascade='save-update, merge, delete')
+
     def __init__(self, name, email, description):
         self.name = name
         self.email = email

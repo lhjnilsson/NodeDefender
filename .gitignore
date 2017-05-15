@@ -1,6 +1,7 @@
-*.xml
-app.db
-app.log
+*.db
+*.log
+*.logg
+NodeDefender.conf
 migrations/
 __pycache__/
 py/

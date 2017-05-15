@@ -53,9 +53,14 @@
 var sensorEventTable = document.getElementById('sensoreventtable');
 var sensorEventBody = document.getElementById('sensoreventbody');
 
+function reload() {
+	location.reload();
+};
+
 document.getElementById('updateSensor').addEventListener('click', function() {
 	sensorSocket.emit('update', {'icpe' : document.getElementById('sensoriCPE').innerHTML,
 		'sensor' : document.getElementById('sensorId').innerHTML});
+	setTimeout(reload, 5000);
 });
 
 sensorSocket.on('info', function(info) {

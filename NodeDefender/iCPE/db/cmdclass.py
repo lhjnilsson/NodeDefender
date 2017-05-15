@@ -46,7 +46,7 @@ def Update(cmdclass):
                         cmdclass.sensor.sensorid, cmdclass.classname)
 
     for field in classinfo.fields:
-        if not len(fields):
+        if not len(field):
             continue
         FieldRedis.Load(FieldSQL.Add(cmdclass.sensor.icpe.macaddr,\
                                      cmdclass.sensor.sensorid,\

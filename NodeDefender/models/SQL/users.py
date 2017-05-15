@@ -32,7 +32,8 @@ class UserModel(db.Model):
     administrator = db.Column(db.Boolean)
     superuser = db.Column(db.Boolean)
     
-    messages = db.relationship('UserMessageModel', backref='user')
+    messages = db.relationship('MessageModel', backref='user',
+                              cascade='save-update, merge, delete')
 
     def __init__(self, email):
         self.email = email
@@ -77,30 +78,3 @@ class UserModel(db.Model):
             return getattr(self, role.lower())
         except AttributeError:
             print(role)
-
-class UserMessageModel(db.Model):
-    # Mailbox for User. 
-    __tablename__ = 'usermessage'
-    '''
-    Message Inbox for User
-
-    Author is who sent it
-    uuid is to be able to present the message in secure manners
-    subject is the topic of the message
-    body is the body.
-    created_on is when the message was sent from Author to User
-    '''
-    id = db.Column(db.Integer, primary_key=True)
-    parent_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-
-    author = db.relationship('UserModel', backref='usermessage')
-    uuid = db.Column(db.String(40))
-    subject = db.Column(db.String(50))
-    body = db.Column(db.String(300))
-    created_on = db.Column(db.DateTime)
-
-    def __init__(self, author, subject, message):
-        self.uuid = str(uuid4())
-        self.subject = subject
-        self.body = body
-        self.created_on = datetime.now()

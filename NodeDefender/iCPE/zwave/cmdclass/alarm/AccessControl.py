@@ -1,5 +1,5 @@
 def Fields():
-    return {'type' : 'box', 'readonly' : True, 'name' : 'door'}
+    return {'type' : 'box', 'readonly' : True, 'name' : 'Door/Window'}
 
 def Event(payload):
     payload.name = 'door'

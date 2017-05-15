@@ -60,3 +60,8 @@ def sup(topic, payload, mqttsrc):
 def get(topic, payload, mqttsrc):
     if topic.subfunc:
         return eval(topic.subfunc)(topic, payload, mqttsrc)
+
+
+@ParsePayload
+def info(topic, payload, mqttsrc):
+    print(topic, payload)

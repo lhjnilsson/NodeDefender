@@ -1,5 +1,5 @@
 def Fields():
-    return {'type' : 'value', 'readonly' : True, 'name' : 'watt'}
+    return {'type' : 'value', 'readonly' : True, 'name' : 'Current Watt'}
 
 def Event(payload):
     payload.name = 'watt'

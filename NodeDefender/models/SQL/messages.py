@@ -1,7 +1,7 @@
 from ... import db
 from datetime import datetime
 from .nodes import LocationModel
-i
+
 class MessageModel(db.Model):
     '''
     Representing one group containing iCPEs and Users
@@ -10,8 +10,15 @@ class MessageModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.DateTime)
     subject = db.Column(db.String(50))
-    body = db.Column(db.String(350))
+    body = db.Column(db.String(180))
     
+    group_id = db.Column(db.Integer, db.ForeignKey('group.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    node_id = db.Column(db.Integer, db.ForeignKey('node.id'))
+    icpe_id = db.Column(db.Integer, db.ForeignKey('icpe.id'))
+    sensor_id = db.Column(db.Integer, db.ForeignKey('sensor.id'))
+
+
     def __init__(self, subject, body):
         self.subject = subject
         self.body = body

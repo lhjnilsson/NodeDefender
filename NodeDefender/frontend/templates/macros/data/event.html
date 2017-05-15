@@ -30,8 +30,9 @@ dataSocket.on('groupEventGet', function(events) {
 		var newRow = tableRef.insertRow(i);
 
 		var eventCell = newRow.insertCell(0);
-		var eventText = document.createTextNode(events[i].value);
-		eventCell.appendChild(eventText);
+		var icon = document.createElement("i");
+		icon.className += events[i].icon;
+		eventCell.appendChild(icon);
 
 		var nodeCell = newRow.insertCell(1);
 		var nodeText = document.createTextNode(events[i].node);

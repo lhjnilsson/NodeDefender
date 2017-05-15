@@ -15,8 +15,8 @@ def Info():
     classinfo.classname = 'basic'
     classinfo.classnumber = '20'
     classinfo.types = False
-    classinfo.fields = [{'type' : 'switch', 'readonly' : False, 'name' :
-                            'basic'}]
+    classinfo.fields = [{'type' : 'box', 'readonly' : True, 'name' :
+                            'Basic'}]
     return classinfo
 
 def Load(classtypes):

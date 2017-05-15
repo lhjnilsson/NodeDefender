@@ -9,8 +9,13 @@ class iCPEModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     node_id = db.Column(db.Integer, db.ForeignKey('node.id'))
     name = db.Column(db.String(64))
+
     macaddr = db.Column(db.String(12), unique=True)
     ipaddr = db.Column(db.String(32))
+    
+    firmware = db.Column(db.String(12))
+    hardware = db.Column(db.String(8))
+
     enabled =  db.Column(db.Boolean)
     created_on = db.Column(db.DateTime)
     last_online = db.Column(db.DateTime)
@@ -25,6 +30,9 @@ class iCPEModel(db.Model):
                            cascade="save-update, merge, delete")
     events = db.relationship('EventModel', backref="icpe",
                            cascade="save-update, merge, delete")
+
+    messages = db.relationship('MessageModel', backref='icpe',
+                               cascade='save-update, merge, delete')
 
     def __init__(self, macaddr):
         self.macaddr = macaddr.upper()
@@ -98,6 +106,9 @@ class SensorModel(db.Model):
                            cascade="save-update, merge, delete")
     events = db.relationship('EventModel', backref="sensor",
                            cascade="save-update, merge, delete")
+
+    messages = db.relationship('MessageModel', backref='sensor',
+                               cascade='save-update, merge, delete')
 
 
     def __init__(self, sensorid, sensorinfo):
