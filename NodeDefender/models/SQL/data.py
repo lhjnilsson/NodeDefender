@@ -62,14 +62,16 @@ class EventModel(db.Model):
     cmdclass_id = db.Column(db.Integer, db.ForeignKey('sensorclass.id'))
     
     classtype = db.Column(db.String(32))
+    classevent = db.Column(db.String(32))
     value = db.Column(db.String(16))
     enabled = db.Column(db.Boolean)
 
     critcial = db.Column(db.Boolean)
     normal = db.Column(db.Boolean)
 
-    def __init__(self, classtype, value, date = None):
+    def __init__(self, classtype, classevent, value, date = None):
         self.classtype = classtype
+        self.classevent = classevent
         self.value = value
         self.date = date if date else datetime.now()
 

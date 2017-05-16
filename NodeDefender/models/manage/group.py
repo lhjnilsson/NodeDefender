@@ -3,6 +3,7 @@ from ...models.SQL import GroupModel, UserModel, LocationModel
 from . import logger
 from . import user as UserSQL
 from . import node as NodeSQL
+from ..manage import message
 from geopy.geocoders import Nominatim
 
 def Create(name, mail = None, description = None):
@@ -13,6 +14,7 @@ def Create(name, mail = None, description = None):
     group = GroupModel(name, mail, description)
     db.session.add(group)
     db.session.commit()
+    message.group_created(group)
     logger.info("Created Group: {}".format(group.name))
     return group
 

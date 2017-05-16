@@ -4,6 +4,7 @@ from ... import icpe as iCPESQL
 from ... import sensor as SensorSQL
 from ... import cmdclass as CmdclassSQL
 from ..... import db
+from ....redis import field as FieldRedis
 
 def Latest(icpe, sensor):
     return EventModel.query.join(iCPEModel).join(SensorModel).\
@@ -20,14 +21,16 @@ def Get(icpe, sensor, limit = None):
             filter(SensorModel.sensorid == sensor).\
             order_by(EventModel.date.desc()).limit(int(limit)).all()
 
-def Put(icpe, sensor, cmdclass, classtype, value):
+def Put(icpe, sensor, cmdclass, classtype, classevent, value):
     icpe = iCPESQL.Get(icpe)
     sensor = SensorSQL.Get(icpe.macaddr, sensor)
     cmdclass = CmdclassSQL.Get(icpe.macaddr, sensor.sensorid, cmdclass)
-    event = EventModel(classtype, value)
+    event = EventModel(classtype, classevent, value)
     event.node = icpe.node
     event.icpe = icpe
     event.sensor = sensor
     event.sensorclass = cmdclass
     db.session.add(event)
     db.session.commit()
+    FieldEvent(event)
+    FieldRedis.Update(event)

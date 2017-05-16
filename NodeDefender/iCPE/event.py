@@ -1,10 +1,7 @@
 from .. import celery
 from . import zwave, db, mqtt
 from .decorators import ParseTopic
-from ..models.redis import cmdclass as CmdclassRedis
-from ..models.redis import field as FieldRedis
 from .zwave import ZWaveEvent
-from ..conn.websocket import FieldEvent
 from ..models.manage.data import sensor as SQLData
 
 @celery.task
@@ -20,12 +17,6 @@ def MQTT(topic, payload, mqttsrc):
     event = eval(topic.msgtype + '.' + topic.action)(topic, payload,
                                                               mqttsrc)
     if 'value' in dir(event):
-        FieldRedis.Update(topic.macaddr, topic.sensorid,\
-                          event.name,event.value)
-
-        FieldEvent(topic.macaddr, topic.sensorid, event.name,\
-                   event.value, event.enabled)
-        
         if event.classtype == 'power':
             SQLData.power.Put(topic.macaddr, topic.sensorid, event.value)
         
@@ -34,12 +25,8 @@ def MQTT(topic, payload, mqttsrc):
         
         else:
             SQLData.event.Put(topic.macaddr, topic.sensorid, event.cls,
-                          event.classtype, event.value)
+                          event.classtype, event.classevent, event.value)
 
-    return True
-
-@celery.task
-def Socket(macaddr, sensorid, cmdclass, classtype, event):
     return True
 
 from .msgtype import rpt, rsp, cmd, err

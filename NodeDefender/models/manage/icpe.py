@@ -2,6 +2,7 @@ from ..SQL import iCPEModel, NodeModel, MQTTModel
 from ... import db
 from . import logger
 from redlock import RedLock
+from ..manage import message
 
 def List():
     return [icpe for icpe in iCPEModel.query.all()]
@@ -48,6 +49,7 @@ def Create(mac, node = None, ipaddr = None, port = None):
     db.session.commit()
     logger.info("Added iCPE: {}".format(icpe.macaddr))
     lock.release()
+    message.icpe_created(icpe)
     return icpe
 
 def Enable(icpe, ipaddr = None, port = None):

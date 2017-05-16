@@ -1,6 +1,7 @@
 from ..SQL import iCPEModel, SensorModel, SensorClassModel 
 from ... import db
 from . import logger
+from ..manage import message
 
 def Create(icpe, sensorid, sensorinfo):
     if type(icpe) is str:
@@ -12,6 +13,7 @@ def Create(icpe, sensorid, sensorinfo):
     db.session.add(icpe, sensor)
     db.session.commit()
     logger.info("Created Sensor {}:{}".format(icpe.macaddr, sensor.sensorid))
+    message.sensor_created(sensor)
     return sensor
 
 def Delete(sensor, icpe = None):

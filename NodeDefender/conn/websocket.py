@@ -6,11 +6,8 @@ from ..models.redis import field as FieldRedis
 
 socketio = SocketIO(message_queue='redis://localhost:6379/0')
 
-def FieldEvent(macaddr, sensorid, field, event, enabled):
-    sensor = SensorRedis.Get(macaddr, sensorid)
-    field = FieldRedis.Get(macaddr, sensorid, field)
-    
-    socketio.emit('FieldEvent', (sensor, field, event, enabled),
+def FieldEvent(event):
+    socketio.emit('FieldEvent', (event.to_json()),
                   namespace = '/icpe'+macaddr,
                   broadcast=True);
     return True
