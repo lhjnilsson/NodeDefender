@@ -26,19 +26,30 @@ class MessageModel(db.Model):
 
     def to_json(self):
         if self.group:
-            group : self.group.name
+            group = self.group.name
+        else:
+            group = False
         
         if self.user:
-            user : self.user.name
+            user = self.user.name
+        else:
+            user = False
 
         if self.node:
-            node : self.node.name
+            node = self.node.name
+        else:
+            node = False
 
         if self.icpe:
-            icpe : self.icpe.name
+            icpe = self.icpe.name
+        else:
+            icpe = False
 
         if self.sensor:
-            sensor : self.sensor.name
+            sensor = self.sensor.name
+        else:
+            sensor = False
 
         return {'name' : self.name, 'email' : self.email, 'date' :
-                str(self.date), 'group' : group}
+                str(self.date), 'group' : group, 'user' : user,\
+                'node' : node, 'icpe' : icpe, 'sensor' : sensor}

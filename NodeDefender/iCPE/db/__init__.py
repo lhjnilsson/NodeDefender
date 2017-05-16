@@ -2,6 +2,13 @@ from redis import ConnectionPool, StrictRedis
 from functools import wraps
 from ... import logger, RedisPool
 
+
+def Verify(topic, payload, mqttsrc):
+    icpe.Verify(topic, payload, mqttsrc)
+    sensor.Verify(topic, payload, mqttsrc)
+    cmdclass.Verify(topic, payload, mqttsrc)
+    return True
+
 def redisconn(func):
     @wraps(func)
     def wrapper(*args, **kwargs):

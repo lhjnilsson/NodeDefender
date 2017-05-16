@@ -2,7 +2,7 @@ from ...models.manage import cmdclass as CmdclassSQL
 from ...models.redis import cmdclass as CmdclassRedis
 from ...models.manage import field as FieldSQL
 from ...models.redis import field as FieldRedis
-from . import redisconn, icpe, sensor
+from . import redisconn
 from .. import mqtt, zwave
 from ... import celery
 from datetime import datetime
@@ -23,8 +23,6 @@ def Verify(topic, payload, mqttsrc = None):
     
     print("{}{}{} not found".format(topic.macaddr, topic.sensorid,
                                     payload.cls))
-    icpe.Verify(topic, payload, mqttsrc)
-    sensor.Verify(topic, payload, mqttsrc)
     return Add(topic, payload)
 
 # Takes Cmdclass SQL Model and updated the fields
@@ -100,7 +98,7 @@ def AddTypes(topic, payload, mqttsrc = None):
             continue
         print('adding field', classinfo)
         for field in classinfo.fields:
-            if not len(fields):
+            if not len(field):
                 continue
             FieldRedis.Load(FieldSQL.Add(topic.macaddr, topic.sensorid,
                                          classinfo.classname, **field))
