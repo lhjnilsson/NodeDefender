@@ -23,10 +23,10 @@ def Load(field, conn):
     return f
 
 @redisconn
-def Update(mac, sensorid, name, value, conn):
-    conn.hmset(mac + sensorid + name, {'value' : str(value)})
-    conn.hmset(mac + sensorid + name, {'last_updated' : str(datetime.now())})
-    return conn.hgetall(mac + sensorid + name)
+def Update(event, zwave_event, conn):
+    conn.hmset(event.icpe.macaddr + event.sensor.sensorid + zwave_event.name, {'value' : str(value)})
+    conn.hmset(event.icpe.macaddr + event.sensor.sensorid + zwave_event.name, {'last_updated' : str(datetime.now())})
+    return conn.hgetall(event.icpe.macaddr + event.sensor.sensorid + event.name)
 
 @redisconn
 def Get(mac, sensorid, name, conn):

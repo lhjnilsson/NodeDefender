@@ -8,6 +8,6 @@ socketio = SocketIO(message_queue='redis://localhost:6379/0')
 
 def FieldEvent(event):
     socketio.emit('FieldEvent', (event.to_json()),
-                  namespace = '/icpe'+macaddr,
+                  namespace = '/icpe'+event.icpe.macaddr,
                   broadcast=True);
     return True

@@ -83,6 +83,7 @@ class BaseModel:
     cls = DataDescriptor('cls')
     classname = DataDescriptor('classname')
     classtype = DataDescriptor('classtype')
+    classevent = DataDescriptor('classevent')
     subfunc = DataDescriptor('subfunc')
     enabled = DataDescriptor('enabled')
 
@@ -96,6 +97,7 @@ class BaseModel:
         self.classname = None
         self.subfunc = None
         self.classtype = None
+        self.classevent = None
         self.value = None
         self.enabled = False
     

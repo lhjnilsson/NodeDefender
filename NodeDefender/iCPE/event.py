@@ -24,8 +24,7 @@ def MQTT(topic, payload, mqttsrc):
             SQLData.heat.Put(topic.macaddr, topic.sensorid, event.value)
         
         else:
-            SQLData.event.Put(topic.macaddr, topic.sensorid, event.cls,
-                          event.classtype, event.classevent, event.value)
+            SQLData.event.Put(topic.macaddr, topic.sensorid, event)
 
     return True
 
