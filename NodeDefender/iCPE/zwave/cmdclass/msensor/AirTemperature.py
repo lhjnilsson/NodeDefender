@@ -1,9 +1,8 @@
-def Fields():
-    return {'type' : 'value', 'readonly' : True, 'name' : 'celsius'}
+def Datafield():
+    return {'type' : 'value', 'readonly' : True, 'name' : 'Celsius'}
 
 def Event(payload):
-    payload.name = 'celsius'
-    payload.classtype = 'heat'
+    payload.ccevent = 'Celsius'
     if payload.unit != '0':
         return False 
     payload.value = int(payload.data, 0) / 10

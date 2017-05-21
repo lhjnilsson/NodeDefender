@@ -31,16 +31,23 @@ def Load(icpes = None):
         iCPERedis.Load(icpe)
         for sensor in icpe.sensors:
             SensorRedis.Load(sensor)
-            for cmdclass in sensor.cmdclasses:
-                try:
-                    CmdclassRedis.Load(cmdclass)
-                except NotImplementedError:
-                    db.cmdclass.Add(icpe.macaddr, sensor.sensorid,
-                                          cmdclass.classnumber)
+            for cc in sensor.commandclasses:
+                if not cc.supported:
+                    continue
 
-    for field in FieldSQL.List():
-        FieldRedis.Load(field)
-    return True
+                CmdclassRedis.Load(cc)
+
+                if not cc.types:
+                    field = eval('zwave.commandclasses.'+cc.name+'.Fields')()
+                    FieldRedis.Load(sensor, cc, field)
+                    continue
+                
+                for t in cc.types:
+                    if not t.supported:
+                        continue
+                    field = eval('zwave.commandclasses.'+cc.name+'.'+t.name+\
+                                 '.Fields')()
+                    FieldRedis.Load(sensor, cc, field)
 
 from . import db, event, decorators
 from .msgtype import cmd, err, rpt, rsp

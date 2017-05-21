@@ -12,13 +12,14 @@ class BasicModel:
 
 def Info():
     classinfo = ClassInfo()
-    classinfo.classname = 'bswitch'
-    classinfo.classnumber = '25'
-    classinfo.types = False
-    classinfo.fields = [{'type' : 'switch', 'readonly' : False, 'name' :
-                            'Switch'}]
+    classinfo.cc = '25'
+    classinfo.ccname = 'bswitch'
+    classinfo.cctypes = False
     return classinfo
 
+def Fields():
+    return {'type' : 'switch', 'readonly' : False, 'name' : 'Switch'}
+ 
 def Load(classtypes):
     return {'bswitch' : None}
 
@@ -27,12 +28,11 @@ def Icon(value, classtype):
 
 @PayloadSplitter(model=BasicModel)
 def Event(payload):
-    payload.name = 'bswitch'
+    payload.ccevent = 'Switch'
     if payload.value == '0':
         payload.value = False
-        payload.enabled = False
+    
     else:
         payload.value = True
-        payload.enabled = True
 
     return payload

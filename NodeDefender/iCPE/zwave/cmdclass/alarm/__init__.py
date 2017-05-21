@@ -1,4 +1,5 @@
 from ... import BaseModel, PayloadSplitter, DataDescriptor, ClassInfo
+
 zalm = {'06' : 'AccessControl'}
 icons = {'AccessControl' : {'16' : 'fa fa-bell', '17' : 'fa fa-bell-slash-o',\
          '1' : 'fa fa-bell', '0' : 'fa fa-bell-slash-o'}}
@@ -25,30 +26,38 @@ class AlarmModel:
         super().__init__()
 
 
-def Info(classtype = None):
+def Info(cctype = None):
+    if cctype:
+        return eval(zalm[cctype] + '.Info')
     classinfo = ClassInfo()
-    classinfo.classname = 'alarm'
-    classinfo.classnumber = '71'
-    classinfo.types = True
-    classinfo.fields = []
-    if classtype:
-        try:
-            classinfo.fields.append(eval(zalm[classtype] + '.Fields')())
-        except KeyError as e:
-            print("Unable to add {} for class {}".format(classtype,
-                                                         classinfo.classname))
+    classinfo.cc = '71'
+    classinfo.ccname = 'alarm'
+    classinfo.cctypes = True
+    classinfo.datafield = None
     return classinfo
 
 
-def Icon(value, classtype):
-    return icons[classtype][value]
+def Icon(value, cctype):
+    try:
+        return icons[cctype][value]
+    except KeyError:
+        try:
+            icons[zalm[cctype]][value]
+        except KeyError as e:
+            raise KeyError(e)
 
 def Load():
     return {'notification': None}
 
+def Fields():
+    return False
+
 @PayloadSplitter(model=AlarmModel)
 def Event(payload):
+    payload.cc = '71'
+    payload.ccname = 'alarm'
     try:
+        payload.cctype = payload.zalm
         return eval(zalm[payload.zalm] + '.Event')(payload)
     except KeyError as e:
         print(str(e))

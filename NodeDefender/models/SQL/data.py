@@ -61,24 +61,24 @@ class EventModel(db.Model):
     sensor_id = db.Column(db.Integer, db.ForeignKey('sensor.id'))
     cmdclass_id = db.Column(db.Integer, db.ForeignKey('sensorclass.id'))
     
-    classtype = db.Column(db.String(32))
-    classevent = db.Column(db.String(32))
+    cctype = db.Column(db.String(32))
+    ccevent = db.Column(db.String(32))
     value = db.Column(db.String(16))
-    enabled = db.Column(db.Boolean)
 
     critcial = db.Column(db.Boolean)
     normal = db.Column(db.Boolean)
 
-    def __init__(self, classtype, classevent, value, date = None):
-        self.classtype = classtype
-        self.classevent = classevent
+    def __init__(self, cctype, ccevent, value, date = None):
+        self.cctype = cctype
+        self.ccevent = ccevent
         self.value = value
         self.date = date if date else datetime.now()
 
     def to_json(self):
         icon = eval('cmdclass.'+self.sensorclass.classname+'.Icon')\
-                    (self.value, self.classtype)
+                    (self.value, self.cctype)
         
         return {'iCPE' : self.icpe.macaddr, 'sensor' : self.sensor.productname, 'node' :
                 self.icpe.node.name, 'value' : self.value,\
-                'date' : str(self.date), 'icon' : icon}
+                'date' : str(self.date), 'icon' : icon,\
+                'name' : self.ccevent}

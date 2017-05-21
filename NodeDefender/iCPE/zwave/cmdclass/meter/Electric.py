@@ -1,8 +1,7 @@
-def Fields():
-    return {'type' : 'value', 'readonly' : True, 'name' : 'Current Watt'}
+def Datafield():
+    return {'type' : 'value', 'readonly' : True, 'name' : 'Watt'}
 
 def Event(payload):
-    payload.name = 'watt'
-    payload.classtype = 'power'
+    payload.ccevent = 'Watt'
     payload.value = int(payload.data32, 0) / 10
     return payload

@@ -62,9 +62,9 @@ function valueEvent(box, value) {
 
 
 
-eventsocket.on('FieldEvent', function(sensor, field, value, enabled) {
-	f = document.getElementById(sensor.sensorid+field.name);
-	console.log(sensor, field, value, enabled);
+eventsocket.on('FieldEvent', function(event) {
+	f = document.getElementById(event.sensor+event.name);
+	console.log(event);
 	if (field.type == 'switch') {
 		switchEvent(f, enabled);
 	} else if (field.type == 'box') {

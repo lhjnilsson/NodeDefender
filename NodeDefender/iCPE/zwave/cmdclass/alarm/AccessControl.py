@@ -1,21 +1,15 @@
-def Fields():
+def Datafield():
     return {'type' : 'box', 'readonly' : True, 'name' : 'Door/Window'}
 
 def Event(payload):
-    payload.classevent = 'Door/Window'
-    payload.classtype = 'AccessControl'
+    payload.ccevent = 'Door/Window'
+    
     if payload.evt == '16':
         payload.value = '16'
-        payload.enabled = True
-    
     elif payload.evt == '17':
         payload.value = '17'
-        payload.enabled = False
 
     return payload
 
 def Load():
     return {}
-
-def Form():
-    pass

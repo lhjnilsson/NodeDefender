@@ -21,10 +21,10 @@ class MsensorModel:
 
 def Info(classtype = None):
     classinfo = ClassInfo()
-    classinfo.classname = 'msensor'
-    classinfo.classnum = '31'
+    classinfo.cc = '31'
+    classinfo.ccname = 'msensor'
     classinfo.types = True
-    classinfo.fields = [{}]
+    classinfo.datafields = None
     if classtype:
         try:
             classinfo.fields.append(eval(mtype[classtype] + '.Fields')())

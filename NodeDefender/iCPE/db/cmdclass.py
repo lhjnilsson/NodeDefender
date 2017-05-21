@@ -92,15 +92,19 @@ def AddTypes(topic, payload, mqttsrc = None):
                          types)
 
     for classtype in types:
-        classinfo = zwave.Info(payload.cls, classtype)
-        if not classinfo:
-            print('no classinfo..')
+        try:
+            t = CmdclassSQL.AddType(topic.macaddr, topic.sensorid, payload.cls,
+                                    classtype)
+        except KeyError:
             continue
-        print('adding field', classinfo)
-        for field in classinfo.fields:
-            if not len(field):
-                continue
-            FieldRedis.Load(FieldSQL.Add(topic.macaddr, topic.sensorid,
-                                         classinfo.classname, **field))
-             
+
+        t_info = zwave.Info(payload.cls, classtype)
+        if not t_info:
+            continue
+
+        t.name = t_info.name
+        t.supported = True
+        CmdclassSQL.UpdateType(t)
+        FieldRedis.Load(t)
+
     return CmdclassRedis.Load(topic.macaddr, topic.sensorid, payload.cls)

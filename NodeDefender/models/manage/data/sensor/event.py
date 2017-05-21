@@ -22,17 +22,17 @@ def Get(icpe, sensor, limit = None):
             filter(SensorModel.sensorid == sensor).\
             order_by(EventModel.date.desc()).limit(int(limit)).all()
 
-def Put(icpe, sensor, zwave_event):
+def Put(icpe, sensor, event):
     icpe = iCPESQL.Get(icpe)
     sensor = SensorSQL.Get(icpe.macaddr, sensor)
-    cmdclass = CmdclassSQL.Get(icpe.macaddr, sensor.sensorid, zwave_event.cls)
-    event = EventModel(zwave_event.classtype, zwave_event.classevent,\
-                       zwave_event.value)
-    event.node = icpe.node
-    event.icpe = icpe
-    event.sensor = sensor
-    event.sensorclass = zwave_event.cls
-    db.session.add(event)
+    cmdclass = CmdclassSQL.Get(icpe.macaddr, sensor.sensorid, event.cc)
+    e = EventModel(event.cctype, event.ccevent, event.value)
+    
+    e.node = icpe.node
+    e.icpe = icpe
+    e.sensor = sensor
+    e.sensorclass = cmdclass
+
+    db.session.add(e)
     db.session.commit()
-    FieldEvent(event, zwave_event)
-    FieldRedis.Update(event)
+    FieldEvent(FieldRedis.Update(e))

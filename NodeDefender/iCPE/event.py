@@ -17,10 +17,10 @@ def MQTT(topic, payload, mqttsrc):
     event = eval(topic.msgtype + '.' + topic.action)(topic, payload,
                                                               mqttsrc)
     if 'value' in dir(event):
-        if event.classtype == 'power':
+        if event.ccevent == 'Watt':
             SQLData.power.Put(topic.macaddr, topic.sensorid, event.value)
         
-        elif event.classtype == 'heat':
+        elif event.ccevent == 'Celsius':
             SQLData.heat.Put(topic.macaddr, topic.sensorid, event.value)
         
         else:

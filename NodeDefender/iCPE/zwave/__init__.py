@@ -64,10 +64,11 @@ class DataDescriptor:
         raise AttributeError("Can't delete me")
 
 class ClassInfo:
-    classname = DataDescriptor('classname')
-    classnumber = DataDescriptor('classnumber')
-    types = DataDescriptor('types')
-    fields = DataDescriptor('fields')
+    cc = DataDescriptor('classname')
+    ccname = DataDescriptor('classnumber')
+    cctypes = DataDescriptor('types')
+    datafields = DataDescriptor('datafields')
+
     def __init__(self):
         self.classname = None
         self.classnumber = None
@@ -80,12 +81,15 @@ class BaseModel:
     vid = DataDescriptor('vid')
     ptype = DataDescriptor('ptype')
     pid = DataDescriptor('pid')
-    cls = DataDescriptor('cls')
-    classname = DataDescriptor('classname')
-    classtype = DataDescriptor('classtype')
-    classevent = DataDescriptor('classevent')
+
     subfunc = DataDescriptor('subfunc')
-    enabled = DataDescriptor('enabled')
+    value = DataDescriptor('value')
+
+    cc = DataDescriptor('cc')
+    ccname = DataDescriptor('ccname')
+    cctype = DataDescriptor('cctype')
+    ccevent = DataDescriptor('ccevent')
+    
 
     def __init__(self):
         self.sensorid = None
@@ -93,14 +97,14 @@ class BaseModel:
         self.vid = None
         self.ptype = None
         self.pid = None
-        self.cls = None
-        self.classname = None
         self.subfunc = None
-        self.classtype = None
-        self.classevent = None
         self.value = None
-        self.enabled = False
     
+        self.cc = None
+        self.ccname = None
+        self.cctype = None
+        self.ccevent = None
+
     def __call__(self):
         return self._retdata
 

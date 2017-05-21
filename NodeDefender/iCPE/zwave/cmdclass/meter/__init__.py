@@ -26,19 +26,22 @@ class MeterModel:
         self.rateType = None
         super().__init__()
 
-def Info(classtype = None):
+def Info(cctype = None):
     classinfo = ClassInfo()
-    classinfo.classname = 'meter'
-    classinfo.classnum = '25'
-    classinfo.types = True
-    classinfo.fields = [{}]
-    if classtype:
+    classinfo.cc = '25'
+    classinfo.ccname = 'meter'
+    classinfo.cctypes = True
+    classinfo.datafield = None
+    if cctype:
         try:
-            classinfo.fields.append(eval(mtype[classtype] + '.Fields')())
+            classinfo.datafield = (eval(mtype[cctype] + '.Datafield')())
         except KeyError:
-            print("Unable to add {} for class {}".format(classtype,
+            print("Unable to add {} for class {}".format(cctype,
                                                          classinfo.clasname))
     return classinfo
+
+def Icon(value, cctype):
+    return icons[cctype]
 
 def Load(classtypes):
     return {'meter' : 0}

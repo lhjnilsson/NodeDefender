@@ -4,17 +4,21 @@ from . import logger
 from . import redisconn
 
 @redisconn
-def Load(field, conn):
+def Load(sensor, cc, field, conn):
     if field is None:
         return None
+    
     f = {
         'name' : field.name,
-        'macaddr' : field.icpe.macaddr,
-        'sensorid' : field.sensor.sensorid,
-        'cmdclass' : field.sensorclass.classname,
         'type' : field.type,
         'readonly' : field.readonly,
-        'display' : field.display,
+
+        'icpe' : sensor.icpe.macaddr,
+        'sensor' : sensor.sensorid,
+        'cc' : cc.number,
+        'ccname' : cc.name,
+        
+        'last_updated' : None,
         'loaded_at' : str(datetime.now())
     }
     conn.sadd(field.icpe.macaddr + field.sensor.sensorid + ':fields',
@@ -23,10 +27,12 @@ def Load(field, conn):
     return f
 
 @redisconn
-def Update(event, zwave_event, conn):
-    conn.hmset(event.icpe.macaddr + event.sensor.sensorid + zwave_event.name, {'value' : str(value)})
-    conn.hmset(event.icpe.macaddr + event.sensor.sensorid + zwave_event.name, {'last_updated' : str(datetime.now())})
-    return conn.hgetall(event.icpe.macaddr + event.sensor.sensorid + event.name)
+def Update(event, conn):
+    conn.hmset(event.icpe.macaddr + event.sensor.sensorid + event.ccevent,
+               {'value' : str(event.value)})
+    conn.hmset(event.icpe.macaddr + event.sensor.sensorid + event.ccevent, {'last_updated' : str(datetime.now())})
+    return conn.hgetall(event.icpe.macaddr + event.sensor.sensorid +
+                        event.ccevent)
 
 @redisconn
 def Get(mac, sensorid, name, conn):
