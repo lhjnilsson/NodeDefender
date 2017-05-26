@@ -1,6 +1,6 @@
 from ...models.manage import sensor as SensorSQL
 from ...models.redis import sensor as SensorRedis
-from . import redisconn, cmdclass
+from . import redisconn, commandclass
 from .. import mqtt, zwave
 from ... import celery
 from datetime import datetime
@@ -26,9 +26,9 @@ def Add(topic, payload):
 
 def Update(macaddr, sensorid):
     sensor = SensorSQL.Get(macaddr, sensorid)
-    if not sensor.cmdclasses:
+    if not sensor.commandclasses:
         mqtt.sensor.Query(macaddr, sensorid)
         return True
-    for cls in sensor.cmdclasses:
-        cmdclass.Update(cls)
+    for cls in sensor.commandclasses:
+        commandclass.Update(cls)
     return True

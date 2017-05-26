@@ -42,14 +42,14 @@ def qry(topic, payload, mqttsrc):
         pass
     else:
         db.sensor.Verify(topic, payload, mqttsrc)
-        db.cmdclass.Add(topic, payload)
+        db.commandclass.Add(topic, payload)
     return None, None
 
 @VerifyiCPE
 @ParsePayload
 def sup(topic, payload, mqttsrc):
     try:
-        db.cmdclass.AddTypes(topic, payload, payload.typelist)
+        db.commandclass.AddTypes(topic, payload, payload.typelist)
     except AttributeError:
         pass
 

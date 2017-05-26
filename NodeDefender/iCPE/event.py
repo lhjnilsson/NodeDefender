@@ -5,8 +5,8 @@ from .zwave import ZWaveEvent
 from ..models.manage.data import sensor as SQLData
 
 @celery.task
-def WebSocket(macaddr, sensorid, cmdclass, value):
-    mqtt.zwave.Set(macaddr, sensorid, cmdclass, value)
+def WebSocket(macaddr, sensorid, commandclass, value):
+    mqtt.zwave.Set(macaddr, sensorid, commandclass, value)
     return True
 
 @celery.task

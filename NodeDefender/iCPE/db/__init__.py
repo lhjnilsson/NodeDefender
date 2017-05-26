@@ -6,7 +6,7 @@ from ... import logger, RedisPool
 def Verify(topic, payload, mqttsrc):
     icpe.Verify(topic, payload, mqttsrc)
     sensor.Verify(topic, payload, mqttsrc)
-    cmdclass.Verify(topic, payload, mqttsrc)
+    commandclass.Verify(topic, payload, mqttsrc)
     return True
 
 def redisconn(func):
@@ -35,4 +35,4 @@ def Load(mqttsrc, mac, sensorid = None):
 
     return sensor.Get(mac, sensorid) if sensorid else icpe.Get(mac)
 
-from . import sensor, icpe, cmdclass
+from . import sensor, icpe, commandclass

@@ -1,4 +1,4 @@
-from ..SQL import iCPEModel, SensorModel, SensorClassModel 
+from ..SQL import iCPEModel, SensorModel, CommandClassModel
 from ... import db
 from . import logger
 from ..manage import message

@@ -17,4 +17,4 @@ def redisconn(func):
         return func(*args, conn = conn, **kwargs)
     return wrapper
 
-from . import sensor, icpe, cmdclass
+from . import sensor, icpe, commandclass, field

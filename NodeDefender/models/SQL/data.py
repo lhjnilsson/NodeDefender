@@ -1,6 +1,6 @@
 from ... import db
 from datetime import datetime
-from ...iCPE.zwave import cmdclass
+from ...iCPE.zwave import commandclass
 
 class HeatModel(db.Model):
     __tablename__ = 'heat'
@@ -59,10 +59,10 @@ class EventModel(db.Model):
     node_id = db.Column(db.Integer, db.ForeignKey('node.id'))
     icpe_id = db.Column(db.Integer, db.ForeignKey('icpe.id'))
     sensor_id = db.Column(db.Integer, db.ForeignKey('sensor.id'))
-    cmdclass_id = db.Column(db.Integer, db.ForeignKey('sensorclass.id'))
-    
-    cctype = db.Column(db.String(32))
-    ccevent = db.Column(db.String(32))
+    commandclass_id = db.Column(db.Integer, db.ForeignKey('commandclass.id'))
+    commandclasstype_id = db.Column(db.Integer,
+                                    db.ForeignKey('commandclasstype.id'))
+
     value = db.Column(db.String(16))
 
     critcial = db.Column(db.Boolean)
@@ -75,7 +75,7 @@ class EventModel(db.Model):
         self.date = date if date else datetime.now()
 
     def to_json(self):
-        icon = eval('cmdclass.'+self.sensorclass.classname+'.Icon')\
+        icon = eval('commandclass.'+self.sensorclass.classname+'.Icon')\
                     (self.value, self.cctype)
         
         return {'iCPE' : self.icpe.macaddr, 'sensor' : self.sensor.productname, 'node' :

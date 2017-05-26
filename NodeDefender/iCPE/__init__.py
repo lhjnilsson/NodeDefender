@@ -1,10 +1,9 @@
 from .. import celery, loggHandler
 from ..models.manage import icpe as iCPESQL
-from ..models.manage import field as FieldSQL
 from ..models.redis import field as FieldRedis
 from ..models.redis import icpe as iCPERedis
 from ..models.redis import sensor as SensorRedis
-from ..models.redis import cmdclass as CmdclassRedis
+from ..models.redis import commandclass as CommandclassRedis
 from celery.utils.log import get_task_logger
 import logging
 
@@ -17,7 +16,7 @@ log.addHandler(loggHandler)
 def Load(icpes = None):
     '''
     Loads iCPEs and Sensors
-    Tries to load cmdclasses to sensor, recieved NotImplementedError from
+    Tries to load commandclasses to sensor, recieved NotImplementedError from
     Redis- handler in the classname is not specific(the class is not
                                                     supported).
     if so it tries to add the class.
@@ -35,7 +34,7 @@ def Load(icpes = None):
                 if not cc.supported:
                     continue
 
-                CmdclassRedis.Load(cc)
+                CommandclassRedis.Load(cc)
 
                 if not cc.types:
                     field = eval('zwave.commandclasses.'+cc.name+'.Fields')()

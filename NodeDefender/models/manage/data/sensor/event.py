@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from ....SQL import EventModel, iCPEModel, SensorModel
 from ... import icpe as iCPESQL
 from ... import sensor as SensorSQL
-from ... import cmdclass as CmdclassSQL
+from ... import commandclass as CommandclassSQL
 from ..... import db
 from ....redis import field as FieldRedis
 from .....conn.websocket import FieldEvent
@@ -25,13 +25,13 @@ def Get(icpe, sensor, limit = None):
 def Put(icpe, sensor, event):
     icpe = iCPESQL.Get(icpe)
     sensor = SensorSQL.Get(icpe.macaddr, sensor)
-    cmdclass = CmdclassSQL.Get(icpe.macaddr, sensor.sensorid, event.cc)
+    commandclass = CommandclassSQL.Get(icpe.macaddr, sensor.sensorid, event.cc)
     e = EventModel(event.cctype, event.ccevent, event.value)
     
     e.node = icpe.node
     e.icpe = icpe
     e.sensor = sensor
-    e.sensorclass = cmdclass
+    e.sensorclass = commandclass
 
     db.session.add(e)
     db.session.commit()

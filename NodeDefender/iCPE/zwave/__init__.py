@@ -13,7 +13,7 @@ def Supported(classname):
     Return True if the classname is Known
     '''
     try:
-        return eval('cmdclass.' + classname + '.Info')()
+        return eval('commandclass.' + classname + '.Info')()
     except NameError:
         return False
 
@@ -27,9 +27,9 @@ def Info(classnumber, classtypes = None):
     classname = supported[classnumber]
     try:
         if classtypes:
-            return eval('cmdclass.' + classname + '.Info')(classtypes)
+            return eval('commandclass.' + classname + '.Info')(classtypes)
         else:
-            return eval('cmdclass.' + classname + '.Info')()
+            return eval('commandclass.' + classname + '.Info')()
     except AttributeError:
         raise NotImplementedError
 
@@ -38,9 +38,9 @@ def Event(topic, payload):
     Z-Wave event. Tries to lookup if the event is known(supported) or not
     '''
     try:
-        return eval('cmdclass.' + topic.cmdclass + '.Event')(payload)
+        return eval('commandclass.' + topic.commandclass + '.Event')(payload)
     except AttributeError as e:
-        print(topic.cmdclass + str(e))
+        print(topic.commandclass + str(e))
     except KeyError:
         print("Descr not found")
 
@@ -128,4 +128,4 @@ def PayloadSplitter(model=BaseModel):
         return wrapper
     return decorate
 
-from . import db, cmdclass
+from . import db, commandclass

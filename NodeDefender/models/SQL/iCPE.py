@@ -111,11 +111,11 @@ class CommandClassModel(db.Model):
     types = db.relationship('CommandClassTypeModel', backref="commandclass",
                             cascade="save-update, merge, delete")
     supported = db.Column(db.Boolean)
-    events = db.relationship('EventModel', backref="sensorcc",
+    events = db.relationship('EventModel', backref="commandclass",
                            cascade="save-update, merge, delete")
 
     def __init__(self, cc):
-        self.ccc = cc[:2]
+        self.ccc = str(cc)[:2]
         self.supported = False
 
 class CommandClassTypeModel(db.Model):
@@ -125,7 +125,9 @@ class CommandClassTypeModel(db.Model):
     number = db.Column(db.String(2))
     name = db.Column(db.String(40))
     supported = db.Column(db.Boolean)
+    events = db.relationship('EventModel', backref="commandclasstype",
+                           cascade="save-update, merge, delete")
 
     def __init__(self, number):
-        self.number = str(number)
+        self.number = str(number)[:2]
         self.supported = False

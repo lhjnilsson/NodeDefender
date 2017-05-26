@@ -1,7 +1,7 @@
 from functools import wraps
 from ..manage import icpe as iCPESQL
 from ..manage import sensor as SensorSQL
-from ..manage import cmdclass as CmdclassSQL
+from ..manage import commandclass as CommandclassSQL
 
 def LookupiCPE(func):
     @wraps(func)
@@ -21,11 +21,11 @@ def LookupSensor(func):
             return func(icpe)
     return wrapper
 
-def LookupCmdclass(func):
+def LookupCommandclass(func):
     @wraps(func)
-    def wrapper(icpe, sensor = None, cmdclass = None):
+    def wrapper(icpe, sensor = None, commandclass = None):
         if type(icpe) is str:
-            return func(CmdclassSQL.Get(icpe, sensor, cmdclass))
+            return func(CommandclassSQL.Get(icpe, sensor, commandclass))
         else:
             return func(icpe)
     return wrapper

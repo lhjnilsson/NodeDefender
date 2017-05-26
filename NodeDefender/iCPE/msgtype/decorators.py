@@ -15,11 +15,11 @@ def VerifySensor(func):
         return func(topic, payload, mqttsrc)
     return wrapper
 
-def VerifyCmdclass(func):
+def VerifyCommandclass(func):
     @wraps(func)
     def wrapper(topic, payload, mqttsrc):
         db.icpe.Verify(topic, payload, mqttsrc)
         db.sensor.Verify(topic, payload, mqttsrc)
-        db.cmdclass.Verify(topic, payload, mqttsrc)
+        db.commandclass.Verify(topic, payload, mqttsrc)
         return func(topic, payload, mqttsrc)
     return wrapper

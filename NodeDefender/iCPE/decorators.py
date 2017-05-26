@@ -27,7 +27,7 @@ class Topic:
     msgtype = TopicDescriptor("msgtype")
     sensorid = TopicDescriptor("sensorid")
     endpoint = TopicDescriptor("endpoint")
-    cmdclass = TopicDescriptor("cmdclass")
+    commandclass = TopicDescriptor("commandclass")
     subfunc = TopicDescriptor("subfunc")
     action = TopicDescriptor("action")
     def __init__(self):
@@ -35,7 +35,7 @@ class Topic:
         self.msgtype = None
         self.sensorid = None
         self.endpoint = None
-        self.cmdclass = None
+        self.commandclass = None
         self.subfunc = None
         self.action = None
 
@@ -57,7 +57,7 @@ def ParseTopic(func):
                 topic.endpoint = splitted[4].split(":")[1]
             except IndexError:
                 topic.endpoint = None
-            topic.cmdclass = splitted[6].split(":")[0]
+            topic.commandclass = splitted[6].split(":")[0]
             try:
                 topic.subfunc = splitted[6].split(":")[1]
             except IndexError:

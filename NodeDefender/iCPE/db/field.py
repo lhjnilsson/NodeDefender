@@ -1,4 +1,3 @@
-from ...models.mange import field as FieldSQL
 from ...models.redis import field as FieldRedis
 from . import redisconn
 from datetime import datetime
