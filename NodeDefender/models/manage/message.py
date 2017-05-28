@@ -34,13 +34,13 @@ def icpe_created(icpe):
     body = _icpe_created_template.format(icpe.macaddr)
     message = MessageModel(subject, body)
     icpe.messages.append(message)
-    db.sesion.add(icpe)
+    db.session.add(icpe)
     db.session.commit()
     return True
 
 def sensor_created(sensor):
     subject = "Sensor Created"
-    body = _sensor_created_template.foramt(sensor.name,
+    body = _sensor_created_template.format(sensor.name,
                                               sensor.icpe.macaddr)
     message = MessageModel(subject, body)
     sensor.messages.append(message)

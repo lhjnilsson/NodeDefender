@@ -63,18 +63,6 @@ class DataDescriptor:
     def __delete__(self, instance):
         raise AttributeError("Can't delete me")
 
-class ClassInfo:
-    cc = DataDescriptor('classname')
-    ccname = DataDescriptor('classnumber')
-    cctypes = DataDescriptor('types')
-    datafields = DataDescriptor('datafields')
-
-    def __init__(self):
-        self.classname = None
-        self.classnumber = None
-        self.types = None
-        self.fields = None
-
 class BaseModel:
     sensorid = DataDescriptor('sensorid')
     instance = DataDescriptor('instance')
@@ -84,6 +72,7 @@ class BaseModel:
 
     subfunc = DataDescriptor('subfunc')
     value = DataDescriptor('value')
+    field = DataDescriptor('field') 
 
     cc = DataDescriptor('cc')
     ccname = DataDescriptor('ccname')
@@ -99,7 +88,7 @@ class BaseModel:
         self.pid = None
         self.subfunc = None
         self.value = None
-    
+        self.field = None
         self.cc = None
         self.ccname = None
         self.cctype = None

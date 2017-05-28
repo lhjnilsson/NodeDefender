@@ -1,4 +1,5 @@
-from ... import BaseModel, PayloadSplitter, DataDescriptor, ClassInfo
+from ... import BaseModel, PayloadSplitter, DataDescriptor
+from .. import ClassInfo
 
 zalm = {'06' : 'AccessControl'}
 icons = {'AccessControl' : {'16' : 'fa fa-bell', '17' : 'fa fa-bell-slash-o',\
@@ -30,10 +31,9 @@ def Info(cctype = None):
     if cctype:
         return eval(zalm[cctype] + '.Info')
     classinfo = ClassInfo()
-    classinfo.cc = '71'
-    classinfo.ccname = 'alarm'
-    classinfo.cctypes = True
-    classinfo.datafield = None
+    classinfo.number = '71'
+    classinfo.name = 'alarm'
+    classinfo.types = True
     return classinfo
 
 

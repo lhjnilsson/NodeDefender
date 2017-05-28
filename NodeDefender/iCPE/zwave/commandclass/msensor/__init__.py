@@ -1,4 +1,5 @@
-from ... import BaseModel, PayloadSplitter, DataDescriptor, ClassInfo
+from ... import BaseModel, PayloadSplitter, DataDescriptor
+from .. import ClassInfo
 
 mtype = {'1' : 'AirTemperature', '0x01' : 'AirTemperature'}
 
@@ -20,17 +21,12 @@ class MsensorModel:
         super().__init__()
 
 def Info(classtype = None):
-    classinfo = ClassInfo()
-    classinfo.cc = '31'
-    classinfo.ccname = 'msensor'
-    classinfo.types = True
-    classinfo.datafields = None
     if classtype:
-        try:
-            classinfo.fields.append(eval(mtype[classtype] + '.Fields')())
-        except KeyError:
-            print("Unable to add {} for class {}".format(classtype,
-                                                         classinfo.clasname))
+        return eval(mtype[classtype] + '.Info')()
+    classinfo = ClassInfo()
+    classinfo.number = '31'
+    classinfo.name = 'msensor'
+    classinfo.types = True
     return classinfo
 
 def Load(classtypes):

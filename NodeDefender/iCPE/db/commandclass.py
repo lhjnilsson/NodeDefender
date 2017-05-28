@@ -1,6 +1,6 @@
 from ...models.manage import commandclass as CommandclassSQL
 from ...models.redis import commandclass as CommandclassRedis
-from ...models.redis import field as FieldRedis
+from . import field as FieldDB
 from . import redisconn
 from .. import mqtt, zwave
 from ... import celery
@@ -66,7 +66,9 @@ def Add(topic, payload, mqttsrc = None):
         cls.name = classinfo.name
         cls.supported = True
         CommandclassSQL.Save(cls)
-        
+        if not classinfo.fields:
+            continue
+
         for field in classinfo.fields:
             if not len(field):
                 continue
@@ -74,32 +76,11 @@ def Add(topic, payload, mqttsrc = None):
                                      classinfo.name, **field))
         CommandclassRedis.Load(topic.macaddr, topic.sensorid, classinfo.name)
 
+    FieldDB.Load(topic.sensorid)
     return True
 
-@ParsePayload
-def AddTypes(topic, payload, mqttsrc = None):
-    try:
-        types = payload.typelist.split(',')
-    except AttributeError:
-        types = list(payload.type)
-
-    CommandclassSQL.AddTypes(topic.macaddr, topic.sensorid, payload.cls,
-                         types)
-
-    for classtype in types:
-        try:
-            t = CommandclassSQL.AddType(topic.macaddr, topic.sensorid, payload.cls,
-                                    classtype)
-        except KeyError:
-            continue
-
-        t_info = zwave.Info(payload.cls, classtype)
-        if not t_info:
-            continue
-
-        t.name = t_info.name
-        t.supported = True
-        CommandclassSQL.UpdateType(t)
-        FieldRedis.Load(t)
-
-    return CommandclassRedis.Load(topic.macaddr, topic.sensorid, payload.cls)
+@celery.task
+def Load(sensor = None):
+    for commandclass in CommandclassSQL.List(sensor):
+        CommandclassRedis.Load(commandclass)
+    return True

@@ -1,4 +1,5 @@
-from ... import BaseModel, PayloadSplitter, DataDescriptor, ClassInfo
+from ... import BaseModel, PayloadSplitter, DataDescriptor
+from .. import ClassInfo
 
 mtype = {'1' : 'Electric'}
 icons = {'Electric' : 'fa fa-plug'}
@@ -26,18 +27,13 @@ class MeterModel:
         self.rateType = None
         super().__init__()
 
-def Info(cctype = None):
+def Info(classtype = None):
+    if classtype:
+        return eval(mgtype[classtype] + '.Info')()
     classinfo = ClassInfo()
-    classinfo.cc = '25'
-    classinfo.ccname = 'meter'
-    classinfo.cctypes = True
-    classinfo.datafield = None
-    if cctype:
-        try:
-            classinfo.datafield = (eval(mtype[cctype] + '.Datafield')())
-        except KeyError:
-            print("Unable to add {} for class {}".format(cctype,
-                                                         classinfo.clasname))
+    classinfo.number = '25'
+    classinfo.name = 'meter'
+    classinfo.types = True
     return classinfo
 
 def Icon(value, cctype):

@@ -1,4 +1,5 @@
-from ... import PayloadSplitter, DataDescriptor, ClassInfo
+from ... import PayloadSplitter, DataDescriptor
+from .. import ClassInfo
 
 icons = {True : 'fa fa-toggle-on', False : 'fa fa-toggle-off'}
 
@@ -12,9 +13,9 @@ class BasicModel:
 
 def Info():
     classinfo = ClassInfo()
-    classinfo.cc = '25'
-    classinfo.ccname = 'bswitch'
-    classinfo.cctypes = False
+    classinfo.number = '25'
+    classinfo.name = 'bswitch'
+    classinfo.types = False
     return classinfo
 
 def Fields():

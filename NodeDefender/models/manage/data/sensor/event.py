@@ -35,4 +35,5 @@ def Put(icpe, sensor, event):
 
     db.session.add(e)
     db.session.commit()
-    FieldEvent(FieldRedis.Update(e))
+
+    FieldEvent(FieldRedis.Update(e, event))

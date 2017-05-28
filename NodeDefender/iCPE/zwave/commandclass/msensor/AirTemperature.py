@@ -1,5 +1,14 @@
-def Datafield():
+from .. import ClassTypeInfo
+
+def Fields():
     return {'type' : 'value', 'readonly' : True, 'name' : 'Celsius'}
+
+def Info():
+    typeinfo = ClassTypeInfo()
+    typeinfo.number = '1'
+    typeinfo.name = 'AirTemperature'
+    typeinfo.fields = True
+    return typeinfo
 
 def Event(payload):
     payload.ccevent = 'Celsius'

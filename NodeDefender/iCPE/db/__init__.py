@@ -17,22 +17,10 @@ def redisconn(func):
     return wrapper
 
 def Load(mqttsrc, mac, sensorid = None):
-    if sensorid:
-        if sensor.Load(mac, sensorid):
-            pass
-        else:
-            if icpe.Load(mac):
-                sensor.CreateLoadQuery(mqttsrc, mac, sensorid)
-            else:
-                icpe.CreateLoadQuery(mqttsrc, mac)
-                sensor.CreateLoadQuery(mqttsrc, mac, sensorid)
+    icpe.Load.apply_async()
+    sensor.Load.apply_async()
+    commandclass.Load.apply_async()
+    commandclasstype.Load.apply_async()
+    field.Load.apply_async()
 
-    else:
-        if icpe.Load(mac):
-            pass
-        else:
-            icpe.CreateLoadQuery(mqttsrc, mac)
-
-    return sensor.Get(mac, sensorid) if sensorid else icpe.Get(mac)
-
-from . import sensor, icpe, commandclass
+from . import sensor, icpe, commandclass, commandclasstype, field

@@ -32,3 +32,9 @@ def Update(macaddr, sensorid):
     for cls in sensor.commandclasses:
         commandclass.Update(cls)
     return True
+
+@celery.task
+def Load(icpe = None):
+    for sensor in SensorSQL.List(icpe):
+        SensorRedis.Load(sensor)
+    return True

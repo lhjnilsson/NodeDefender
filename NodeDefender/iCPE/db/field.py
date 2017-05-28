@@ -1,9 +1,29 @@
 from ...models.redis import field as FieldRedis
+from ...models.manage import commandclass as CommandclassSQL
 from . import redisconn
 from datetime import datetime
-
-def Load(field):
-    return FieldRedis.Load(field)
+from .. import celery, zwave
 
 def Update(topic, data):
     return FieldRedis.Update(topic.macaddr, topic.sensorid, **data)
+
+@celery.task
+def Load(sensor = None):
+    for commandclass in CommandclassSQL.List(sensor):
+        if not commandclass.name:
+            continue
+
+        types = commandclass.types
+        if types:
+            for t in types:
+                if not t.name:
+                    continue
+
+                field = eval('zwave.commandclass.'+commandclass.name+'.'+\
+                             t.name+'.Fields')()
+                FieldRedis.Load(commandclass, field)
+            continue
+        else:
+            field = eval('zwave.commandclass.'+commandclass.name+\
+                         '.Fields')()
+            FieldRedis.Load(commandclass, field)

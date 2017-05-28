@@ -114,8 +114,8 @@ class CommandClassModel(db.Model):
     events = db.relationship('EventModel', backref="commandclass",
                            cascade="save-update, merge, delete")
 
-    def __init__(self, cc):
-        self.ccc = str(cc)[:2]
+    def __init__(self, number):
+        self.number = str(number)[:2]
         self.supported = False
 
 class CommandClassTypeModel(db.Model):

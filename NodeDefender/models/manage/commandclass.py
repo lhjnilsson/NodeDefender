@@ -2,25 +2,37 @@ from ..SQL import iCPEModel, SensorModel, CommandClassModel
 from ... import db
 from . import logger
 
+def List(sensorid = None):
+    if sensorid:
+        return db.session.query(CommandClassModel).\
+                join(CommandClassModel.sensor).\
+                filter(SensorModel.sensorid == sensorid).all()
+    return db.session.query(CommandClassModel).all()
+
 def Get(mac, sensorid, classnumber):
     return db.session.query(CommandClassModel).\
             join(CommandClassModel.sensor).\
             filter(SensorModel.sensorid == sensorid).\
-            filter(CommandClassModel.classnumber == classnumber).first()
+            filter(CommandClassModel.number == classnumber).first()
 
-def Add(mac, sensorid, classnumber):
-    commandclass = Get(mac, sensorid, classnumber)
+def Add(macaddr, sensorid, classnumber):
+    commandclass = Get(macaddr, sensorid, classnumber)
     if commandclass:
         return commandclass
 
-    s = sensor.Get(mac, sensorid)
+    s = db.session.query(SensorModel).\
+            join(SensorModel.icpe).\
+            filter(iCPEModel.macaddr == macaddr).\
+            filter(SensorModel.sensorid == sensorid).first()
+    
     if s is None:
-        print('Sensor {} not found'.format(sensorid))
+        print('Sensor {}:{} not found'.format(macaddr, sensorid))
+
     commandclass = CommandClassModel(classnumber)
     s.commandclasses.append(commandclass)
     db.session.add(s, commandclass)
     db.session.commit()
-    logger.info("Added Class {} to Sensor {}:{}".format(classnumber, mac,\
+    logger.info("Added Class {} to Sensor {}:{}".format(classnumber, macaddr,\
                                                         sensorid))
     return commandclass
 

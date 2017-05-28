@@ -7,7 +7,8 @@ from ..models.redis import field as FieldRedis
 socketio = SocketIO(message_queue='redis://localhost:6379/0')
 
 def FieldEvent(event):
-    socketio.emit('FieldEvent', (event.to_json()),
-                  namespace = '/icpe'+event.icpe.macaddr,
+    print(event)
+    socketio.emit('FieldEvent', (event),
+                  namespace = '/icpe'+event['icpe'],
                   broadcast=True);
     return True
