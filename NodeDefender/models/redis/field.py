@@ -7,23 +7,21 @@ from . import redisconn
 def Load(commandclass, field, conn):
     if field is None:
         return None
-    print(field)
-    field = {
-        'icpe' : commandclass.sensor.icpe.macaddr,
-        'sensor' : commandclass.sensor.sensorid,
-        'commandclassNumber' : commandclass.number,
-        'commandclassName' : commandclass.name,
+    field['icpe'] = commandclass.sensor.icpe.macaddr
+    field['sensor'] = commandclass.sensor.sensorid
+    field['commandclassNumber'] = commandclass.number
+    field['commandclassName'] = commandclass.name
 
-        'value' : None,
+    field['value'] = None
         
-        'last_updated' : None,
-        'loaded_at' : str(datetime.now())
-    }
+    field['last_updated'] = None,
+    field['loaded_at'] = str(datetime.now())
+    
     conn.sadd(commandclass.sensor.icpe.macaddr + commandclass.sensor.sensorid\
               + ':fields', field['name'])
-    conn.hmset(field.icpe.macaddr + field.sensor.sensorid + field['field'],
-               field)
-    return f
+    conn.hmset(commandclass.sensor.icpe.macaddr + commandclass.sensor.sensorid\
+               + field['name'], field)
+    return field
 
 @redisconn
 def Update(model, event, conn):

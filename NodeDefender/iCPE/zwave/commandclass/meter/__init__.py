@@ -42,6 +42,9 @@ def Icon(value, cctype):
 def Load(classtypes):
     return {'meter' : 0}
 
+def Fields():
+    return False
+
 @PayloadSplitter(model=MeterModel)
 def Event(payload):
     try:

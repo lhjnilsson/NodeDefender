@@ -18,7 +18,7 @@ def event(topic, payload, mqttsrc):
 @ParsePayload
 def sup(topic, payload, mqttsrc):
     try:
-        db.commandclass.AddTypes(topic, payload)
+        db.commandclasstype.Add(topic, payload)
     except AttributeError:
         pass
 

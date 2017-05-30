@@ -32,6 +32,9 @@ def Info(classtype = None):
 def Load(classtypes):
     return {'meter' : 0}
 
+def Fields():
+    return False
+
 @PayloadSplitter(model=MsensorModel)
 def Event(payload):
     try:

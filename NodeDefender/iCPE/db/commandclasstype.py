@@ -10,6 +10,7 @@ from ..decorators import ParsePayload
 
 @ParsePayload
 def Add(topic, payload, mqttsrc = None):
+    print('adding type...')
     try:
         types = payload.typelist.split(',')
     except AttributeError:

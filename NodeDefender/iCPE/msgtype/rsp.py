@@ -49,7 +49,7 @@ def qry(topic, payload, mqttsrc):
 @ParsePayload
 def sup(topic, payload, mqttsrc):
     try:
-        db.commandclass.AddTypes(topic, payload, payload.typelist)
+        db.commandclasstype.Add(topic, payload, payload.typelist)
     except AttributeError:
         pass
 

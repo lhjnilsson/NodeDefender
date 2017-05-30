@@ -18,12 +18,18 @@ def Load(sensor = None):
             for t in types:
                 if not t.name:
                     continue
-
-                field = eval('zwave.commandclass.'+commandclass.name+'.'+\
-                             t.name+'.Fields')()
-                FieldRedis.Load(commandclass, field)
+                try:
+                    field = eval('zwave.commandclass.'+commandclass.name+'.'+\
+                                t.name+'.Fields')()
+                except AttributeError:
+                    print('!!!!!!!!!!!EERROR!!!!!!!!!!!!!!1')
+                    print(commandclass.name, t.name)
+                if field:
+                    FieldRedis.Load(commandclass, field)
             continue
         else:
             field = eval('zwave.commandclass.'+commandclass.name+\
                          '.Fields')()
-            FieldRedis.Load(commandclass, field)
+            if field:
+                FieldRedis.Load(commandclass, field)
+
