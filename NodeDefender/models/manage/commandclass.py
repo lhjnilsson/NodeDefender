@@ -9,9 +9,11 @@ def List(sensorid = None):
                 filter(SensorModel.sensorid == sensorid).all()
     return db.session.query(CommandClassModel).all()
 
-def Get(mac, sensorid, classnumber):
+def Get(macaddr, sensorid, classnumber):
     return db.session.query(CommandClassModel).\
             join(CommandClassModel.sensor).\
+            join(SensorModel.icpe).\
+            filter(iCPEModel.macaddr == macaddr).\
             filter(SensorModel.sensorid == sensorid).\
             filter(CommandClassModel.number == classnumber).first()
 

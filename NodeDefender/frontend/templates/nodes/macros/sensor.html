@@ -1,16 +1,23 @@
 {% macro SensorBox(Sensor) %}
 {% from "nodes/macros/fields.html" import Switch, Box, Value %}
 <form name="#" class="form-horizontal" method="#">
-{% for field in Sensor.fields %}
-{% if field.display  %}
-	{% if field.type == 'switch' %}
-		{{ Switch(field) }}
-	{% elif field.type == 'box' %}
-		{{ Box(field) }}
-	{% elif field.type == 'value' %}
-		{{ Value(field) }}
-	{% endif %}
+{% for commandclass in Sensor.commandclasses %}
+{% if commandclass.field %}
+<div class="form-group">
+	<label class="col-sm-2 control-label">{{commandclass.name}}</label>
+	<div class="col-sm-5 col-sm-offset-5">
+		Thing
+	</div>
+</div>
 {% endif %}
+{% for commandclasstype in commandclass.types %}
+<div class="form-group">
+	<label class="col-sm-2 control-label">{{commandclasstype.name}}</label>
+	<div class="col-sm-5 col-sm-offset-5">
+		Thing
+	</div>
+</div>
+{% endfor %}
 {% endfor %}
 </form>
 {% endmacro %}

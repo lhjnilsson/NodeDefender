@@ -1,5 +1,6 @@
 from ...models.manage import commandclasstype as CommandclasstypeSQL
 from ...models.redis import commandclass as CommandclassRedis
+from ...models.redis import field as FieldRedis
 from . import field as FieldDB
 from . import redisconn
 from .. import mqtt, zwave
@@ -25,20 +26,19 @@ def Add(topic, payload, mqttsrc = None):
 
         t_info = zwave.Info(payload.cls, classtype)
         if not t_info:
-            continue
+            print('ERROR FINDING TYPE', payload.cls, classtype)
 
         t.name = t_info.name
         t.number = t_info.number
         t.fields = t_info.fields
         t.supported = True
-        CommandclassSQL.UpdateType(t)
-        FieldRedis.Load(t)
+        CommandclasstypeSQL.Save(t)
     
     FieldDB.Load(topic.sensorid)
     return CommandclassRedis.Load(topic.macaddr, topic.sensorid, payload.cls)
 
 @celery.task
 def Load(commandclass = None):
-    for commandclasstype in CommandclassstypeSQL.List(commandclass):
-        CommandclassRedis.Load(commandclasstype)
+    #for commandclasstype in CommandclasstypeSQL.List(commandclass):
+        #CommandclassRedis.Load(commandclasstype)
     return True

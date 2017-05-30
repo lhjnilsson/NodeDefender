@@ -30,7 +30,7 @@ def Verify(topic, payload, mqttsrc = None):
 
 @celery.task
 def Load(group = None):
-    for icpe in iCPESQL.List(group):
+    for icpe in iCPESQL.List():
         iCPERedis.Load(icpe)
     return True
 

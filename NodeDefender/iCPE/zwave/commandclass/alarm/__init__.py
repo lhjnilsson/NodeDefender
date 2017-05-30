@@ -29,7 +29,10 @@ class AlarmModel:
 
 def Info(cctype = None):
     if cctype:
-        return eval(zalm[cctype] + '.Info')
+        try:
+            return eval(zalm[cctype] + '.Info')()
+        except KeyError:
+            return False
     classinfo = ClassInfo()
     classinfo.number = '71'
     classinfo.name = 'alarm'

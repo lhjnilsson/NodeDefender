@@ -1,7 +1,8 @@
 from ... import BaseModel, PayloadSplitter, DataDescriptor
 from .. import ClassInfo
 
-mtype = {'1' : 'AirTemperature', '0x01' : 'AirTemperature'}
+mtype = {'1' : 'AirTemperature', '0x01' : 'AirTemperature',
+         '01' : 'AirTemperature'}
 
 class MsensorModel:
     unit = DataDescriptor('unit')
@@ -22,7 +23,10 @@ class MsensorModel:
 
 def Info(classtype = None):
     if classtype:
-        return eval(mtype[classtype] + '.Info')()
+        try:
+            return eval(mtype[classtype] + '.Info')()
+        except KeyError:
+            return False
     classinfo = ClassInfo()
     classinfo.number = '31'
     classinfo.name = 'msensor'

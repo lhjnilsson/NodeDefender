@@ -29,7 +29,10 @@ class MeterModel:
 
 def Info(classtype = None):
     if classtype:
-        return eval(mgtype[classtype] + '.Info')()
+        try:
+            return eval(mtype[classtype] + '.Info')()
+        except KeyError:
+            return False
     classinfo = ClassInfo()
     classinfo.number = '25'
     classinfo.name = 'meter'

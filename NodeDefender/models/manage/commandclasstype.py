@@ -3,15 +3,18 @@ CommandClassTypeModel
 from ... import db
 from . import logger
 
+def List(macaddr = None, sensorid = None, commandclass = None):
+    return db.session.query(CommandClassTypeModel).all()
+
 def Get(macaddr, sensorid, classnumber, classtype):
     return db.session.query(CommandClassTypeModel).\
-            join(CommandClassTypeModel.icpe).\
-            join(CommandClassTypeModel.sensor).\
             join(CommandClassTypeModel.commandclass).\
+            join(CommandClassModel.sensor).\
+            join(SensorModel.icpe).\
             filter(iCPEModel.macaddr == macaddr).\
             filter(SensorModel.sensorid == sensorid).\
-            filter(CommandclassModel.number == classnumber).\
-            filter(CommandclassTypeModel.number == classtype).first()
+            filter(CommandClassModel.number == classnumber).\
+            filter(CommandClassTypeModel.number == classtype).first()
 
 def Add(macaddr, sensorid, classnumber, classtype):
     commandclasstype =  Get(macaddr, sensorid, classnumber, classtype)
@@ -19,20 +22,22 @@ def Add(macaddr, sensorid, classnumber, classtype):
         return commandclasstype
 
     commandclass = db.session.query(CommandClassModel).\
-            join(CommandClassModel.icpe).\
+            join(CommandClassModel.sensor).\
+            join(SensorModel.icpe).\
             filter(iCPEModel.macaddr == macaddr).\
+            filter(SensorModel.sensorid == sensorid).\
             filter(CommandClassModel.number == classnumber).first()
     
     if commandclass is None:
         raise TypeError('Command Class does not exist')
 
-    commandclasstype = CommandClassTypeModel(classnumber)
+    commandclasstype = CommandClassTypeModel(classtype)
 
     commandclass.types.append(commandclasstype)
     db.session.add(commandclass, commandclasstype)
     db.session.commit()
-    logger.info("Added Classtypes {} to Sensor {}:{}".\
-                format(classtypes, macaddr, sensorid))
+    logger.info("Added Classtype {} to Sensor {}:{}".\
+                format(classtype, macaddr, sensorid))
     return commandclasstype
 
 def Save(commandclasstype):

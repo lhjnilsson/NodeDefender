@@ -16,7 +16,7 @@ def redisconn(func):
         return func(*args, conn = conn, **kwargs)
     return wrapper
 
-def Load(mqttsrc, mac, sensorid = None):
+def Load(*args):
     icpe.Load.apply_async()
     sensor.Load.apply_async()
     commandclass.Load.apply_async()
