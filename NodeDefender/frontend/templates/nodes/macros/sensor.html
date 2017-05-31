@@ -4,17 +4,17 @@
 {% for commandclass in Sensor.commandclasses %}
 {% if commandclass.field %}
 <div class="form-group">
-	<label class="col-sm-2 control-label">{{commandclass.name}}</label>
-	<div class="col-sm-5 col-sm-offset-5">
-		Thing
+	<label class="col-sm-2 control-label" id="{{sensor.sensorid}}{{commandclass.name}}Name">---</label>
+	<div class="col-sm-5 col-sm-offset-5" id="{{sensor.sensorid}}{{commandclass.name}}Div">
+		---
 	</div>
 </div>
 {% endif %}
 {% for commandclasstype in commandclass.types %}
 <div class="form-group">
-	<label class="col-sm-2 control-label">{{commandclasstype.name}}</label>
-	<div class="col-sm-5 col-sm-offset-5">
-		Thing
+	<label class="col-sm-2 control-label" id="{{sensor.sensorid}}{{commandclasstype.name}}Name">---</label>
+	<div class="col-sm-5 col-sm-offset-5" id="{{sensor.sensorid}}{{commandclasstype.name}}Div">
+		---
 	</div>
 </div>
 {% endfor %}
@@ -42,5 +42,43 @@ iCPESocket.on('iCPEEvent', function(msg) {
 	console.log(msg);
 });
 
+function createFieldBox(field) {
+	div = document.getElementById(field.sensorid+field.name+"Div");
+	box = document.createElement("LABEL");
+	box.setAttribute("class", "lightbox");
+	box.setAttribute("id", field.sensorid+field.name+"Value");
+	if (field.enabled) {
+		box.className += " light";
+	}
+	div.appendChild(box);
+};
+
+function createFieldValue(field) {
+	div = document.getElementById(field.sensorid+field.name+"Div");
+	box = document.createElement("P");
+	box.setAttribute("id", field.sensorid+field.name+"Value");
+	box.style.position = "absolute";
+	box.style.right = "0";
+	box.style.width = "60px";
+	box.innerHTML = field.value;
+	div.appendChild(box);
+}
+
+function createFieldSwitch(field) {
+	div = document.getElementById(field.sensorid+field.name+"Div");
+	input = document.createElement("INPUT");
+	input.setAttribute("type", "checkbox");
+	input.setAttribute("id", field.sensorid+field.name+"Value");
+	input.onclick = switchChange(this, field.sensorid+field.name);
+	slider = document.createElement("DIV");
+	slider.setAttribute("class", "slider");
+
+	div.appendChild(input);
+	div.appendChild(slider);
+}
+
+sensorSocket.on('Field', function(field) {
+	
+});
 </script>
 {% endmacro %}
