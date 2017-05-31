@@ -10,17 +10,18 @@ mqtt_icpe = db.Table('mqtt_icpe',
 class MQTTModel(db.Model):
     __tablename__ = 'mqtt'
     id = db.Column(db.Integer, primary_key=True)
-    ipaddr = db.Column(db.String(20))
+    host = db.Column(db.String(128))
     port = db.Column(db.Integer)
     username = db.Column(db.String(64))
     password = db.Column(db.String(64))
+    
 
     icpes = db.relationship('iCPEModel', secondary=mqtt_icpe,
                             backref=db.backref('mqtt', lazy='dynamic'))
     created_at = db.Column(db.DateTime)
 
-    def __init__(self, ipaddr, port, username = None, password = None):
-        self.ipaddr = ipaddr
+    def __init__(self, host, port, username = None, password = None):
+        self.ipaddr = host
         self.port = int(port)
         self.username = username
         self.password = password
