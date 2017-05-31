@@ -1,84 +1,96 @@
-{% macro SensorBox(Sensor) %}
+{% macro SensorBox(sensor) %}
 {% from "nodes/macros/fields.html" import Switch, Box, Value %}
 <form name="#" class="form-horizontal" method="#">
-{% for commandclass in Sensor.commandclasses %}
-{% if commandclass.field %}
+{% for commandclass in sensor.commandclasses %}
+
+{% if commandclass.types %}
+{% for commandclasstype in commandclass.types %}
+{% if commandclasstype.supported %}
 <div class="form-group">
-	<label class="col-sm-2 control-label" id="{{sensor.sensorid}}{{commandclass.name}}Name">---</label>
+	<label class="col-sm-2 control-label" id="{{sensor.sensorid}}{{commandclass.name}}Name">-</label>
 	<div class="col-sm-5 col-sm-offset-5" id="{{sensor.sensorid}}{{commandclass.name}}Div">
 		---
 	</div>
 </div>
 {% endif %}
-{% for commandclasstype in commandclass.types %}
+{% endfor %}
+
+{% else %}
+{% if commandclass.supported %}
 <div class="form-group">
-	<label class="col-sm-2 control-label" id="{{sensor.sensorid}}{{commandclasstype.name}}Name">---</label>
-	<div class="col-sm-5 col-sm-offset-5" id="{{sensor.sensorid}}{{commandclasstype.name}}Div">
+	<label class="col-sm-2 control-label" id="{{sensor.sensorid}}{{commandclass.name}}Name">-</label>
+	<div class="col-sm-5 col-sm-offset-5" id="{{sensor.sensorid}}{{commandclass.name}}Div">
 		---
 	</div>
 </div>
-{% endfor %}
+{% endif %}
+{% endif %}
+
 {% endfor %}
 </form>
 {% endmacro %}
 
-{% macro SensorSockets(sensors) %}
+{% macro SensorScripts(sensors) %}
 <script>
-function checkboxClick(box, icpe, nodeid, commandclass) {
-	$(box).addClass('disabled');
-	if (box.checked) {
-		
-	} else {
-
-	}
-	$(box).removeClass('disabled');
-}
-
-iCPESocket.on('connect', function() {
-	icpesocket.emit('JoiniCPE', {icpe : '{{sensors[0].icpe.macaddraddr}}');
-});
-
-iCPESocket.on('iCPEEvent', function(msg) {
-	console.log(msg);
-});
-
 function createFieldBox(field) {
-	div = document.getElementById(field.sensorid+field.name+"Div");
+	console.log(field);
+	div = document.getElementById(field.sensor+field.commandclassName+"Div");
 	box = document.createElement("LABEL");
 	box.setAttribute("class", "lightbox");
-	box.setAttribute("id", field.sensorid+field.name+"Value");
+	box.setAttribute("id", field.sensor+field.name+"Value");
 	if (field.enabled) {
 		box.className += " light";
 	}
+	div.innerHTML = ""
 	div.appendChild(box);
 };
 
 function createFieldValue(field) {
-	div = document.getElementById(field.sensorid+field.name+"Div");
+	div = document.getElementById(field.sensor+field.commandclassName+"Div");
 	box = document.createElement("P");
-	box.setAttribute("id", field.sensorid+field.name+"Value");
+	box.setAttribute("id", field.sensor+field.name+"Value");
 	box.style.position = "absolute";
 	box.style.right = "0";
 	box.style.width = "60px";
 	box.innerHTML = field.value;
+	div.innerHTML = "";
 	div.appendChild(box);
 }
 
 function createFieldSwitch(field) {
-	div = document.getElementById(field.sensorid+field.name+"Div");
+	div = document.getElementById(field.sensor+field.commandclassName+"Div");
+	_switch = document.createElement("LABEL");
+	_switch.setAttribute("class", "switch");
+
 	input = document.createElement("INPUT");
 	input.setAttribute("type", "checkbox");
-	input.setAttribute("id", field.sensorid+field.name+"Value");
-	input.onclick = switchChange(this, field.sensorid+field.name);
+	input.setAttribute("id", field.sensor+field.name+"Value");
+	input.onclick = switchChange(this, field.sensor+field.name);
 	slider = document.createElement("DIV");
 	slider.setAttribute("class", "slider");
+	
+	_switch.appendChild(input);
+	_switch.appendChild(slider);
 
-	div.appendChild(input);
-	div.appendChild(slider);
+	div.innerHTML = "";
+	div.appendChild(_switch);
 }
 
-sensorSocket.on('Field', function(field) {
-	
+sensorSocket.on('fields', function(fields) {
+	for (var i = 0; i < fields.length; i++) {
+		document.getElementById(fields[i].sensor+fields[i].commandclassName+"Name").innerHTML = fields[i].name;
+		if (fields[i].type == 'box')
+			createFieldBox(fields[i]);
+		else if (fields[i].type == 'value')
+			createFieldValue(fields[i]);
+		else if (fields[i].type == 'switch')
+			createFieldSwitch(fields[i]);
+		else
+			console.log("unknown field " + fields[i].type);
+	}
 });
+{% for sensor in sensors %}
+sensorSocket.emit('fields', "{{sensor.icpe.macaddr}}", "{{sensor.sensorid}}");
+{% endfor %}
 </script>
 {% endmacro %}

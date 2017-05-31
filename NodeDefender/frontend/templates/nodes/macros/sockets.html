@@ -1,31 +1,3 @@
-{% macro Lookup(iCPE) %}
-<script>
-socket.on('SensorRespond', function(sensor, fields) {
-	for (var i = 0; i < fields.length; i++) {
-		field = fields[i];
-		box = $(document.getElementById(sensor.sensorid + field.name));
-		console.log(field);
-		if (field.type == 'switch') {
-			switchEvent(box, field.value);
-		}
-		else if (field.type == 'box') {
-			boxEvent(box, field.value);
-		}
-		else if (field.type == 'value') {
-			valueEvent(box, field.value);
-		}
-	}
-	$(document.getElementById("Box" + sensor.sensorid)).removeClass("blur");
-});
-
-{% for sensor in iCPE.sensors %}
-	$(document.getElementById("Box" + {{sensor.sensorid}})).addClass("blur");
-	socket.emit('SensorGet', {macaddr : "{{sensor.icpe.macaddr}}", sensorid : "{{sensor.sensorid}}"});
-{% endfor %}
-
-</script>
-{% endmacro %}
-
 {% macro EventListener(macaddr) %}
 <script>
 var eventsocket = io.connect('http://' + document.domain + ':' + location.port + '/icpe' + '{{macaddr}}');

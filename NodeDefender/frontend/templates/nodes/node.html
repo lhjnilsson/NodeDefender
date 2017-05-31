@@ -65,7 +65,7 @@ var socket = io.connect('http://' + document.domain + ':' + location.port + name
 		</div>
 	</div>
 </div>
-{% from "nodes/macros/sensor.html" import SensorBox %}
+{% from "nodes/macros/sensor.html" import SensorBox, SensorScripts %}
 <div class="row">
 	{% if iCPE.sensors|length > 0 %}
 	{% for sensor in iCPE.sensors %}
@@ -77,7 +77,7 @@ var socket = io.connect('http://' + document.domain + ':' + location.port + name
 					<a href="#" style="color: #FFFFFF; margin: 0 5px;" onclick="sensorModal('{{iCPE.macaddr}}', '{{sensor.sensorid}}')"><i class="fa fa-info" aria-hidden="true"></i></a>
 				</div>
 			</div>
-			<div class="panel-body">
+			<div class="panel-body" id="Box{{sensor.sensorid}}">
 				{{ SensorBox(sensor) }}
 			</div>
 		</div>
@@ -150,7 +150,7 @@ function iCPEModal(iCPE) {
 {{ ModifyGeneral(Node) }}
 {% endif %}
 
-{{ Lookup(iCPE) }}
+{{ SensorScripts(iCPE.sensors) }}
 {{ iCPEModal() }}
 {{ SensorModal() }}
 {% endblock %}
