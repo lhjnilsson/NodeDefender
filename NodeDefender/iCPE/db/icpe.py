@@ -17,13 +17,13 @@ def Verify(topic, payload, mqttsrc = None):
             else:
                 iCPESQL.Enable(topic.macaddr **mqttsrc)
                 iCPEMail.icpe_enabled.apply_async((topic.macaddr,
-                                               mqttsrc['ipaddr'],
+                                               mqttsrc['host'],
                                                mqttsrc['port']), countdown=30)
                 return iCPERedis.Load(topic.macaddr)
         else:
             iCPESQL.Create(topic.macaddr)
             iCPESQL.Enable(topic.macaddr, **mqttsrc)
-            iCPEMail.new_icpe.apply_async((topic.macaddr, mqttsrc['ipaddr'],
+            iCPEMail.new_icpe.apply_async((topic.macaddr, mqttsrc['host'],
                                            mqttsrc['port']), countdown=30)
             iCPERedis.Load(topic.macaddr)
     return mqtt.icpe.Query(topic.macaddr, **mqttsrc)

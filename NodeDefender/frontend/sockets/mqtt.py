@@ -17,7 +17,7 @@ def create_mqtt(msg):
     group = GroupSQL.Get(msg['group'])
     mqtt.groups.append(group)
     MQTTSQL.Save(mqtt)
-    GroupMail.new_mqtt.delay(group.name, mqtt.ipaddr, mqtt.port)
+    GroupMail.new_mqtt.delay(group.name, mqtt.host, mqtt.port)
     LoadMQTT([mqtt])
     emit('reload', namespace='/general')
     return True
@@ -26,10 +26,10 @@ def create_mqtt(msg):
 def mqtt_list(msg):
     if 'icpe' in msg:
         icpe = iCPESQL.Get(msg['icpe'])
-        emit('list', ([mqtt.ipaddr for mqtt in icpe.mqtt]))
+        emit('list', ([mqtt.host for mqtt in icpe.mqtt]))
     elif 'group' in msg:
         group = GroupSQL.Get(msg['group'])
-        emit('list', ([mqtt.ipaddr for mqtt in group.mqtt]))
+        emit('list', ([mqtt.host for mqtt in group.mqtt]))
     return True
 
 @socketio.on('info', namespace='/mqtt')

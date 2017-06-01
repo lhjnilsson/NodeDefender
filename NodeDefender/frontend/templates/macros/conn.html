@@ -12,17 +12,17 @@
 		{% for mqtt in mqtts %}
 		<tr>
 			<td>
-				<a href="#" onclick="MQTTInfo('{{mqtt.ipaddr}}', '{{mqtt.port}}')">
-				{{mqtt.ipaddr}}
+				<a href="#" onclick="MQTTInfo('{{mqtt.host}}', '{{mqtt.port}}')">
+				{{mqtt.host}}
 				</a>
 			</td>
 			<td>
-				<a href="#" onclick="MQTTInfo('{{mqtt.ipaddr}}', '{{mqtt.port}}')">
+				<a href="#" onclick="MQTTInfo('{{mqtt.host}}', '{{mqtt.port}}')">
 					{{mqtt.port}}
 				</a>
 			</td>
 			<td>
-				<a href="#" onclick="MQTTInfo('{{mqtt.ipaddr}}', '{{mqtt.port}}')">
+				<a href="#" onclick="MQTTInfo('{{mqtt.host}}', '{{mqtt.port}}')">
 				-
 				</a>
 			</td>
@@ -69,16 +69,16 @@
 	</div>
 </div>
 <script>
-function MQTTInfo(ipaddress, port) {
+function MQTTInfo(hostes, port) {
 	$('#MQTTInfoModal').modal('show');
-	mqttSocket.emit("info", {'ipaddr' : ipaddress, 'port' : port});
-	$("#mqttTitle").text(ipaddress);
+	mqttSocket.emit("info", {'host' : hostes, 'port' : port});
+	$("#mqttTitle").text(hostess);
 }
 mqttSocket.on("info", function(info) {
 	cleariCPEList();
 	clearGroupList();
 
-	$("#mqttInfoAddress").text(info.ipaddr);
+	$("#mqttInfoAddress").text(info.host);
 	$("#mqttInfoPort").text(info.port);
 	$("#mqttInfoOnline").text(info.online);
 	$("#mqttInfoCreatedAt").text(info.createdAt);

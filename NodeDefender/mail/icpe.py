@@ -5,16 +5,16 @@ from flask_mail import Message
 from flask import render_template, url_for
 
 @celery.task
-def new_icpe(icpe, ipaddr, port):
+def new_icpe(icpe, host, port):
     icpe = iCPESQL.Get(icpe)
     if icpe is None:
         return False
 
-    mqtt = MQTTSQL.Get(ipaddr, port)
+    mqtt = MQTTSQL.Get(host, port)
     if mqtt is None:
         return False
 
-    msg = Message('iCPE {} found on MQTT {}'.format(icpe.macaddr, mqtt.ipaddr),
+    msg = Message('iCPE {} found on MQTT {}'.format(icpe.macaddr, mqtt.host),
                   sender='noreply@nodedefender.com', recipients=\
                   [group.email for group in mqtt.groups ])
     url = url_for('NodeView.NodesList')
@@ -24,16 +24,16 @@ def new_icpe(icpe, ipaddr, port):
     return True
 
 @celery.task
-def icpe_enabled(icpe, ipaddr, port):
+def icpe_enabled(icpe, host, port):
     icpe = iCPESQL.Get(icpe)
     if icpe is None:
         return False
 
-    mqtt = MQTTSQL.Get(ipaddr, port)
+    mqtt = MQTTSQL.Get(host, port)
     if mqtt is None:
         return False
 
-    msg = Message('iCPE {} Enabled from MQTT {}'.format(icpe.macaddr, mqtt.ipaddr),
+    msg = Message('iCPE {} Enabled from MQTT {}'.format(icpe.macaddr, mqtt.host),
                   sender='noreply@nodedefender.com', recipients=\
                   [group.email for group in mqtt.groups ])
     url = url_for('NodeView.NodesList')

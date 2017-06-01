@@ -17,7 +17,7 @@ def create_mqtt(msg):
     group = GroupSQL.Get(msg['group'])
     mqtt.groups.append(group)
     MQTTSQL.Save(mqtt)
-    GroupMail.new_mqtt.delay(group.name, mqtt.ipaddr, mqtt.port)
+    GroupMail.new_mqtt.delay(group.name, mqtt.host, mqtt.port)
     LoadMQTT([mqtt])
     emit('reload', namespace='/general')
     return True

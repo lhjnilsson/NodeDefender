@@ -21,14 +21,14 @@ class MQTTModel(db.Model):
     created_at = db.Column(db.DateTime)
 
     def __init__(self, host, port, username = None, password = None):
-        self.ipaddr = host
+        self.host = host
         self.port = int(port)
         self.username = username
         self.password = password
         self.created_at = datetime.now()
 
     def to_json(self):
-        return {'ipaddr' : self.ipaddr, 'port' : self.port, 'createdAt' :
+        return {'host' : self.host, 'port' : self.port, 'createdAt' :
                 str(self.created_at), 'online' : True,
                 'groups' : [group.name for group in self.groups],
                 'icpes' : [icpe.macaddr for icpe in self.icpes]}
