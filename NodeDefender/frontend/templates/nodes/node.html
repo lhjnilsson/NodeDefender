@@ -66,9 +66,10 @@ var socket = io.connect('http://' + document.domain + ':' + location.port + name
 	</div>
 </div>
 {% from "nodes/macros/sensor.html" import SensorBox, SensorScripts %}
+{% if iCPE.sensors|length > 0 %}
+{% for sensors in iCPE.sensors|batch(6) %}
 <div class="row">
-	{% if iCPE.sensors|length > 0 %}
-	{% for sensor in iCPE.sensors %}
+	{% for sensor in sensors %}
 	<div class="col-lg-2">
 		<div class="panel panel-info">
 			<div class="panel-heading">
@@ -83,8 +84,9 @@ var socket = io.connect('http://' + document.domain + ':' + location.port + name
 		</div>
 	</div>
 	{% endfor %}
-	{% endif %}
 </div>
+{% endfor %}
+{% endif %}
 {% from "macros/statistics.html" import PowerGraph, HeatGraph, EventList with context %}
 {% from "macros/data/node/power.html" import Chart as PowerChart %}
 {% from "macros/data/node/heat.html" import Chart as HeatChart %}
