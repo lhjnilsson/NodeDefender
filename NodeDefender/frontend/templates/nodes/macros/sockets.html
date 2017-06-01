@@ -2,7 +2,6 @@
 <script>
 var eventsocket = io.connect('http://' + document.domain + ':' + location.port + '/icpe' + '{{macaddr}}');
 
-
 function switchChange(box, macaddr, sensorid, commandclass, classtype) {
 	if (box.checked) {
 		socket.emit('ZWaveSet', {'macaddr' : macaddr, 'sensorid' : sensorid, 'commandclass' : commandclass, 'value' : '1'});
@@ -19,7 +18,6 @@ function switchEvent(field, enabled) {
 	}
 }
 
-
 function boxEvent(box, enabled) {
  if(enabled) {
 	 $(box).addClass('lightboxlight');
@@ -32,18 +30,21 @@ function valueEvent(box, value) {
 	$(box).text(value);
 }
 
+function eventToastr(event) {
+	toastr.warning(event.name);
+};
 
-
-eventsocket.on('FieldEvent', function(event) {
-	f = document.getElementById(event.sensor+event.name);
+eventsocket.on('ZWaveEvent', function(event) {
+	f = document.getElementById(event.sensor+event.name+"Value");
 	console.log(event);
-	if (field.type == 'switch') {
-		switchEvent(f, enabled);
-	} else if (field.type == 'box') {
-		boxEvent(f, enabled);
-	} else if (field.type == 'value') {
-		valueEvent(f, value);
+	if (event.type == 'switch') {
+		switchEvent(f, event.enabled);
+	} else if (event.type == 'box') {
+		boxEvent(f, event.enabled);
+	} else if (event.type == 'value') {
+		valueEvent(f, event.value);
 	}
+	eventToastr(event);
 });
 </script>
 {% endmacro %}

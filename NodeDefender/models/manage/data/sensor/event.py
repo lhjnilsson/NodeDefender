@@ -5,7 +5,7 @@ from ... import sensor as SensorSQL
 from ... import commandclass as CommandclassSQL
 from ..... import db
 from ....redis import field as FieldRedis
-from .....conn.websocket import FieldEvent
+from .....conn.websocket import ZWaveEvent
 
 def Latest(icpe, sensor):
     return EventModel.query.join(iCPEModel).join(SensorModel).\
@@ -26,14 +26,14 @@ def Put(icpe, sensor, event):
     icpe = iCPESQL.Get(icpe)
     sensor = SensorSQL.Get(icpe.macaddr, sensor)
     commandclass = CommandclassSQL.Get(icpe.macaddr, sensor.sensorid, event.cc)
-    e = EventModel(event.cctype, event.ccevent, event.value)
+    e = EventModel(event.value)
     
     e.node = icpe.node
     e.icpe = icpe
     e.sensor = sensor
-    e.sensorclass = commandclass
+    e.commandclass = commandclass
 
     db.session.add(e)
     db.session.commit()
 
-    FieldEvent(FieldRedis.Update(e, event))
+    ZWaveEvent(FieldRedis.Update(e, event))
