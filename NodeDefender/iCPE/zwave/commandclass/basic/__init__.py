@@ -24,12 +24,12 @@ def Fields():
 def Load(classtypes):
     return {'basic' : None}
 
-def Icon(value, classtype):
+def Icon(value):
     return icons[eval(value)]
 
 @PayloadSplitter(model=BasicModel)
 def Event(payload):
-    payload.name = 'basic'
+    payload.field = 'Basic'
     if payload.value == '0x00':
         payload.value = False
         payload.enabled = False

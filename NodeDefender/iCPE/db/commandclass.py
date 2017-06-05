@@ -10,9 +10,12 @@ from ..decorators import ParsePayload
 
 @ParsePayload
 def Verify(topic, payload, mqttsrc = None):
+    if 'abnormal' in payload.__dict__:
+        return False # Temporary
+    
     if len(CommandclassRedis.Get(topic.macaddr, topic.sensorid, topic.commandclass)):
         return True
-    commandclass = CommandclassSQL.Get(topic.macaddr, topic.sensorid, payload.cls)
+    commandclass = CommandclassSQL.Get(topic.macaddr, topic.sensorid, payload.cc)
     if commandclass and commandclass.supported:
         CommandclassRedis.Load(topic.macaddr, topic.sensorid, topic.commandclass)
         return True
@@ -21,7 +24,7 @@ def Verify(topic, payload, mqttsrc = None):
         return True
     
     print("{}{}{} not found".format(topic.macaddr, topic.sensorid,
-                                    payload.cls))
+                                    payload.cc))
     return Add(topic, payload)
 
 # Takes Commandclass SQL Model and updated the fields
@@ -51,10 +54,10 @@ def Add(topic, payload, mqttsrc = None):
     try:
         commandclasses = payload.clslist_0.split(',')
     except AttributeError:
-        commandclasses = [payload.cls]
+        commandclasses = [payload.cc]
     
     for commandclass in commandclasses:
-        cls = CommandclassSQL.Add(topic.macaddr, topic.sensorid, commandclass)
+        cc = CommandclassSQL.Add(topic.macaddr, topic.sensorid, commandclass)
 
         classinfo = zwave.Info(commandclass)
         if not classinfo:
@@ -63,9 +66,9 @@ def Add(topic, payload, mqttsrc = None):
             mqtt.sensor.Sup(topic.macaddr, topic.sensorid,
                             classinfo.name)
 
-        cls.name = classinfo.name
-        cls.supported = True
-        CommandclassSQL.Save(cls)
+        cc.name = classinfo.name
+        cc.supported = True
+        CommandclassSQL.Save(cc)
         if not classinfo.fields:
             continue
 

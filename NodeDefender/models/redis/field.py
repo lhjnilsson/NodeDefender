@@ -27,6 +27,15 @@ def Load(commandclass, field, conn):
 def Update(model, event, conn):
     conn.hmset(model.icpe.macaddr + model.sensor.sensorid + event.field,
                {'value' : str(event.value)})
+    
+    if 'state' in event.__dict__:
+        conn.hmset(model.icpe.macaddr + model.sensor.sensorid + event.field,
+                    {'state' : str(event.state)})
+    
+    if 'icon' in event.__dict__:
+         conn.hmset(model.icpe.macaddr + model.sensor.sensorid + event.field,
+                    {'icon' : str(event.icon)})
+    
     conn.hmset(model.icpe.macaddr + model.sensor.sensorid + event.field, {'last_updated' : str(datetime.now())})
     return conn.hgetall(model.icpe.macaddr + model.sensor.sensorid +
                         event.field)

@@ -22,7 +22,6 @@ def Load(sensor = None):
                     field = eval('zwave.commandclass.'+commandclass.name+'.'+\
                                 t.name+'.Fields')()
                 except AttributeError:
-                    print('!!!!!!!!!!!EERROR!!!!!!!!!!!!!!1')
                     print(commandclass.name, t.name)
                 if field:
                     FieldRedis.Load(commandclass, field)

@@ -4,6 +4,9 @@ from ..... import db
 from sqlalchemy import func
 from sqlalchemy.sql import label
 from itertools import groupby
+from ....redis import field as FieldRedis
+from .....conn.websocket import ZWaveEvent
+
 
 def Current(icpe, sensor):
     sensor = db.session.query(SensorModel).\
@@ -162,7 +165,7 @@ def Chart(icpe, sensor):
 
     return sensor_data
 
-def Put(icpe, sensor, power, date = None):
+def Put(icpe, sensor, event, date = None):
     if date is None:
         date = datetime.now().replace(minute=0, second=0, microsecond=0)
 
@@ -177,6 +180,8 @@ def Put(icpe, sensor, power, date = None):
             filter(PowerModel.icpe == icpe,\
                    PowerModel.sensor == sensor,\
                    PowerModel.date == date).first()
+
+    power = event.value
 
     if data:
         if power > data.high:
@@ -195,3 +200,7 @@ def Put(icpe, sensor, power, date = None):
         db.session.add(data)
 
     db.session.commit()
+    
+    redis = FieldRedis.Update(data, event)
+
+    ZWaveEvent(redis)

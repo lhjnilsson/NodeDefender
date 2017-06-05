@@ -3,6 +3,7 @@ from ....SQL import EventModel, iCPEModel, SensorModel
 from ... import icpe as iCPESQL
 from ... import sensor as SensorSQL
 from ... import commandclass as CommandclassSQL
+from ... import commandclasstype as CommandclasstypeSQL
 from ..... import db
 from ....redis import field as FieldRedis
 from .....conn.websocket import ZWaveEvent
@@ -27,7 +28,11 @@ def Put(icpe, sensor, event):
     sensor = SensorSQL.Get(icpe.macaddr, sensor)
     commandclass = CommandclassSQL.Get(icpe.macaddr, sensor.sensorid, event.cc)
     e = EventModel(event.value)
-    
+    if event.cctype:
+        commandclasstype = CommandclasstypeSQL.Get(icpe.macaddr, sensor.sensorid,
+                                               event.cc, event.cctype)
+        e.commandclasstype = commandclasstype
+
     e.node = icpe.node
     e.icpe = icpe
     e.sensor = sensor
@@ -36,4 +41,6 @@ def Put(icpe, sensor, event):
     db.session.add(e)
     db.session.commit()
 
-    ZWaveEvent(FieldRedis.Update(e, event))
+    redis = FieldRedis.Update(e, event)
+
+    ZWaveEvent(redis)

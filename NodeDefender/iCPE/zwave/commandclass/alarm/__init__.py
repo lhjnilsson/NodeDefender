@@ -2,9 +2,6 @@ from ... import BaseModel, PayloadSplitter, DataDescriptor
 from .. import ClassInfo
 
 zalm = {'06' : 'AccessControl'}
-icons = {'AccessControl' : {'16' : 'fa fa-bell', '17' : 'fa fa-bell-slash-o',\
-         '1' : 'fa fa-bell', '0' : 'fa fa-bell-slash-o'}}
-
 class AlarmModel:
     v1alm = DataDescriptor('v1alm')
     zalm = DataDescriptor('zalm')
@@ -40,14 +37,8 @@ def Info(cctype = None):
     return classinfo
 
 
-def Icon(value, cctype):
-    try:
-        return icons[cctype][value]
-    except KeyError:
-        try:
-            icons[zalm[cctype]][value]
-        except KeyError as e:
-            raise KeyError(e)
+def Icon(value):
+    return False
 
 def Load():
     return {'notification': None}

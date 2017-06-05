@@ -32,7 +32,7 @@ from ...models.redis import sensor as SensorRedis
 
 @socketio.on('ZWaveSet', namespace='/nodedata')
 def icpeevent(msg):
-    #SocketEvent(msg['macaddr'], msg['sensorid'], msg['commandclass'], msg['value'])
+    SocketEvent(msg['macaddr'], msg['sensorid'], msg['commandclass'], msg['value'])
     return True
 
 @socketio.on('SensorGet', namespace='/nodedata')

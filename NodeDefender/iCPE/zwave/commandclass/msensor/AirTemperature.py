@@ -11,7 +11,7 @@ def Info():
     return typeinfo
 
 def Event(payload):
-    payload.ccevent = 'Celsius'
+    payload.field = 'Celsius'
     if payload.unit != '0':
         return False 
     payload.value = int(payload.data, 0) / 10

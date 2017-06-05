@@ -2,8 +2,6 @@ from ... import BaseModel, PayloadSplitter, DataDescriptor
 from .. import ClassInfo
 
 mtype = {'1' : 'Electric'}
-icons = {'Electric' : 'fa fa-plug'}
-
 class MeterModel:
     unit = DataDescriptor('unit')
     type = DataDescriptor('type')
@@ -39,8 +37,8 @@ def Info(classtype = None):
     classinfo.types = True
     return classinfo
 
-def Icon(value, cctype):
-    return icons[cctype]
+def Icon(value):
+    return False
 
 def Load(classtypes):
     return {'meter' : 0}

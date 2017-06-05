@@ -16,7 +16,7 @@
 {% include "flash.html" %}
 {% from "macros/group.html" import GroupInfo with context %}
 {% from "macros/map.html" import MapGroup %}
-{% from "macros/messages.html" import MessageList %}
+{% from "macros/messages.html" import MessageList, emit_group_messages %}
 {% from "macros/user.html" import ListUsers with context %}
 
 <div class="row">
@@ -81,7 +81,8 @@
 				Messages
 			</div>
 			<div class="panel-body" style="padding: 0";>
-				{{MessageList(Group.messages)}}
+				{{MessageList()}}
+				{{emit_group_messages(Group)}}
 			</div>
 		</div>
 	</div>

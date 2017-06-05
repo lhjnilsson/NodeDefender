@@ -1,5 +1,88 @@
-from ..SQL import MessageModel
+from ..SQL import MessageModel, UserModel, GroupModel, NodeModel, iCPEModel,\
+SensorModel
 from ... import db
+from sqlalchemy import or_
+
+def messages(user, limit = 10):
+    if type(user) is str:
+        user = db.session.query(UserModel).filter(UserModel.email ==
+                                                  user).first()
+    
+    if user is None:
+        return False
+
+    if user.has_role('superuser'):
+        return db.session.query(MessageModel).\
+                order_by(MessageModel.date.desc()).limit(int(limit)).all()
+    
+    groups = [group for group in user.groups]
+    nodes = [node for node in [group.node for group in groups]]
+    icpes = [node.icpe for node in nodes]
+    sensors = [sensor.id for sensor in [icpe.sensors for icpe in icpes][0]]
+
+    # Revert from list of models to a list of string
+    groups = [group.name for group in groups]
+    nodes = [node.name for node in nodes]
+    icpes = [icpe.macaddr for icpe in icpes]
+
+    return db.session.query(MessageModel).\
+            filter(or_(MessageModel.group.id == group.id,\
+                       MessageModel.node.name.in_(*[nodes]),\
+                       MessageModel.icpe.macaddr.in_(*[icpes]),\
+                       MessageModel.sensor.id.in_(*[sensors])\
+                      )).order_by(MessageModel.date.desc()).limit(int(limit)).all()
+
+def group_messages(group, limit = 10):
+    if type(group) is str:
+        group = db.session.query(GroupModel).filter(GroupModel.name ==
+                                                    group).first()
+    if group is None:
+        return False
+
+    nodes = [node for node in group.nodes]
+    icpes = [node.icpe for node in nodes]
+    sensors = [sensor.id for sensor in [icpe.sensors for icpe in icpes][0]]
+
+    # Revert from list for models to a list for strings
+    nodes = [node.name for node in nodes]
+    icpes = [icpe.macaddr for icpe in icpes]
+
+    return db.session.query(MessageModel).\
+            join(MessageModel.group).\
+            join(MessageModel.node).\
+            join(MessageModel.icpe).\
+            join(MessageModel.sensor).\
+            filter(or_(GroupModel.name == group.name,\
+                       NodeModel.name.in_(*[nodes]),\
+                       iCPEModel.macaddr.in_(*[icpes]),\
+                       SensorModel.id.in_(*[sensors])\
+                      )).order_by(MessageModel.date.desc()).limit(int(limit)).all()
+
+def user_messages(user, limit = 10):
+    if type(user) is str:
+        user = db.session.query(UserModel).\
+                filter(UserModel.email == user).first()
+
+    if user is None:
+        return False
+
+    return db.session.query(MessageModel).\
+            filter(MessageModel.user.email == user.email).\
+            order_by(MessageModel.date.desc()).limit(int(limit)).all()
+
+def node_messages(node, limit = 10):
+    if type(node) is str:
+        node = db.session.query(NodeModel).filter(NodeModel.name == node).first()
+
+    if node is None:
+        return False
+    
+    sensors = [sensor.sensorid for sensor in node.icpe.sensors]
+    return db.session.query(MessageModel).\
+            filter(or_(MessageModel.node == node,
+                       MessageModel.sensors.sensorid.in_(*[sensors]),
+                    )).order_by(MessageModel.date.desc()).limit(int(limit)).all()
+
 
 def group_created(group):
     subject = "Group Created"

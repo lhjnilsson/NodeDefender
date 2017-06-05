@@ -50,6 +50,8 @@ class MessageModel(db.Model):
         else:
             sensor = False
 
-        return {'name' : self.name, 'email' : self.email, 'date' :
-                str(self.date), 'group' : group, 'user' : user,\
-                'node' : node, 'icpe' : icpe, 'sensor' : sensor}
+        return {'group' : group, 'user' : user,\
+                'node' : node, 'icpe' : icpe, 'sensor' : sensor,\
+                'subject' : self.subject,
+                'body' : self.body,
+                'date' : str(self.date)}

@@ -33,14 +33,13 @@
 {% macro SensorScripts(sensors) %}
 <script>
 function createFieldBox(field) {
-	console.log(field);
 	div = document.getElementById(field.sensor+field.commandclassName+"Div");
 	box = document.createElement("LABEL");
 	box.setAttribute("class", "lightbox");
 	box.setAttribute("id", field.sensor+field.name+"Value");
-	if (field.enabled) {
-		box.className += " light";
-	}
+	if (field.state === "True") 
+		box.className += " lightboxlight";
+
 	div.innerHTML = ""
 	div.appendChild(box);
 };
@@ -65,15 +64,22 @@ function createFieldSwitch(field) {
 	input = document.createElement("INPUT");
 	input.setAttribute("type", "checkbox");
 	input.setAttribute("id", field.sensor+field.name+"Value");
-	input.onclick = switchChange(this, field.sensor+field.name);
 	slider = document.createElement("DIV");
 	slider.setAttribute("class", "slider");
+	if (field.state === "True")
+		input.checked = true;
+	else
+		input.checked = false;
 	
 	_switch.appendChild(input);
 	_switch.appendChild(slider);
 
 	div.innerHTML = "";
 	div.appendChild(_switch);
+	document.getElementById(field.sensor+field.name+"Value").addEventListener("click", function() {
+		switchChange(this, field.icpe, field.sensor, field.commandclassName, "");
+	});
+
 }
 
 sensorSocket.on('fields', function(fields) {

@@ -1,0 +1,26 @@
+{% macro data_group_looper() %}
+<script>
+var groupsIndex = 0;
+var groupsArray = [];
+
+groupSocket.on('list', function(groups) {
+	for (var i = 0; i < groups.length; i++)
+		groupsArray.push(groups[i].name);
+
+	dataSocket.emit('groupHeatAverage', groupsArray[0]);
+	dataSocket.emit('groupPowerAverage', groupsArray[0]);
+	dataSocket.emit('averageEvents', groupsArray[0]);
+	groupsIndex++;
+	setInterval(groupLooper, 5000);
+});
+
+function groupLooper() {
+	dataSocket.emit('averageHeat', groupsArray[groupsIndex]);
+	dataSocket.emit('averagePower', groupsArray[groupsIndex]);
+	dataSocket.emit('averageEvents', groupsArray[groupsIndex]);
+	groupsIndex++;
+	if (groupsIndex > groupsArray.length)
+		groupsIndex = 0;
+};
+</script>
+{% endmacro %}

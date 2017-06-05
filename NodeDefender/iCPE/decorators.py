@@ -85,7 +85,7 @@ def ParsePayload(func):
             try:
                 key, value = part.split('=')
                 if key == 'class':
-                    key = 'cls'
+                    key = 'cc'
                     value = value[-2:]
                 setattr(p, key, value)
             except ValueError:

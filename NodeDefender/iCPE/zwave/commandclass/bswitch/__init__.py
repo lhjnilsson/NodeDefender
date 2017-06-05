@@ -24,16 +24,20 @@ def Fields():
 def Load(classtypes):
     return {'bswitch' : None}
 
-def Icon(value, classtype):
+def Icon(value):
     return icons[eval(value)]
 
 @PayloadSplitter(model=BasicModel)
 def Event(payload):
-    payload.ccevent = 'Switch'
+    payload.field = 'Switch'
     if payload.value == '0':
         payload.value = False
+        payload.state = False
+        payload.icon = 'fa fa-toggle-off'
     
     else:
         payload.value = True
+        payload.state = True
+        payload.icon = 'fa fa-toggle-on'
 
     return payload

@@ -33,6 +33,9 @@ def Info(classtype = None):
     classinfo.types = True
     return classinfo
 
+def Icon(value):
+    return False
+
 def Load(classtypes):
     return {'meter' : 0}
 

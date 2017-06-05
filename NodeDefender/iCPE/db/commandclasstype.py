@@ -19,14 +19,14 @@ def Add(topic, payload, mqttsrc = None):
 
     for classtype in types:
         try:
-            t = CommandclasstypeSQL.Add(topic.macaddr, topic.sensorid, payload.cls,
+            t = CommandclasstypeSQL.Add(topic.macaddr, topic.sensorid, payload.cc,
                                     classtype)
         except KeyError:
             continue
 
-        t_info = zwave.Info(payload.cls, classtype)
+        t_info = zwave.Info(payload.cc, classtype)
         if not t_info:
-            print('ERROR FINDING TYPE', payload.cls, classtype)
+            print('ERROR FINDING TYPE', payload.cc, classtype)
 
         t.name = t_info.name
         t.number = t_info.number
@@ -35,7 +35,7 @@ def Add(topic, payload, mqttsrc = None):
         CommandclasstypeSQL.Save(t)
     
     FieldDB.Load(topic.sensorid)
-    return CommandclassRedis.Load(topic.macaddr, topic.sensorid, payload.cls)
+    return CommandclassRedis.Load(topic.macaddr, topic.sensorid, payload.cc)
 
 @celery.task
 def Load(commandclass = None):

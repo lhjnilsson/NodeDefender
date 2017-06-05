@@ -10,7 +10,14 @@ def Info():
     typeinfo.fields = True
     return typeinfo
 
+def Icon(value):
+    return 'fa fa-plug'
+
 def Event(payload):
-    payload.ccevent = 'Watt'
+    payload.field = 'Watt'
     payload.value = int(payload.data32, 0) / 10
+    if payload.value > 1.0:
+        payload.state = True
+    
+    payload.icon = 'fa fa-plug'
     return payload

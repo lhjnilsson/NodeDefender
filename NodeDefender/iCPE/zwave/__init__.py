@@ -77,8 +77,11 @@ class BaseModel:
     cc = DataDescriptor('cc')
     ccname = DataDescriptor('ccname')
     cctype = DataDescriptor('cctype')
+    cctypename = DataDescriptor('cctypename')
     ccevent = DataDescriptor('ccevent')
-    
+
+    icon = DataDescriptor('icon')
+    state = DataDescriptor('state')
 
     def __init__(self):
         self.sensorid = None
@@ -92,7 +95,11 @@ class BaseModel:
         self.cc = None
         self.ccname = None
         self.cctype = None
+        self.cctypename = None
         self.ccevent = None
+
+        self.icon = None
+        self.state = None
 
     def __call__(self):
         return self._retdata

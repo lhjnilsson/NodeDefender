@@ -1,3 +1,54 @@
+{% macro AveragePower() %}
+<div class="panel panel-info">
+	<div class="panel-heading">
+		Average Power, <div id="averagePowerName" style="display: inline";>None</div>
+	</div>
+	<div class="panel-body">
+		<div class="row">
+			<div class="col-xs-4">
+				<h4 id="averagePowerMonthly">	
+					0.0
+				</h4>
+				<small><i>Monthly Average</i></small>
+			</div>
+			<div class="col-xs-4">
+				<h4 id="averagePowerWeekly">
+				0.0
+				</h4>
+				<small><i>Weekly Average</i></small>
+			</div>
+			<div class="col-xs-4">
+				<h4 style="color: blue;" id="averagePowerDaily">
+				0.0
+				</h4>
+				<small><i>Daily Average</i></small>
+			</div>
+		</div>
+	</div>
+</div>
+	<script>
+powerName = document.getElementById('averagePowerName')
+powerMonthly = document.getElementById('averagePowerMonthly');
+powerWeekly = document.getElementById('averagePowerWeekly');
+powerDaily = document.getElementById('averagePowerDaily');
+
+dataSocket.on('groupPowerAverage', function(data) {
+	powerName.innerHTML = data.name;
+	powerMonthly.innerHTML = parseFloat(data.monthly).toFixed(2);
+	powerWeekly.innerHTML = parseFloat(data.weekly).toFixed(2);
+	if (data.weekly > data.monthly)
+		powerWeekly.style.color = 'red';
+	else
+		powerWeekly.style.color = 'green';
+	powerDaily.innerHTML = parseFloat(data.daily).toFixed(2);
+	if (data.daily > data.weekly)
+		powerDaily.style.color = 'green';
+	else
+		powerDaily.style.color = 'blue';
+})
+	</script>
+{% endmacro %}
+
 {% macro Chart(user) %}
 <div class="panel panel-primary">
 	<div class="panel-heading">

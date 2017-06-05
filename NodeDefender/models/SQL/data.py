@@ -74,13 +74,17 @@ class EventModel(db.Model):
 
     def to_json(self):
         if self.commandclasstype:
-            name = commandclasstype.name
+            name = self.commandclasstype.name
+            icon = eval('commandclass.'+self.commandclass.name+'.'+\
+                        self.commandclasstype.name+'.Icon')(self.value)
+        elif self.commandclass:
+            name = self.commandclass.name
+            icon = eval('commandclass.'+self.commandclass.name+'.Icon')\
+                        (self.value)
         else:
-            name = commandclass.name
+            name = 'unkown'
+            icon = 'fa fa-question'
 
-        icon = eval('commandclass.'+self.commandclass.name+'.Icon')\
-                    (self.value, name)
-        
         return {'iCPE' : self.icpe.macaddr, 'sensor' : self.sensor.productname, 'node' :
                 self.icpe.node.name, 'value' : self.value,\
                 'date' : str(self.date), 'icon' : icon,\

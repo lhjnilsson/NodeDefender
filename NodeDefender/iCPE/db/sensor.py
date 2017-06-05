@@ -29,8 +29,8 @@ def Update(macaddr, sensorid):
     if not sensor.commandclasses:
         mqtt.sensor.Query(macaddr, sensorid)
         return True
-    for cls in sensor.commandclasses:
-        commandclass.Update(cls)
+    for cc in sensor.commandclasses:
+        commandclass.Update(cc)
     return True
 
 @celery.task
