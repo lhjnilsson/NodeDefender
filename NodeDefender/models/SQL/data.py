@@ -65,7 +65,7 @@ class EventModel(db.Model):
 
     value = db.Column(db.String(16))
 
-    critcial = db.Column(db.Boolean)
+    critical = db.Column(db.Boolean)
     normal = db.Column(db.Boolean)
 
     def __init__(self, value, date = None):
