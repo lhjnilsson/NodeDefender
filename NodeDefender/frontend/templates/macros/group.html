@@ -1,5 +1,5 @@
-{% macro ListGroups(groups) %}
-<table class="table table-hover">
+{% macro ListGroups(groups = None) %}
+<table class="table table-hover" id="grouptable">
 	<thead>
 		<tr>
 			<th>Name</th>
@@ -8,7 +8,8 @@
 			<th>Nodes</th>
 		</tr>
 	</thead>
-	<tbody>
+	<tbody id="grouptbody">
+		{% if groups %}
 		{% for group in groups %}
 		<tr>
 			<td>
@@ -33,9 +34,47 @@
 			</td>
 		</tr>
 		{% endfor %}
+		{% endif %}
 	</tbody>
 </table>
+{% if groups %}
 
+{% else %}
+	<script>
+grouptbody = document.getElementById('grouptbody');
+grouptable = document.getElementById('grouptable');
+	function groupList(groups) {
+		for (var i = 0; i < groups.length; i++) {
+			groupSocket.emit('info', ({'name' : groups[i]}));
+		}
+	};
+
+	function clearGroupList() {
+		while (grouptable.rows.length > 0)
+			grouptable.deleteRow(0);
+	};
+
+	groupSocket.on('info', function(group) {
+		var newRow = grouptbody.insertRow(0);
+
+		var nameCell = newRow.insertCell(0);
+		var nameText = document.createTextNode(group.name);
+		nameCell.appendChild(nameText);
+
+		var descCell = newRow.insertCell(1);
+		var descText = document.createTextNode(group.description);
+		descCell.appendChild(descText);
+
+		var usersCell = newRow.insertCell(2);
+		var usersText = document.createTextNode(group.users.length);
+		usersCell.appendChild(usersText);
+		
+		var nodesCell = newRow.insertCell(3);
+		var nodesText = document.createTextNode(group.nodes.length);
+		nodesCell.appendChild(nodesText);
+	});
+	</script>
+{% endif %}
 {% endmacro %}
 
 {% macro CreateGroup(Form) %}
@@ -62,74 +101,59 @@
 {% endmacro %}
 
 {% macro SelectGroup(user) %}
+{% from "macros/info.html" import FieldID %}
 <div class="form-group">
 	<label for="sell">Avalible Groups: </label>
 	<select class="form-control" id="GroupsList"></select>
 </div>
 <form class="form-horizontal">
 	<div class="row">
-		<div class="col-md-6">
-			<p><strong>Name</strong></p>
-		</div>
-		<div class="col-md-6">
-			<p id="Groupname">None</p>
-		</div>
-		<div class="col-md-6">
-			<p><strong>Description</strong></p>
-		</div>
-		<div class="col-md-6">
-			<p id="Groupdesc">None</p>
-		</div>
-		<div class="col-md-6">
-			<p><strong>Users</strong></p>
-		</div>
-		<div class="col-md-6">
-			<p id="Groupusers">None</p>
-		</div>
-		<div class="col-md-6">
-			<p><strong>Nodes</strong></p>
-		</div>
-		<div class="col-md-6">
-			<p id="Groupnodes">None</p>
-		</div>
+		{{ FieldID('Name', '-', 'Groupname') }}
+		{{ FieldID('Description', '-', 'Groupdesc') }}
+		{{ FieldID('Users', '-', 'Groupusers') }}
+		{{ FieldID('Nodes', '-', 'Groupnodes') }}
 	</div>
 </form>
 <script>
 $(document).ready(function() {
-	groupSocket.emit('groups', ('{{user.email}}'));
+	groupSocket.emit('list', ('{{user.email}}'));
 
-	groupSocket.on('groups', function(groups) {
+	groupSocket.on('list', function(groups) {
 		var glength = groups.length;
 		if (glength < 1) {
 			return 
 		}
 		
 		for (var i = 0; i < glength; i++) {
-			$('#GroupsList').append('<option>'+  groups[i] + '</option>');
+			$('#GroupsList').append('<option>'+  groups[i].name + '</option>');
 		}
-		groupSocket.emit('groupInfoGet', {'name' : groups[0]});
+		groupSocket.emit('info', {'name' : groups[0].name});
 	});
 
-	groupSocket.on('groupInfoRsp', function(group) {
+	groupSocket.on('info', function(group) {
 		$('#Groupname').text(group.name);
 		$('#Groupdesc').text(group.description);
-		$('#Groupusers').text(group.users);
-		$('#Groupnodes').text(group.nodes);
+		$('#Groupusers').text(group.users.length);
+		$('#Groupnodes').text(group.nodes.length);
 	});
 
 	$('#GroupsList').change(function() {
 		var name = $('#GroupsList option:selected').text();
-		groupSocket.emit('groupInfoGet', {'name' : name});
+		groupSocket.emit('info', {'name' : name});
 	});
 
-	function addToGroup() {
+	var addToGroup = function() {
 		groupname = $('#Groupname').text();
-		groupSocket.emit('addToGroup', {'user' : '{{user.email}}', 'group' : groupname});
+		console.log('addtogroooup');
+		groupSocket.emit('addUser', {'user' : '{{user.email}}', 'group' : groupname});
 	}
 
-	groupSocket.on('Reload', function() {
-		window.location.reload();
-	});
+	try {
+		document.getElementById('addToGroup').onclick = function() {addToGroup();};
+	}
+	catch (err) {
+		console.log('addToGroup not found');
+	}
 });
 </script>
 

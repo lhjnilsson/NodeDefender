@@ -1,5 +1,5 @@
 from .. import db, mqtt
-from ..decorators import CommonPayload
+from ..decorators import ParsePayload
 from .decorators import VerifyiCPE, VerifySensor
 
 @VerifyiCPE
@@ -35,29 +35,33 @@ def set(topic, payload, mqttsrc):
     pass
 
 @VerifyiCPE
-@CommonPayload
+@ParsePayload
 def qry(topic, payload, mqttsrc):
     # Specific Information about a ZWave Sensor
     if topic.sensorid < '2' or topic.sensorid == 'sys':
         pass
     else:
         db.sensor.Verify(topic, payload, mqttsrc)
-        for classnum in payload.clslist_0.split(','):
-            db.cmdclass.Add(topic, payload, classnum)
+        db.commandclass.Add(topic, payload)
     return None, None
 
 @VerifyiCPE
-@CommonPayload
+@ParsePayload
 def sup(topic, payload, mqttsrc):
     try:
-        db.cmdclass.AddTypes(topic, payload, payload.typelist)
+        db.commandclasstype.Add(topic, payload, payload.typelist)
     except AttributeError:
         pass
 
     return None, None
 
 @VerifySensor
-@CommonPayload
+@ParsePayload
 def get(topic, payload, mqttsrc):
     if topic.subfunc:
         return eval(topic.subfunc)(topic, payload, mqttsrc)
+
+
+@ParsePayload
+def info(topic, payload, mqttsrc):
+    print(topic, payload)

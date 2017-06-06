@@ -17,7 +17,7 @@ def create_mqtt(msg):
     group = GroupSQL.Get(msg['group'])
     mqtt.groups.append(group)
     MQTTSQL.Save(mqtt)
-    GroupMail.new_mqtt.delay(group.name, mqtt.ipaddr, mqtt.port)
+    GroupMail.new_mqtt.delay(group.name, mqtt.host, mqtt.port)
     LoadMQTT([mqtt])
     emit('reload', namespace='/general')
     return True
@@ -26,58 +26,6 @@ def create_mqtt(msg):
 def mqtt_info(msg):
     mqtt = MQTTSQL.Get(**msg)
     emit('mqttInfo', mqtt.to_json())
-    return True
-
-@socketio.on('groups', namespace='/adminusers')
-def Groups(msg):
-    groups = GroupSQL.List()
-    groupsnames = [group.name for group in groups]
-    emit('groupsrsp', (groupsnames))
-    return True
-
-@socketio.on('createGroup', namespace='/admin')
-def create_group(info):
-    if GroupSQL.Get(info['name']):
-        emit('error', ('Group exsists'), namespace='/general')
-        return False
-    group = GroupSQL.Create(info['name'], info['mail'], info['description'])
-    GroupSQL.Location(group, info['street'], info['city'])
-    GroupMail.new_group.delay(group.name)
-    emit('reload', namespace='/general')
-    return True
-
-@socketio.on('createUser', namespace='/admin')
-def create_user(info):
-    user = UserSQL.Create(info['email'])
-    user.firstname = info['firstname']
-    user.lastname = info['lastname']
-    UserSQL.Save(user)
-    UserSQL.Lock(info['email'])
-    UserSQL.Join(info['email'], info['group'])
-    RoleSQL.AddRole(info['email'], info['role'])
-    UserMail.create_user.delay(user.email)
-    emit('reload', namespace='/general')
-    return True
-
-@socketio.on('resetUserPassword', namespace='/admin')
-def reset_password(info):
-    user = UserSQL.Get(info['email'])
-    if user is None:
-        emit('error', ('user not found'), namespace='/general')
-    UserMail.reset_password.delay(user.email)
-    emit('reload', namespace='/general')
-    return True
-
-@socketio.on('groupInfoGet', namespace='/adminusers')
-def GroupInfo(msg):
-    group = GroupSQL.Get(msg['name'])
-    info = {'name' : group.name,
-            'description' : group.description,
-            'users' : str(len(group.users)),
-            'nodes' : str(len(group.nodes)),
-            'created_on' : str(group.created_on),
-           }
-    emit('groupInfoRsp', (info))
     return True
 
 @socketio.on('addToGroup', namespace='/adminusers')

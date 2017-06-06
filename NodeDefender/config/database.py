@@ -25,11 +25,11 @@ def file():
     return parser['DATABASE']['FILE_PATH']
 
 def mysql_uri():
-    return 'mysql://'+username()+':'+password()+'@'+server()+':'+port()+'/'+db()
+    return 'mysql+pymysql://'+username()+':'+password()+'@'+server()+':'+port()+'/'+db()
 
-def postgres_uri():
+def postgresql_uri():
     return 'postgresql://'+username()+':'+password()+'@'\
-            +sever()+':'+port()+'/'+db()
+            +server()+':'+port()+'/'+db()
 
 def sqlite_uri():
     return 'sqlite:///' + parser['DATABASE']['FILE_PATH']

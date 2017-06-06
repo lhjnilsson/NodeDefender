@@ -66,6 +66,7 @@ def database():
          'SERVER' : server,
          'PORT' : port,
          'USERNAME' : username,
+         'PASSWORD' : password,
          'DB' : db,
          'FILE_PATH' : filepath})
     print("\nDatabase- settings stored successful!\n")

@@ -27,6 +27,8 @@ class NodeModel(db.Model):
                            cascade="save-update, merge, delete")
     events = db.relationship('EventModel', backref="node",
                            cascade="save-update, merge, delete")
+    messages = db.relationship('MessageModel', backref='node',
+                               cascade='save-update, merge, delete')
 
     def __init__(self, name, location):
         self.name = name

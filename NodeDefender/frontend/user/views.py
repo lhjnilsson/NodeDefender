@@ -1,7 +1,7 @@
 from .. import UserView
 from flask import render_template
 from flask_login import login_required, current_user
-from .models import UserModel, UserMessageModel
+from ...models.SQL import UserModel
 
 @UserView.route('/user/profile')
 @login_required
@@ -29,5 +29,3 @@ def UserInboxID(mailid):
     message = UserMessageModel.query.filter_by(uuid=mailid).first()
     return render_template('user/inboxid.html', mailid=mailid, message =
                            message)
-
-

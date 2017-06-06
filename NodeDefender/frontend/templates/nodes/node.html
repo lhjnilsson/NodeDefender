@@ -65,10 +65,11 @@ var socket = io.connect('http://' + document.domain + ':' + location.port + name
 		</div>
 	</div>
 </div>
-{% from "nodes/macros/sensor.html" import SensorBox %}
+{% from "nodes/macros/sensor.html" import SensorBox, SensorScripts %}
+{% if iCPE.sensors|length > 0 %}
+{% for sensors in iCPE.sensors|batch(6) %}
 <div class="row">
-	{% if iCPE.sensors|length > 0 %}
-	{% for sensor in iCPE.sensors %}
+	{% for sensor in sensors %}
 	<div class="col-lg-2">
 		<div class="panel panel-info">
 			<div class="panel-heading">
@@ -77,14 +78,15 @@ var socket = io.connect('http://' + document.domain + ':' + location.port + name
 					<a href="#" style="color: #FFFFFF; margin: 0 5px;" onclick="sensorModal('{{iCPE.macaddr}}', '{{sensor.sensorid}}')"><i class="fa fa-info" aria-hidden="true"></i></a>
 				</div>
 			</div>
-			<div class="panel-body">
+			<div class="panel-body" id="Box{{sensor.sensorid}}">
 				{{ SensorBox(sensor) }}
 			</div>
 		</div>
 	</div>
 	{% endfor %}
-	{% endif %}
 </div>
+{% endfor %}
+{% endif %}
 {% from "macros/statistics.html" import PowerGraph, HeatGraph, EventList with context %}
 {% from "macros/data/node/power.html" import Chart as PowerChart %}
 {% from "macros/data/node/heat.html" import Chart as HeatChart %}
@@ -110,18 +112,21 @@ var socket = io.connect('http://' + document.domain + ':' + location.port + name
 </div>
 {% from "nodes/modals/node.html" import ModalGrouplist, ModifyLocation, ModifyGeneral with context %}
 {% from "nodes/modals/node.html" import NodeInformation with context %}
+{% from "nodes/modals/icpe.html" import iCPEModal %}
 {% from "nodes/modals/sensor.html" import SensorModal %}
 <script>
 $(document).ready(function() {
+icpeMac = "{{iCPE.macaddr}}";
 $('#general').prepend('<a style="color: #FFFFFF; margin: 0 5px;" href="#" data-toggle="modal" data-target="#groupList"><i class="fa fa-users" aria-hidden="true"></i></a>');
 $('#general').prepend('<a style="color: #FFFFFF; margin: 0 5px;" href="#" data-toggle="modal" data-target="#nodeInfo"><i class="fa fa-info" aria-hidden="true"></i></a>');
-$('#iCPEModals').prepend('<a style="color: #FFFFFF; margin: 0 5px;" href="#" onclick='iCPEModal("{{iCPE.macaddr}}")'><i class="fa fa-info" aria-hidden="true"></i></a>');
+$('#iCPEModals').prepend('<a style="color: #FFFFFF; margin: 0 5px;" href="#" onclick="iCPEModal(icpeMac)"><i class="fa fa-info" aria-hidden="true"></i></a>');
 
 {% if current_user.has_role("technician") %}
 $('#location').prepend('<a style="color: #FFFFFF; margin: 0 5px;" href="#" data-toggle="modal" data-target="#modifyLocation"><i class="fa fa-pencil" aria-hidden="true"></i></a>');
 {% endif %}
 
 });
+
 function sensorModal(iCPE, sensor) {
 	sensorSocket.emit('info', {'icpe' : iCPE, 'sensor' : sensor});
 	dataSocket.emit('sensorEvents', {'icpe' : iCPE, 'sensor' : sensor});
@@ -147,6 +152,7 @@ function iCPEModal(iCPE) {
 {{ ModifyGeneral(Node) }}
 {% endif %}
 
-{{ Lookup(iCPE) }}
+{{ SensorScripts(iCPE.sensors) }}
+{{ iCPEModal() }}
 {{ SensorModal() }}
 {% endblock %}

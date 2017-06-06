@@ -2,6 +2,7 @@ from ... import db, bcrypt
 from flask_script import Command, prompt, prompt_pass
 from ..SQL import UserModel, GroupModel
 from . import logger
+from ..manage import message
 
 def Create(email):
     if UserModel.query.filter_by(email = email).first():
@@ -10,11 +11,12 @@ def Create(email):
     db.session.add(user)
     db.session.commit()
     logger.info("Created user: {}".format(user.email))
+    message.user_created(user)
     return user
 
 def Password(email, password):
     user = Get(email)
-    user.password = bcrypt.generate_password_hash(password)
+    user.password = bcrypt.generate_password_hash(password).decode('utf-8')
     db.session.add(user)
     db.session.commit()
 

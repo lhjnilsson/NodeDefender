@@ -1,5 +1,5 @@
 
-MQTT Connection to {{ mqtt.ipaddr }} has been added to group {{ group.name }}
+MQTT Connection to {{ mqtt.host }} has been added to group {{ group.name }}
 
 url {{ url }}
 

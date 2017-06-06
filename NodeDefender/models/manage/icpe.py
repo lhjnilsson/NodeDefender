@@ -2,6 +2,7 @@ from ..SQL import iCPEModel, NodeModel, MQTTModel
 from ... import db
 from . import logger
 from redlock import RedLock
+from ..manage import message
 
 def List():
     return [icpe for icpe in iCPEModel.query.all()]
@@ -14,9 +15,9 @@ def Get(icpe):
 
 def MQTT(macaddr):
     icpe = iCPEModel.query.filter_by(macaddr = macaddr).first()
-    return icpe.mqtt[0].ipaddr, icpe.mqtt[0].port
+    return icpe.mqtt[0].host, icpe.mqtt[0].port
 
-def Create(mac, node = None, ipaddr = None, port = None):
+def Create(mac, node = None, host = None, port = None):
     print(mac)
     lock = RedLock(mac)
     if lock.acquire() is False:
@@ -27,9 +28,9 @@ def Create(mac, node = None, ipaddr = None, port = None):
 
     icpe = iCPEModel(mac)
 
-    if ipaddr:
-        if type(ipaddr) is str:
-            mqtt = MQTTModel.query.filter_by(ipaddr = ipaddr).first()
+    if host:
+        if type(host) is str:
+            mqtt = MQTTModel.query.filter_by(host = host).first()
             if mqtt is None:
                 raise LookupError('MQTT not found')
         mqtt.icpes.append(icpe)
@@ -48,15 +49,16 @@ def Create(mac, node = None, ipaddr = None, port = None):
     db.session.commit()
     logger.info("Added iCPE: {}".format(icpe.macaddr))
     lock.release()
+    message.icpe_created(icpe)
     return icpe
 
-def Enable(icpe, ipaddr = None, port = None):
+def Enable(icpe, host = None, port = None):
     icpe = Get(icpe)
     icpe.enabled = True
-    if ipaddr and port:
-        ipaddr = str(ipaddr)
+    if host and port:
+        host = str(host)
         port = int(port)
-        mqtt = MQTTModel.query.filter_by(ipaddr = ipaddr, port = port).first()
+        mqtt = MQTTModel.query.filter_by(host = host, port = port).first()
         icpe.mqtt.append(mqtt)
 
     db.session.add(icpe)

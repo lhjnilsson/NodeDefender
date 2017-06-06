@@ -62,7 +62,7 @@ $(document).ready(function() {
 		var mail = $('#submitMail').text();
 		var street = $('#submitStreet').text();
 		var city = $('#submitCity').text();
-		adminSocket.emit('createGroup', {'name' : name, 'mail' : mail, 'street' : street, 'city' : city, 'description' : ''});
+		groupSocket.emit('create', {'name' : name, 'mail' : mail, 'street' : street, 'city' : city, 'description' : ''});
 		return true;
 	}
 	

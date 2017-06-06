@@ -9,31 +9,31 @@ msg = 'icpe/0x{}/cmd/node/{}/class/{}/act/{}'
 def mqttconn(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        if 'ipaddr' not in kwargs:
-            ipaddr, port = iCPESQL.MQTT(args[0])
-            return func(*args, ipaddr = ipaddr, port = port)
+        if 'host' not in kwargs:
+            host, port = iCPESQL.MQTT(args[0])
+            return func(*args, host = host, port = port)
         return func(*args, **kwargs)
     return wrapper
 
-def Fire(ipaddr, port, topic, payload = None):
+def Fire(host, port, topic, payload = None):
     client = mqttcl.Client()
     try:
-        client.connect(ipaddr, port)
+        client.connect(host, port)
     except TimeoutError:
-        Check(ipaddr, port)
+        Check(host, port)
         return False
 
     client.publish(topic, payload)
     return True
 
-def Check(ipaddr, port):
-    mqtt = MQTTSQL.Get(ipaddr, port)
+def Check(host, port):
+    mqtt = MQTTSQL.Get(host, port)
     if mqtt is None:
         raise LookupError('MQTT not found')
 
     client = mqttcl.Client()
     try:
-        client.connect(ipaddr, port)
+        client.connect(host, port)
         mqtt.online = True
     except TimeoutError:
         mqtt.online = False

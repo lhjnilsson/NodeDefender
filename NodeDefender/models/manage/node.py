@@ -2,6 +2,7 @@ from ..SQL import GroupModel, NodeModel, LocationModel, iCPEModel
 from geopy.geocoders import Nominatim
 from collections import namedtuple
 from ... import db
+from ..manage import message
 
 location = namedtuple('location', 'street city latitude longitude')
 
@@ -16,6 +17,7 @@ def Create(name, location):
     node = NodeModel(name, LocationModel(*location))
     db.session.add(node)
     db.session.commit()
+    message.node_created(node)
     return node
 
 def Delete(node):

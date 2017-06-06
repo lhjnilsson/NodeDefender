@@ -1,42 +1,102 @@
-{% macro SensorBox(Sensor) %}
+{% macro SensorBox(sensor) %}
 {% from "nodes/macros/fields.html" import Switch, Box, Value %}
 <form name="#" class="form-horizontal" method="#">
-{% for field in Sensor.fields %}
-{% if field.display  %}
-	{% if field.type == 'switch' %}
-		{{ Switch(field) }}
-	{% elif field.type == 'box' %}
-		{{ Box(field) }}
-	{% elif field.type == 'value' %}
-		{{ Value(field) }}
-	{% endif %}
+{% for commandclass in sensor.commandclasses %}
+
+{% if commandclass.types %}
+{% for commandclasstype in commandclass.types %}
+{% if commandclasstype.supported %}
+<div class="form-group">
+	<label class="col-sm-2 control-label" id="{{sensor.sensorid}}{{commandclass.name}}Name">-</label>
+	<div class="col-sm-5 col-sm-offset-5" id="{{sensor.sensorid}}{{commandclass.name}}Div">
+		---
+	</div>
+</div>
 {% endif %}
+{% endfor %}
+
+{% else %}
+{% if commandclass.supported %}
+<div class="form-group">
+	<label class="col-sm-2 control-label" id="{{sensor.sensorid}}{{commandclass.name}}Name">-</label>
+	<div class="col-sm-5 col-sm-offset-5" id="{{sensor.sensorid}}{{commandclass.name}}Div">
+		---
+	</div>
+</div>
+{% endif %}
+{% endif %}
+
 {% endfor %}
 </form>
 {% endmacro %}
 
-{% macro SensorSockets(sensors) %}
+{% macro SensorScripts(sensors) %}
 <script>
-namespace = '/icpe';
-var icpesocket = io.connect('http://' + document.domain + ':' location.port + namespace);
+function createFieldBox(field) {
+	div = document.getElementById(field.sensor+field.commandclassName+"Div");
+	box = document.createElement("LABEL");
+	box.setAttribute("class", "lightbox");
+	box.setAttribute("id", field.sensor+field.name+"Value");
+	if (field.state === "True") 
+		box.className += " lightboxlight";
 
-function checkboxClick(box, icpe, nodeid, cmdclass) {
-	$(box).addClass('disabled');
-	if (box.checked) {
-		
-	} else {
+	div.innerHTML = ""
+	div.appendChild(box);
+};
 
-	}
-	$(box).removeClass('disabled');
+function createFieldValue(field) {
+	div = document.getElementById(field.sensor+field.commandclassName+"Div");
+	box = document.createElement("P");
+	box.setAttribute("id", field.sensor+field.name+"Value");
+	box.style.position = "absolute";
+	box.style.right = "0";
+	box.style.width = "60px";
+	box.innerHTML = field.value;
+	div.innerHTML = "";
+	div.appendChild(box);
 }
 
-icpesocket.on('connect', function() {
-	icpesocket.emit('JoiniCPE', {icpe : '{{sensors[0].icpe.macaddraddr}}');
-});
+function createFieldSwitch(field) {
+	div = document.getElementById(field.sensor+field.commandclassName+"Div");
+	_switch = document.createElement("LABEL");
+	_switch.setAttribute("class", "switch");
 
-icpesocket.on('iCPEEvent', function(msg) {
-	console.log(msg);
-});
+	input = document.createElement("INPUT");
+	input.setAttribute("type", "checkbox");
+	input.setAttribute("id", field.sensor+field.name+"Value");
+	slider = document.createElement("DIV");
+	slider.setAttribute("class", "slider");
+	if (field.state === "True")
+		input.checked = true;
+	else
+		input.checked = false;
+	
+	_switch.appendChild(input);
+	_switch.appendChild(slider);
 
+	div.innerHTML = "";
+	div.appendChild(_switch);
+	document.getElementById(field.sensor+field.name+"Value").addEventListener("click", function() {
+		switchChange(this, field.icpe, field.sensor, field.commandclassName, "");
+	});
+
+}
+
+sensorSocket.on('fields', function(fields) {
+	for (var i = 0; i < fields.length; i++) {
+		document.getElementById(fields[i].sensor+fields[i].commandclassName+"Name").innerHTML = fields[i].name;
+		if (fields[i].type == 'box')
+			createFieldBox(fields[i]);
+		else if (fields[i].type == 'value')
+			createFieldValue(fields[i]);
+		else if (fields[i].type == 'switch')
+			createFieldSwitch(fields[i]);
+		else
+			console.log("unknown field " + fields[i].type);
+	}
+});
+{% for sensor in sensors %}
+sensorSocket.emit('fields', "{{sensor.icpe.macaddr}}", "{{sensor.sensorid}}");
+{% endfor %}
 </script>
 {% endmacro %}

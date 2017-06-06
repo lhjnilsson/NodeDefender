@@ -26,13 +26,13 @@ from flask_socketio import emit, send, disconnect, join_room, leave_room, \
         close_room, rooms
 from ... import socketio
 from ...iCPE.event import WebSocket as SocketEvent
-from ...models.redis import cmdclass as CmdclassRedis
+from ...models.redis import commandclass as CommandclassRedis
 from ...models.redis import field as FieldRedis
 from ...models.redis import sensor as SensorRedis
 
 @socketio.on('ZWaveSet', namespace='/nodedata')
 def icpeevent(msg):
-    SocketEvent(msg['macaddr'], msg['sensorid'], msg['cmdclass'], msg['value'])
+    SocketEvent(msg['macaddr'], msg['sensorid'], msg['commandclass'], msg['value'])
     return True
 
 @socketio.on('SensorGet', namespace='/nodedata')

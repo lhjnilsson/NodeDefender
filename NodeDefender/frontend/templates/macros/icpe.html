@@ -50,8 +50,8 @@ $(document).ready(function() {
 		}
 	});
 	
-	iCPESocket.on('infoRsp', function(icpe) {
-		$('#icpemac').text(icpe.mac);
+	iCPESocket.on('info', function(icpe) {
+		$('#icpemac').text(icpe.macAddress);
 		$('#icpesensors').text(icpe.sensors);
 		$('#icpecreated').text(icpe.createdAt);
 		$('#icpemqtt').text(icpe.mqttConnection);
@@ -67,11 +67,76 @@ $(document).ready(function() {
 			$("#manual").hide();
 			$("#unassigned").show();
 			$("#manualMAC").text('');
-			iCPESocket.emit('info', {'macaddr' : macaddr});
+			iCPESocket.emit('info', {'icpe' : macaddr});
 		}
 	});
 	$("#unassigned").hide();
 	$("#manual").show();
 });
 </script>
+{% endmacro %}
+
+{% macro iCPEList(icpes = None) %}
+<table class="table table-hover" id="iCPEtable">
+	<thead>
+		<tr>
+			<th>MAC Address</th>
+			<th>Node</th>
+			<th>Online</th>
+		</tr>
+	</thead>
+	<tbody id="iCPEtbody">
+		{% if icpes %}
+		{% for icpe in icpes %}
+		<tr>
+			<td>
+				<a href="#">
+					{{icpe.macaddr}}
+				</a>
+			</td>
+			<td>
+				<a href="#">
+					{{icpe.node.name}}
+				</a>
+			</td>
+			<td>
+				<a href="#">
+					{{icpe.online}}
+				</a>
+			</td>
+		</tr>
+		{% endfor %}
+		{% endif %}
+	</tbody>
+</table>
+	<script>
+iCPEtbody = document.getElementById('iCPEtbody');
+iCPEtable = document.getElementById('iCPEtable');
+	function iCPEList(icpes) {
+		for (var i = 0; i < icpes.length; i++) {
+			iCPESocket.emit('info', {'icpe' : icpes[i]});
+		}
+	};
+
+	function cleariCPEList() {
+		while (iCPEtable.rows.length > 0)
+			iCPEtable.deleteRow(0);
+	};
+
+	iCPESocket.on('info', function(icpe) {
+		var newRow = iCPEtbody.insertRow(0);
+
+		var macCell = newRow.insertCell(0);
+		var macText = document.createTextNode(icpe.macAddress);
+		macCell.appendChild(macText);
+
+		var nodeCell = newRow.insertCell(1);
+		var nodeText = document.createTextNode(icpe.node);
+		nodeCell.appendChild(nodeText);
+
+		var onlineCell = newRow.insertCell(2);
+		var onlineText = document.createTextNode(icpe.online);
+		onlineCell.appendChild(onlineText);
+	});
+	</script>
 {% endmacro %}
