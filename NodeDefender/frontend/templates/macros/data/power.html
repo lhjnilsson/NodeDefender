@@ -123,7 +123,7 @@ $(document).ready(function() {
 		}
 	});
 	{% for group in groups %}
-	dataSocket.emit('groupPowerAverage', {'name': "{{group.name}}"});
+	dataSocket.emit('groupPowerAverage', "{{group.name}}");
 	{% endfor %}
 });
 	</script>

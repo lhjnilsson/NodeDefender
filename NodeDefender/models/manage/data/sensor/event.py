@@ -23,6 +23,28 @@ def Get(icpe, sensor, limit = None):
             filter(SensorModel.sensorid == sensor).\
             order_by(EventModel.date.desc()).limit(int(limit)).all()
 
+def Average(icpe, sensor, time_ago = None):
+    if time_ago is None:
+        time_ago = (datetime.now() - timedelta(days=1))
+
+    total_events = db.session.query(EventModel).\
+            join(EventModel.sensor).\
+            join(EventModel.icpe).\
+            filter(iCPEModel.macaddr == icpe).\
+            filter(SensorModel.sensorid == sensor).\
+            filter(EventModel.date > time_ago).all()
+
+    ret_data = {}
+    ret_data['icpe'] = icpe
+    ret_data['sensor'] = sensor
+    ret_data['total'] = len(total_events)
+    ret_data['critical'] = len([event for event in total_events if
+                                event.critical])
+    ret_data['normal'] = len([event for event in total_events if
+                              event.normal])
+    return ret_data
+
+
 def Put(icpe, sensor, event):
     icpe = iCPESQL.Get(icpe)
     sensor = SensorSQL.Get(icpe.macaddr, sensor)

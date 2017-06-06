@@ -28,9 +28,9 @@
 	</div>
 </div>
 <br>
-{% from "macros/statistics.html" import AverageEvents with context %}
 {% from "macros/data/heat.html" import AverageHeat %}
 {% from "macros/data/power.html" import AveragePower %}
+{% from "macros/data/event.html" import AverageEvents %}
 {% from "macros/data.html" import data_group_looper %}
 <div class="row">
 	<div class="col-lg-4">
@@ -40,14 +40,7 @@
 		{{ AveragePower() }}
 	</div>
 	<div class="col-lg-4">
-		<div class="panel panel-info">
-			<div class="panel-heading">
-				Events
-			</div>
-			<div class="panel-body">
-				{{ AverageEvents() }}
-			</div>
-		</div>
+		{{ AverageEvents() }}
 	</div>
 </div>
 {{ data_group_looper() }}

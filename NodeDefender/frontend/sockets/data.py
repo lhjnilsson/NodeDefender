@@ -25,11 +25,18 @@ def user_messages(user):
     return emit('messages', MessageSQL.messages(user))
 
 # Events
-@socketio.on('groupEventGet', namespace='/data')
-def group_events(msg):
-    events = DataSQL.group.event.Get(msg['group'], msg['length'])
+@socketio.on('groupEventsAverage', namespace='/data')
+def group_events(group, length = None):
+    events = DataSQL.group.event.Average(group)
+    emit('groupEventsAverage', (events))
+    return True
+
+@socketio.on('groupEventsList', namespace='/data')
+def group_events(group, length = None):
+    events = DataSQL.group.event.List(group, length)
     if events:
-        emit('groupEventGet', ([event.to_json() for event in events]))
+        events = [event.to_json() for event in events]
+        emit('groupEventsList', (events))
     return True
 
 @socketio.on('nodeEvents', namespace='/data')

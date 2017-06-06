@@ -9,15 +9,17 @@ groupSocket.on('list', function(groups) {
 
 	dataSocket.emit('groupHeatAverage', groupsArray[0]);
 	dataSocket.emit('groupPowerAverage', groupsArray[0]);
-	dataSocket.emit('averageEvents', groupsArray[0]);
+	dataSocket.emit('groupEventsAverage', groupsArray[0]);
 	groupsIndex++;
 	setInterval(groupLooper, 5000);
 });
 
 function groupLooper() {
-	dataSocket.emit('averageHeat', groupsArray[groupsIndex]);
-	dataSocket.emit('averagePower', groupsArray[groupsIndex]);
-	dataSocket.emit('averageEvents', groupsArray[groupsIndex]);
+	if (groupsArray.length < 2)
+		return;
+	dataSocket.emit('groupHeatAverage', groupsArray[groupsIndex]);
+	dataSocket.emit('groupPowerAverage', groupsArray[groupsIndex]);
+	dataSocket.emit('groupEventsAverage', groupsArray[groupsIndex]);
 	groupsIndex++;
 	if (groupsIndex > groupsArray.length)
 		groupsIndex = 0;
