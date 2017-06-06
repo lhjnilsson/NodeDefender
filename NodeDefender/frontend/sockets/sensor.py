@@ -27,6 +27,9 @@ from flask_socketio import emit, send, disconnect, join_room, leave_room, \
 from ... import socketio
 from ...models.manage import icpe as iCPESQL
 from ...models.manage import sensor as SensorSQL
+from ...models.redis import sensor as SensorRedis
+from ...models.redis import field as FieldRedis
+from ... import iCPE
 
 @socketio.on('list', namespace='/sensor')
 def List(msg):
@@ -40,3 +43,16 @@ def Info(msg):
         emit('info', (sensor.to_json()))
     return True
 
+@socketio.on('update', namespace='/sensor')
+def update_fields(sensor):
+    iCPE.db.sensor.Update(sensor['icpe'], sensor['sensor'])
+    return True
+
+@socketio.on('fields', namespace='/sensor')
+def fields(icpe, sensor):
+    fields = []
+    for field in SensorRedis.Fields(icpe, sensor):
+        fields.append(FieldRedis.Get(icpe, sensor, field))
+
+    emit('fields', fields)
+    return True

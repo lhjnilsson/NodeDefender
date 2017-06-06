@@ -28,8 +28,8 @@ def Current(node):
         latest_heat =  db.session.query(HeatModel,\
                     label('sum', func.sum(HeatModel.average)),
                     label('count', func.count(HeatModel.average))).\
-                    join(iCPEModel).\
-                    join(SensorModel).\
+                    join(HeatModel.icpe).\
+                    join(HeatModel.sensor).\
                     filter(iCPEModel.macaddr == node.icpe.macaddr).\
                     filter(SensorModel.sensorid == sensor.sensorid).\
                     filter(HeatModel.date > min_ago).first()
@@ -66,28 +66,28 @@ def Average(node):
     current_heat = db.session.query(HeatModel,\
                 label('sum', func.sum(HeatModel.average)),
                 label('count', func.count(HeatModel.average))).\
-                join(iCPEModel).\
+                join(HeatModel.icpe).\
                 filter(iCPEModel.macaddr == node.icpe.macaddr).\
                 filter(HeatModel.date > min_ago).first()
     
     daily_heat = db.session.query(HeatModel,\
                 label('sum', func.sum(HeatModel.average)),
                 label('count', func.count(HeatModel.average))).\
-                join(iCPEModel).\
+                join(HeatModel.icpe).\
                 filter(iCPEModel.macaddr == node.icpe.macaddr).\
                 filter(HeatModel.date > day_ago).first()
     
     weekly_heat = db.session.query(HeatModel,\
                 label('sum', func.sum(HeatModel.average)),
                 label('count', func.count(HeatModel.average))).\
-                join(iCPEModel).\
+                join(HeatModel.icpe).\
                 filter(iCPEModel.macaddr == node.icpe.macaddr).\
                 filter(HeatModel.date > week_ago).first()
 
     monthly_heat = db.session.query(HeatModel,\
                 label('sum', func.sum(HeatModel.average)),
                 label('count', func.count(HeatModel.average))).\
-                join(iCPEModel).\
+                join(HeatModel.icpe).\
                 filter(iCPEModel.macaddr == node.icpe.macaddr).\
                 filter(HeatModel.date > month_ago).first()
     
@@ -137,8 +137,8 @@ def Chart(node):
             continue
         
         heat_data = db.session.query(HeatModel).\
-                join(iCPEModel).\
-                join(SensorModel).\
+                join(HeatModel.icpe).\
+                join(HeatModel.sensor).\
                 filter(iCPEModel.macaddr == node.icpe.macaddr).\
                 filter(SensorModel.sensorid == sensor.sensorid).\
                 filter(HeatModel.date > from_date).\

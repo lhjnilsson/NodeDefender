@@ -9,22 +9,28 @@ class iCPEModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     node_id = db.Column(db.Integer, db.ForeignKey('node.id'))
     name = db.Column(db.String(64))
+
     macaddr = db.Column(db.String(12), unique=True)
     ipaddr = db.Column(db.String(32))
+    
+    firmware = db.Column(db.String(12))
+    hardware = db.Column(db.String(8))
+
     enabled =  db.Column(db.Boolean)
     created_on = db.Column(db.DateTime)
     last_online = db.Column(db.DateTime)
     sensors = db.relationship('SensorModel', backref='icpe',
                               cascade='save-update, merge, delete')
     notesticky = db.Column(db.String(150))
-    fields = db.relationship('FieldModel', backref='icpe',
-                                cascade='save-update, merge, delete')
     heat = db.relationship('HeatModel', backref="icpe",
                            cascade="save-update, merge, delete")
     power = db.relationship('PowerModel', backref="icpe",
                            cascade="save-update, merge, delete")
     events = db.relationship('EventModel', backref="icpe",
                            cascade="save-update, merge, delete")
+
+    messages = db.relationship('MessageModel', backref='icpe',
+                               cascade='save-update, merge, delete')
 
     def __init__(self, macaddr):
         self.macaddr = macaddr.upper()
@@ -35,31 +41,20 @@ class iCPEModel(db.Model):
         return '<Name %r, Mac %r>' % (self.name, self.macaddr)
 
     def to_json(self):
-        icpe = {'macAddress' : self.macaddr,
+        if self.node:
+            node = self.node.name
+        else:
+            node = 'Not assigned'
+
+        icpe = {'name' : self.name,
+                'macAddress' : self.macaddr,
                 'ipaddr' : self.ipaddr,
-                'createdOn' : str(self.created_on),
+                'createdAt' : str(self.created_on),
                 'sensors' : str(len(self.sensors)),
-                'mqttConnection' : self.mqtt[0].ipaddr}
+                'mqttConnection' : self.mqtt[0].host,
+                'node' : node,
+                'online' : 'false'}
         return icpe
-
-class FieldModel(db.Model):
-    __tablename__ = 'field'
-    id = db.Column(db.Integer, primary_key=True)
-    
-    icpe_id = db.Column(db.Integer, db.ForeignKey('icpe.id'))
-    sensor_id = db.Column(db.Integer, db.ForeignKey('sensor.id'))
-    cmdclass_id = db.Column(db.Integer, db.ForeignKey('sensorclass.id'))
-
-    name = db.Column(db.String(16))
-    display = db.Column(db.Boolean)
-    type = db.Column(db.String(16))
-    readonly = db.Column(db.Boolean)
-
-    def __init__(self, name, type, readonly):
-        self.name = str(name)
-        self.display = True
-        self.type = str(type)
-        self.readonly = bool(readonly)
 
 class SensorModel(db.Model):
     '''
@@ -69,20 +64,18 @@ class SensorModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     icpe_id = db.Column(db.Integer, db.ForeignKey('icpe.id'))
     
-    name = db.Column(db.String(32))
+    name = db.Column(db.String(64))
     sensorid = db.Column(db.String(4))
     
-    brand = db.Column(db.String(32))
-    productname = db.Column(db.String(32))
+    brand = db.Column(db.String(64))
+    productname = db.Column(db.String(64))
     manufacturerid = db.Column(db.String(16))
     productid = db.Column(db.String(16))
     producttypeid = db.Column(db.String(16))
-    librarytype = db.Column(db.String(32))
-    devicetype = db.Column(db.String(32))
+    librarytype = db.Column(db.String(64))
+    devicetype = db.Column(db.String(64))
   
-    cmdclasses = db.relationship('SensorClassModel', backref='sensor',
-                                cascade='save-update, merge, delete')
-    fields = db.relationship('FieldModel', backref='sensor',
+    commandclasses = db.relationship('CommandClassModel', backref='sensor',
                                 cascade='save-update, merge, delete')
     heat = db.relationship('HeatModel', backref="sensor",
                            cascade="save-update, merge, delete")
@@ -90,6 +83,9 @@ class SensorModel(db.Model):
                            cascade="save-update, merge, delete")
     events = db.relationship('EventModel', backref="sensor",
                            cascade="save-update, merge, delete")
+
+    messages = db.relationship('MessageModel', backref='sensor',
+                               cascade='save-update, merge, delete')
 
 
     def __init__(self, sensorid, sensorinfo):
@@ -103,20 +99,35 @@ class SensorModel(db.Model):
     
     def to_json(self):
         return {'name' : self.name, 'sensorId' : self.sensorid,\
+                'icpe' : self.icpe.macaddr,\
                 'brand' : self.brand, 'productName' : str(self.productname)}
 
-class SensorClassModel(db.Model):
-    __tablename__ = 'sensorclass'
+class CommandClassModel(db.Model):
+    __tablename__ = 'commandclass'
     id = db.Column(db.Integer, primary_key=True)
     sensor_id = db.Column(db.Integer, db.ForeignKey('sensor.id'))
-    classnumber = db.Column(db.String(20))
-    classname = db.Column(db.String(20))
-    classtypes = db.Column(db.String(200))
-    fields = db.relationship('FieldModel', backref='sensorclass',
-                                cascade='save-update, merge, delete')
-    events = db.relationship('EventModel', backref="sensorclass",
+    number = db.Column(db.String(2))
+    name = db.Column(db.String(20))
+    types = db.relationship('CommandClassTypeModel', backref="commandclass",
+                            cascade="save-update, merge, delete")
+    supported = db.Column(db.Boolean)
+    events = db.relationship('EventModel', backref="commandclass",
                            cascade="save-update, merge, delete")
 
-    def __init__(self, classnumber, classname):
-        self.classnumber = classnumber
-        self.classname = classname
+    def __init__(self, number):
+        self.number = str(number)[:2]
+        self.supported = False
+
+class CommandClassTypeModel(db.Model):
+    __tablename__ = 'commandclasstype'
+    id = db.Column(db.Integer, primary_key=True)
+    commandclass_id = db.Column(db.Integer, db.ForeignKey('commandclass.id'))
+    number = db.Column(db.String(2))
+    name = db.Column(db.String(40))
+    supported = db.Column(db.Boolean)
+    events = db.relationship('EventModel', backref="commandclasstype",
+                           cascade="save-update, merge, delete")
+
+    def __init__(self, number):
+        self.number = str(number)[:2]
+        self.supported = False

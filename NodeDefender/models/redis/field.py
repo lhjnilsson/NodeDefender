@@ -4,30 +4,41 @@ from . import logger
 from . import redisconn
 
 @redisconn
-def Load(field, conn):
+def Load(commandclass, field, conn):
     if field is None:
         return None
-    f = {
-        'name' : field.name,
-        'macaddr' : field.icpe.macaddr,
-        'sensorid' : field.sensor.sensorid,
-        'cmdclass' : field.sensorclass.classname,
-        'type' : field.type,
-        'readonly' : field.readonly,
-        'display' : field.display,
-        'loaded_at' : str(datetime.now())
-    }
-    conn.sadd(field.icpe.macaddr + field.sensor.sensorid + ':fields',
-              field.name)
-    conn.hmset(field.icpe.macaddr + field.sensor.sensorid + field.name, f)
-    return f
+    field['icpe'] = commandclass.sensor.icpe.macaddr
+    field['sensor'] = commandclass.sensor.sensorid
+    field['commandclassNumber'] = commandclass.number
+    field['commandclassName'] = commandclass.name
+
+    field['value'] = None
+        
+    field['last_updated'] = None,
+    field['loaded_at'] = str(datetime.now())
+    
+    conn.sadd(commandclass.sensor.icpe.macaddr + commandclass.sensor.sensorid\
+              + ':fields', field['name'])
+    conn.hmset(commandclass.sensor.icpe.macaddr + commandclass.sensor.sensorid\
+               + field['name'], field)
+    return field
 
 @redisconn
-def Update(mac, sensorid, name, value, conn):
-    print(mac, sensorid, name, value)
-    conn.hmset(mac + sensorid + name, {'value' : str(value)})
-    conn.hmset(mac + sensorid + name, {'last_updated' : str(datetime.now())})
-    return conn.hgetall(mac + sensorid + name)
+def Update(model, event, conn):
+    conn.hmset(model.icpe.macaddr + model.sensor.sensorid + event.field,
+               {'value' : str(event.value)})
+    
+    if 'state' in event.__dict__:
+        conn.hmset(model.icpe.macaddr + model.sensor.sensorid + event.field,
+                    {'state' : str(event.state)})
+    
+    if 'icon' in event.__dict__:
+         conn.hmset(model.icpe.macaddr + model.sensor.sensorid + event.field,
+                    {'icon' : str(event.icon)})
+    
+    conn.hmset(model.icpe.macaddr + model.sensor.sensorid + event.field, {'last_updated' : str(datetime.now())})
+    return conn.hgetall(model.icpe.macaddr + model.sensor.sensorid +
+                        event.field)
 
 @redisconn
 def Get(mac, sensorid, name, conn):

@@ -11,7 +11,7 @@ from .decorators import LookupSensor
         Unsupported
         Role Type
         Device Type
-        cmdclass = {
+        commandclass = {
             basic {
                 e.g. Status: On
                 e.g. Rules: False
@@ -40,8 +40,8 @@ def Load(sensor, conn):
     }
     logger.info("Loaded Sensor {}:{} from Object".format(sensor.icpe.macaddr,
                                                          sensor.sensorid))
-    conn.sadd(sensor.icpe.macaddr + sensor.sensorid + ':classes', \
-              [cmdclass.classname for cmdclass in sensor.cmdclasses])
+    conn.sadd(sensor.icpe.macaddr + sensor.sensorid + ':commandclasses', \
+              [commandclass.name for commandclass in sensor.commandclasses])
     return conn.hmset(sensor.icpe.macaddr + sensor.sensorid, s)
 
 @redisconn
@@ -59,5 +59,5 @@ def Fields(mac, sensorid, conn):
     return conn.smembers(mac + sensorid + ':fields')
 
 @redisconn
-def Cmdclasses(mac, sensorid, conn):
-    return conn.smembers(mac + sensorid + ':classes')
+def Commandclasses(mac, sensorid, conn):
+    return conn.smembers(mac + sensorid + ':commandclasses')

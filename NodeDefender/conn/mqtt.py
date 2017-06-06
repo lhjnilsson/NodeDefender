@@ -30,19 +30,19 @@ from threading import Thread
 from .. import celery
 from redlock import RedLock
 
-conninfo = namedtuple('conninfo', 'ipaddr, port')
+conninfo = namedtuple('conninfo', 'host, port')
 
 connections = set()
 
-def Add(ipaddr, port = 8883, username = None, password = None):
-    current = List(ipaddr)
+def Add(host, port = 8883, username = None, password = None):
+    current = List(host)
     if current:
         if current.port == port:
             raise TypeError('Already Exisisting Connecton')
             return
 
     mqtt = _MQTT()
-    mqtt.ipaddr = ipaddr
+    mqtt.host = host
     mqtt.port = port
     mqtt.connect()
     mqtt.loop_start()
@@ -71,7 +71,7 @@ def Load(mqttlist = None):
         mqttlist = MQTTSQL.List()
 
     for m in mqttlist:
-        Thread(target = Add, args=[m.ipaddr, m.port, m.username,
+        Thread(target = Add, args=[m.host, m.port, m.username,
                                    m.password]).start()
 
     return len(mqttlist)
@@ -84,7 +84,7 @@ class _MQTT:
     internal Queue. Puts Messages from broker another internal queue
     '''
     def __init__(self):
-        self.ip = None
+        self.host = None
         self.port = None
         self.username = None
         self.password = None
@@ -99,15 +99,15 @@ class _MQTT:
             return False
 
     def loop_start(self):
-        if self.ipaddr is None:
+        if self.host is None:
             raise AttributeError('IP Address not set')
         if self.port is None:
             raise AttributeError('Port not set')
-        self.info = {'ipaddr' : self.ipaddr, 'port' : self.port}
+        self.info = {'host' : self.host, 'port' : self.port}
         self.client.loop_start()
 
     def connect(self):
-        self.client.connect(str(self.ipaddr), int(self.port), 60)
+        self.client.connect(str(self.host), int(self.port), 60)
         self.connect = True
         return True
 
@@ -121,12 +121,12 @@ class _MQTT:
 @celery.task
 def CheckMQTT():
     for mqtt in MQTTSQL.List():
-        lock = RedLock(str(mqtt.ipaddr) + str(mqtt.port))
+        lock = RedLock(str(mqtt.host) + str(mqtt.port))
         if lock.acquire() is False:
             #Someone is already holding this
             continue
         m = _MQTT()
-        m.ipaddr = mqtt.ipaddr
+        m.host = mqtt.host
         m.port = mqtt.port
         m.username = mqtt.username
         m.password = mqtt.password

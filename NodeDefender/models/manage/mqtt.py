@@ -2,29 +2,29 @@ from ... import db
 from ..SQL import MQTTModel
 from . import logger
 
-def Create(ipaddr, port, username = None, password = None):
-    mqtt = MQTTModel.query.filter_by(ipaddr = ipaddr).first()
+def Create(host, port, username = None, password = None):
+    mqtt = MQTTModel.query.filter_by(host = host).first()
     if mqtt and int(mqtt.port) is int(port):
         raise ValueError('IP Address and Port combination already exists')
 
-    mqtt = MQTTModel(ipaddr, port, username, password)
+    mqtt = MQTTModel(host, port, username, password)
     db.session.add(mqtt)
     db.session.commit()
-    logger.info("Created MQTT: {}:{}".format(ipaddr, str(port)))
+    logger.info("Created MQTT: {}:{}".format(host, str(port)))
     return mqtt
 
-def Delete(ipaddr, port = None):
-    mqtt = MQTTModel.query.filter_by(ipaddr = ipaddr).first()
+def Delete(host, port = None):
+    mqtt = MQTTModel.query.filter_by(host = host).first()
     if mqtt is None:
         raise LookupError('MQTT Connection does not exist')
     
     db.session.delete(mqtt)
     db.session.commit()
-    logger.info("Delted MQTT: {}:{}".format(ipaddr, str(port)))
+    logger.info("Delted MQTT: {}:{}".format(host, str(port)))
     return mqtt
 
-def Include(ipaddr, mac):
-    mqtt = MQTTModel.query.filter_by(ipaddr = ipaddr).first()
+def Include(host, mac):
+    mqtt = MQTTModel.query.filter_by(host = host).first()
     if mqtt is None:
         raise LookupError('MQTT Connection does not exist')
 
@@ -35,12 +35,12 @@ def Include(ipaddr, mac):
     mqtt.icpes.append(icpe)
     db.session.add(mqtt)
     db.session.commit()
-    logger.info("Included iCPE {} to MQTT {}:{}".format(icpe.macaddr, mqtt.ipaddr,
+    logger.info("Included iCPE {} to MQTT {}:{}".format(icpe.macaddr, mqtt.host,
                                                         str(mqtt.port)))
     return mqtt
 
-def Exclude(ipaddr, mac):
-    mqtt = MQTTModel.query.filter_by(ipaddr = ipaddr).first()
+def Exclude(host, mac):
+    mqtt = MQTTModel.query.filter_by(host = host).first()
     if mqtt is None:
         raise LookupError('MQTT Connection does not exist')
 
@@ -51,11 +51,11 @@ def Exclude(ipaddr, mac):
     mqtt.icpes.remove(icpe)
     db.session.add(mqtt)
     db.session.commit()
-    logger.info("Removed iCPE {} from MQTT {}:{}".fomrat(icpe.macaddr, mqtt.ipaddr,
+    logger.info("Removed iCPE {} from MQTT {}:{}".fomrat(icpe.macaddr, mqtt.host,
                                                          str(mqtt.port)))
     return mqtt
 
-def Query(ipaddr, mac):
+def Query(host, mac):
     pass
 
 
@@ -65,8 +65,8 @@ def List():
 def iCPE(macaddr):
     pass
 
-def Get(ipaddr, port):
-    return MQTTModel.query.filter_by(ipaddr = ipaddr, port = port).first()
+def Get(host, port):
+    return MQTTModel.query.filter_by(host = host, port = port).first()
 
 def Save(model):
     db.session.add(model)

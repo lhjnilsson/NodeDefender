@@ -19,7 +19,7 @@ def Current(*groups):
         latest_heat =  db.session.query(HeatModel,\
                     label('sum', func.sum(HeatModel.average)),
                     label('count', func.count(HeatModel.average))).\
-                    join(iCPEModel).\
+                    join(HeatModel.icpe).\
                     filter(iCPEModel.macaddr.in_(*[icpes])).\
                     filter(HeatModel.date > min_ago).first()
         if latest_heat.count:
@@ -49,28 +49,28 @@ def Average(*groups):
         current_heat = db.session.query(HeatModel,\
                     label('sum', func.sum(HeatModel.average)),
                     label('count', func.count(HeatModel.average))).\
-                    join(iCPEModel).\
+                    join(HeatModel.icpe).\
                     filter(iCPEModel.macaddr.in_(*[icpes])).\
                     filter(HeatModel.date > min_ago).first()
         
         daily_heat = db.session.query(HeatModel,\
                     label('sum', func.sum(HeatModel.average)),
                     label('count', func.count(HeatModel.average))).\
-                    join(iCPEModel).\
+                    join(HeatModel.icpe).\
                     filter(iCPEModel.macaddr.in_(*[icpes])).\
                     filter(HeatModel.date > day_ago).first()
         
         weekly_heat = db.session.query(HeatModel,\
                     label('sum', func.sum(HeatModel.average)),
                     label('count', func.count(HeatModel.average))).\
-                    join(iCPEModel).\
+                    join(HeatModel.icpe).\
                     filter(iCPEModel.macaddr.in_(*[icpes])).\
                     filter(HeatModel.date > week_ago).first()
 
         monthly_heat = db.session.query(HeatModel,\
                     label('sum', func.sum(HeatModel.average)),
                     label('count', func.count(HeatModel.average))).\
-                    join(iCPEModel).\
+                    join(HeatModel.icpe).\
                     filter(iCPEModel.macaddr.in_(*[icpes])).\
                     filter(HeatModel.date > month_ago).first()
         
@@ -115,7 +115,7 @@ def Chart(*groups):
         icpes = [node.icpe.macaddr for node in group.nodes]
         
         heat_data = db.session.query(HeatModel).\
-                join(iCPEModel).\
+                join(HeatModel.icpe).\
                 filter(iCPEModel.macaddr.in_(*[icpes])).\
                 filter(HeatModel.date > from_date).\
                 filter(HeatModel.date < to_date).all()

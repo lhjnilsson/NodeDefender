@@ -27,8 +27,9 @@ dataSocket.on('nodeEvents', function(events) {
 		var newRow = tableRef.insertRow(i);
 
 		var eventCell = newRow.insertCell(0);
-		var eventText = document.createTextNode(events[i].value);
-		eventCell.appendChild(eventText);
+		var icon = document.createElement("i");
+		icon.className += events[i].icon;
+		eventCell.appendChild(icon);
 
 		var sensorCell = newRow.insertCell(1);
 		var sensorText = document.createTextNode(events[i].sensor);

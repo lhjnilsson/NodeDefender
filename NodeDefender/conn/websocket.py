@@ -6,11 +6,11 @@ from ..models.redis import field as FieldRedis
 
 socketio = SocketIO(message_queue='redis://localhost:6379/0')
 
-def FieldEvent(macaddr, sensorid, field, event, enabled):
-    sensor = SensorRedis.Get(macaddr, sensorid)
-    field = FieldRedis.Get(macaddr, sensorid, field)
-    
-    socketio.emit('FieldEvent', (sensor, field, event, enabled),
-                  namespace = '/icpe'+macaddr,
+def ZWaveEvent(event):
+    if 'icpe' not in event:
+        return False
+
+    socketio.emit('ZWaveEvent', (event),
+                  namespace = '/icpe'+event['icpe'],
                   broadcast=True);
     return True

@@ -28,8 +28,8 @@ def Current(node):
         latest_power =  db.session.query(PowerModel,\
                     label('sum', func.sum(PowerModel.average)),
                     label('count', func.count(PowerModel.average))).\
-                    join(iCPEModel).\
-                    join(SensorModel).\
+                    join(PowerModel.icpe).\
+                    join(PowerModel.sensor).\
                     filter(iCPEModel.macaddr == node.icpe.macaddr).\
                     filter(SensorModel.sensorid == sensor.sensorid).\
                     filter(PowerModel.date > min_ago).first()
@@ -66,28 +66,28 @@ def Average(node):
     current_power = db.session.query(PowerModel,\
                 label('sum', func.sum(PowerModel.average)),
                 label('count', func.count(PowerModel.average))).\
-                join(iCPEModel).\
+                join(PowerModel.icpe).\
                 filter(iCPEModel.macaddr == node.icpe.macaddr).\
                 filter(PowerModel.date > min_ago).first()
     
     daily_power = db.session.query(PowerModel,\
                 label('sum', func.sum(PowerModel.average)),
                 label('count', func.count(PowerModel.average))).\
-                join(iCPEModel).\
+                join(PowerModel.icpe).\
                 filter(iCPEModel.macaddr == node.icpe.macaddr).\
                 filter(PowerModel.date > day_ago).first()
     
     weekly_power = db.session.query(PowerModel,\
                 label('sum', func.sum(PowerModel.average)),
                 label('count', func.count(PowerModel.average))).\
-                join(iCPEModel).\
+                join(PowerModel.icpe).\
                 filter(iCPEModel.macaddr == node.icpe.macaddr).\
                 filter(PowerModel.date > week_ago).first()
 
     monthly_power = db.session.query(PowerModel,\
                 label('sum', func.sum(PowerModel.average)),
                 label('count', func.count(PowerModel.average))).\
-                join(iCPEModel).\
+                join(PowerModel.icpe).\
                 filter(iCPEModel.macaddr == node.icpe.macaddr).\
                 filter(PowerModel.date > month_ago).first()
     
@@ -137,8 +137,8 @@ def Chart(node):
             continue
         
         power_data = db.session.query(PowerModel).\
-                join(iCPEModel).\
-                join(SensorModel).\
+                join(PowerModel.icpe).\
+                join(PowerModel.sensor).\
                 filter(iCPEModel.macaddr == node.icpe.macaddr).\
                 filter(SensorModel.sensorid == sensor.sensorid).\
                 filter(PowerModel.date > from_date).\

@@ -25,7 +25,7 @@ def AdminServer():
                            MQTT.Port.data,\
                            MQTT.Username.data,\
                            MQTT.Password.data)
-            mqtt.Add(m.ipaddr, m.port, m.username, m.password)
+            mqtt.Add(m.host, m.port, m.username, m.password)
         except ValueError as e:
             flash('Error: {}'.format(e), 'danger')
             return redirect(url_for('AdminView.AdminServer'))

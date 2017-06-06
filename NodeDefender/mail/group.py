@@ -32,7 +32,7 @@ def new_mqtt(group, mqttip, mqttport):
     if mqtt is None:
         return False
 
-    msg = Message('MQTT {} added to {}'.format(mqtt.ipaddr, group.name), sender='noreply@nodedefender.com', recipients=[group.email])
+    msg = Message('MQTT {} added to {}'.format(mqtt.host, group.name), sender='noreply@nodedefender.com', recipients=[group.email])
     url = url_for('AdminView.AdminGroup', name = serializer.dumps(group.name))
     msg.body = render_template('mail/group/new_mqtt.txt', group = group,\
                                mqtt = mqtt, url = url)

@@ -1,3 +1,54 @@
+{% macro AverageHeat() %}
+<div class="panel panel-info">
+	<div class="panel-heading">
+		Average Heat, <div id="averageHeatName" style="display: inline";>None</div>
+	</div>
+	<div class="panel-body">
+		<div class="row">
+			<div class="col-xs-4">
+				<h4 id="averageHeatMonthly">	
+					0.0
+				</h4>
+				<small><i>Monthly Average</i></small>
+			</div>
+			<div class="col-xs-4">
+				<h4 id="averageHeatWeekly">
+				0.0
+				</h4>
+				<small><i>Weekly Average</i></small>
+			</div>
+			<div class="col-xs-4">
+				<h4 style="color: blue;" id="averageHeatDaily">
+				0.0
+				</h4>
+				<small><i>Daily Average</i></small>
+			</div>
+		</div>
+	</div>
+</div>
+	<script>
+heatName = document.getElementById('averageHeatName')
+heatMonthly = document.getElementById('averageHeatMonthly');
+heatWeekly = document.getElementById('averageHeatWeekly');
+heatDaily = document.getElementById('averageHeatDaily');
+
+dataSocket.on('groupHeatAverage', function(data) {
+	heatName.innerHTML = data.name;
+	heatMonthly.innerHTML = parseFloat(data.monthly).toFixed(1);
+	heatWeekly.innerHTML = parseFloat(data.weekly).toFixed(1);
+	if (data.weekly > data.monthly)
+		heatWekly.style.color = 'red';
+	else
+		heatWeekly.style.color = 'blue';
+	heatDaily.innerHTML = parseFloat(data.daily).toFixed(1);
+	if (data.daily > data.weekly)
+		heatDaily.style.color = 'red';
+	else
+		heatDaily.style.color = 'blue';
+})
+	</script>
+{% endmacro %}
+
 {% macro Chart(user) %}
 <div class="panel panel-primary">
 	<div class="panel-heading">
@@ -72,7 +123,7 @@ $(document).ready(function() {
 		}
 	});
 	{% for group in groups %}
-	dataSocket.emit('groupHeatAverage', {'name': "{{group.name}}"});
+	dataSocket.emit('groupHeatAverage', "{{group.name}}");
 	{% endfor %}
 });
 	</script>

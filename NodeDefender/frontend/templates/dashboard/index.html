@@ -28,41 +28,24 @@
 	</div>
 </div>
 <br>
-{% from "macros/statistics.html" import AverageHeat, AveragePower, AverageEvents with context %}
+{% from "macros/data/heat.html" import AverageHeat %}
+{% from "macros/data/power.html" import AveragePower %}
+{% from "macros/data/event.html" import AverageEvents %}
+{% from "macros/data.html" import data_group_looper %}
 <div class="row">
 	<div class="col-lg-4">
-		<div class="panel panel-info">
-			<div class="panel-heading">
-				Heat 
-			</div>
-			<div class="panel-body">
-				{{ AverageHeat() }}
-			</div>
-		</div>
+		{{ AverageHeat() }}
 	</div>
 	<div class="col-lg-4">
-		<div class="panel panel-info">
-			<div class="panel-heading">
-				Power
-			</div>
-			<div class="panel-body">
-				{{ AveragePower() }}
-			</div>
-		</div>
+		{{ AveragePower() }}
 	</div>
 	<div class="col-lg-4">
-		<div class="panel panel-info">
-			<div class="panel-heading">
-				Events
-			</div>
-			<div class="panel-body">
-				{{ AverageEvents() }}
-			</div>
-		</div>
+		{{ AverageEvents() }}
 	</div>
 </div>
+{{ data_group_looper() }}
 <br>
-{% from "macros/messages.html" import MessageList %}
+{% from "macros/messages.html" import MessageList, emit_messages %}
 {% from "macros/data/event.html" import GroupEventList with context %}
 <div class="row">
 	<div class="col-lg-6">
@@ -70,8 +53,9 @@
 			<div class="panel-heading">
 				Message List
 			</div>
-			<div class="panel-body">
+			<div class="panel-body" style="padding: 0;">
 				{{ MessageList() }}
+				{{ emit_messages() }}
 			</div>
 		</div>
 	</div>

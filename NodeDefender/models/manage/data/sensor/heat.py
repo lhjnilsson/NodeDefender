@@ -4,10 +4,13 @@ from ..... import db
 from sqlalchemy import func
 from sqlalchemy.sql import label
 from itertools import groupby
+from ....redis import field as FieldRedis
+from .....conn.websocket import ZWaveEvent
+
 
 def Current(icpe, sensor):
     sensor = db.session.query(SensorModel).\
-            join(iCPEModel).\
+            join(HeatModel.icpe).\
             filter(iCPEModel.macaddr == icpe).\
             filter(SensorModel.sensorid == sensor).first()
 
@@ -23,7 +26,8 @@ def Current(icpe, sensor):
     latest_heat =  db.session.query(HeatModel,\
                 label('sum', func.sum(HeatModel.average)),
                 label('count', func.count(HeatModel.average))).\
-                join(iCPEModel).\
+                join(HeatModel.icpe).\
+                join(HeatModel.sensor).\
                 filter(iCPEModel.macaddr == sensor.icpe.macaddr).\
                 filter(SensorModel.sensorid == sensor.sensorid).\
                 filter(HeatModel.date > min_ago).first()
@@ -37,7 +41,7 @@ def Current(icpe, sensor):
     return sensor_data
 
 def Average(icpe, sensor):
-    sensor = db.session.query(SensorModel).join(iCPEModel).\
+    sensor = db.session.query(SensorModel).join(HeatModel.icpe).\
             filter(iCPEModel.macaddr == icpe).\
             filter(SensorModel.sensorid == sensor).first()
     
@@ -60,8 +64,8 @@ def Average(icpe, sensor):
     current_heat = db.session.query(HeatModel,\
                 label('sum', func.sum(HeatModel.average)),
                 label('count', func.count(HeatModel.average))).\
-                join(iCPEModel).\
-                join(SensorModel).\
+                join(HeatModel.icpe).\
+                join(HeatModel.sensor).\
                 filter(iCPEModel.macaddr == sensor.icpe.macaddr).\
                 filter(SensorModel.sensorid == sensor.sensorid).\
                 filter(HeatModel.date > min_ago).first()
@@ -69,8 +73,8 @@ def Average(icpe, sensor):
     daily_heat = db.session.query(HeatModel,\
                 label('sum', func.sum(HeatModel.average)),
                 label('count', func.count(HeatModel.average))).\
-                join(iCPEModel).\
-                join(SensorModel).\
+                join(HeatModel.icpe).\
+                join(HeatModel.sensor).\
                 filter(iCPEModel.macaddr == sensor.icpe.macaddr).\
                 filter(SensorModel.sensorid == sensor.sensorid).\
                 filter(HeatModel.date > day_ago).first()
@@ -78,8 +82,8 @@ def Average(icpe, sensor):
     weekly_heat = db.session.query(HeatModel,\
                 label('sum', func.sum(HeatModel.average)),
                 label('count', func.count(HeatModel.average))).\
-                join(iCPEModel).\
-                join(SensorModel).\
+                join(HeatModel.icpe).\
+                join(HeatModel.sensor).\
                 filter(iCPEModel.macaddr == sensor.icpe.macaddr).\
                 filter(SensorModel.sensorid == sensor.sensorid).\
                 filter(HeatModel.date > week_ago).first()
@@ -87,8 +91,8 @@ def Average(icpe, sensor):
     monthly_heat = db.session.query(HeatModel,\
                 label('sum', func.sum(HeatModel.average)),
                 label('count', func.count(HeatModel.average))).\
-                join(iCPEModel).\
-                join(SensorModel).\
+                join(HeatModel.icpe).\
+                join(HeatModel.sensor).\
                 filter(iCPEModel.macaddr == sensor.icpe.macaddr).\
                 filter(SensorModel.sensorid == sensor.sensorid).\
                 filter(HeatModel.date > month_ago).first()
@@ -128,7 +132,7 @@ def Chart(icpe, sensor):
     to_date = datetime.now()
     
     sensor = db.session.query(SensorModel).\
-            join(iCPEModel).\
+            join(HeatModel.icpe).\
             filter(iCPEModel.macaddr == icpe).\
             filter(SensorModel.sensorid == sensor).first()
     
@@ -137,8 +141,8 @@ def Chart(icpe, sensor):
 
     
     heat_data = db.session.query(HeatModel).\
-            join(iCPEModel).\
-            join(SensorModel).\
+            join(HeatModel.icpe).\
+            join(HeatModel.sensor).\
             filter(iCPEModel.macaddr == sensor.icpe.macaddr).\
             filter(SensorModel.sensorid == sensor.sensorid).\
             filter(HeatModel.date > from_date).\
@@ -159,3 +163,42 @@ def Chart(icpe, sensor):
         sensor_data['heat'].append(entry)
 
     return sensor_data
+
+def Put(icpe, sensor, event, date = None):
+    if date is None:
+        date = datetime.now().replace(minute=0, second=0, microsecond=0)
+    
+    icpe, sensor = db.session.query(iCPEModel, SensorModel).\
+            filter(iCPEModel.macaddr == icpe).\
+            filter(SensorModel.sensorid == sensor).first()
+    
+    if not icpe or not sensor:
+        return False
+
+    data = db.session.query(HeatModel).\
+            filter(HeatModel.icpe == icpe,\
+                   HeatModel.sensor == sensor,\
+                   HeatModel.date == date).first()
+
+    heat = event.value
+    
+    if data:
+        if heat > data.high:
+            data.high = heat
+        
+        if heat < data.low or data.low == 0:
+            data.low = heat
+
+        data.average = (data.average + heat) / 2
+        db.session.add(data)
+    else:
+        data = HeatModel(heat, date)
+        data.sensor = sensor
+        data.icpe = sensor.icpe
+        db.session.add(data)
+
+    db.session.commit()
+        
+    redis = FieldRedis.Update(data, event)
+
+    ZWaveEvent(redis)

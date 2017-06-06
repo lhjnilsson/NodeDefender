@@ -1,6 +1,6 @@
 Unknown iCPE discovered,
 
-iCPE {{ icpe.macaddr }} has been discovered on MQTT Connection {{ mqtt.ipaddr}}:{{mqtt.port}}.
+iCPE {{ icpe.macaddr }} has been discovered on MQTT Connection {{ mqtt.host}}:{{mqtt.port}}.
 
 url : {{ url }}
 

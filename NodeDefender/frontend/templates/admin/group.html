@@ -16,7 +16,7 @@
 {% include "flash.html" %}
 {% from "macros/group.html" import GroupInfo with context %}
 {% from "macros/map.html" import MapGroup %}
-{% from "macros/messages.html" import MessageList %}
+{% from "macros/messages.html" import MessageList, emit_group_messages %}
 {% from "macros/user.html" import ListUsers with context %}
 
 <div class="row">
@@ -41,37 +41,18 @@
 		</div>
 	</div>
 </div>
-{% from "macros/statistics.html" import AverageHeat, AveragePower, AverageEvents %}
+{% from "macros/data/group/heat.html" import AverageHeat %}
+{% from "macros/data/group/power.html" import AveragePower %}
+{% from "macros/data/group/event.html" import AverageEvents %}
 <div class="row">
 	<div class="col-lg-4">
-		<div class="panel panel-info">
-			<div class="panel-heading">
-				Heat 
-			</div>
-			<div class="panel-body">
-				{{ AverageHeat() }}
-			</div>
-		</div>
+		{{ AverageHeat(Group) }}
 	</div>
 	<div class="col-lg-4">
-		<div class="panel panel-info">
-			<div class="panel-heading">
-				Power
-			</div>
-			<div class="panel-body">
-				{{ AveragePower() }}
-			</div>
-		</div>
+		{{ AveragePower(Group) }}
 	</div>
 	<div class="col-lg-4">
-		<div class="panel panel-info">
-			<div class="panel-heading">
-				Events
-			</div>
-			<div class="panel-body">
-				{{ AverageEvents() }}
-			</div>
-		</div>
+		{{ AverageEvents(Group) }}
 	</div>
 </div>
 <div class="row">
@@ -81,7 +62,8 @@
 				Messages
 			</div>
 			<div class="panel-body" style="padding: 0";>
-				{{MessageList(Group.messages)}}
+				{{MessageList()}}
+				{{emit_group_messages(Group)}}
 			</div>
 		</div>
 	</div>

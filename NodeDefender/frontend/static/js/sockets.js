@@ -7,9 +7,17 @@ var adminSocket = io.connect('http://' + document.domain + ':' + location.port +
 var dataSocket = io.connect('http://' + document.domain + ':' + location.port + '/data');
 var plotlySocket = io.connect('http://' + document.domain + ':' + location.port + '/plotly');
 var sensorSocket = io.connect('http://' + document.domain + ':' + location.port + '/sensor');
-
-
+var mqttSocket = io.connect('http://' + document.domain + ':' + location.port + '/mqtt');
 
 generalSocket.on('reload', function() {
+	console.log('Reloading..');
 	location.reload();
 })
+
+generalSocket.on('redirect', function(url) {
+	location.href = url;
+});
+
+generalSocket.on('error', function(msg) {
+	toastr.error(msg)
+});

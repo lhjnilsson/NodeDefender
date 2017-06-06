@@ -12,7 +12,6 @@ def create_user(user):
 
     if user.email == None:
         return False
-
     msg = Message('Welcome to NodeDefender', sender='noreply@nodedefender.com',
                   recipients=[user.email])
     url = url_for('AuthView.Register',\

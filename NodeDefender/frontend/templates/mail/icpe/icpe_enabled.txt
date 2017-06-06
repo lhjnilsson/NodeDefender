@@ -1,6 +1,6 @@
 iCPE Enabled!,
 
-iCPE {{ icpe.macaddr }} has been discovered on MQTT Connection {{ mqtt.ipaddr}}:{{mqtt.port}}.
+iCPE {{ icpe.macaddr }} has been discovered on MQTT Connection {{ mqtt.host}}:{{mqtt.port}}.
 This iCPE was manually added, and has now been enabled.
 
 url : {{ url }}

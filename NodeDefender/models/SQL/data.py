@@ -1,6 +1,6 @@
 from ... import db
 from datetime import datetime
-from ...iCPE.zwave import cmdclass
+from ...iCPE.zwave import commandclass
 
 class HeatModel(db.Model):
     __tablename__ = 'heat'
@@ -59,24 +59,33 @@ class EventModel(db.Model):
     node_id = db.Column(db.Integer, db.ForeignKey('node.id'))
     icpe_id = db.Column(db.Integer, db.ForeignKey('icpe.id'))
     sensor_id = db.Column(db.Integer, db.ForeignKey('sensor.id'))
-    cmdclass_id = db.Column(db.Integer, db.ForeignKey('sensorclass.id'))
-    
-    classtype = db.Column(db.String(8))
-    value = db.Column(db.String(8))
-    enabled = db.Column(db.Boolean)
+    commandclass_id = db.Column(db.Integer, db.ForeignKey('commandclass.id'))
+    commandclasstype_id = db.Column(db.Integer,
+                                    db.ForeignKey('commandclasstype.id'))
 
-    critcial = db.Column(db.Boolean)
+    value = db.Column(db.String(16))
+
+    critical = db.Column(db.Boolean)
     normal = db.Column(db.Boolean)
 
-    def __init__(self, classtype, value, date = None):
-        self.classtype = classtype
+    def __init__(self, value, date = None):
         self.value = value
         self.date = date if date else datetime.now()
 
     def to_json(self):
-        icon = eval('cmdclass.'+self.sensorclass.classname+'.Icon')\
-                    (self.value, self.classtype)
-        
+        if self.commandclasstype:
+            name = self.commandclasstype.name
+            icon = eval('commandclass.'+self.commandclass.name+'.'+\
+                        self.commandclasstype.name+'.Icon')(self.value)
+        elif self.commandclass:
+            name = self.commandclass.name
+            icon = eval('commandclass.'+self.commandclass.name+'.Icon')\
+                        (self.value)
+        else:
+            name = 'unkown'
+            icon = 'fa fa-question'
+
         return {'iCPE' : self.icpe.macaddr, 'sensor' : self.sensor.productname, 'node' :
                 self.icpe.node.name, 'value' : self.value,\
-                'date' : str(self.date), 'icon' : icon}
+                'date' : str(self.date), 'icon' : icon,\
+                'name' : name}
