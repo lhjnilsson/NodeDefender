@@ -42,9 +42,9 @@ dataSocket.on('groupPowerAverage', function(data) {
 		powerWeekly.style.color = 'green';
 	powerDaily.innerHTML = parseFloat(data.daily).toFixed(2);
 	if (data.daily > data.weekly)
-		powerDaily.style.color = 'green';
+		powerDaily.style.color = 'red';
 	else
-		powerDaily.style.color = 'blue';
+		powerDaily.style.color = 'green';
 })
 	</script>
 {% endmacro %}

@@ -38,6 +38,7 @@ def group_messages(group, limit = 10):
                                                     group).first()
     if group is None:
         return False
+    return group.messages
 
     nodes = [node for node in group.nodes]
     icpes = [node.icpe for node in nodes]
@@ -52,11 +53,11 @@ def group_messages(group, limit = 10):
             join(MessageModel.node).\
             join(MessageModel.icpe).\
             join(MessageModel.sensor).\
-            filter(or_(GroupModel.name == group.name,\
+            filter(GroupModel.name == group.name,\
                        NodeModel.name.in_(*[nodes]),\
                        iCPEModel.macaddr.in_(*[icpes]),\
                        SensorModel.id.in_(*[sensors])\
-                      )).order_by(MessageModel.date.desc()).limit(int(limit)).all()
+                      ).order_by(MessageModel.date.desc()).limit(int(limit)).all()
 
 def user_messages(user, limit = 10):
     if type(user) is str:

@@ -14,11 +14,13 @@ def messages():
 
 @socketio.on('groupMessages', namespace='/data')
 def group_messages(group):
-    return emit('messages', MessageSQL.group_messages(group))
+    messages = MessageSQL.group_messages(group)
+    return emit('messages', ([message.to_json() for message in messages]))
 
 @socketio.on('nodeMessages', namespace='/data')
 def node_messages(node):
-    return emit('messages', MessageSQL.node_messages(node))
+    messages = MessageSQL.node_messages(node)
+    return emit('messages', ([message.to_json() for message in messages]))
 
 @socketio.on('userMessages', namespace='/data')
 def user_messages(user):
