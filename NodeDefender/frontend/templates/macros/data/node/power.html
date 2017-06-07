@@ -87,10 +87,10 @@ plotlySocket.emit('nodePowerChart', {'name' : "{{node.name}}"});
 	<script>
 $(document).ready(function() {
 	dataSocket.on('sensorPowerAverage', function(data) {
-		document.getElementById(data.icpe+data.sensor+"CurrentPower").innerHTML = data.current;
-		document.getElementById(data.icpe+data.sensor+"DailyPower").innerHTML = data.daily;
-		document.getElementById(data.icpe+data.sensor+"WeeklyPower").innerHTML = data.weekly;
-		document.getElementById(data.icpe+data.sensor+"MonthlyPower").innerHTML = data.monthly;
+		document.getElementById(data.icpe+data.sensor+"CurrentPower").innerHTML = parseFloat(data.current).toFixed(2);
+		document.getElementById(data.icpe+data.sensor+"DailyPower").innerHTML = parseFloat(data.daily).toFixed(2);
+		document.getElementById(data.icpe+data.sensor+"WeeklyPower").innerHTML = parseFloat(data.weekly).toFixed(2);
+		document.getElementById(data.icpe+data.sensor+"MonthlyPower").innerHTML = parseFloat(data.monthly).toFixed(2);
 	});
 	{% for sensor in node.icpe.sensors %}
 	{% if sensor.power %}

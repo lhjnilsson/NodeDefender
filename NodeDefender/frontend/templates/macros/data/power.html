@@ -116,10 +116,10 @@ plotlySocket.emit('powerChart', {'user' : "{{current_user.email}}"});
 $(document).ready(function() {
 	dataSocket.on('groupPowerAverage', function(data) {
 		if (data) {
-			document.getElementById(data.name+"CurrentPower").innerHTML = data.current;
-			document.getElementById(data.name+"DailyPower").innerHTML = data.daily;
-			document.getElementById(data.name+"WeeklyPower").innerHTML = data.weekly;
-			document.getElementById(data.name+"MonthlyPower").innerHTML = data.monthly;
+			document.getElementById(data.name+"CurrentPower").innerHTML = parseFloat(data.current).toFixed(2);
+			document.getElementById(data.name+"DailyPower").innerHTML = parseFloat(data.daily).toFixed(2);
+			document.getElementById(data.name+"WeeklyPower").innerHTML = parseFloat(data.weekly).toFixed(2);
+			document.getElementById(data.name+"MonthlyPower").innerHTML = parseFloat(data.monthly).toFixed(2);
 		}
 	});
 	{% for group in groups %}

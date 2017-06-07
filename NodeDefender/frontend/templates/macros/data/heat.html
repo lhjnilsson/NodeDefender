@@ -116,10 +116,10 @@ plotlySocket.emit('heatChart', {'user' : "{{current_user.email}}"});
 $(document).ready(function() {
 	dataSocket.on('groupHeatAverage', function(data) {
 		if (data) {
-			document.getElementById(data.name+"CurrentHeat").innerHTML = data.current;
-			document.getElementById(data.name+"DailyHeat").innerHTML = data.daily;
-			document.getElementById(data.name+"WeeklyHeat").innerHTML = data.weekly;
-			document.getElementById(data.name+"MonthlyHeat").innerHTML = data.monthly;
+			document.getElementById(data.name+"CurrentHeat").innerHTML = parseFloat(data.current).toFixed(1);
+			document.getElementById(data.name+"DailyHeat").innerHTML = parseFloat(data.daily).toFixed(1);
+			document.getElementById(data.name+"WeeklyHeat").innerHTML = parseFloat(data.weekly).toFixed(1);
+			document.getElementById(data.name+"MonthlyHeat").innerHTML = parseFloat(data.monthly).toFixed(1);
 		}
 	});
 	{% for group in groups %}
