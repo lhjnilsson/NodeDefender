@@ -61,5 +61,5 @@ def info(msg):
 @socketio.on('addUser', namespace='/group')
 def add_user(msg):
     UserSQL.Join(msg['user'], msg['group'])
-    emit('Reload')
+    emit('reload', namespace='/general')
     return True

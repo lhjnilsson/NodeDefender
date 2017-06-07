@@ -31,7 +31,7 @@ class MessageModel(db.Model):
             group = False
         
         if self.user:
-            user = self.user.name
+            user = self.user.email
         else:
             user = False
 

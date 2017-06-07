@@ -27,17 +27,28 @@ from flask_socketio import emit, send, disconnect, join_room, leave_room, \
 from ... import socketio
 from ...models.manage import group as GroupSQL
 from ...models.manage import user as UserSQL
+from ...models.manage import role as RoleSQL
+from ...mail import user as UserMail
 from flask_login import current_user
 from flask import flash, redirect, url_for
 
 @socketio.on('create', namespace='/user')
-def create(info):
-    if GroupSQL.Get(info['name']):
-        emit('error', ('Group exsists'), namespace='/general')
+def create(user):
+    if not GroupSQL.Get(user['group']):
+        emit('error', ('Group does not exist'), namespace='/general')
         return False
-    group = GroupSQL.Create(info['name'], info['mail'], info['description'])
-    GroupSQL.Location(group, info['street'], info['city'])
-    GroupMail.new_group.delay(group.name)
+
+    if UserSQL.Get(user['email']):
+        emit('error', ('User Exists'), namespace='/general')
+        return False
+    db_user = UserSQL.Create(user['email'])
+    db_user.firstname = user['firstname']
+    db_user.lastname = user['lastname']
+    UserSQL.Save(db_user)
+
+    UserSQL.Join(db_user.email, user['group'])
+    RoleSQL.AddRole(db_user.email, user['role'])
+    UserMail.new_user.delay(db_user.email)
     emit('reload', namespace='/general')
     return True
 
