@@ -28,7 +28,6 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_restful import Api
 from flask_socketio import SocketIO
 from flask_moment import Moment
-from flask_mail import Mail
 from flask_login import LoginManager
 from flask_bcrypt import Bcrypt
 from apscheduler.schedulers.gevent import GeventScheduler
@@ -77,9 +76,6 @@ serializer = Serializer(app)
 
 # Report that startup is successfull
 logger.info('NodeDefender Succesfully started')
-
-# Initialize Mail
-mail = Mail(app)
 
 # MQTT
 from . import conn

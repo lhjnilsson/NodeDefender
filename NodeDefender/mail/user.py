@@ -1,4 +1,5 @@
-from .. import LoginMan, app, celery, serializer, mail
+from .. import LoginMan, app, celery, serializer
+from . import mail
 from ..models.manage import user as UserSQL
 from ..models.SQL import UserModel
 from flask_mail import Message
