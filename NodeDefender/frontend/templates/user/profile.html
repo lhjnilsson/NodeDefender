@@ -15,11 +15,15 @@
 </div>
 
 {% from "macros/info.html" import Field %}
+{% from "macros/user.html" import UserSettingsModal %}
 <div class="row">
 	<div class="col-lg-4 col-lg-offset-2">
 		<div class="panel panel-primary">
 			<div class="panel-heading">
 				Information
+				<div class="floatRight">
+					<a style="color: #FFFFFF; margin: 0 5px" href="#" data-toggle="modal" data-target="#userSettingsModal"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+				</div>
 			</div>
 			<div class="panel-body">
 				{{ Field("Firstname", current_user.firstname) }}
@@ -39,6 +43,6 @@
 		</div>
 	</div>
 </div>
-
+{{ UserSettingsModal(current_user) }}
 
 {% endblock %}

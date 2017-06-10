@@ -69,6 +69,17 @@ def info(msg):
     emit('info', (group.to_json()))
     return True
 
+@socketio.on('updateName', namespace='/user')
+def update_name(firstname, lastname):
+    user = current_user
+    if user is None:
+        return
+    user.firstname = firstname
+    user.lastname = lastname
+    UserSQL.Save(user)
+    emit('reload', namespace='/general')
+    return True
+
 @socketio.on('freeze', namespace='/user')
 def freeze_user(user):
     pass
