@@ -48,6 +48,17 @@ def update_fields(sensor):
     iCPE.db.sensor.Update(sensor['icpe'], sensor['sensor'])
     return True
 
+@socketio.on('updateConfig', namespace='/sensor')
+def update_config(icpe, sensorid, name):
+    sensor = SensorSQL.Get(icpe, sensorid)
+    if sensor is None:
+        emit('error', 'Sensor not found', namespace='/general')
+        return False
+    sensor.name = name
+    SensorSQL.Save(sensor)
+    emit('reload', namespace='/general')
+    return True
+
 @socketio.on('fields', namespace='/sensor')
 def fields(icpe, sensor):
     fields = []

@@ -1,5 +1,6 @@
 {% macro SensorModal() %}
 {% from "macros/info.html" import FieldID %}
+{% from "macros/form.html" import render_manual %}
 <div class="modal fade" id="SensorModal" role="dialog">
 	<div class="modal-dialog">
 		<div class="modal-content">
@@ -38,12 +39,15 @@
 						</table>
 					</div>
 					<div id="SensorModalConfig" class="tab-pane fade">
-						<h3>Config</h3>
+						<div class="row">
+							{{ render_manual("Name", "sensorConfigName") }} 
+						</div>
 					</div>
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-primary" id="updateSensor">Update</button>
+				<button type="button" class="btn btn-primary" id="updateSensor">Update Fields</button>
+				<button type="button" class="btn btn-primary" id="updateSensorConfig">Update Config</button>
 				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 			</div>
 		</div>
@@ -63,8 +67,16 @@ document.getElementById('updateSensor').addEventListener('click', function() {
 	setTimeout(reload, 5000);
 });
 
+document.getElementById('updateSensorConfig').addEventListener('click', function() {
+	var icpe = document.getElementById("sensoriCPE").innerHTML;
+	var sensorid = document.getElementById("sensorId").innerHTML;
+	var sensorName = document.getElementById('sensorConfigName').value;
+	sensorSocket.emit('updateConfig', icpe, sensorid, sensorName);
+});
+
 sensorSocket.on('info', function(info) {
 	document.getElementById("sensorName").innerHTML = info.name;
+	document.getElementById("sensorConfigName").value = info.name;
 	document.getElementById("sensorId").innerHTML = info.sensorId;
 	document.getElementById("sensoriCPE").innerHTML = info.icpe;
 	document.getElementById("sensorBrand").innerHTML = info.brand;
