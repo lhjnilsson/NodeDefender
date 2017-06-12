@@ -16,7 +16,7 @@ def messages(user, limit = 10):
                 order_by(MessageModel.date.desc()).limit(int(limit)).all()
     
     groups = [group for group in user.groups]
-    nodes = [node for node in [group.node for group in groups]]
+    nodes = [node for node in [group.nodes for group in groups][0]]
     icpes = [node.icpe for node in nodes]
     sensors = [sensor.id for sensor in [icpe.sensors for icpe in icpes][0]]
 
@@ -26,10 +26,14 @@ def messages(user, limit = 10):
     icpes = [icpe.macaddr for icpe in icpes]
 
     return db.session.query(MessageModel).\
-            filter(or_(MessageModel.group.id == group.id,\
-                       MessageModel.node.name.in_(*[nodes]),\
-                       MessageModel.icpe.macaddr.in_(*[icpes]),\
-                       MessageModel.sensor.id.in_(*[sensors])\
+            join(MessageModel.group).\
+            join(MessageModel.node).\
+            join(MessageModel.icpe).\
+            join(MessageModel.sensor).\
+            filter(or_(GroupModel.id.in_(*[groups]),\
+                       NodeModel.name.in_(*[nodes]),\
+                       iCPEModel.macaddr.in_(*[icpes]),\
+                       SensorModel.id.in_(*[sensors])\
                       )).order_by(MessageModel.date.desc()).limit(int(limit)).all()
 
 def group_messages(group, limit = 10):

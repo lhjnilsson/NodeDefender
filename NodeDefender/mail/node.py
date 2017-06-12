@@ -1,6 +1,7 @@
 from ..models.manage import group as GroupSQL
 from ..models.manage import node as NodeSQL
-from .. import serializer, app, celery, mail
+from .. import serializer, app, celery
+from . import mail
 from flask_mail import Message
 from flask import render_template, url_for
 

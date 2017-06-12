@@ -3,7 +3,7 @@
 {% from "macros/info.html" import FieldID %}
 {% from "macros/role.html" import select_role %}
 {% from "macros/group.html" import SelectGroup %}
-<div class="modal fade" id="CreateUser" role="dialog">
+<div class="modal fade" id="CreateUserModal" role="dialog">
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
@@ -77,7 +77,7 @@ $(document).ready(function() {
 		var mail = $('#submitMail').text();
 		var role = $('#submitRole').text();
 		var group = $('#submitGroup').text();
-		adminSocket.emit('createUser', {'firstname' : firstname, 'lastname' : lastname, 'email' : mail, 'role' : role, 'group' : group});
+		userSocket.emit('create', {'firstname' : firstname, 'lastname' : lastname, 'email' : mail, 'role' : role, 'group' : group});
 		return true;
 	}
 	initMultistep(userInfo, userGroup, userSubmit);
