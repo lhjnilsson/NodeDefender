@@ -78,7 +78,7 @@ serializer = Serializer(app)
 logger.info('NodeDefender Succesfully started')
 
 # MQTT
-from . import conn
+import NodeDefender.conn
 
 # Frontend
 moment = Moment(app)
