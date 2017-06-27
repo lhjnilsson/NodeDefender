@@ -121,7 +121,7 @@ def Chart(*groups):
                 filter(HeatModel.date < to_date).all()
 
         if not heat_data:
-            return False
+            continue
         
         group_data = {}
         group_data['name'] = group.name

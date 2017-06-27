@@ -104,8 +104,7 @@ def Average(*groups):
 def Chart(*groups):    
     from_date = (datetime.now() - timedelta(days=30))
     to_date = datetime.now()
-    
-    groups = GroupModel.query.filter(GroupModel.name.in_(*[groups])).all()
+    groups = db.session.query(GroupModel).filter(GroupModel.name.in_([*groups])).all()
     if not len(groups):
         return False
 
@@ -121,7 +120,7 @@ def Chart(*groups):
                 filter(PowerModel.date < to_date).all()
 
         if not power_data:
-            return False
+            continue
         
         group_data = {}
         group_data['name'] = group.name
