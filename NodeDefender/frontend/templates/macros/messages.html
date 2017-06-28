@@ -22,6 +22,16 @@ dataSocket.on('messages', function(messages) {
 		message.setAttribute("href", "#");
 		message.setAttribute("class", "list-group-item");
 		
+		messageIcon = document.createElement("DIV");
+		messageIcon.setAttribute("class", "message-list-icon");
+		icon = document.createElement("I");
+		icon.setAttribute("class", messages[i].icon);
+
+		messageIcon.appendChild(icon);
+
+		messageText = document.createElement("DIV");
+		messageText.setAttribute("class", "message-list-text");
+
 		subject = document.createElement("H5");
 		subject.setAttribute("class", "mb-1");
 		subject.innerHTML = messages[i].subject;
@@ -33,9 +43,12 @@ dataSocket.on('messages', function(messages) {
 		body.setAttribute("class", "mb-1");
 		body.innerHTML = messages[i].body;
 		
-		message.appendChild(subject);
-		message.appendChild(created);
-		message.appendChild(body);
+		messageText.appendChild(subject);
+		messageText.appendChild(created);
+		messageText.appendChild(body);
+
+		message.appendChild(messageIcon);
+		message.appendChild(messageText);
 
 		messageList.appendChild(message);
 	}

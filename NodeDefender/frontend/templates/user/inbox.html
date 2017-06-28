@@ -14,20 +14,20 @@
     </div>
 </div>
 
-{% from "macros/messages.html" import MessageList %}
+{% from "macros/messages.html" import MessageList, emit_messages %}
 <div class="row">
 	<div class="col-lg-8 col-lg-offset-2">
 		<div class="panel panel-primary">
 			<div class="panel-heading">
 				Messages
 			</div>
-			<div class="panel-body">
+			<div class="panel-body" style="padding: 0;">
 				{{ MessageList() }}
 			</div>
 		</div>
 	</div>
 </div>	
-
+{{ emit_messages() }}
 
 
 {% endblock %}
