@@ -16,7 +16,8 @@ generalSocket.on('reload', function() {
 })
 
 generalSocket.on('redirect', function(url) {
-	location.href = url;
+	console.log("Forwarding to: ", url);
+	window.location.replace(url);
 });
 
 generalSocket.on('error', function(msg) {
