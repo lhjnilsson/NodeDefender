@@ -25,7 +25,7 @@ var socket = io.connect('http://' + document.domain + ':' + location.port + name
   </div>
 </div>
 {% include "flash.html" %}
-{% from "nodes/macros/info.html" import NodeInfo, iCPEInfo with context %}
+{% from "nodes/macros/info.html" import NodeInfo, iCPEInfo, AddiCPE with context %}
 {% from "macros/map.html" import Map %}
 <div class="row">
 	<div class="col-lg-6">
@@ -55,18 +55,22 @@ var socket = io.connect('http://' + document.domain + ':' + location.port + name
 	<div class="col-lg-3">
 		<div class="panel panel-primary">
 			<div class="panel-heading">
-				{{iCPE.name}}, {{iCPE.macaddr}}
+				iCPE Connections
 				<div class="floatRight" id="iCPEModals">
 				</div>
 			</div>
 			<div class="panel-body" style="height: 200px;">
+				{% if Node.icpe %}
 				{{ iCPEInfo(iCPE) }}
+				{% else %}
+				{{ AddiCPE(Node.icpe)}}
+				{% endif %}
 			</div>
 		</div>
 	</div>
 </div>
 {% from "nodes/macros/sensor.html" import SensorBox, SensorScripts %}
-{% if iCPE.sensors|length > 0 %}
+{% if Node.icpe.sensors|length > 0 %}
 {% for sensors in iCPE.sensors|batch(6) %}
 <div class="row">
 	{% for sensor in sensors %}
@@ -148,8 +152,9 @@ function iCPEModal(iCPE) {
 {% if current_user.has_role("technician") %}
 {{ ModifyLocation(Node.name) }}
 {% endif %}
-
-{{ SensorScripts(iCPE.sensors) }}
+{% if Node.icpe.sensors|length > 0 %}
+	{{ SensorScripts(iCPE.sensors) }}
+{% endif %}
 {{ iCPEModal() }}
 {{ SensorModal() }}
 {% endblock %}

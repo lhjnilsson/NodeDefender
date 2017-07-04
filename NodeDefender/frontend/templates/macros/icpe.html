@@ -1,17 +1,13 @@
 {% macro SelectiCPE(user) %}
-{% from "macros/form.html" import render_manual %}
 <br>
 <div class="form-group">
 	<label for="sell">Unassigned iCPEs: </label>
 	<select class="form-control" id="UnassignedList">
-		<option>Manual</option>
+		<option>None</option>
 	</select>
 </div>
 <form class="form-horizontal">
 	<div class="row">
-		<div id="manual" stlye="width: 97.5%;">
-			{{ render_manual('MAC', 'manualMAC') }}
-		</div>
 		<div id="unassigned">
 			<div class="col-md-6">
 				<p><strong>MAC</strong></p>
@@ -44,7 +40,7 @@
 $(document).ready(function() {
 	iCPESocket.emit('unassigned', {'user' : '{{user.email}}'});
 
-	iCPESocket.on('unassignedRsp', function(icpes) {
+	iCPESocket.on('unassigned', function(icpes) {
 		for (var i = 0; i < icpes.length; i++) {
 			$('#UnassignedList').append('<option>'+  icpes[i] + '</option>');
 		}
@@ -71,7 +67,6 @@ $(document).ready(function() {
 		}
 	});
 	$("#unassigned").hide();
-	$("#manual").show();
 });
 </script>
 {% endmacro %}

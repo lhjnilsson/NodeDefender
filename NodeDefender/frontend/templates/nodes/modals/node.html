@@ -162,9 +162,6 @@ $(document).ready(function() {
 					{{ SelectGroup(current_user) }}
 				</div>
 				<div class="multiform-step">
-					{{ SelectiCPE(current_user) }}
-				</div>
-				<div class="multiform-step">
 					<div class="row">
 						{{ FieldID('Name', 'None', 'SubmitName') }}
 						{{ FieldID('Street', 'None', 'SubmitStreet') }}
@@ -172,7 +169,6 @@ $(document).ready(function() {
 						{{ FieldID('Latitude', 'None', 'SubmitLatitude') }}
 						{{ FieldID('Longitude', 'None', 'SubmitLongitude') }}
 						{{ FieldID('Group', 'None', 'SubmitGroup') }}
-						{{ FieldID('iCPE', 'None', 'SubmitiCPE') }}
 					</div>
 				</div>
 			</div>
@@ -215,29 +211,16 @@ $(document).ready(function() {
 
 		return true;
 	}
-	var icpe = function() {
 
-		if ($('#manualMAC').val().length == 12) {
-			$('#SubmitiCPE').text($('#manualMAC').val());
-			return true;
-		}
-		
-		if ($('#icpemac').text() != 'None') {
-			$('#SubmitiCPE').text($('#icpemac').text());
-			return true;
-		}
-		toastr.error('Please enter correct iCPE');
-		return false;
-	}	
 	var submit = function() {
 		var macaddr = $('#SubmitiCPE').text();
 		var group = $('#SubmitGroup').text();
 		var node = $('#SubmitName').text();
 		var street = $('#SubmitStreet').text();
 		var city = $('#SubmitCity').text();
-		nodeSocket.emit('create', {'macaddr' : macaddr, 'group' : group, 'node' : node, 'street' : street, 'city' : city});
+		nodeSocket.emit('create', {'group' : group, 'node' : node, 'street' : street, 'city' : city});
 	}
-	initMultistep(basic, group, icpe, submit);
+	initMultistep(basic, group, submit);
 
 	nodeSocket.on('coordinates', function(coordinates) {
 		$('#SubmitLatitude').text(coordinates.latitude);

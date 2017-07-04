@@ -8,7 +8,7 @@ from itertools import groupby
 def Current(node):
     node = db.session.query(NodeModel).filter(NodeModel.name ==
                                                 node).first()
-    if node is None:
+    if node is None or not node.icpe or not node.icpe.sensors:
         return False
     
     ret_data = []
