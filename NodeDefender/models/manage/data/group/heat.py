@@ -16,6 +16,9 @@ def Current(group):
     group_data['name'] = group.name
     group_data['heat'] = 0.0
     for node in group.nodes:
+        if not node.icpe:
+            continue
+
         node_data = {}
         node_data['name'] = node.name
         
@@ -55,7 +58,7 @@ def Average(group):
     group_data['weekly'] = 0.0
     group_data['monthly'] = 0.0
     
-    icpes = [node.icpe.macaddr for node in group.nodes]
+    icpes = [node.icpe.macaddr for node in group.nodes if node.icpe]
     
     current_heat = db.session.query(HeatModel,\
                 label('sum', func.sum(HeatModel.average)),
@@ -127,7 +130,9 @@ def Chart(group):
     ret_data = []
     
     for node in group.nodes:
-        
+        if not node.icpe:
+            continue
+
         heat_data = db.session.query(HeatModel).\
                 join(HeatModel.icpe).\
                 filter(iCPEModel.macaddr == node.icpe.macaddr).\
@@ -135,7 +140,7 @@ def Chart(group):
                 filter(HeatModel.date < to_date).all()
 
         if not heat_data:
-            return False
+            continue
         
         node_data = {}
         node_data['name'] = node.name

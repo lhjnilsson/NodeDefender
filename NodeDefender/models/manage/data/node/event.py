@@ -8,7 +8,7 @@ def Average(node, time_ago = None):
         time_ago = (datetime.now() - timedelta(days=1))
 
     node = db.session.query(NodeModel).filter(NodeModel.name == node).first()
-    if node is None:
+    if node is None or not node.icpe or not node.icpe.sensors:
         return False
 
     total_events = db.session.query(EventModel).\

@@ -11,7 +11,7 @@ def Average(group, time_ago = None):
     if group is None:
         return False
 
-    icpes = [node.icpe.macaddr for node in group.nodes]
+    icpes = [node.icpe.macaddr for node in group.nodes if node.icpe]
 
     total_events = db.session.query(EventModel).\
             join(EventModel.icpe).\

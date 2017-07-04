@@ -96,16 +96,16 @@ plotlySocket.emit('groupPowerChart', {'name' : "{{group.name}}"});
 						</a>
 					</td>
 					<td>
-						<p id="{{node.name}}CurrentPower">0.0</p>	
+						<p id="{{trim(node.name)}}CurrentPower">0.0</p>	
 					</td>
 					<td>
-						<p id="{{node.name}}DailyPower">0.0</p>	
+						<p id="{{trim(node.name)}}DailyPower">0.0</p>	
 					</td>
 					<td>
-						<p id="{{node.name}}WeeklyPower">0.0</p>	
+						<p id="{{trim(node.name)}}WeeklyPower">0.0</p>	
 					</td>
 					<td>
-						<p id="{{node.name}}MonthlyPower">0.0</p>
+						<p id="{{trim(node.name)}}MonthlyPower">0.0</p>
 					</td>
 				</a>
 			{% endfor %}
@@ -116,10 +116,13 @@ plotlySocket.emit('groupPowerChart', {'name' : "{{group.name}}"});
 	<script>
 $(document).ready(function() {
 	dataSocket.on('nodePowerAverage', function(data) {
-		document.getElementById(data.name+"CurrentPower").innerHTML = parseFloat(data.current).toFixed(2);
-		document.getElementById(data.name+"DailyPower").innerHTML = parseFloat(data.daily).toFixed(2);
-		document.getElementById(data.name+"WeeklyPower").innerHTML = parseFloat(data.weekly).toFixed(2);
-		document.getElementById(data.name+"MonthlyPower").innerHTML = parseFloat(data.monthly).toFixed(2);
+		if (!data.name)
+			return false;
+		name = data.name.replace(/\s/g, '');
+		document.getElementById(name+"CurrentPower").innerHTML = parseFloat(data.current).toFixed(2);
+		document.getElementById(name+"DailyPower").innerHTML = parseFloat(data.daily).toFixed(2);
+		document.getElementById(name+"WeeklyPower").innerHTML = parseFloat(data.weekly).toFixed(2);
+		document.getElementById(name+"MonthlyPower").innerHTML = parseFloat(data.monthly).toFixed(2);
 	});
 	{% for node in group.nodes %}
 		dataSocket.emit('nodePowerAverage', {'name': "{{node.name}}"});

@@ -40,6 +40,11 @@ def inject_serializer():
         return serializer.dumps_salted(name)
     return dict(serialize = serialize, serialize_salted = serialize_salted)
 
+def trim_string(string):
+    return string.replace(" ", "")
+
+app.jinja_env.globals.update(trim=trim_string)
+
 @app.route('/')
 @app.route('/index')
 @login_required

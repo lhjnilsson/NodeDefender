@@ -14,7 +14,7 @@ def Current(*groups):
     for group in groups:
         group_data = {}
         group_data['name'] = group.name
-        icpes = [node.icpe.macaddr for node in group.nodes]
+        icpes = [node.icpe.macaddr for node in group.nodes if node.icpe]
         min_ago = (datetime.now() - timedelta(hours=0.5))
         latest_power =  db.session.query(PowerModel,\
                     label('sum', func.sum(PowerModel.average)),
@@ -44,7 +44,7 @@ def Average(*groups):
     for group in groups:
         group_data = {}
         group_data['name'] = group.name
-        icpes = [node.icpe.macaddr for node in group.nodes]
+        icpes = [node.icpe.macaddr for node in group.nodes if node.icpe]
         
         current_power = db.session.query(PowerModel,\
                     label('sum', func.sum(PowerModel.average)),
@@ -111,7 +111,7 @@ def Chart(*groups):
     ret_data = []
     
     for group in groups:
-        icpes = [node.icpe.macaddr for node in group.nodes]
+        icpes = [node.icpe.macaddr for node in group.nodes if node.icpe]
         
         power_data = db.session.query(PowerModel).\
                 join(PowerModel.icpe).\
