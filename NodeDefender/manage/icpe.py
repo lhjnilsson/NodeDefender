@@ -4,25 +4,6 @@ from ..models.manage import node, icpe
 manager = Manager(usage='Manage iCPE Devices')
 
 @manager.option('-m', '--mac', dest='mac', default=None)
-@manager.option('-n', '--node', dest='node', default=None)
-def create(mac, node):
-    'Create iCPE'
-    if mac is None:
-        mac = prompt('Mac')
-
-    if node is None:
-        node = prompt('Node')
-
-    try:
-        icpe.Create(mac, node)
-    except (LookupError, ValueError) as e:
-        print("Error: ", str(e))
-        return
-
-    print('iCPE {} Successfully Created'.format(mac))
-    return
-
-@manager.option('-m', '--mac', dest='mac', default=None)
 def delete(mac):
     'Remove iCPE'
     if mac is None:
@@ -33,40 +14,30 @@ def delete(mac):
     except LookupError as e:
         print("Error: ", str(e))
         return
-
     print("Successfully Deleted: ", mac)
-
-'''
-@manager.option('-mac', '--mac', dest='mac', default=None)
-def join(icpe, group):
-    'Let iCPE Join a Group'
-    if mac is None:
-        mac = prompt('Mac')
-    
-    if node is None:
-        node = prompt('Group')
-
-    icpe.Join(mac, group)
-
-@manager.option('-mac', '--mac', dest='mac', default=None)
-def leave(icpe, group):
-    'Let iCPE Leave a Group'
-    if mac is None:
-        mac = prompt('Mac')
-    
-    if node is None:
-        node = prompt('Group')
-
-    icpe.Leave(mac, group)
-'''
-
 
 @manager.command
 def list():
     'List iCPEs'
-    for i in icpe.List():
-        print("ID: {}, Name: {}, MAC: {}".format(i.id, i.name,
-                                                  i.macaddr))
+    icpes = icpe.List()
+    if not icpes:
+        print("No icpes")
+        return False
+
+    for i in icpes:
+        print("ID: {}, MAC: {}".format(i.id, i.macaddr))
+    return True
+
+@manager.command
+def unassigned():
+    icpes = icpe.Unassigned()
+    if not icpes:
+        print("No Unassigned iCPEs")
+        return False
+
+    for i in icpes:
+        print("ID: {}, MAC: {}".format(i.id, i.macaddr))
+    return True
 
 @manager.option('-mac', '--mac', dest='mac', default=None)
 def info(mac):
