@@ -68,10 +68,10 @@ plotlySocket.emit('sensorHeatChart', {'icpe' : "{{sensor.icpe.macaddr}}", 'senso
 	<script>
 $(document).ready(function() {
 	dataSocket.on('sensorHeatAverage', function(data) {
-		document.getElementById(data.icpe+data.sensor+"CurrentHeat").innerHTML = data.current;
-		document.getElementById(data.icpe+data.sensor+"DailyHeat").innerHTML = data.daily;
-		document.getElementById(data.icpe+data.sensor+"WeeklyHeat").innerHTML = data.weekly;
-		document.getElementById(data.icpe+data.sensor+"MonthlyHeat").innerHTML = data.monthly;
+		document.getElementById(data.icpe+data.sensor+"CurrentHeat").innerHTML = parsefloat(data.current).toFixed(1);
+		document.getElementById(data.icpe+data.sensor+"DailyHeat").innerHTML = parseFloat(data.daily).toFixed(1);
+		document.getElementById(data.icpe+data.sensor+"WeeklyHeat").innerHTML = parseFloat(data.weekly).toFixed(1);
+		document.getElementById(data.icpe+data.sensor+"MonthlyHeat").innerHTML = parseFloat(data.monthly).toFixed(1);
 	});
 	{% for sensor in node.icpe.sensors %}
 	{% if sensor.heat %}

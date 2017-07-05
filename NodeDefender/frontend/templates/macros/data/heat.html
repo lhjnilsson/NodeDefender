@@ -95,16 +95,16 @@ plotlySocket.emit('heatChart', {'user' : "{{current_user.email}}"});
 						</a>
 					</td>
 					<td>
-						<p id="{{group.name}}CurrentHeat">0.0</p>	
+						<p id="{{trim(group.name)}}CurrentHeat">0.0</p>	
 					</td>
 					<td>
-						<p id="{{group.name}}DailyHeat">0.0</p>	
+						<p id="{{trim(group.name)}}DailyHeat">0.0</p>	
 					</td>
 					<td>
-						<p id="{{group.name}}WeeklyHeat">0.0</p>	
+						<p id="{{trim(group.name)}}WeeklyHeat">0.0</p>	
 					</td>
 					<td>
-						<p id="{{group.name}}MonthlyHeat">0.0</p>
+						<p id="{{trim(group.name)}}MonthlyHeat">0.0</p>
 					</td>
 				</a>
 			{% endfor %}
@@ -116,10 +116,13 @@ plotlySocket.emit('heatChart', {'user' : "{{current_user.email}}"});
 $(document).ready(function() {
 	dataSocket.on('groupHeatAverage', function(data) {
 		if (data) {
-			document.getElementById(data.name+"CurrentHeat").innerHTML = data.current;
-			document.getElementById(data.name+"DailyHeat").innerHTML = data.daily;
-			document.getElementById(data.name+"WeeklyHeat").innerHTML = data.weekly;
-			document.getElementById(data.name+"MonthlyHeat").innerHTML = data.monthly;
+			if (!data.name)
+				return false;
+			name = data.name.replace(/\s/g, '');
+			document.getElementById(name+"CurrentHeat").innerHTML = parseFloat(data.current).toFixed(1);
+			document.getElementById(name+"DailyHeat").innerHTML = parseFloat(data.daily).toFixed(1);
+			document.getElementById(name+"WeeklyHeat").innerHTML = parseFloat(data.weekly).toFixed(1);
+			document.getElementById(name+"MonthlyHeat").innerHTML = parseFloat(data.monthly).toFixed(1);
 		}
 	});
 	{% for group in groups %}

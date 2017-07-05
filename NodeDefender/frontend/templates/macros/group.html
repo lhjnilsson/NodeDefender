@@ -144,7 +144,6 @@ $(document).ready(function() {
 
 	var addToGroup = function() {
 		groupname = $('#Groupname').text();
-		console.log('addtogroooup');
 		groupSocket.emit('addUser', {'user' : '{{user.email}}', 'group' : groupname});
 	}
 

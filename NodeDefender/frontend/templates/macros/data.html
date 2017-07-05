@@ -17,12 +17,13 @@ groupSocket.on('list', function(groups) {
 function groupLooper() {
 	if (groupsArray.length < 2)
 		return;
+	if ((groupsIndex + 1) > groupsArray.length)
+		groupsIndex = 0;
+
 	dataSocket.emit('groupHeatAverage', groupsArray[groupsIndex]);
 	dataSocket.emit('groupPowerAverage', groupsArray[groupsIndex]);
 	dataSocket.emit('groupEventsAverage', groupsArray[groupsIndex]);
 	groupsIndex++;
-	if (groupsIndex > groupsArray.length)
-		groupsIndex = 0;
 };
 </script>
 {% endmacro %}

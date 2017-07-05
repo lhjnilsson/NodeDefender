@@ -1,4 +1,5 @@
-from .. import LoginMan, app, celery, serializer, mail
+from .. import LoginMan, app, celery, serializer
+from . import mail
 from ..models.manage import user as UserSQL
 from ..models.SQL import UserModel
 from flask_mail import Message
@@ -6,7 +7,7 @@ from flask import render_template, url_for
 
 
 @celery.task
-def create_user(user):
+def new_user(user):
     if type(user) == str:
         user = UserSQL.Get(user)
 

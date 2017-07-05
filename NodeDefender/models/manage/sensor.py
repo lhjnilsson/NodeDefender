@@ -2,6 +2,7 @@ from ..SQL import iCPEModel, SensorModel, CommandClassModel
 from ... import db
 from . import logger
 from ..manage import message
+import NodeDefender.models.redis
 
 def Create(icpe, sensorid, sensorinfo):
     if type(icpe) is str:
@@ -33,6 +34,7 @@ def Delete(sensor, icpe = None):
 def Save(sensor):
     db.session.add(sensor)
     db.session.commit()
+    sensor.redis.Load(sensor)
     return sensor
 
 def List(icpe = None):

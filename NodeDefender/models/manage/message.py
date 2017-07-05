@@ -16,21 +16,23 @@ def messages(user, limit = 10):
                 order_by(MessageModel.date.desc()).limit(int(limit)).all()
     
     groups = [group for group in user.groups]
-    nodes = [node for node in [group.node for group in groups]]
+    nodes = [node for node in [group.nodes for group in groups][0]]
     icpes = [node.icpe for node in nodes]
-    sensors = [sensor.id for sensor in [icpe.sensors for icpe in icpes][0]]
 
     # Revert from list of models to a list of string
     groups = [group.name for group in groups]
     nodes = [node.name for node in nodes]
     icpes = [icpe.macaddr for icpe in icpes]
 
-    return db.session.query(MessageModel).\
-            filter(or_(MessageModel.group.id == group.id,\
-                       MessageModel.node.name.in_(*[nodes]),\
-                       MessageModel.icpe.macaddr.in_(*[icpes]),\
-                       MessageModel.sensor.id.in_(*[sensors])\
-                      )).order_by(MessageModel.date.desc()).limit(int(limit)).all()
+    gq = db.session.query(MessageModel).join(MessageModel.group).\
+            filter(GroupModel.name.in_(groups))
+    nq = db.session.query(MessageModel).join(MessageModel.node).\
+            filter(NodeModel.name.in_(nodes))
+    iq = db.session.query(MessageModel).join(MessageModel.icpe).\
+            filter(iCPEModel.macaddr.in_(icpes))
+
+    return gq.union(nq).union(iq).order_by(MessageModel.date.desc()).\
+            limit(int(limit)).all()
 
 def group_messages(group, limit = 10):
     if type(group) is str:
