@@ -27,26 +27,31 @@ class MessageModel(db.Model):
     def to_json(self):
         if self.group:
             group = self.group.name
+            icon = 'fa fa-users fa-3x'
         else:
             group = False
         
         if self.user:
             user = self.user.email
+            icon = 'fa fa-user fa-3x'
         else:
             user = False
 
         if self.node:
             node = self.node.name
+            icon = 'fa fa-map-marker fa-3x'
         else:
             node = False
 
         if self.icpe:
             icpe = self.icpe.name
+            icon = 'fa fa-bug fa-3x'
         else:
             icpe = False
 
         if self.sensor:
             sensor = self.sensor.name
+            icon = 'fa fa-bug fa-3x'
         else:
             sensor = False
 
@@ -54,4 +59,5 @@ class MessageModel(db.Model):
                 'node' : node, 'icpe' : icpe, 'sensor' : sensor,\
                 'subject' : self.subject,
                 'body' : self.body,
-                'date' : str(self.date)}
+                'date' : str(self.date),
+                'icon' : icon}

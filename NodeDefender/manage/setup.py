@@ -4,12 +4,31 @@ from ..config import basepath
 
 manager = Manager(usage="Setup NodeDefender Configuration")
 
+def get_chunks(message):
+    return [ message[i:i+38] for i in range(0, len(message), 38)]
+
+def print_message(message):
+    print("#")
+    if len(message) > 38:
+        for chunk in get_chunks(message):
+            print("#" +  chunk.center(38))
+    else:
+        print("#" + message.center(38))
+    print("#")
+    return True
+
+def print_topic(topic):
+    print("****************************************")
+    print("*" + topic.center(38) + "*")
+    print("****************************************")
+    return True
+
 @manager.command
 def database():
-    print('\nSetting up Database..\n')
+    print_topic('Database')
     engine = ""
     while not engine:
-        engine = prompt("Enter DB Engine(SQLITE, MYSQL, PosgreSQL):").lower()
+        engine = prompt("Enter DB Engine(SQLITE, MySQL)").lower()
         if engine == 'sqlite':
             server = 'Not Used'
             port = 'Not Used'
@@ -36,22 +55,22 @@ def database():
             engine = ''
 
     while not server:
-        server = prompt('\nEnter Server Address')
+        server = prompt('Enter Server Address')
 
     while not port:
-        port = prompt('\nEnter Server Port')
+        port = prompt('Enter Server Port')
 
     while not username:
-        username = prompt('\nEnter Username')
+        username = prompt('Enter Username')
 
     while not password:
-        password = prompt('\nEnter Password')
+        password = prompt('Enter Password')
 
     while not db:
-        db = prompt("\nEnter DB Name/Number")
+        db = prompt("Enter DB Name/Number")
 
     while not filepath:
-        print("\nFilePath for SQLite Database, Enter leading slash(/) for\
+        print("FilePath for SQLite Database, Enter leading slash(/) for\
               absolute- path. Otherwise relative to your current folder.")
         filepath = prompt("Enter File Path")
     
@@ -60,7 +79,7 @@ def database():
     else:
         filepath = basepath + '/' + filepath
 
-    print("\nStoring database- settings...")
+    print("Storing database- settings...")
     config.database.set_cfg(**{'ENABLED' : True,
          'ENGINE' : engine,
          'SERVER' : server,
@@ -69,12 +88,12 @@ def database():
          'PASSWORD' : password,
          'DB' : db,
          'FILE_PATH' : filepath})
-    print("\nDatabase- settings stored successful!\n")
+    print("Database- settings stored successful!")
     return True
 
 @manager.command
 def celery():
-    print("\nSetting up Celery. Used for Currentent and required to have\n")
+    print_topic("Celery")
     broker = ''
     while not broker:
         broker = prompt("Enter Broker type(AMQP or Redis)")
@@ -88,28 +107,28 @@ def celery():
 
     server = ''
     while not server:
-        server = prompt("\nEnter Server Address")
+        server = prompt("Enter Server Address")
 
     port = ''
     while not port:
-        port = prompt("\nEnter Server Port:")
+        port = prompt("Enter Server Port")
 
     database = ''
     while not database:
-        database = prompt("\nEnter Database:")
+        database = prompt("Enter Database")
 
-    print("\nStoring celery- settings..\n")
+    print("Storing celery- settings..")
     config.celery.set_cfg(**{'ENABLED' : True,
          'BROKER' : broker,
          'SERVER' : server,
          'PORT' : port,
          'DATABASE' : database})
-    print("\nCelery- settings stored successful!\n")
+    print("Celery- settings stored successful!")
     return True
 
 @manager.command
 def general():
-    print("Setting up General configuration.\n")
+    print_topic("General configuration")
     print("Server Name. If you are using a local running server please enter\
           as format NAME:PORT, e.g. 127.0.0.1:5000. Otherwise it will be\
           generating non- accessable URLs")
@@ -119,30 +138,30 @@ def general():
 
     port = ""
     while not port:
-        port = prompt("\nWhich port should the server be running on:")
+        port = prompt("Which port should the server be running on")
     
-    print("\n\nSecurity Key is used to Encrypt Password etc.")
+    print("Security Key is used to Encrypt Password etc.")
     key = ""
     while not key:
         key = prompt("Enter Secret Key")
 
-    print("\nSalt is used to genereate URLS and more.")
+    print("Salt is used to genereate URLS and more.")
     salt = ""
 
     while not salt:
         salt = prompt("Please enter Salt")
 
-    print("\nStoring general- settings..\n")
+    print("Storing general- settings..")
     config.general.set_cfg(**{'KEY' : key,
                                 'SALT' : salt,
                                 'SERVERNAME' : servername,
                                 'PORT' : port})
-    print("\nSuccessfully stored General Settings!\n")
+    print("Successfully stored General Settings!")
     return True
 
 @manager.command
 def logging():
-    print("\nLogging used to get run-time information\n")
+    print_topic("Logging")
     loggtype = ""
     while not loggtype:
         loggtype = prompt("Enter Logging Type(Syslog/Local)").lower()
@@ -182,20 +201,19 @@ def logging():
     while not port:
         port = prompt('Enter Syslog Port')
 
-    print("\nStoring Logging- settings..\n")
+    print("Storing Logging- settings..")
     config.logging.set_cfg(**{'ENABLED' : True,
          'TYPE' : loggtype,
          'NAME' : filepath,
          'SERVER' : server,
          'PORT' : port})
-    print("\nSuccessfully stored logging settings\n");
+    print("Successfully stored logging settings");
     return True
  
 
 @manager.command
 def mail():
-    print("Setting up Mail configuration. Mail is used to add new users, \
-          send notfications to groups and users and more..")
+    print_topic("Mail")
     server = ''
     while not server:
         server = prompt("Enter Server Address")
@@ -232,7 +250,7 @@ def mail():
     while not password:
         password = prompt('Password')
 
-    print("\nSetting mail- configuration\n")
+    print("Saving mail- configuration")
     config.mail.set_cfg(**{'ENABLED' : True,
          'SERVER' : server,
          'PORT' : port,
@@ -240,7 +258,7 @@ def mail():
          'SSL' : ssl,
          'username' : username,
          'password' : password})
-    print("\nSuccessfully stored Mail- configuration\n")
+    print("Successfully stored Mail- configuration")
     return True
 
 @manager.command
@@ -250,3 +268,7 @@ def all():
     mail()
     logging()
     celery()
+    print_topic("Configuration Successfully stored!")
+    print("Dont forget to migrate and upgrade the database before running")
+    print("./manage.py db migrate")
+    print("./manage.py db upgrade")

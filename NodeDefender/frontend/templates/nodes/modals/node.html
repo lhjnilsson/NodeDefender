@@ -1,5 +1,6 @@
 {% macro NodeInformation(node) %}
 {% from "macros/info.html" import Field %}
+{% from "macros/form.html" import render_manual %}
 <div class="modal fade" id="nodeInfo" role="dialog">
 	<div class="modal-dialog">
 		<div class="modal-content">
@@ -32,14 +33,30 @@
 				<h2 class="modal-title">{{node.name}}</h2>
 			</div>
 			<div class="modal-body">
+				<div class="row">
+					{{ render_manual("Name", "modifyNodeName") }}
+				</div>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				<button type="button" class="btn btn-success" id="submitNodeModify">Update</button>
 			</div>
 		</div>
 	</div>
 </div>
+	<script>
+nodeName = "{{Node.name}}";
+$(document).ready(function() {
+	document.getElementById('modifyNodeName').value = "{{Node.name}}";
+	document.getElementById('submitNodeModify').addEventListener("click", function() {
+		newName = document.getElementById('modifyNodeName').value;
+		nodeSocket.emit('updateGeneral', {'node' : nodeName, 'newName' : newName});
+	});
+});
+
+	</script>
 {% endmacro %}
+
 {% macro ModalGrouplist(grouplist) %}
 {% from "macros/group.html" import ListGroups with context %}
 <div class="modal fade" id="groupList" role="dialog">
@@ -120,24 +137,6 @@ $(document).ready(function() {
 });
 </script>
 {% endmacro %}
-{% macro ModifyGeneral(node) %}
-<div class="modal fade" id="modifyGeneral" role="dialog">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal">&times;</button>
-				<h2 class="modal-title">Modify General Information</h2>
-			</div>
-			<div class="modal-body">
-			
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-			</div>
-		</div>
-	</div>
-</div>
-{% endmacro %}
 {% macro CreateNode() %}
 {% from "macros/form.html" import render_manual %}
 {% from "macros/group.html" import SelectGroup %}
@@ -163,9 +162,6 @@ $(document).ready(function() {
 					{{ SelectGroup(current_user) }}
 				</div>
 				<div class="multiform-step">
-					{{ SelectiCPE(current_user) }}
-				</div>
-				<div class="multiform-step">
 					<div class="row">
 						{{ FieldID('Name', 'None', 'SubmitName') }}
 						{{ FieldID('Street', 'None', 'SubmitStreet') }}
@@ -173,7 +169,6 @@ $(document).ready(function() {
 						{{ FieldID('Latitude', 'None', 'SubmitLatitude') }}
 						{{ FieldID('Longitude', 'None', 'SubmitLongitude') }}
 						{{ FieldID('Group', 'None', 'SubmitGroup') }}
-						{{ FieldID('iCPE', 'None', 'SubmitiCPE') }}
 					</div>
 				</div>
 			</div>
@@ -216,29 +211,16 @@ $(document).ready(function() {
 
 		return true;
 	}
-	var icpe = function() {
 
-		if ($('#manualMAC').val().length == 12) {
-			$('#SubmitiCPE').text($('#manualMAC').val());
-			return true;
-		}
-		
-		if ($('#icpemac').text() != 'None') {
-			$('#SubmitiCPE').text($('#icpemac').text());
-			return true;
-		}
-		toastr.error('Please enter correct iCPE');
-		return false;
-	}	
 	var submit = function() {
 		var macaddr = $('#SubmitiCPE').text();
 		var group = $('#SubmitGroup').text();
 		var node = $('#SubmitName').text();
 		var street = $('#SubmitStreet').text();
 		var city = $('#SubmitCity').text();
-		nodeSocket.emit('create', {'macaddr' : macaddr, 'group' : group, 'node' : node, 'street' : street, 'city' : city});
+		nodeSocket.emit('create', {'group' : group, 'node' : node, 'street' : street, 'city' : city});
 	}
-	initMultistep(basic, group, icpe, submit);
+	initMultistep(basic, group, submit);
 
 	nodeSocket.on('coordinates', function(coordinates) {
 		$('#SubmitLatitude').text(coordinates.latitude);

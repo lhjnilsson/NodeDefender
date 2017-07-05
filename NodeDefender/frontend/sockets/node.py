@@ -28,8 +28,9 @@ from ... import socketio
 from ...models.manage import node as NodeSQL
 from ...models.manage import icpe as iCPESQL
 from ...mail import node as NodeMail
-from flask import jsonify
+from flask import jsonify, url_for
 from geopy.geocoders import Nominatim
+from ... import serializer
 
 @socketio.on('nodes', namespace='/node')
 def icpeevent(msg):
@@ -40,6 +41,15 @@ def icpeevent(msg):
 def Location(msg):
     node = NodeSQL.Get(name = msg['node'])
     return emit('location', (node.location.to_json()))
+
+@socketio.on('updateGeneral', namespace='/node')
+def update_general(msg):
+    node = NodeSQL.Get(name = msg['node'])
+    node.name = msg['newName']
+    NodeSQL.Save(node)
+    url = url_for('NodeView.NodesNode', name = serializer.dumps(node.name))
+    emit('redirect', (url), namespace='/general')
+    return True
 
 @socketio.on('updateLocation', namespace='/node')
 def UpdateLocation(msg):
@@ -73,11 +83,6 @@ def Create(msg):
     location = NodeSQL.Location(msg['street'], msg['city'])
     node = NodeSQL.Create(msg['node'], location)
     NodeSQL.Join(node.name, msg['group'])
-    try:
-        iCPESQL.Join(msg['macaddr'], node.name)
-    except LookupError:
-        iCPESQL.Create(msg['macaddr'])
-        iCPESQL.Join(msg['macaddr'], node.name)
     NodeMail.new_node.delay(msg['group'], msg['node'])
     emit('reload', namespace='/general')
     return True

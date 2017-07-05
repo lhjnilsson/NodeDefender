@@ -36,7 +36,7 @@ def List(msg):
 @socketio.on('unassigned', namespace='/icpe')
 def Unassigned(msg):
     icpes = [icpe.macaddr for icpe in iCPESQL.Unassigned(**msg)]
-    emit('unassignedRsp', (icpes), namespace='/icpe')
+    emit('unassigned', (icpes), namespace='/icpe')
     return True
 
 

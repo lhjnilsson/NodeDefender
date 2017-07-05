@@ -322,3 +322,13 @@ input:checked + .slider:before {
 	-o-filter: blur(3px);
 	filter: blur(3px);
 }
+
+.message-list-icon {
+	width: 10%;
+	display: inline-block;
+	text-align: center;
+}
+.message-list-text {
+	width: 80%;
+	display: inline-block;
+}
