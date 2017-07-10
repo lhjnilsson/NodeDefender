@@ -13,7 +13,7 @@
 				<p><strong>MAC</strong></p>
 			</div>
 			<div class="col-md-6">
-				<p id="icpemac">None</p>
+				<p id="addicpemac">None</p>
 			</div>
 			<div class="col-md-6">
 				<p><strong>Sensors</strong></p>
@@ -47,7 +47,7 @@ $(document).ready(function() {
 	});
 	
 	iCPESocket.on('info', function(icpe) {
-		$('#icpemac').text(icpe.macAddress);
+		$('#addicpemac').text(icpe.macAddress);
 		$('#icpesensors').text(icpe.sensors);
 		$('#icpecreated').text(icpe.createdAt);
 		$('#icpemqtt').text(icpe.mqttConnection);

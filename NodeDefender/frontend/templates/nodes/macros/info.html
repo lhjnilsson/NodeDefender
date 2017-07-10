@@ -121,7 +121,7 @@ $(document).ready(function() {
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-success">Add iCPE</button>
+				<button type="button" class="btn btn-success" id="AddiCPEButton">Add iCPE</button>
 				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 			</div>
 		</div>
@@ -129,9 +129,11 @@ $(document).ready(function() {
 </div>
 	<script>
 $(document).ready(function() {
+	node = "{{Node.name}}"
 	function addiCPE() {
 		if ($('addiCPEMac').text() != 'None') {
-			nodeSocket.emit('addiCPE', $('addiCPEMac').text());
+			console.log($('#addicpemac').text());
+			nodeSocket.emit('addiCPE', node, $('#addicpemac').text());
 			return true;
 		} else {
 		 toastr.error("Please choose iCPE");
