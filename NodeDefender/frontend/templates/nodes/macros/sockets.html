@@ -1,6 +1,6 @@
 {% macro EventListener(macaddr) %}
 <script>
-var eventSocket = io.connect('http://' + document.domain + ':' + location.port + '/icpe' + '{{macaddr}}');
+var eventSocket = io.connect('//' + document.domain + ':' + location.port + '/icpe' + '{{macaddr}}');
 
 function switchChange(box, macaddr, sensorid, commandclass, classtype) {
 	if (box.checked) {

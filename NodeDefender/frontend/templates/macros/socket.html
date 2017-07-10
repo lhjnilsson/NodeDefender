@@ -1,6 +1,0 @@
-{% macro CreateSocket(name, namespace) %}
-<script>
-namespace = '/{{namespace}}';
-var {{name}} = io.connect('http://' + document.domain + ':' + location.port + namespace);
-</script>
-{% endmacro %}
