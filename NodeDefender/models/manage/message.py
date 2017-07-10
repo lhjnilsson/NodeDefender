@@ -17,7 +17,7 @@ def messages(user, limit = 10):
     
     groups = [group for group in user.groups]
     nodes = [node for node in [group.nodes for group in groups][0]]
-    icpes = [node.icpe for node in nodes]
+    icpes = [node.icpe for node in nodes if node.icpe]
 
     # Revert from list of models to a list of string
     groups = [group.name for group in groups]
@@ -43,7 +43,7 @@ def group_messages(group, limit = 10):
     return group.messages
 
     nodes = [node for node in group.nodes]
-    icpes = [node.icpe for node in nodes]
+    icpes = [node.icpe for node in nodes if node.icpe]
     sensors = [sensor.id for sensor in [icpe.sensors for icpe in icpes][0]]
 
     # Revert from list for models to a list for strings

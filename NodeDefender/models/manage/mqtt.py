@@ -1,5 +1,5 @@
 from ... import db
-from ..SQL import MQTTModel
+from ..SQL import MQTTModel, GroupModel
 from . import logger
 
 def Create(host, port, username = None, password = None):
@@ -59,8 +59,13 @@ def Query(host, mac):
     pass
 
 
-def List():
-    return [mqtt for mqtt in MQTTModel.query.all()]
+def List(current_user = None):
+    if current_user is None or current_user.superuser:
+        return [mqtt for mqtt in MQTTModel.query.all()]
+    else:
+        groups = [group.name for group in current_user.groups]
+        return db.session.query(MQTTModel).join(MQTTModel.groups).\
+                filter(GroupModel.name.in_(groups)).all()
 
 def iCPE(macaddr):
     pass
