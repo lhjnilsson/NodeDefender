@@ -37,6 +37,22 @@ def icpeevent(msg):
     emit('nodes', ([node.to_json() for node in NodeSQL.List(msg)]))
     return True
 
+@socketio.on('addiCPE', namespace='/node')
+def icpeevent(node, macaddr):
+    print(node, macaddr)
+    node = NodeSQL.Get(node)
+    if not node:
+        emit('error', 'Node not found', namespace='/general')
+        return False
+    icpe = iCPESQL.Get(macaddr)
+    if not icpe:
+        emit('error', 'iCPE not found', namespace='/general')
+        return False
+    node.icpe = icpe
+    NodeSQL.Save(node)
+    emit('reload', namespace='/general')
+    return True
+
 @socketio.on('location', namespace='/node')
 def Location(msg):
     node = NodeSQL.Get(name = msg['node'])
