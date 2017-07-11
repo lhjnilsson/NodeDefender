@@ -14,7 +14,7 @@ from ...security import group_required
 @login_required
 def AdminServer():
     General = GeneralForm()
-    MQTTList = MQTTSQL.List()
+    MQTTList = MQTTSQL.List(current_user)
     MQTT = CreateMQTTForm()
     if request.method == 'GET':
         return render_template('admin/server.html', GeneralForm = General,
