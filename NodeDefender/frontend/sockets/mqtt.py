@@ -10,6 +10,14 @@ from ...conn.mqtt import Load as LoadMQTT
 
 @socketio.on('create', namespace='/mqtt')
 def create_mqtt(msg):
+    mqtt = MQTTSQL.Get(msg['address'], msg['port'])
+    if mqtt:
+        mqtt.groups.append(GroupSQL.Get(msg['group']))
+        MQTTSQL.Save(mqtt)
+        GroupMail.new_mqtt.delay(msg['group'], mqtt.host, mqtt.port)
+        emit('reload', namespace='/general')
+        return True
+
     mqtt = MQTTSQL.Create(msg['address'], msg['port'])
     if len(msg['username']):
         mqtt.username = msg['username']

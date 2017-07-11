@@ -62,7 +62,7 @@ def Friends(user):
         return List()
 
     groupnames = [g.name for g in user.groups] 
-    return UserModel.query.filter(UserModel.group.any(GroupModel.name.in_(groupnames)))
+    return UserModel.query.filter(UserModel.groups.any(GroupModel.name.in_(groupnames)))
 
 def Groups(user):
     if type(user) is str:

@@ -99,4 +99,5 @@ def delete_user(user):
     except LookupError:
         emit('error')
         return
+    url = url_for('AdminView.AdminUsers')
     emit('redirect', (url), namespace='/general')
