@@ -71,7 +71,7 @@ $(document).ready(function() {
 		var password = $('#SubmitPassword').text();
 
 		var group = $('#SubmitGroup').text();
-		adminSocket.emit('createMQTT', {'address' : address, 'port' : port, 'username' : username, 'password' : password, 'group' : group});
+		mqttSocket.emit('create', {'address' : address, 'port' : port, 'username' : username, 'password' : password, 'group' : group});
 	}
 	initMultistep(basic, group, submit);
 });

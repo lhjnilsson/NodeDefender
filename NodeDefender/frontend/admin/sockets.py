@@ -8,32 +8,6 @@ from ...mail import group as GroupMail
 from ...mail import user as UserMail
 from ...conn.mqtt import Load as LoadMQTT
 
-@socketio.on('createMQTT', namespace='/admin')
-def create_mqtt(msg):
-    mqtt = MQTTSQL.Create(msg['address'], msg['port'])
-    if len(msg['username']):
-        mqtt.username = msg['username']
-        mqtt.password = msg['password']
-    group = GroupSQL.Get(msg['group'])
-    mqtt.groups.append(group)
-    MQTTSQL.Save(mqtt)
-    GroupMail.new_mqtt.delay(group.name, mqtt.host, mqtt.port)
-    LoadMQTT([mqtt])
-    emit('reload', namespace='/general')
-    return True
-
-@socketio.on('mqttInfo', namespace='/admin')
-def mqtt_info(msg):
-    mqtt = MQTTSQL.Get(**msg)
-    emit('mqttInfo', mqtt.to_json())
-    return True
-
-@socketio.on('addToGroup', namespace='/adminusers')
-def AddToGroup(msg):
-    UserSQL.Join(msg['user'], msg['group'])
-    emit('Reload')
-    return True
-
 @socketio.on('generalInfo', namespace='/admin')
 def general_info():
     info = {'hostname' : settings.hostname, 'release' : settings.release,
