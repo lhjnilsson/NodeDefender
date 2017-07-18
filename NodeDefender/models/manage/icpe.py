@@ -4,6 +4,92 @@ from . import logger
 from redlock import RedLock
 from ..manage import message
 
+def get_sql(macaddr):
+    return iCPEModel.query.filter_by(macaddr = macaddr).first()
+
+def get_redis(macaddr):
+    return conn.hgetall(macaddr)
+
+def update_sql(macaddr, **kwargs):
+    icpe = get_sql(macaddr)
+    if icpe is None:
+        return False
+
+    for key, value in kwargs:
+        if key not in icpe.columns():
+            continue
+        setattr(icpe, key, value)
+
+    db.session.save(icpe)
+    db.session.comit()
+    return icpe
+
+def update_redis(macaddr, **kwargs):
+    icpe = get_redis(macaddr)
+    if not len(icpe) and not load_redis(macaddr):
+        return False
+
+    for key, value in kwargs:
+        icpe[key] = value
+
+    return conn.hmset(macaddr, icpe)
+
+def load_redis(macaddr):
+    icpe = get_sql(macaddr)
+    if icpe is None:
+        return False
+    model = {'name' : icpe.name,
+             'macaddr' : icpe.macaddr,
+             'ipaddr' : icpe.network.ipaddr,
+             'online' : False,
+             'battery' : None,
+             'loaded_at' : str(datetime.now()),
+             'last_onlnie' : False}
+    conn.hmset(macaddr, model)
+    con.sadd(macaddr + ':sensors', [sensor.sensorid for sensor in
+                                    icpe.sensors])
+    return get_redis(macaddr)
+
+def delete_sql(macaddr):
+    icpe = get_sql(macaddr)
+    db.session.delete(icpe)
+    return db.session.commit()
+
+def delete_redis(macaddr):
+    conn.delete(macaddr)
+
+def get(macaddr):
+    icpe = get_redis(macaddr)
+    if len(icpe):
+        return icpe
+    if load_redis(macaddr):
+        return get_redis(macaddr)
+    return False
+
+def list(node):
+    nodes = db.session.query(iCPEModel).join(iCPEModel.node).\
+            filter(NodeModel.name == node).all()
+    return [node.name for node in nodes]
+
+def sensors(macaddr):
+    sensors = conn.smembers(macaddr + ":sensors")
+    if len(sensors):
+        return sensors
+    if load_redis(macaddr):
+        return conn.smembers(macaddr + ":sensors")
+    return False
+
+def state(macaddr, state):
+    icpe = get(macaddr)
+    if not icpe:
+        return False
+    icpe['state'] = state
+    websocket.icpe.state(macaddr, state)
+    update_redis(icpe)
+    return True
+
+#####---###
+
 def List():
     return [icpe for icpe in iCPEModel.query.all()]
 

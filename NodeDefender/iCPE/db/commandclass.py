@@ -40,15 +40,7 @@ def Update(commandclass):
     if classinfo.types:
         mqtt.sensor.Sup(commandclass.sensor.icpe.macaddr,
                         commandclass.sensor.sensorid, commandclass.name)
-
-    for field in classinfo.fields:
-        if not len(field):
-            continue
-        FieldRedis.Load(commandclass.sensor.icpe.macaddr,\
-                                     commandclass.sensor.sensorid,\
-                                     classinfo.name,\
-                                     **field)
-
+    
 @ParsePayload
 def Add(topic, payload, mqttsrc = None):
     try:
@@ -69,14 +61,6 @@ def Add(topic, payload, mqttsrc = None):
         cc.name = classinfo.name
         cc.supported = True
         CommandclassSQL.Save(cc)
-        if not classinfo.fields:
-            continue
-
-        for field in classinfo.fields:
-            if not len(field):
-                continue
-            FieldRedis.Load(FieldSQL.Add(topic.macaddr, topic.sensorid,\
-                                     classinfo.name, **field))
         CommandclassRedis.Load(topic.macaddr, topic.sensorid, classinfo.name)
 
     FieldDB.Load(topic.sensorid)
