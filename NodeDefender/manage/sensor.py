@@ -1,5 +1,5 @@
 from flask_script import Manager, prompt
-from ..models.manage import sensor
+import NodeDefender.db
 
 manager = Manager(usage='Manage Sensors')
 

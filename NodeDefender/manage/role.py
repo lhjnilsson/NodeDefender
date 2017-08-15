@@ -1,6 +1,5 @@
-from .. import db
-from ..models.manage import role
 from flask_script import Manager, prompt
+import NodeDefender.db
 
 manager = Manager(usage="Administrate Roles")
 

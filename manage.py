@@ -1,6 +1,7 @@
 #!./py/bin/python
 from flask_script import Manager, Command
-from NodeDefender import app, db
+from NodeDefender import app
+from NodeDefender.db.sql import SQL
 from flask_migrate import Migrate, MigrateCommand
 from NodeDefender.manage.user import manager as UserManager
 from NodeDefender.manage.role import manager as RoleManager
@@ -22,7 +23,7 @@ manager.add_command('sensor', SensorManager)
 manager.add_command('mqtt', MQTTManager)
 manager.add_command('setup', SetupManager)
 
-migrate = Migrate(app, db)
+migrate = Migrate(app, SQL)
 manager.add_command('db', MigrateCommand)
 
 if __name__ == '__main__':

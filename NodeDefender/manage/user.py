@@ -1,7 +1,5 @@
-from .. import app, db
-from flask_script import Command, prompt, prompt_pass
-from ..models.manage import user
-from flask_script import Manager
+from flask_script import Manager, Command, prompt, prompt_pass
+import NodeDefender.db
 
 manager = Manager(usage="Preform User- operations in SQL Database")
 

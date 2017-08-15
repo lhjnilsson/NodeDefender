@@ -1,14 +1,14 @@
 import logging
 from flask import Flask
-from celery import Celery
 from flask_moment import Moment
+from celery import Celery
 from itsdangerous import URLSafeSerializer
 from flask_wtf.csrf import CSRFProtect
-from . import config
+from NodeDefender import config
 import os
 
-moment = Moment()
 csfr = CSRFProtect()
+moment = Moment()
 
 def CreateApp():
     app = Flask(__name__)
@@ -29,20 +29,21 @@ def CreateLogging(app = None):
     app = app or CreateApp()
     try:
         if app.config['LOGGING_TYPE'] == 'LOCAL':
-            handler = logging.FileHandler(app.config['LOGGING_NAME'])
+            loggHandler = logging.FileHandler(app.config['LOGGING_NAME'])
         elif app.config['LOGGING_TYPE'] == 'SYSLOG':
-            handler = logging.handlers.SysLogHandler(address = (app.config['LOGGING_SERVER'],
+            loggHandler = logging.handlers.SysLogHandler(address = (app.config['LOGGING_SERVER'],
                                                   int(app.config['LOGGING_PORT'])))
     except KeyError:
-        handler = logging.StreamHandler()
-    handler.setLevel(logging.INFO)
+        loggHandler = logging.StreamHandler()
+    
+    loggHandler.setLevel(logging.DEBUG)
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    handler.setFormatter(formatter)
+    loggHandler.setFormatter(formatter)
 
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.INFO)
-    logger.addHandler(handler)
-    return logger, handler
+    logger.addHandler(loggHandler)
+    return logger, loggHandler
 
 def CreateCelery(app = None):
     app = app or CreateApp()
@@ -78,4 +79,3 @@ class Serializer:
 
     def dumps_salted(self, string):
         return self.serializer.dumps(string, salt=self.salt)
-
