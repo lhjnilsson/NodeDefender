@@ -55,7 +55,7 @@ def get(macaddr, sensorid):
     sensor = get_redis(macaddr, sensorid)
     if len(sensor):
         return sensor
-    if load_redis(get_sql(macaddr, sensorid)):
+    if redis.sensor.load(get_sql(macaddr, sensorid)):
         return get_redis(macaddr, sensorid)
     return False
 
@@ -77,7 +77,7 @@ def list(macaddr):
 def create(macaddr, sensorid):
     if not create_sql(macaddr, sensorid):
         return False
-    mqtt.command.zwave.info.qry(macaddr, sensorid)
+    mqtt.command.sensor.info.qry(macaddr, sensorid)
     return get_redis(macaddr, sensorid)
 
 def delete(macaddr, sensor):

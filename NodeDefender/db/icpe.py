@@ -42,9 +42,6 @@ def delete_sql(macaddr):
 def get_redis(macaddr):
     return redis.icpe.get(macaddr)
 
-def load_redis(macaddr):
-    return redis.icpe.load(get_sql(macaddr))
-
 def update_redis(macaddr, **kwargs):
     return redis.icpe.save(macaddr, **kwargs)
 
@@ -55,15 +52,15 @@ def get(macaddr):
     icpe = get_redis(macaddr)
     if len(icpe):
         return icpe
-    if load_redis(get_sql(macaddr)):
+    if redis.icpe.load(get_sql(macaddr)):
         return get_redis(macaddr)
     return False
 
 def create(macaddr, mqttsrc):
     if not create_sql(macaddr, mqttsrc):
         return False
-    mqtt.command.zwave.info.qry(macaddr, '0', mqttsrc)
-    mqtt.command.zwave.node.list(macaddr, mqttsrc)
+    mqtt.command.icpe.zwave.info.qry(macaddr)
+    mqtt.command.icpe.zwave.node.list(macaddr)
     return get_redis(macaddr)
 
 def update(macaddr, **data):

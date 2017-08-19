@@ -40,6 +40,9 @@ def delete_sql(host, port = 1883):
 def get(host, port = 1883):
     return get_sql(host, port)
 
+def online(host, port):
+    return False
+
 def icpe(macaddr):
     return SQL.session.query(MQTTModel).join(MQTTModel.icpes).\
             filter(iCPEModel.macaddr == macaddr).first().to_json()

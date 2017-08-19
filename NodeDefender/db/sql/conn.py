@@ -29,6 +29,7 @@ class MQTTModel(SQL.Model):
 
     def to_json(self):
         return {'id' : str(self.id), 'host' : self.host, 'port' : self.port, 'createdAt' :
-                str(self.created_at), 'online' : True,
+                str(self.created_at), 'online' : True, 'username ' : None,
+                'password' : None,
                 'groups' : [group.name for group in self.groups],
                 'icpes' : [icpe.macaddr for icpe in self.icpes]}

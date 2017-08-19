@@ -98,7 +98,8 @@ def get(macaddr, sensorid, classnumber = None, classname = None):
         commandclass = get_redis(macaddr, sensorid, classname)
         if len(commandclass):
             return commandclass
-        if load_redis(macaddr, sensorid, classname):
+        commandclass = get_sql(macaddr, sensorid, classname = classname)
+        if redis.commandclass.load(commandclass):
             return get_redis(macaddr, sensorid, classname)
         return False
     else:
@@ -138,8 +139,7 @@ def create(macaddr, sensorid, classnumber):
     if info:
         update(macaddr, sensorid, classnumber = classnumber, **info)
         if info['types']:
-            mqtt.command.commandclass.get(macaddr, sensorid, \
-                                          info['name'], 'sup')
+            mqtt.command.commandclass.sup(macaddr, sensorid, info['name'])
         return get_redis(macaddr, sensorid, info['name'])
     return {}
 
