@@ -18,5 +18,8 @@ def event(topic, payload):
     if topic['commandClass'] == 'info':
         return eval('info.' + topic['action'])(topic, payload)
     elif topic['subFunction']:
-        return True # Modify later
+        if topic['subFunction'] == 'sup':
+            return info.sup(topic, payload)
+        elif topic['subFunction'] == 'evtsup':
+            return info.evtsup(topic, payload)
     return icpe.zwave.event(topic, payload)

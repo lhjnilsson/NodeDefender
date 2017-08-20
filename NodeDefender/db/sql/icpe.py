@@ -120,6 +120,7 @@ class CommandClassModel(SQL.Model):
     types = SQL.relationship('CommandClassTypeModel', backref="commandclass",
                             cascade="save-update, merge, delete")
     supported = SQL.Column(SQL.Boolean)
+    web_field = SQL.Column(SQL.Boolean)
     events = SQL.relationship('EventModel', backref="commandclass",
                            cascade="save-update, merge, delete")
 
@@ -138,6 +139,7 @@ class CommandClassTypeModel(SQL.Model):
     number = SQL.Column(SQL.String(2))
     name = SQL.Column(SQL.String(40))
     supported = SQL.Column(SQL.Boolean)
+    web_field = SQL.Column(SQL.Boolean)
     events = SQL.relationship('EventModel', backref="commandclasstype",
                            cascade="save-update, merge, delete")
 

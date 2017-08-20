@@ -17,4 +17,4 @@ def redisconn(func):
         return func(*args, conn = conn, **kwargs)
     return wrapper
 
-from NodeDefender.db.redis import icpe, sensor, commandclass
+from NodeDefender.db.redis import icpe, sensor, field

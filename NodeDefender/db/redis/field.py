@@ -1,48 +1,35 @@
-from ... import celery
 from datetime import datetime
-from . import logger
-from . import redisconn
+from NodeDefender.db.redis import redisconn
 
 @redisconn
-def Load(commandclass, field, conn):
+def load(sensor, conn, **kwargs):
     if field is None:
         return None
-    field['icpe'] = commandclass.sensor.icpe.macaddr
-    field['sensor'] = commandclass.sensor.sensorid
-    field['commandclassNumber'] = commandclass.number
-    field['commandclassName'] = commandclass.name
-
-    field['value'] = None
-        
-    field['last_updated'] = None,
-    field['loaded_at'] = str(datetime.now())
-    
-    conn.sadd(commandclass.sensor.icpe.macaddr + commandclass.sensor.sensorid\
-              + ':fields', field['name'])
-    conn.hmset(commandclass.sensor.icpe.macaddr + commandclass.sensor.sensorid\
-               + field['name'], field)
-    return field
+    kwargs['icpe'] = sensor.icpe.macaddr
+    kwargs['sensor'] = sensor.sensorid
+    kwargs['value'] = None
+    kwargs['last_updated'] = None,
+    kwargs['loaded_at'] = str(datetime.now())
+    conn.sadd(sensor.icpe.macaddr + sensor.sensorid +':fields', kwargs['name'])
+    conn.hmset(sensor.icpe.macaddr + sensor.sensorid + field['name'], kwargs)
+    return kwargs
 
 @redisconn
-def Update(model, event, conn):
-    conn.hmset(model.icpe.macaddr + model.sensor.sensorid + event.field,
-               {'value' : str(event.value)})
-    
-    if 'state' in event.__dict__:
-        conn.hmset(model.icpe.macaddr + model.sensor.sensorid + event.field,
-                    {'state' : str(event.state)})
-    
-    if 'icon' in event.__dict__:
-         conn.hmset(model.icpe.macaddr + model.sensor.sensorid + event.field,
-                    {'icon' : str(event.icon)})
-    
-    conn.hmset(model.icpe.macaddr + model.sensor.sensorid + event.field, {'last_updated' : str(datetime.now())})
-    return conn.hgetall(model.icpe.macaddr + model.sensor.sensorid +
-                        event.field)
+def save(macaddr, sensorid, name, conn, **kwargs):
+    field  = conn.hgetall(macaddr + sensorid + name)
+    for key, value in kwargs.items():
+        field[key] = value
+    return conn.hmset(macaddr + sensorid + name)
 
 @redisconn
-def Get(mac, sensorid, name, conn):
-    return conn.hgetall(mac + sensorid + name)
+def get(macaddr, sensorid, name, conn):
+    return conn.hgetall(macaddr + sensorid + name)
 
-def Remove():
-    pass
+@redisconn
+def flush(macaddr, sensorid, name, conn):
+    if conn.hkeys(macaddr+ sensorid + name):
+        conn.srem(macaddr + sensorid + ':fields', name)
+        return conn.hdel(macaddr + sensorid + name, \
+                         *conn.hkeys(macaddr+ sensorid + name))
+    else:
+        return True

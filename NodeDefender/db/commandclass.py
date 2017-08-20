@@ -1,5 +1,6 @@
-from NodeDefender.db.sql import SQL, iCPEModel, SensorModel, CommandClassModel
-from NodeDefender.db import redis, logger
+from NodeDefender.db.sql import SQL, iCPEModel, SensorModel,\
+                                CommandClassModel, CommandClassTypeModel
+from NodeDefender.db import logger
 from NodeDefender import db, mqtt
 from NodeDefender.icpe import zwave
 
@@ -77,53 +78,23 @@ def delete_sql(macaddr, sensorid, classnumber = None, classname = None):
                  format(macaddr, sensorid, commandclass.number))
     return SQL.session.commit()
 
-def get_redis(macaddr, sensorid, classname):
-    return redis.commandclass.get(macaddr, sensorid, classname)
-
-def update_redis(macaddr, sensorid, classname, **kwargs):
-    return redis.commandclass.save(macaddr, sensorid, classname, **kwargs)
-
-def delete_redis(macaddr, sensorid):
-    return redis.commandclass.flush(macaddr, sensorid, classname)
-
 def get(macaddr, sensorid, classnumber = None, classname = None):
-    if classnumber and not classname:
-        commandclass = get_sql(macaddr, sensorid, classnumber = classnumber)
-        if not commandclass:
-            return False
-        if commandclass and not commandclass.name:
-            return commandclass.to_json()
-        className = commandclass.name
-    elif classname:
-        commandclass = get_redis(macaddr, sensorid, classname)
-        if len(commandclass):
-            return commandclass
-        commandclass = get_sql(macaddr, sensorid, classname = classname)
-        if redis.commandclass.load(commandclass):
-            return get_redis(macaddr, sensorid, classname)
-        return False
+    cc = get_sql(macaddr, sensorid, classnumber = classnumber, \
+                 classname = classname)
+    if cc:
+        return cc.to_json()
     else:
-        raise ValueError('Please enter either classnumber or classname')
+        return False
 
 def update(macaddr, sensorid, classnumber = None, classname = None, **kwargs):
-    if classnumber and not classname:
-        commandclass = update_sql(macaddr, sensorid,\
-                                  classnumber = classnumber, **kwargs)
-        classname = commandclass.name
-    if classname:
-        update_redis(macaddr, sensorid, classname, **kwargs)
-    return True
+    return update_sql(macaddr, sensorid, classnumber = classnumber, \
+                      classname = classname, **kwargs)
 
 def list(macaddr, sensorid):
-    commandclasses = redis.commandclass.list(macaddr, sensorid)
-    if len(commandclasses):
-        return commandclasses
-    if len(db.sensor.get_sql(macaddr, sensorid).commandclasses):
-        for commandclass in db.sensor.get_sql(macaddr,\
-                                              commandclass).commandclasses:
-            redis.commandclass.load(commandclass)
-        return redis.commandclass.list(macaddr, sensorid)
-    return []
+    sensor = db.sensor.get_sql(macaddr, sensorid)
+    if not sensor:
+        return []
+    return [commandclass.to_json() for commandclass in sensor.commandclasses]
 
 def number_list(macaddr, sensorid):
     sensor = db.sensor.get_sql(macaddr, sensorid)
@@ -140,18 +111,11 @@ def create(macaddr, sensorid, classnumber):
         update(macaddr, sensorid, classnumber = classnumber, **info)
         if info['types']:
             mqtt.command.commandclass.sup(macaddr, sensorid, info['name'])
-        return get_redis(macaddr, sensorid, info['name'])
-    return {}
+    return get(macaddr, sensorid, classnumber = classnumber)
 
 def delete(macaddr, sensorid, classnumber = None, classname = None):
-    if classname:
-        delete_sql(macaddr, sensorid, classname = classname)
-        delete_redis(macaddr, sensorid, classname = classname)
-        return True
-    elif classnumber:
-        delete_sql(macaddr, sensorid, classnumber= classnumber)
-        return True
-    return False
+    return delete_sql(macaddr, sensorid, classnumber = classnumber, \
+                      classname = classname)
 
 def verify_list(macaddr, sensorid, classList):
     knownClasses = number_list(macaddr, sensorid)
@@ -163,4 +127,19 @@ def verify_list(macaddr, sensorid, classList):
         if classnumber not in classList:
             delete(macaddr, sensorid, classnumber = classnumber)
 
+    return True
+
+def add_types(macaddr, sensorid, classname, classtypes):
+    commandclass = get_sql(macaddr, sensorid, classname = classname)
+    if commandclass is None:
+        return False
+    for classtype in classtypes:
+        typeModel = CommandClassTypeModel(classtype)
+        info = zwave.commandclass.info(classname = classname,\
+                                       classtype = classtype)
+        typeModel.name = info['name']
+        typeModel.supported = info['supported']
+        typeModel.web_field = info['webField']
+        db.session.save(typeModel)
+        db.session.commit()
     return True
