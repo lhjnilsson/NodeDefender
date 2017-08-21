@@ -1,57 +1,43 @@
-from NodeDefender.db.sql import SQL, iCPEModel, SensorModel
 from NodeDefender.db import redis
 from NodeDefender import db, mqtt
+from NodeDefender.icpe import zwave
 
-def get_redis(macaddr, sensorid):
-    return redis.sensor.get(macaddr, sensorid)
+def get_redis(macaddr, sensorid, name):
+    return redis.sensor.get(macaddr, sensorid, name)
 
-def update_redis(macaddr, sensorid, **kwargs):
-    return redis.sensor.save(macaddr, sensorid, **kwargs)
+def update_redis(macaddr, sensorid, name, **kwargs):
+    return redis.sensor.save(macaddr, sensorid, name, **kwargs)
 
-def delete_redis(macaddr, sensorid):
-    return redis.sensor.flush(macaddr, sensorid)
+def delete_redis(macaddr, sensorid, name):
+    return redis.sensor.flush(macaddr, sensorid, name)
 
-def get(macaddr, sensorid):
-    sensor = get_redis(macaddr, sensorid)
-    if len(sensor):
-        return sensor
-    if load_redis(get_sql(macaddr, sensorid)):
-        return get_redis(macaddr, sensorid)
-    return False
+def get(macaddr, sensorid, name):
+    return get_redis(macaddr, sensorid, name)
 
-def update(macaddr, sensorid, **kwargs):
-    update_sql(macaddr, sensorid, **kwargs)
-    update_redis(macaddr, sensorid, **kwargs)
-    return True
+def update(macaddr, sensorid, name, **kwargs):
+    return update_redis(macaddr, sensorid, name, **kwargs)
 
-def list(macaddr):
-    sensors = redis.sensor.list(macaddr)
-    if len(sensors):
-        return sensors
-    if len(db.icpe.get_sql(macaddr).sensors):
-        for sensor in db.icpe.get_sql(macaddr).sensors:
-            redis.sensor.load(sensor)
-        return redis.sensor.list(macaddr)
-    return []
+def list(macaddr, sensorid):
+    return redis.field.list(macaddr, sensorid)
 
-def create(macaddr, sensorid):
-    if not create_sql(macaddr, sensorid):
+def load(commandclass, commandclassType = None):
+    if commandclassType:
+        field = eval('zwave.commandclass.'+commandclass.name+'.'+\
+                    commandclassType.name+'.field')()
+    else:
+        field = eval('zwave.commandclass.'+commandclass.name+'.field')()
+    
+    if field is None:
         return False
-    mqtt.command.zwave.info.qry(macaddr, sensorid)
-    return get_redis(macaddr, sensorid)
+    
+    return redis.field.load(commandclass.sensor, **field)
 
-def delete(macaddr, sensor):
-    delete_redis(macaddr, sensor)
-    return True
+def load_from_sensor(sensor):
+    for commandclass in sensor.commandclasses:
+        load(commandclass)
+        if commandclass.types:
+            for commandclasstype in commandclass.types:
+                load(commandclass, commandclasstype)
 
-def verify_list(macaddr, sensorList):
-    knownSensors = list(macaddr)
-    for sensor in sensorList.split(','):
-        if sensor not in knownSensors:
-            create(macaddr, sensor)
-
-    for sensor in knownSensors:
-        if sensor not in sensorList:
-            delete(macaddr, sensor)
-
-    return True
+def flush(macaddr, sensorid, name):
+    return delete_redis(macaddr, sensorid, name)
