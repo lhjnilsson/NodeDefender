@@ -1,6 +1,7 @@
 from NodeDefender.db import redis
 from NodeDefender import db, mqtt
 from NodeDefender.icpe import zwave
+from NodeDefender.db.sql import SQL, CommandClassModel, CommandClassTypeModel
 
 def get_redis(macaddr, sensorid, name):
     return redis.field.get(macaddr, sensorid, name)
@@ -20,17 +21,23 @@ def update(macaddr, sensorid, name, **kwargs):
 def list(macaddr, sensorid):
     return redis.field.list(macaddr, sensorid)
 
-def load(commandclass, commandclassType = None):
-    if commandclassType:
-        field = eval('zwave.commandclass.'+commandclass.name+'.'+\
-                    commandclassType.name+'.field')()
-    else:
-        field = eval('zwave.commandclass.'+commandclass.name+'.field')()
+def load():
+    ccs = SQL.session.query(CommandClassModel).\
+            filter(CommandClassModel.name.isnot(None)).all()
+    for cc in ccs:
+        field = eval('zwave.commandclass.'+cc.name+'.fields')
+        if field:
+            redis.field.load(cc.sensor, **field)
     
-    if field is None:
-        return False
+    cctypes = SQL.session.query(CommandClassTypeModel).\
+                 filter(CommandClassTypeModel.name.isnot(None)).all()
+    for cctype in cctypes:
+        field = eval('zwave.commandclass.'+cctype.commandclass.name+\
+                     '.'+cctype.name+'.fields')
+        if field:
+            redis.field.load(cctype.commandclass.sensor, **field)
     
-    return redis.field.load(commandclass.sensor, **field)
+    return len(ccs) + len(cctypes)
 
 def load_from_sensor(sensor):
     for commandclass in sensor.commandclasses:

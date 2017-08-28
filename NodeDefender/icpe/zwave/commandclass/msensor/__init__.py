@@ -1,29 +1,15 @@
 from NodeDefender.icpe.zwave.commandclass.msensor import AirTemperature
 
-mtype = {'1' : 'AirTemperature', '0x01' : 'AirTemperature',
+classtypes = {'1' : 'AirTemperature', '0x01' : 'AirTemperature',
          '01' : 'AirTemperature'}
-
-def info(classtype = None):
-    if classtype:
-        try:
-            return eval(mtype[classtype] + '.info')()
-        except KeyError:
-            return False
-    return {'number' : '31',
-            'name' : 'msensor',
-            'types' : True}
-
-def icon(value):
-    return False
-
-def load(classtypes):
-    return {'meter' : 0}
-
-def fields():
-    return False
+info = {'number' : '31', 'name' : 'msensor', 'types' : True}
+fields = None
 
 def event(payload):
     try:
-        return eval(mtype[payload.type] + '.Event')(payload)
+        return eval(classtypes[payload['mtype']] + '.event')(payload)
     except KeyError as e:
         print(str(e))
+
+def icon(value):
+    return None

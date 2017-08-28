@@ -1,19 +1,13 @@
-def fields():
-    return {'type' : 'value', 'readonly' : True, 'name' : 'Watt'}
+fields = {'type' : 'value', 'readonly' : True, 'name' : 'Watt'}
 
-def info():
-    return {'name' : 'Electric',
-            'number' : '1',
-            'fields' : True}
+info = {'name' : 'Electric', 'number' : '01', 'commandclass' : 'meter'}
 
 def icon(value):
     return 'fa fa-plug'
 
 def event(payload):
-    payload.field = 'Watt'
-    payload.value = int(payload.data32, 0) / 10
-    if payload.value > 1.0:
-        payload.state = True
-    
-    payload.icon = 'fa fa-plug'
+    data = {'field' : fields, 'info' : info}
+    data['value'] = int(payload['data32'], 0) / 10
+    data['state'] = True if data['value'] > 1.0 else False
+    data['icon'] = 'fa fa-plug'
     return payload

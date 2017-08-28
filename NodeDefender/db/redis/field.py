@@ -3,7 +3,7 @@ from NodeDefender.db.redis import redisconn
 
 @redisconn
 def load(sensor, conn, **kwargs):
-    if field is None:
+    if sensor is None:
         return None
     kwargs['icpe'] = sensor.icpe.macaddr
     kwargs['sensor'] = sensor.sensorid
@@ -11,7 +11,7 @@ def load(sensor, conn, **kwargs):
     kwargs['last_updated'] = None,
     kwargs['loaded_at'] = str(datetime.now())
     conn.sadd(sensor.icpe.macaddr + sensor.sensorid +':fields', kwargs['name'])
-    conn.hmset(sensor.icpe.macaddr + sensor.sensorid + field['name'], kwargs)
+    conn.hmset(sensor.icpe.macaddr + sensor.sensorid + kwargs['name'], kwargs)
     return kwargs
 
 @redisconn

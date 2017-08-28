@@ -1,28 +1,14 @@
 from NodeDefender.icpe.zwave.commandclass.meter import Electric
 
-mtype = {'1' : 'Electric'}
-
-def info(classtype = None):
-    if classtype:
-        try:
-            return eval(mtype[classtype] + '.info')()
-        except KeyError:
-            return False
-    return {'number' : '25',
-            'name' : 'meter',
-            'types' : True}
+classtypes = {'1' : 'Electric'}
+info = {'number' : '25', 'name' : 'meter', 'types' : True}
+fields = None
 
 def icon(value):
-    return False
-
-def load(classtypes):
-    return {'meter' : 0}
-
-def fields():
-    return False
+    return None
 
 def event(payload):
     try:
-        return eval(mtype[payload.type] + '.Event')(payload)
+        return eval(mtype[payload['mtype']] + '.event')(payload)
     except KeyError as e:
         print(str(e))
