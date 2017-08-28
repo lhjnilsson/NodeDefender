@@ -1,31 +1,14 @@
-from .. import celery
-from . import zwave, db, mqtt
-from .decorators import ParseTopic
-from .zwave import ZWaveEvent
-from ..models.manage.data import sensor as SQLData
+from NodeDefender.icpe import zwave
+from NodeDefender import db
 
-@celery.task
-def WebSocket(macaddr, sensorid, commandclass, value):
-    mqtt.zwave.Set(macaddr, sensorid, commandclass, value)
+def sensor_event(MacAddress, SensorID, CommandClass, **payload):
+    if CommandClass == 'info':
+        return True
+    data = zwave.event(MacAddress, SensorID, CommandClass, **payload)
+    if not data:
+        return False
+
+    print(data)
+    db.field.update(MacAddress, SensorID, data['field']['name'], \
+                    **{'value' : data['value'], 'state' : data['state']})
     return True
-
-@celery.task
-@ParseTopic
-def MQTT(topic, payload, mqttsrc):
-    if topic.msgtype == 'cmd':
-        return
-    event = eval(topic.msgtype + '.' + topic.action)(topic, payload,
-                                                              mqttsrc)
-    if 'value' in dir(event):
-        if event.field == 'Watt':
-            SQLData.power.Put(topic.macaddr, topic.sensorid, event)
-        
-        elif event.field == 'Celsius':
-            SQLData.heat.Put(topic.macaddr, topic.sensorid, event)
-        
-        else:
-            SQLData.event.Put(topic.macaddr, topic.sensorid, event)
-
-    return True
-
-from .msgtype import rpt, rsp, cmd, err

@@ -129,6 +129,11 @@ class CommandClassModel(SQL.Model):
         self.name = name
         self.supported = False
 
+    def to_json(self):
+        return {'name' : self.name, 'number' : self.number, 'webField' :
+                self.web_field, 'supported' : self.supported, 'sensor' :
+                self.sensor.sensorid, 'icpe' : self.sensor.icpe.macaddr}
+
     def columns(self):
         return ['number', 'name']
 

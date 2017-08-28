@@ -5,4 +5,4 @@ logger = logging.getLogger('iCPE')
 logger.setLevel('INFO')
 logger.addHandler(loggHandler)
 
-import NodeDefender.icpe.zwave
+from NodeDefender.icpe import zwave, event

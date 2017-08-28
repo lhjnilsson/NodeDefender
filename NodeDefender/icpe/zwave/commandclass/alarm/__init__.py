@@ -5,7 +5,11 @@ info = {'number' : '71', 'name' : 'alarm', 'types' : True}
 field = None
 
 def event(payload):
-    return False
+    try:
+        return eval(classtypes[payload['zalm']] + '.event')(payload)
+    except NameError:
+        print("Not found ")
+        return False
 
 def icon(value):
     return None

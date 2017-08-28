@@ -3,13 +3,13 @@ from NodeDefender import db, mqtt
 from NodeDefender.icpe import zwave
 
 def get_redis(macaddr, sensorid, name):
-    return redis.sensor.get(macaddr, sensorid, name)
+    return redis.field.get(macaddr, sensorid, name)
 
 def update_redis(macaddr, sensorid, name, **kwargs):
-    return redis.sensor.save(macaddr, sensorid, name, **kwargs)
+    return redis.field.save(macaddr, sensorid, name, **kwargs)
 
 def delete_redis(macaddr, sensorid, name):
-    return redis.sensor.flush(macaddr, sensorid, name)
+    return redis.field.flush(macaddr, sensorid, name)
 
 def get(macaddr, sensorid, name):
     return get_redis(macaddr, sensorid, name)

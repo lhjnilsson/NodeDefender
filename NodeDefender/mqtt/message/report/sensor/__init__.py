@@ -14,5 +14,5 @@ def verify_sensor_and_class(func):
 
 @verify_sensor_and_class
 def event(topic, payload):
-    return icpe.zwave.event(topic['macAddress'], topic['node'],
-                            topic['commandClass'], **payload)
+    return icpe.event.sensor_event(topic['macAddress'], topic['node'],\
+                                    topic['commandClass'], **payload)

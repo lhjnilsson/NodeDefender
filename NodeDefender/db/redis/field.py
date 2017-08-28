@@ -19,7 +19,8 @@ def save(macaddr, sensorid, name, conn, **kwargs):
     field  = conn.hgetall(macaddr + sensorid + name)
     for key, value in kwargs.items():
         field[key] = value
-    return conn.hmset(macaddr + sensorid + name)
+    
+    return conn.hmset(macaddr + sensorid + name, field)
 
 @redisconn
 def get(macaddr, sensorid, name, conn):
