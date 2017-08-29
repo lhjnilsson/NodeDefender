@@ -1,13 +1,14 @@
-from NodeDefender.icpe import zwave
+import NodeDefender
 
 def sensor_event(MacAddress, SensorID, CommandClass, **payload):
     if CommandClass == 'info':
         return True
-    data = zwave.event(MacAddress, SensorID, CommandClass, **payload)
+    data = NodeDefender.icpe.zwave.event(MacAddress, SensorID, \
+                                         CommandClass, **payload)
     if not data:
         return False
 
     print(data)
-    NodeDefender.db.field.update(MacAddress, SensorID, data['field']['name'], \
+    NodeDefender.db.field.update(MacAddress, SensorID, data['fields']['name'], \
                     **{'value' : data['value'], 'state' : data['state']})
     return True

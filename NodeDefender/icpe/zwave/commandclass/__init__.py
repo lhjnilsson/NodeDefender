@@ -21,6 +21,6 @@ def info(classnumber = None, classname = None, classtype = None):
         if not classname:
             return False
     try:
-        return eval(classname + '.info')(classtype)
+        return eval(classname + '.info')
     except NameError:
         return False

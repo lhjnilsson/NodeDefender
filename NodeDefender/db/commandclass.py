@@ -137,11 +137,10 @@ def add_types(macaddr, sensorid, classname, classtypes):
         return False
     for classtype in classtypes:
         typeModel = CommandClassTypeModel(classtype)
-        info = zwave.commandclass.info(classname = classname,\
-                                       classtype = classtype)
+        info = NodeDefender.icpe.zwave.commandclass.info(classname = classname,\
+                                                         classtype = classtype)
         typeModel.name = info['name']
-        typeModel.supported = info['supported']
-        typeModel.web_field = info['webField']
-        db.session.save(typeModel)
-        db.session.commit()
+        commandclass.types.append(typeModel)
+        SQL.session.add(commandclass, typeModel)
+        SQL.session.commit()
     return True

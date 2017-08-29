@@ -26,7 +26,7 @@ def create_sql(macaddr, sensorid):
     if get_sql(macaddr, sensorid):
         return False
 
-    icpe = db.icpe.get_sql(macaddr)
+    icpe = NodeDefender.db.icpe.get_sql(macaddr)
     sensor = SensorModel(sensorid)
     icpe.sensors.append(sensor)
     SQL.session.add(icpe, sensor)

@@ -1,5 +1,6 @@
 from NodeDefender.db import redis
 from NodeDefender.db.sql import SQL, CommandClassModel, CommandClassTypeModel
+import NodeDefender
 
 def get_redis(macaddr, sensorid, name):
     return redis.field.get(macaddr, sensorid, name)

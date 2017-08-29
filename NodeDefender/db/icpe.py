@@ -68,7 +68,7 @@ def update(macaddr, **data):
 
 def delete(macaddr):
     for sensor in NodeDefender.db.sensor.list(macaddr):
-        db.sensor.delete(macaddr, sensor)
+        NodeDefender.db.sensor.delete(macaddr, sensor)
         
     delete_sql(macaddr)
     delete_redis(macaddr)

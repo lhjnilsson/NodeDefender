@@ -1,5 +1,6 @@
 from NodeDefender.mqtt.message import report, respond, command, error
 from functools import wraps
+import NodeDefender
 
 def mqtt_to_dict(func):
     @wraps(func)

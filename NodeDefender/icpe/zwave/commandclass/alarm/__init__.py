@@ -7,7 +7,8 @@ fields = None
 def event(payload):
     try:
         return eval(classtypes[payload['zalm']] + '.event')(payload)
-    except NameError:
+    except (NameError, KeyError) as e:
+        print(payload)
         print("Not found ")
         return False
 
