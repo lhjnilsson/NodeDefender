@@ -1,6 +1,6 @@
 from NodeDefender.db.sql import SQL, iCPEModel, SensorModel
 from NodeDefender.db import redis, logger
-from NodeDefender import db, mqtt
+import NodeDefender
 
 def get_sql(macaddr, sensorid):
     return SQL.session.query(SensorModel).join(SensorModel.icpe).\
@@ -68,8 +68,8 @@ def list(macaddr):
     sensors = redis.sensor.list(macaddr)
     if len(sensors):
         return sensors
-    if len(db.icpe.get_sql(macaddr).sensors):
-        for sensor in db.icpe.get_sql(macaddr).sensors:
+    if len(NodeDefender.db.icpe.get_sql(macaddr).sensors):
+        for sensor in NodeDefender.db.icpe.get_sql(macaddr).sensors:
             redis.sensor.load(sensor)
         return redis.sensor.list(macaddr)
     return []
@@ -77,7 +77,7 @@ def list(macaddr):
 def create(macaddr, sensorid):
     if not create_sql(macaddr, sensorid):
         return False
-    mqtt.command.sensor.info.qry(macaddr, sensorid)
+    NodeDefender.mqtt.command.sensor.info.qry(macaddr, sensorid)
     return get_redis(macaddr, sensorid)
 
 def delete(macaddr, sensor):

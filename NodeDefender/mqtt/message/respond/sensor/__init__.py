@@ -1,13 +1,13 @@
 from functools import wraps
-from NodeDefender import db, icpe
 from NodeDefender.mqtt.message.respond.sensor import info
+import NodeDefender
 
 def verify_sensor_and_class(func):
     @wraps(func)
     def wrapper(topic, payload):
-        if not db.sensor.get(topic['macAddress'], topic['node']):
-            db.sensor.create(topic['macAddress'], topic['node'])
-        if not db.commandclass.get(topic['macAddress'], topic['node'],\
+        if not NodeDefender.db.sensor.get(topic['macAddress'], topic['node']):
+            NodeDefender.db.sensor.create(topic['macAddress'], topic['node'])
+        if not NodeDefender.db.commandclass.get(topic['macAddress'], topic['node'],\
                                    classname = topic['commandClass']):
             pass
         return func(topic, payload)
@@ -22,4 +22,4 @@ def event(topic, payload):
             return info.sup(topic, payload)
         elif topic['subFunction'] == 'evtsup':
             return info.evtsup(topic, payload)
-    return icpe.zwave.event(topic, payload)
+    return NodeDefender.icpe.zwave.event(topic, payload)

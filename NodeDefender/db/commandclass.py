@@ -1,8 +1,7 @@
 from NodeDefender.db.sql import SQL, iCPEModel, SensorModel,\
                                 CommandClassModel, CommandClassTypeModel
 from NodeDefender.db import logger
-from NodeDefender import db, mqtt
-from NodeDefender.icpe import zwave
+import NodeDefender
 
 def get_sql(macaddr, sensorid, classnumber = None, classname = None):
     if classnumber is None and classname is None:
@@ -55,7 +54,9 @@ def create_sql(macaddr, sensorid, classnumber = None, classname = None):
         return commandclass
 
     commandclass = CommandClassModel(classnumber, classname)
-    sensor = db.sensor.get_sql(macaddr, sensorid)
+    sensor = NodeDefender.db.sensor.get_sql(macaddr, sensorid)
+    if sensor is None:
+        return False
     sensor.commandclasses.append(commandclass)
     SQL.session.add(sensor, commandclass)
     SQL.session.commit()
@@ -91,13 +92,13 @@ def update(macaddr, sensorid, classnumber = None, classname = None, **kwargs):
                       classname = classname, **kwargs)
 
 def list(macaddr, sensorid):
-    sensor = db.sensor.get_sql(macaddr, sensorid)
+    sensor = NodeDefender.db.sensor.get_sql(macaddr, sensorid)
     if not sensor:
         return []
     return [commandclass.to_json() for commandclass in sensor.commandclasses]
 
 def number_list(macaddr, sensorid):
-    sensor = db.sensor.get_sql(macaddr, sensorid)
+    sensor = NodeDefender.db.sensor.get_sql(macaddr, sensorid)
     if sensor:
         return [c.number for c in sensor.commandclasses]
     else:
@@ -106,11 +107,12 @@ def number_list(macaddr, sensorid):
 def create(macaddr, sensorid, classnumber):
     if not create_sql(macaddr, sensorid, classnumber):
         return False
-    info = zwave.commandclass.info(classnumber = classnumber)
+    info = NodeDefender.icpe.zwave.commandclass.info(classnumber = classnumber)
     if info:
         update(macaddr, sensorid, classnumber = classnumber, **info)
         if info['types']:
-            mqtt.command.commandclass.sup(macaddr, sensorid, info['name'])
+            NodeDefender.mqtt.command.commandclass.sup(macaddr, sensorid, \
+                                                       info['name'])
     return get(macaddr, sensorid, classnumber = classnumber)
 
 def delete(macaddr, sensorid, classnumber = None, classname = None):

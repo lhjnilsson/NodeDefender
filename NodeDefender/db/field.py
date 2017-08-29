@@ -1,6 +1,4 @@
 from NodeDefender.db import redis
-from NodeDefender import db, mqtt
-from NodeDefender.icpe import zwave
 from NodeDefender.db.sql import SQL, CommandClassModel, CommandClassTypeModel
 
 def get_redis(macaddr, sensorid, name):
@@ -25,15 +23,15 @@ def load():
     ccs = SQL.session.query(CommandClassModel).\
             filter(CommandClassModel.name.isnot(None)).all()
     for cc in ccs:
-        field = eval('zwave.commandclass.'+cc.name+'.fields')
+        field = eval('NodeDefender.icpe.zwave.commandclass.'+cc.name+'.fields')
         if field:
             redis.field.load(cc.sensor, **field)
     
     cctypes = SQL.session.query(CommandClassTypeModel).\
                  filter(CommandClassTypeModel.name.isnot(None)).all()
     for cctype in cctypes:
-        field = eval('zwave.commandclass.'+cctype.commandclass.name+\
-                     '.'+cctype.name+'.fields')
+        field = eval('NodeDefender.icpe.zwave.commandclass.'+\
+                     cctype.commandclass.name+'.'+cctype.name+'.fields')
         if field:
             redis.field.load(cctype.commandclass.sensor, **field)
     

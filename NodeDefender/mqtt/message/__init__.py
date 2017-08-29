@@ -1,6 +1,5 @@
 from NodeDefender.mqtt.message import report, respond, command, error
 from functools import wraps
-from NodeDefender import db
 
 def mqtt_to_dict(func):
     @wraps(func)
@@ -35,8 +34,8 @@ def mqtt_to_dict(func):
 
 @mqtt_to_dict
 def event(topic, payload, mqtt):
-    if not db.icpe.get(topic['macAddress']):
-        db.icpe.create(topic['macAddress'], mqtt)
+    if not NodeDefender.db.icpe.get(topic['macAddress']):
+        NodeDefender.db.icpe.create(topic['macAddress'], mqtt)
 
     if topic['messageType'] == 'rpt':
         report.event(topic, payload)

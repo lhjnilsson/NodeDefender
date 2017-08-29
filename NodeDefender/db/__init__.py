@@ -7,5 +7,11 @@ logger = logging.getLogger('db')
 logger.setLevel('DEBUG')
 logger.addHandler(loggHandler)
 
-from NodeDefender.db import group, user, node, icpe, sensor, mqtt, \
-        commandclass, field
+import NodeDefender.db.group
+import NodeDefender.db.user
+import NodeDefender.db.node
+import NodeDefender.db.icpe
+import NodeDefender.db.sensor
+import NodeDefender.db.commandclass
+import NodeDefender.db.field
+import NodeDefender.db.mqtt

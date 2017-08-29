@@ -1,7 +1,4 @@
 from NodeDefender.db.sql import SQL, MQTTModel, GroupModel, iCPEModel
-import NodeDefender.db.redis
-import NodeDefender.db
-import NodeDefender.mqtt
 from redlock import RedLock
 
 def get_sql(host, port = 1883):

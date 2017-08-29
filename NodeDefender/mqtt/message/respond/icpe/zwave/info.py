@@ -1,4 +1,4 @@
-from NodeDefender import db
+import NodeDefender
 
 def qry(topic, payload):
     data = payload
@@ -6,4 +6,4 @@ def qry(topic, payload):
     data.pop('stat')
     data['operation'] = operation
     data['status'] = status
-    return db.icpe.update(topic['macAddress'], **data)
+    return NodeDefender.db.icpe.update(topic['macAddress'], **data)

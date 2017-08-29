@@ -1,5 +1,4 @@
 from NodeDefender.icpe import zwave
-from NodeDefender import db
 
 def sensor_event(MacAddress, SensorID, CommandClass, **payload):
     if CommandClass == 'info':
@@ -9,6 +8,6 @@ def sensor_event(MacAddress, SensorID, CommandClass, **payload):
         return False
 
     print(data)
-    db.field.update(MacAddress, SensorID, data['field']['name'], \
+    NodeDefender.db.field.update(MacAddress, SensorID, data['field']['name'], \
                     **{'value' : data['value'], 'state' : data['state']})
     return True

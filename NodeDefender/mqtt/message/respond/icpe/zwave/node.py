@@ -1,4 +1,4 @@
-from NodeDefender import db
+import NodeDefender
 
 def list(topic, payload):
-    return db.sensor.verify_list(topic['macAddress'], payload)
+    return NodeDefender.db.sensor.verify_list(topic['macAddress'], payload)

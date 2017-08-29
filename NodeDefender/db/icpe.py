@@ -1,5 +1,5 @@
 from NodeDefender.db.sql import SQL, iCPEModel, NodeModel
-from NodeDefender import db, mqtt
+import NodeDefender
 from NodeDefender.db import redis, logger
 from redlock import RedLock
 
@@ -23,7 +23,7 @@ def update_sql(macaddr, **kwargs):
 def create_sql(macaddr, mqttsrc):
     if get_sql(macaddr):
         return False
-    mqtt = db.mqtt.get(**mqttsrc)
+    mqtt = NodeDefender.db.mqtt.get(**mqttsrc)
     icpe = iCPEModel(macaddr)
     mqtt.icpes.append(icpe)
     SQL.session.add(mqtt, icpe)
@@ -59,15 +59,15 @@ def get(macaddr):
 def create(macaddr, mqttsrc):
     if not create_sql(macaddr, mqttsrc):
         return False
-    mqtt.command.icpe.zwave.info.qry(macaddr)
-    mqtt.command.icpe.zwave.node.list(macaddr)
+    NodeDefender.mqtt.command.icpe.zwave.info.qry(macaddr)
+    NodeDefender.mqtt.command.icpe.zwave.node.list(macaddr)
     return get_redis(macaddr)
 
 def update(macaddr, **data):
     return update_redis(macaddr, **data)
 
 def delete(macaddr):
-    for sensor in db.sensor.list(macaddr):
+    for sensor in NodeDefender.db.sensor.list(macaddr):
         db.sensor.delete(macaddr, sensor)
         
     delete_sql(macaddr)

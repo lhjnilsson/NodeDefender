@@ -1,11 +1,10 @@
 import paho.mqtt.client as PahoMQTT
 from threading import Thread
 from NodeDefender.mqtt import logger, message
-
-from NodeDefender import db
+import NodeDefender
 
 def add(host, port = 8883, username = None, password = None):
-    if db.mqtt.online(host, port):
+    if NodeDefender.db.mqtt.online(host, port):
         return
     mqtt = _MQTT()
     mqtt.host = host
@@ -16,7 +15,7 @@ def add(host, port = 8883, username = None, password = None):
 
 def load(mqttlist = None):
     if mqttlist is None:
-        mqttlist = db.mqtt.list()
+        mqttlist = NodeDefender.db.mqtt.list()
 
     for m in mqttlist:
         Thread(target=add, args=[m['host'], m['port']]).start()

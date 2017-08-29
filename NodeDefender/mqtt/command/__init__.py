@@ -1,5 +1,4 @@
-from NodeDefender.mqtt.connection import connection
-from NodeDefender import db
+import NodeDefender
 
 TopicFormat = "icpe/0x{}/cmd/node/{}/class/{}/act/{}"
 
@@ -8,11 +7,12 @@ def fire(topic, payload = None, icpe = None, mqttsrc = None):
         raise ValueError("Need either iCPE or MQTT Source to target")
 
     if mqttsrc is None and icpe:
-        mqttsrc = db.mqtt.icpe(icpe)
+        mqttsrc = NodeDefender.db.mqtt.icpe(icpe)
 
-    conn = connection(mqttsrc['host'], mqttsrc['port'])
+    conn = NodeDefender.mqtt.connection.connection(mqttsrc['host'], \
+                                                   mqttsrc['port'])
     return conn.publish(topic, payload)
 
 import NodeDefender.mqtt.command.icpe
 import NodeDefender.mqtt.command.sensor
-from NodeDefender.mqtt.command import commandclass
+import NodeDefender.mqtt.command.commandclass
