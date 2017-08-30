@@ -19,8 +19,20 @@ def info(classnumber = None, classname = None, classtype = None):
     if classnumber and not classname:
         classname = to_name(classnumber)
         if not classname:
-            return False
+            return None
+    
+    if not classtype:
+        try:
+            return eval(classname + '.info')
+        except NameError:
+            return None
+
     try:
-        return eval(classname + '.info')
+        typename = eval(classname + '.classtypes')[classtype]
+    except KeyError:
+        return None
+
+    try:
+        return eval(classname + '.' + typename + '.info')
     except NameError:
-        return False
+        return None

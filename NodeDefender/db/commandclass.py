@@ -135,10 +135,13 @@ def add_types(macaddr, sensorid, classname, classtypes):
     commandclass = get_sql(macaddr, sensorid, classname = classname)
     if commandclass is None:
         return False
-    for classtype in classtypes:
+    for classtype in classtypes.split(','):
         typeModel = CommandClassTypeModel(classtype)
         info = NodeDefender.icpe.zwave.commandclass.info(classname = classname,\
                                                          classtype = classtype)
+        if not info:
+            print("No info: ", commandclass.name, classtype)
+            continue
         typeModel.name = info['name']
         commandclass.types.append(typeModel)
         SQL.session.add(commandclass, typeModel)
