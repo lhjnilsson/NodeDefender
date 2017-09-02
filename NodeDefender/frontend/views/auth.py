@@ -1,4 +1,3 @@
-from .. import AuthView
 from ...models.manage import user as UserSQL
 from flask_login import login_user, logout_user
 from .forms import LoginForm, RegisterForm, PasswordForm
@@ -6,6 +5,8 @@ from flask import request, redirect, url_for, render_template, flash
 from datetime import datetime
 from ... import serializer
 from ...mail import user as UserMail
+from NodeDefender.frontend.views import AuthView
+import NodeDefender
 
 @AuthView.route('/login', methods=['GET', 'POST'])
 def Login():

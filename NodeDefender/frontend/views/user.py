@@ -1,21 +1,19 @@
-from .. import UserView
 from flask import render_template
 from flask_login import login_required, current_user
-from ...models.SQL import UserModel
+from NodeDefender.frontend.views import UserView
+import NodeDefender
 
 @UserView.route('/user/profile')
 @login_required
 def UserProfile():
-    Profile = UserModel.query.filter_by(email = current_user.email).first()
     Team =  UserModel.query.all()
-    return render_template('user/profile.html', Team = Team, Profile = Profile)
+    return render_template('user/profile.html', Team = Team)
 
 @UserView.route('/user/groups')
 @login_required
 def UserGroups():
-    Profile = UserModel.query.filter_by(email = current_user.email).first()
     Team =  UserModel.query.all()
-    return render_template('user/groups.html', Team = Team, Profile = Profile)
+    return render_template('user/groups.html', Team = Team)
 
 
 @UserView.route('/user/inbox')

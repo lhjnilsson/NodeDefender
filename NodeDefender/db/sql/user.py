@@ -72,7 +72,26 @@ class UserModel(SQL.Model):
             return True
         else:
             return False
-    
+
+    def set_role(self, role):
+        if role.lower() is 'observer':
+            self.technician = False
+            self.administrator = False
+            self.superuser = False
+        elif role.lower() is 'technician':
+            self.technician = True
+            self.administrator = False
+            self.superuser = False
+        elif role.lower() is 'administrator':
+            self.technician = True
+            self.administrator = True
+            self.observer = False
+        elif role.lower() is 'superuser':
+            self.technician = True
+            self.administrator = True
+            self.superuser = True
+        else:
+            raise AttributeError('Wrong kind of role')
 
     def has_role(self, role):
         try:

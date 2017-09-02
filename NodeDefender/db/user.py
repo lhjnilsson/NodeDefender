@@ -11,7 +11,7 @@ def update_sql(mail, **kwargs):
         if key not in user.columns():
             continue
         setattr(user, key, value)
-    SQL.session.save(user)
+    SQL.session.add(user)
     SQL.session.commit()
     return user
 
@@ -19,7 +19,7 @@ def create_sql(mail):
     if get_sql(mail):
         return get_sql(mail)
     user = UserModel(mail)
-    SQL.session.save(user)
+    SQL.session.add(user)
     SQL.session.commit()
     return user
 
@@ -33,6 +33,22 @@ def delete_sql(mail):
 def get(mail):
     return sql_sql(mail)
 
+def groups(mail):
+    try:
+        return [group.to_json() for group in get_sql(mail).groups]
+    except AttributeError:
+        return []
+
+def set_role(mail, role):
+    user = get_sql(mail)
+    user.set_role(role)
+    SQL.session.add(user)
+    SQL.session.commit()
+    return user
+
+def get_role(mail):
+    return get_sql(mail).role()
+
 def list(groupName = None):
     if not groupName:
         return [user.to_json() for user in UserModel.query.all()]
@@ -40,8 +56,10 @@ def list(groupName = None):
             db.session.query(UserModel).join(UserModel.group).\
             filter(GroupModel.name == groupName).all()]
 
-def create(mail):
-    return create_sql(mail)
+def create(mail, firstname = None, lastname = None):
+    create_sql(mail)
+    update_sql(mail, **{'fistname' : firstname, 'lastname' : lastname})
+    return get_sql(mail)
 
 def delete(mail):
     return delete_sql(mail)

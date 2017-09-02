@@ -24,78 +24,54 @@ SOFTWARE.
 '''
 from flask_socketio import emit, send, disconnect, join_room, leave_room, \
         close_room, rooms
-from ... import socketio
-from ...models.manage import group as GroupSQL
-from ...models.manage import user as UserSQL
-from ...models.manage import role as RoleSQL
-from ...mail import user as UserMail
+from NodeDefender import socketio
+import NodeDefender
 from flask_login import current_user
 from flask import flash, redirect, url_for
 
 @socketio.on('create', namespace='/user')
-def create(user):
-    if not GroupSQL.Get(user['group']):
+def create(mail, firstname, lastname, group, role):
+    if not NodeDefender.db.group.get(group):
         emit('error', ('Group does not exist'), namespace='/general')
         return False
 
-    if UserSQL.Get(user['email']):
+    if NodeDefender.db.user.get(mail):
         emit('error', ('User Exists'), namespace='/general')
         return False
-    db_user = UserSQL.Create(user['email'])
-    db_user.firstname = user['firstname']
-    db_user.lastname = user['lastname']
-    UserSQL.Save(db_user)
 
-    UserSQL.Join(db_user.email, user['group'])
-    RoleSQL.AddRole(db_user.email, user['role'])
-    UserMail.new_user.delay(db_user.email)
+    user = NodeDefender.db.user.create(mail, firstname, lastname)
+    NodeDefender.db.group.add_user(group, mail)
+    NodeDefender.db.user.set_role(mail, role)
+    NodeDefender.mail.user.new_user(user)
     emit('reload', namespace='/general')
     return True
 
-@socketio.on('list', namespace='/user')
-def list(user):
-    user = current_user
-    if user is None:
-        return
-    if user.superuser:
-        emit('list', ([group.to_json() for group in GroupSQL.List()]))
-    else:
-        emit('list', ([group.to_json() for group in user.groups]))
-    return True
+@socketio.on('groups', namespace='/groups')
+def groups(mail):
+    return emit('groups', NodeDefender.db.user.groups(mail))
 
-@socketio.on('info', namespace='/user')
-def info(msg):
-    group = GroupSQL.Get(msg['name'])
-    emit('info', (group.to_json()))
-    return True
-
-@socketio.on('updateName', namespace='/user')
-def update_name(firstname, lastname):
-    user = current_user
-    if user is None:
-        return
-    user.firstname = firstname
-    user.lastname = lastname
-    UserSQL.Save(user)
+@socketio.on('update', namespace='/user')
+def update_name(mail, kwargs):
+    NodeDefender.db.user.update(mail, **kwargs)
     emit('reload', namespace='/general')
     return True
 
 @socketio.on('freeze', namespace='/user')
-def freeze_user(user):
-    pass
+def freeze_user(mail):
+    return emit('freeze', NodeDefender.db.user.freeze(mail))
 
 @socketio.on('enable', namespace='/user')
-def enable_user(user):
-    pass
+def enable_user(mail):
+    return emit('enable', NodeDefender.db.user.enable(mail))
 
 @socketio.on('resetPassword', namespace='/user')
-def freeze_user(user):
-    pass
+def freeze_user(mail):
+    return emit('resetPassword', NodeDefender.db.user.reset_password(mail))
 
 @socketio.on('delete', namespace='/user')
-def delete_user(user):
+def delete_user(mail):
     try:
-        UserSQL.Delete(user)
+        NodeDefender.db.user.delete(mail)
     except LookupError:
         emit('error')
         return

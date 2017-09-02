@@ -14,7 +14,7 @@ def update_sql(host, port = 1883, **kwargs):
             continue
         setattr(mqtt, key, value)
 
-    SQL.session.save(mqtt)
+    SQL.session.add(mqtt)
     SQL.session.comit()
     return mqtt
 

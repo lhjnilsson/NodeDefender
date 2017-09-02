@@ -59,6 +59,12 @@ def get(macaddr, sensorid):
         return get_redis(macaddr, sensorid)
     return False
 
+def fields(macaddr, sensorid):
+    data = []
+    for name in redis.field.list(macaddr, sensorid):
+        data.append(redis.field.get(macaddr, sensorid, name))
+    return data
+
 def update(macaddr, sensorid, **kwargs):
     update_sql(macaddr, sensorid, **kwargs)
     update_redis(macaddr, sensorid, **kwargs)

@@ -81,6 +81,13 @@ def list(node = None):
             filter(NodeModel.name == node).all()
     return [node.name for node in nodes]
 
+def unassigned(user):
+    icpes = SQL.session.query(iCPEModel).\
+            filter_by(iCPEModel.node is none).all()
+    if icpes:
+        emit('unassigned', [icpe.to_json() for icpe in icpes])
+    return True
+
 def sensors(macaddr):
     sensors = redis.sensor.list(macaddr)
     if len(sensors):
@@ -97,3 +104,15 @@ def update_state(macaddr, state):
     websocket.icpe.state(macaddr, state)
     update_redis(icpe)
     return True
+
+def connection(macaddr):
+    icpe = get(macaddr)
+    if not icpe:
+        return False
+    return {'ipAddress' : icpe['ipAddress']}
+
+def power(macaddr):
+    icpe = get(macaddr)
+    if not icpe:
+        return False
+    return {'power' : icpe['power']}

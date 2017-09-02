@@ -33,7 +33,9 @@ def delete_sql(name):
 def get(name):
     return get_sql(name)
 
-def list(groupName = None):
+def list(group = None, user = None):
+    if user:
+        return []
     if not groupName:
         return [node.to_json() for node in NodeModel.query.all()]
     

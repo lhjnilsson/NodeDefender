@@ -33,26 +33,40 @@ def delete_sql(name):
 def get(name):
     return get_sql(name)
 
-def list(userMail = None):
-    if not userMail:
+def list(user_mail = None):
+    if not user_mail:
         return [group.to_json() for group in GroupModel.query.all()]
     
-    user = db.user.get(userMail)
+    user = db.user.get(user_mail)
     if user.superuser():
         return [group.to_json() for group in GroupModel.query.all()]
     return [group.to_json() for group in \
             db.session.query(GroupModel).join(GroupModel.user).\
-            filter(UserModel.mail == userMail).all()]
+            filter(UserModel.mail == user_mail).all()]
 
 def create(name):
     return create_sql(name)
 
+def location(name, street, city):
+    group = get_sql(name)
+    if group is None:
+        return False
+    geo = Nominatim()
+    coord = geo.geocode(street + ' ' + city, timeout = 10)
+    if coord is None:
+        return False
+    group.location = LocationModel(street, city, coord.latitude,
+                                   coord.longitude)
+    SQL.session.add(group)
+    SQL.session.commit()
+    return group
+
 def delete(name):
     return delete_sql(name)
 
-def add_user(groupName, userMail):
-    group = get_sql(groupName)
-    user = db.user.get(userMail)
+def add_user(group_name, user_mail):
+    group = get_sql(group_name)
+    user = db.user.get(user_mail)
     if user is None or group is None:
         return False
 
@@ -61,9 +75,9 @@ def add_user(groupName, userMail):
     SQL.session.commit()
     return group
 
-def remove_user(groupName, userMail):
-    group = get_sql(groupName)
-    user = db.user.get(userMail)
+def remove_user(group_name, user_mail):
+    group = get_sql(group_name)
+    user = db.user.get(user_mail)
     if user is None or group is None:
         return False
 
@@ -72,9 +86,9 @@ def remove_user(groupName, userMail):
     SQL.session.commit()
     return group
 
-def add_node(groupName, nodeName):
-    group = get_sql(groupName)
-    node = db.user.get(nodeName)
+def add_node(group_name, node_name):
+    group = get_sql(group_name)
+    node = db.user.get(node_name)
     if node is None or group is None:
         return False
 
@@ -83,9 +97,9 @@ def add_node(groupName, nodeName):
     SQL.session.commit()
     return group
 
-def remove_node(groupName, nodeName):
-    group = get_sql(groupName)
-    node = db.node.get(nodeName)
+def remove_node(group_name, node_name):
+    group = get_sql(group_name)
+    node = db.node.get(node_name)
     if node is None or group is None:
         return False
 

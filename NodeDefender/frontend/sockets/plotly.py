@@ -1,9 +1,7 @@
 from flask_socketio import emit, send, disconnect, join_room, leave_room, \
         close_room, rooms
-from ... import socketio
-from ...models.manage import data as DataSQL
-from ...models.manage import user as UserSQL
-from ...models.manage import group as GroupSQL
+from flask_login import current_user
+from NodeDefender import socketio
 
 power_layout = {'title' : '',
                'xaxis' : {'title' : 'Date'},
@@ -17,14 +15,14 @@ heat_layout = {'title' : '',
 
 #Power
 @socketio.on('powerChart', namespace='/plotly')
-def power_chart(msg):
-    user = UserSQL.Get(msg['user'])
-    if user.superuser:
-        groups = [group.name for group in GroupSQL.List()]
+def power_chart():
+    if current_user.superuser:
+        groups = [group.name for group in NodeDefender.db.group.list()]
     else:
-        groups = [group.name for group in user.groups]
+        groups = [group.name for group in current_user.groups]
 
-    chart_data = DataSQL.power.Chart(*groups)
+
+    chart_data = NodeDefender.db.data.power.chart(*groups)
     if not chart_data:
         return False
 
@@ -43,8 +41,8 @@ def power_chart(msg):
     return True
 
 @socketio.on('groupPowerChart', namespace='/plotly')
-def group_power_chart(msg):
-    chart_data = DataSQL.group.power.Chart(msg['name'])
+def group_power_chart(name):
+    chart_data = NodeDefender.db.data.group.power.chart(name)
     if not chart_data:
         return False
 
@@ -63,8 +61,8 @@ def group_power_chart(msg):
     return True
 
 @socketio.on('nodePowerChart', namespace='/plotly')
-def node_power_chart(msg):
-    chart_data = DataSQL.node.power.Chart(msg['name'])
+def node_power_chart(name):
+    chart_data = NodeDefender.db.data.node.power.chart(name)
     if not chart_data:
         return False
 
@@ -83,8 +81,8 @@ def node_power_chart(msg):
     return True
 
 @socketio.on('sensorPowerChart', namespace='/plotly')
-def sensor_power_chart(msg):
-    chart_data = DataSQL.sensor.power.Chart(msg['icpe'], msg['sensor'])
+def sensor_power_chart(icpe, sensor):
+    chart_data = NodeDefender.db.data.sensor.power.chart(icpe, sensor)
     if not chart_data:
         return False
 
@@ -120,14 +118,13 @@ def sensor_power_chart(msg):
 
 #Heat
 @socketio.on('heatChart', namespace='/plotly')
-def heat_chart(msg):
-    user = UserSQL.Get(msg['user'])
-    if user.superuser:
-        groups = [group.name for group in GroupSQL.List()]
+def heat_chart():
+    if current_user.superuser:
+        groups = [group.name for group in NodeDefender.db.group.list()]
     else:
-        groups = [group.name for group in user.groups]
+        groups = [group.name for group in current_user.groups]
 
-    chart_data = DataSQL.heat.Chart(*groups)
+    chart_data = NodeDefender.db.data.heat.chart(*groups)
     if not chart_data:
         return False
 
@@ -146,8 +143,8 @@ def heat_chart(msg):
     return True
 
 @socketio.on('groupHeatChart', namespace='/plotly')
-def group_heat_chart(msg):
-    chart_data = DataSQL.group.heat.Chart(msg['name'])
+def group_heat_chart(name):
+    chart_data = NodeDefender.db.data.group.heat.chart(name)
     if not chart_data:
         return False
 
@@ -166,8 +163,8 @@ def group_heat_chart(msg):
     return True
 
 @socketio.on('nodeHeatChart', namespace='/plotly')
-def node_heat_chart(msg):
-    chart_data = DataSQL.node.heat.Chart(msg['name'])
+def node_heat_chart(name):
+    chart_data = NodeDefender.db.data.node.heat.chart(name)
     if not chart_data:
         return False
 
@@ -186,8 +183,8 @@ def node_heat_chart(msg):
     return True
 
 @socketio.on('sensorHeatChart', namespace='/plotly')
-def sensor_heat_chart(msg):
-    chart_data = DataSQL.sensor.heat.Chart(msg['icpe'], msg['sensor'])
+def sensor_heat_chart(icpe, sensor):
+    chart_data = NodeDefender.db.data.sensor.heat.chart(icpe, sensor)
     if not chart_data:
         return False
 
