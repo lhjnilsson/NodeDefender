@@ -2,6 +2,7 @@ from flask_socketio import emit, send, disconnect, join_room, leave_room, \
         close_room, rooms
 from NodeDefender import socketio
 from flask_login import current_user
+import NodeDefender
 
 # Messages
 @socketio.on('messages', namespace='/data')
