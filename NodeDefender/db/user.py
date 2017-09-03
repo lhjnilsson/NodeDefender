@@ -1,4 +1,5 @@
 from NodeDefender.db.sql import SQL, UserModel
+from NodeDefender import bcrypt
 
 def get_sql(mail):
     return UserModel.query.filter_by(mail = mail).first()
@@ -23,6 +24,10 @@ def create_sql(mail):
     SQL.session.commit()
     return user
 
+def save_sql(user):
+    SQL.session.add(user)
+    return SQL.session.commit()
+
 def delete_sql(mail):
     if not get_sql(mail):
         return False
@@ -31,7 +36,12 @@ def delete_sql(mail):
     return True
 
 def get(mail):
-    return sql_sql(mail)
+    return get_sql(mail)
+
+def set_password(email, raw_password):
+    user = get_sql(email)
+    user.password = bcrypt.generate_password_hash(password).decode('utf-8')
+    return save_sql(user)
 
 def groups(mail):
     try:
@@ -49,7 +59,7 @@ def set_role(mail, role):
 def get_role(mail):
     return get_sql(mail).role()
 
-def list(groupName = None):
+def list(*group_names):
     if not groupName:
         return [user.to_json() for user in UserModel.query.all()]
     return [user.to_json() for user in \
@@ -60,6 +70,9 @@ def create(mail, firstname = None, lastname = None):
     create_sql(mail)
     update_sql(mail, **{'fistname' : firstname, 'lastname' : lastname})
     return get_sql(mail)
+
+def update(mail, **kwargs):
+    return update_sql(mail, **kwargs)
 
 def delete(mail):
     return delete_sql(mail)

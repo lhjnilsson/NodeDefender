@@ -47,6 +47,21 @@ def list(group = None, user = None):
 def create(name):
     return create_sql(name)
 
+def location(name, street, city):
+    node = get_sql(name)
+    if node is None:
+        return False
+    geo = Nominatim()
+    coord = geo.geocode(street + ' ' + city, timeout = 10)
+    if coord is None:
+        return False
+    node.location = LocationModel(street, city, coord.latitude,
+                                   coord.longitude)
+    SQL.session.add(node)
+    SQL.session.commit()
+    return group
+
+
 def delete(name):
     return delete_sql(name)
 

@@ -7,8 +7,10 @@ logger = logging.getLogger('db')
 logger.setLevel('DEBUG')
 logger.addHandler(loggHandler)
 
+import NodeDefender.db.data
 import NodeDefender.db.group
 import NodeDefender.db.user
+import NodeDefender.db.message
 import NodeDefender.db.node
 import NodeDefender.db.icpe
 import NodeDefender.db.sensor

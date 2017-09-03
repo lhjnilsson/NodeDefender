@@ -40,4 +40,4 @@ import NodeDefender.db
 import NodeDefender.mqtt
 import NodeDefender.icpe
 #import NodeDefender.mail
-#import NodeDefender.frontend
+import NodeDefender.frontend

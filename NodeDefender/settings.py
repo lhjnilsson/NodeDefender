@@ -1,7 +1,7 @@
 from configparser import ConfigParser
-from .models.manage import mqtt as MQTTSQL
 import os
 from datetime import datetime
+import NodeDefender
 '''
 Utilities used to read and modify configuration
 '''

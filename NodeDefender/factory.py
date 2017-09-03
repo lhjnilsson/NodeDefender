@@ -20,8 +20,8 @@ def CreateApp():
         mode = 'Production'
         
     app.config.from_object('NodeDefender.config.'+mode+'Config')
-    app.template_folder = "frontend/templates"
-    app.static_folder = "frontend/static"
+    app.template_folder = "templates"
+    app.static_folder = "templates/frontend/static"
     moment.init_app(app)
     return app
 

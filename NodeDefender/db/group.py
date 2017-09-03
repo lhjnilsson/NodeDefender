@@ -1,4 +1,5 @@
 from NodeDefender.db.sql import SQL, GroupModel, UserModel
+import NodeDefender
 
 def get_sql(name):
     return GroupModel.query.filter_by(name = name).first()
@@ -11,7 +12,7 @@ def update_sql(name, **kwargs):
         if key not in group.columns():
             continue
         setattr(group, key, value)
-    SQL.session.save(group)
+    SQL.session.add(group)
     SQL.session.commit()
     return group
 
@@ -19,7 +20,7 @@ def create_sql(name):
     if get_sql(name):
         return get_sql(name)
     group = GroupModel(name)
-    SQL.session.save(group)
+    SQL.session.add(group)
     SQL.session.commit()
     return group
 
@@ -37,15 +38,16 @@ def list(user_mail = None):
     if not user_mail:
         return [group.to_json() for group in GroupModel.query.all()]
     
-    user = db.user.get(user_mail)
+    user = NodeDefender.db.user.get(user_mail)
     if user.superuser():
         return [group.to_json() for group in GroupModel.query.all()]
-    return [group.to_json() for group in \
-            db.session.query(GroupModel).join(GroupModel.user).\
-            filter(UserModel.mail == user_mail).all()]
+    return [group.to_json() for group in user.groups]
 
 def create(name):
     return create_sql(name)
+
+def update(name, **kwargs):
+    return update_sql(name, **kwargs)
 
 def location(name, street, city):
     group = get_sql(name)

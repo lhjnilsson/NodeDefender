@@ -50,7 +50,7 @@ def create(host, port = 1883):
 def delete(host, port = 1883):
     return delete_sql(host, port)
 
-def list(group = None, icpe = None):
+def list(group = None, user = None, icpe = None):
     if group:
         return [mqtt.to_json() for mqtt in \
                 db.session.query(MQTTModel).join(MQTTModel.group).\
