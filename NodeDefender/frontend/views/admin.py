@@ -1,128 +1,120 @@
-from .. import AdminView
-from .forms import (GeneralForm, CreateUserForm, CreateGroupForm,
+from NodeDefender.frontend.views import admin_view
+from NodeDefender.frontend.forms.admin import (GeneralForm, CreateUserForm, CreateGroupForm,
                     CreateMQTTForm, UserSettings, UserPassword, UserGroupAdd)
 from flask_login import login_required, current_user
 from flask import Blueprint, request, render_template, flash, redirect, url_for
-from ...models.manage import user as UserSQL
-from ...models.manage import group as GroupSQL
-from ...models.manage import mqtt as MQTTSQL
-from ...conn import mqtt
-from ... import serializer
-from ...security import group_required
+from NodeDefender import serializer
+#from ...security import group_required
 
-@AdminView.route('/admin/server', methods=['GET', 'POST'])
+@admin_view.route('/admin/server', methods=['GET', 'POST'])
 @login_required
-def AdminServer():
+def admin_server():
     General = GeneralForm()
-    MQTTList = MQTTSQL.List(current_user)
+    MQTTList = NodeDefender.db.mqtt.list(user = current_user.email)
     MQTT = CreateMQTTForm()
     if request.method == 'GET':
         return render_template('admin/server.html', GeneralForm = General,
                                MQTTList = MQTTList, MQTTForm = MQTT)
     if MQTT.Submit.data and MQTT.validate_on_submit():
         try:
-            m = MQTTSQL.Create(MQTT.IPAddr.data,\
-                           MQTT.Port.data,\
-                           MQTT.Username.data,\
-                           MQTT.Password.data)
-            mqtt.Add(m.host, m.port, m.username, m.password)
+            NodeDefender.db.mqtt.create(MQTT.IPAddr.data, MQTT.Port.data)
+            NodeDefender.mqtt.connection.add(MQTT.IPAddr.data, MQTT.Port.data)
         except ValueError as e:
             flash('Error: {}'.format(e), 'danger')
-            return redirect(url_for('AdminView.AdminServer'))
+            return redirect(url_for('admin_view.admin_server'))
     
     if General.Submit.data and General.validate_on_submit():
         flash('Successfully updated General Settings', 'success')
-        return redirect(url_for('AdminServer'))
+        return redirect(url_for('admin_server'))
     else:
         flash('Error when trying to update General Settings', 'danger')
-        return redirect(url_for('AdminView.AdminServer'))
+        return redirect(url_for('admin_view.admin_server'))
 
     flash('{}'.format(e), 'success')
-    return redirect(url_for('AdminView.AdminServer'))
+    return redirect(url_for('admin_view.admin_server'))
 
-@AdminView.route('/admin/groups', methods=['GET', 'POST'])
+@admin_view.route('/admin/groups', methods=['GET', 'POST'])
 @login_required
-def AdminGroups():
+def admin_groups():
     GroupForm = CreateGroupForm()
-    groups = GroupSQL.List()
+    groups = NodeDefender.db.group.list(user = current_user.email)
     if request.method == 'GET':
         return render_template('admin/groups.html', groups = groups,
                                 CreateGroupForm = GroupForm)
     else:
         if not GroupForm.validate_on_submit():
             flash('Form not valid', 'danger')
-            return redirect(url_for('AdminView.AdminGroups'))
+            return redirect(url_for('admin_view.admin_groups'))
         try:
-            Group = GroupSQL.Create(GroupForm.Name.data, GroupForm.Description.data)
-            Group.email = GroupForm.Email.data
-            GroupSQL.Save(Group)
+            group = NodeDefender.db.group.create(GroupForm.Name.data)
+            NodeDefender.db.group.update(group.name, **\
+                                         {'email' : GroupForm.Email.data,
+                                          'description' :
+                                          GroupForm.description.data})
         except ValueError as e:
             flash('Error: {}'.format(e), 'danger')
-            return redirect(url_for('AdminView.AdminGroups'))
-        flash('Successfully Created Group: {}'.format(Group.name), 'success')
-        return redirect(url_for('AdminView.AdminGroup', name =
-                                serializer.dumps(Group.name)))
+            return redirect(url_for('admin_view.admin_groups'))
+        flash('Successfully Created Group: {}'.format(group.name), 'success')
+        return redirect(url_for('admin_view.admin_group', name =
+                                serializer.dumps(group.name)))
 
-@AdminView.route('/admin/groups/<name>')
-@group_required
+@admin_view.route('/admin/groups/<name>')
 @login_required
-def AdminGroup(name):
+def admin_group(name):
     name = serializer.loads(name)
-    group = GroupSQL.Get(name)
+    group = NodeDefender.db.group.get(name)
     if group is None:
         flash('Group {} not found'.format(name), 'danger')
-        return redirect(url_for('AdminView.AdminGroups'))
+        return redirect(url_for('admin_view.admin_groups'))
     return render_template('admin/group.html', Group = group)
 
-@AdminView.route('/admin/users', methods=['GET', 'POST'])
+@admin_view.route('/admin/users', methods=['GET', 'POST'])
 @login_required
-def AdminUsers():
+def admin_users():
     UserForm = CreateUserForm()
     if request.method == 'GET':
-        Users = UserSQL.Friends(current_user.email)
-        return render_template('admin/users.html', Users = Users,\
+        groups = NodeDefender.db.group.list(current_user.email)
+        users = NodeDefender.db.user.list(*groups)
+        return render_template('admin/users.html', Users = users,\
                                CreateUserForm = UserForm)
     if not UserForm.validate():
         flash('Error adding user', 'danger')
-        return redirect(url_for('AdminView.AdminUsers'))
+        return redirect(url_for('admin_view.admin_users'))
     try:
-        user = UserSQL.Create(UserForm.Email.data)
-        user.firstname = UserForm.Firstname.data
-        user.lastname = UserForm.Lastname.data
-        UserSQL.Save(user)
+        user = NodeDefender.db.user.create(UserForm.Email.data,
+                                           UserForm.Firstname.data,
+                                           UserForm.Lastname.data)
     except ValueError as e:
         flash('Error: {}'.format(e), 'danger')
-        redirect(url_for('AdminView.AdminUsers'))
+        redirect(url_for('admin_view.admin_users'))
     flash('Successfully added user {}'.format(user.firstname), 'success')
-    return redirect(url_for('AdminView.AdminUser', id = user.id))
+    return redirect(url_for('admin_view.admin_user', id = user.id))
 
-@AdminView.route('/admin/users/<email>', methods=['GET', 'POST'])
+@admin_view.route('/admin/users/<email>', methods=['GET', 'POST'])
 @login_required
-def AdminUser(email):
+def admin_user(email):
     email = serializer.loads(email)
     usersettings = UserSettings()
     userpassword = UserPassword()
     usergroupadd = UserGroupAdd()
-    user = UserSQL.Get(email)
+    user = NodeDefender.db.user.get(email)
     if request.method == 'GET':
         if user is None:
             flash('User {} not found'.format(id), 'danger')
-            return redirect(url_for('AdminView.AdminGroups'))
+            return redirect(url_for('admin_view.admin_groups'))
         return render_template('admin/user.html', User = user, UserSettings =
                                usersettings, UserPassword = userpassword,
                                UserGroupAdd = usergroupadd)
     
     if usersettings.Email.data and usersettings.validate():
-        user.firstname = usersettings.Firstname.data
-        user.lastname = usersettings.Lastname.data
-        user.email = usersettings.Email.data
-        UserSQL.Save(user)
-        return redirect(url_for('AdminView.AdminUser', email =
-                                serializer.dumps(email)))
+        NodeDefender.db.user.update(usersettings.email.data, **\
+                                    {'firstname' : usersettings.Firstname.data,
+                                     'lastname' : usersettings.Lastname.data,
+                                     'email' : usersettings.Email.data})
+        return redirect(url_for('admin_view.admin_user', email =
+                                serializer.dumps(usersettings.Email.data)))
 
-@AdminView.route('/admin/backup')
+@admin_view.route('/admin/backup')
 @login_required
-def AdminBackup():
+def admin_backup():
     return render_template('admin/backup.html')
-
-

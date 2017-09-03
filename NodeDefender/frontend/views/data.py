@@ -1,78 +1,74 @@
-from .. import DataView
-from .models import *
+from NodeDefender.frontend.views import data_view
 from flask import request, render_template
-from ... import serializer
+from NodeDefender import serializer
 from flask_login import login_required, current_user
-from ...models.manage import group as GroupSQL
-from ...models.manage import node as NodeSQL
-from ...models.manage import sensor as SensorSQL
 
 #Power
-@DataView.route('/data/power')
+@data_view.route('/data/power')
 @login_required
-def DataPower():
+def data_power():
     if request.method == 'GET':
-        if current_user.superuser:
-            groups = GroupSQL.List()
-        else:
-            groups = [group for group in current_user.groups]
+        groups = NodeDefender.db.group.list(current_user)
         return render_template('data/power.html', groups = groups)
 
-@DataView.route('/data/power/group/<name>')
-def PowerGroup(name):
+@data_view.route('/data/power/group/<name>')
+@login_required
+def power_group(name):
     name = serializer.loads(name)
     if request.method == 'GET':
-        group = GroupSQL.Get(name)
+        group = NodeDefender.db.group.get(name)
         if group is None:
             pass # Fix later..
         return render_template('data/group/power.html', group = group)
 
-@DataView.route('/data/power/node/<name>')
-def PowerNode(name):
+@data_view.route('/data/power/node/<name>')
+@login_required
+def power_node(name):
     name = serializer.loads(name)
     if request.method == 'GET':
-        node = NodeSQL.Get(name)
+        node = NodeDefender.db.node.get(name)
         return render_template('data/node/power.html', node = node)
 
-@DataView.route('/data/power/sensor/<icpe>/<sensor>')
-def PowerSensor(icpe, sensor):
+@data_view.route('/data/power/sensor/<icpe>/<sensor>')
+@login_required
+def power_sensor(icpe, sensor):
     icpe = serializer.loads(icpe)
     
     if request.method == 'GET':
-        sensor = SensorSQL.Get(icpe, sensor)
+        sensor = NodeDefender.db.sensor.get(icpe, sensor)
         return render_template('data/sensor/power.html', sensor = sensor)
 
 #Heat
-@DataView.route('/data/heat')
+@data_view.route('/data/heat')
 @login_required
-def DataHeat():
+def data_heat():
     if request.method == 'GET':
-        if current_user.superuser:
-            groups = GroupSQL.List()
-        else:
-            groups = [group for group in current_user.groups]
+        groups = NodeDefender.db.group.list(current_user.mail)
         return render_template('data/heat.html', groups = groups)
 
-@DataView.route('/data/heat/group/<name>')
-def HeatGroup(name):
+@data_view.route('/data/heat/group/<name>')
+@login_required
+def heat_group(name):
     name = serializer.loads(name)
     if request.method == 'GET':
-        group = GroupSQL.Get(name)
+        group = NodeDefender.db.group.get(name)
         if group is None:
             pass # Fix later..
         return render_template('data/group/heat.html', group = group)
 
-@DataView.route('/data/heat/node/<name>')
-def HeatNode(name):
+@data_view.route('/data/heat/node/<name>')
+@login_required
+def heat_node(name):
     name = serializer.loads(name)
     if request.method == 'GET':
-        node = NodeSQL.Get(name)
+        node = NodeDefender.db.node.get(name)
         return render_template('data/node/heat.html', node = node)
 
-@DataView.route('/data/heat/sensor/<icpe>/<sensor>')
-def HeatSensor(icpe, sensor):
+@data_view.route('/data/heat/sensor/<icpe>/<sensor>')
+@login_required
+def heat_sensor(icpe, sensor):
     icpe = serializer.loads(icpe)
     
     if request.method == 'GET':
-        sensor = SensorSQL.Get(icpe, sensor)
+        sensor = NodeDefender.db.sensor.get(icpe, sensor)
         return render_template('data/sensor/heat.html', sensor = sensor)

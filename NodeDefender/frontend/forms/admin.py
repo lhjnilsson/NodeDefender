@@ -1,5 +1,5 @@
 from wtforms import StringField, BooleanField, SelectField, SubmitField, validators
-from ...settings import read_server
+from NodeDefender.settings import read_server
 from flask_wtf import FlaskForm as Form
 def loggingchoices():
     '''

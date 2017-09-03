@@ -1,21 +1,19 @@
-from ...models.manage import user as UserSQL
 from flask_login import login_user, logout_user
-from .forms import LoginForm, RegisterForm, PasswordForm
+from NodeDefender.frontend.forms.auth import LoginForm, RegisterForm, PasswordForm
 from flask import request, redirect, url_for, render_template, flash
 from datetime import datetime
-from ... import serializer
-from ...mail import user as UserMail
-from NodeDefender.frontend.views import AuthView
+from NodeDefender import serializer
+from NodeDefender.frontend.views import auth_view
 import NodeDefender
 
-@AuthView.route('/login', methods=['GET', 'POST'])
-def Login():
+@auth_view.route('/login', methods=['GET', 'POST'])
+def login():
     login_form = LoginForm(request.form)
     if request.method == 'GET':
         return render_template('auth/login.html', LoginForm = login_form)
     
     if login_form.validate_on_submit():
-        user = UserSQL.Get(login_form.email.data)
+        user = NodeDefender.db.user.get(login_form.email.data)
         if user is None:
             flash('Email or Password Wrong', 'error')
             return render_template('auth/login.html', LoginForm = login_form)
@@ -37,16 +35,16 @@ def Login():
     else:
         print(login_form.errors)
         flash('error', 'error')
-        return redirect(url_for('AuthView.Login'))
+        return redirect(url_for('auth_view.login'))
 
-@AuthView.route('/logout')
-def Logout():
+@auth_view.route('/logout')
+def logout():
     logout_user()
-    return redirect(url_for('AuthView.Login'))
+    return redirect(url_for('auth_view.login'))
 
-@AuthView.route('/register/<token>', methods=['GET', 'POST'])
-def Register(token):
-    user = UserSQL.Get(serializer.loads_salted(token))
+@auth_view.route('/register/<token>', methods=['GET', 'POST'])
+def register(token):
+    user = NodeDefender.db.user.get(serializer.loads_salted(token))
     if user is None:
         flash('Invalid Token', 'error')
         return redirect(url_for('index'))
@@ -60,23 +58,23 @@ def Register(token):
         user.lastname = register_form.lastname.data
         user.active = True
         user.confirmed_at = datetime.now()
-        UserSQL.Save(user)
-        UserSQL.Password(user.email, register_form.password.data)
-        UserMail.confirm_user.delay(user.email)
+        NodeDefender.db.user.save_sql(user)
+        NodeDefender.db.user.set_password(user.email, register_form.password.data)
+        NodeDefender.mail.user.confirm_user.delay(user.email)
         flash('Register Successful, please login', 'success')
     else:
         print(register_form.errors)
         flash('Error doing register, please try again', 'error')
-        return redirect(url_for('AuthView.Login'))
+        return redirect(url_for('auth_view.login'))
     
-    return redirect(url_for('AuthView.Login'))
+    return redirect(url_for('auth_view.login'))
 
-@AuthView.route('/resetpassword/<token>', methods=['GET', 'POST'])
-def ResetPassword(token):
+@auth_view.route('/resetpassword/<token>', methods=['GET', 'POST'])
+def reset_password(token):
     user = UserSQL.Get(serializer.loads_salted(token))
     if user is None:
         flash('Invalid token', 'error')
-        return redirect(url_for('AuthView.Login'))
+        return redirect(url_for('auth_view.login'))
 
     password_form = PasswordForm()
     if request.method == 'GET':
@@ -84,9 +82,9 @@ def ResetPassword(token):
                                PasswordForm = password_form)
 
     if password_form.validate_on_submit():
-        UserSQL.Password(user.email, password_form.password.data)
+        NodeDefender.db.user.set_password(user.email, password_form.password.data)
     else:
         flash('Error doing register, please try again', 'error')
-        return redirect(url_for('AuthView.Login'))
+        return redirect(url_for('auth_view.login'))
     
-    return redirect(url_for('AuthView.Login'))
+    return redirect(url_for('auth_view.login'))

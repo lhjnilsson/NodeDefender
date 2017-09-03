@@ -1,28 +1,30 @@
 from flask import Blueprint, render_template
+from NodeDefender import app
+from flask_login import login_required
 
-AdminView = Blueprint('AdminView', __name__, template_folder="templates/admin",
+admin_view = Blueprint('admin_view', __name__, template_folder="templates/admin",
                       static_folder="static")
-AuthView = Blueprint('AuthView', __name__, template_folder="templates/auth",
+auth_view = Blueprint('auth_view', __name__, template_folder="templates/auth",
                      static_folder="static")
-DataView = Blueprint('DataView', __name__, template_folder="templates/data",
+data_view = Blueprint('data_view', __name__, template_folder="templates/data",
                       static_folder="static")
-NodeView = Blueprint('NodeView', __name__, template_folder="templates/node",
+node_view = Blueprint('node_view', __name__, template_folder="templates/node",
                       static_folder="static")
-UserView = Blueprint('UserView', __name__, template_folder="templates/user",
+user_view = Blueprint('user_view', __name__, template_folder="templates/user",
                       static_folder="static")
 
 # Register Blueprints
-app.register_blueprint(AdminView)
-app.register_blueprint(AuthView)
-app.register_blueprint(DataView)
-app.register_blueprint(NodeView)
-app.register_blueprint(UserView)
+app.register_blueprint(admin_view)
+app.register_blueprint(auth_view)
+app.register_blueprint(data_view)
+app.register_blueprint(node_view)
+app.register_blueprint(user_view)
 
 @app.route('/')
 @app.route('/index')
 @login_required
 def index():
-    return render_template('dashboard/index.html')
+    return render_template('frontend/dashboard/index.html')
 
 
 import NodeDefender.frontend.views.admin
