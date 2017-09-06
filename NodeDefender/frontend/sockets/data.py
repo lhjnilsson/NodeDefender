@@ -27,13 +27,13 @@ def user_messages(user):
 # Events
 @socketio.on('groupEventsAverage', namespace='/data')
 def group_events(group, length = None):
-    events = NodeDefender.db.data.group.event.Average(group)
+    events = NodeDefender.db.data.group.event.average(group)
     emit('groupEventsAverage', (events))
     return True
 
 @socketio.on('groupEventsList', namespace='/data')
 def group_events(group, length = None):
-    events = NodeDefender.db.data.group.event.List(group, length)
+    events = NodeDefender.db.data.group.event.list(group, length)
     if events:
         events = [event.to_json() for event in events]
         emit('groupEventsList', (events))
@@ -41,14 +41,14 @@ def group_events(group, length = None):
 
 @socketio.on('nodeEvents', namespace='/data')
 def icpe_events(msg):
-    events = NodeDefender.db.data.node.event.Get(msg['node'], msg['length'])
+    events = NodeDefender.db.data.node.event.get(msg['node'], msg['length'])
     if events:
         emit('nodeEvents', ([event.to_json() for event in events]))
     return True
 
 @socketio.on('sensorEvents', namespace='/data')
 def sensor_events(msg):
-    events = NodeDefender.db.data.sensor.event.Get(msg['icpe'], msg['sensor'])
+    events = NodeDefender.db.data.sensor.event.get(msg['icpe'], msg['sensor'])
     if events:
         emit('sensorEvents', ([event.to_json() for event in events]))
     return True
@@ -56,25 +56,25 @@ def sensor_events(msg):
 # Power
 @socketio.on('groupPowerAverage', namespace='/data')
 def group_power_average(group):
-    data = NodeDefender.db.data.group.power.Average(group)
+    data = NodeDefender.db.data.group.power.average(group)
     emit('groupPowerAverage', (data))
     return True
 
 @socketio.on('nodePowerAverage', namespace='/data')
 def node_power_average(msg):
-    data = NodeDefender.db.data.node.power.Average(msg['name'])
+    data = NodeDefender.db.data.node.power.average(msg['name'])
     emit('nodePowerAverage', (data))
     return True
 
 @socketio.on('nodePowerCurrent', namespace='/data')
 def node_power_current(msg):
-    data = NodeDefender.db.data.node.power.Current(msg['name'])
+    data = NodeDefender.db.data.node.power.current(msg['name'])
     emit('nodePowerCurrent', (data))
     return True
 
 @socketio.on('sensorPowerAverage', namespace='/data')
 def sensor_power_average(msg):
-    data = NodeDefender.db.data.sensor.power.Average(msg['icpe'], msg['sensor'])
+    data = NodeDefender.db.data.sensor.power.average(msg['icpe'], msg['sensor'])
     emit('sensorPowerAverage', (data))
     return True
 
@@ -82,24 +82,24 @@ def sensor_power_average(msg):
 # Heat
 @socketio.on('groupHeatAverage', namespace='/data')
 def group_heat_average(group):
-    data = NodeDefender.db.data.group.heat.Average(group)
+    data = NodeDefender.db.data.group.heat.average(group)
     emit('groupHeatAverage', (data))
     return True
 
 @socketio.on('nodeHeatAverage', namespace='/data')
 def node_heat_average(msg):
-    data = NodeDefender.db.data.node.heat.Average(msg['name'])
+    data = NodeDefender.db.data.node.heat.average(msg['name'])
     emit('nodeHeatAverage', (data))
     return True
 
 @socketio.on('nodeHeatCurrent', namespace='/data')
 def node_heat_current(msg):
-    data = NodeDefender.db.data.node.heat.Current(msg['name'])
+    data = NodeDefender.db.data.node.heat.current(msg['name'])
     emit('nodeHeatCurrent', (data))
     return True
 
 @socketio.on('sensorHeatAverage', namespace='/data')
 def sensor_heat_average(msg):
-    data = NodeDefender.db.data.sensor.heat.Average(msg['icpe'], msg['sensor'])
+    data = NodeDefender.db.data.sensor.heat.average(msg['icpe'], msg['sensor'])
     emit('sensorHeatAverage', (data))
     return True

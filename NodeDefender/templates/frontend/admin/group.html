@@ -14,10 +14,10 @@
     </div>
 </div>
 {% include "flash.html" %}
-{% from "macros/group.html" import GroupInfo with context %}
-{% from "macros/map.html" import MapGroup %}
-{% from "macros/messages.html" import MessageList, emit_group_messages %}
-{% from "macros/user.html" import ListUsers with context %}
+{% from "frontend/macros/group.html" import GroupInfo with context %}
+{% from "frontend/macros/map.html" import MapGroup %}
+{% from "frontend/macros/messages.html" import MessageList, emit_group_messages %}
+{% from "frontend/macros/user.html" import ListUsers with context %}
 
 <div class="row">
 	<div class="col-lg-8">
@@ -41,9 +41,9 @@
 		</div>
 	</div>
 </div>
-{% from "macros/data/group/heat.html" import AverageHeat %}
-{% from "macros/data/group/power.html" import AveragePower %}
-{% from "macros/data/group/event.html" import AverageEvents %}
+{% from "frontend/macros/data/group/heat.html" import AverageHeat %}
+{% from "frontend/macros/data/group/power.html" import AveragePower %}
+{% from "frontend/macros/data/group/event.html" import AverageEvents %}
 <div class="row">
 	<div class="col-lg-4">
 		{{ AverageHeat(Group) }}

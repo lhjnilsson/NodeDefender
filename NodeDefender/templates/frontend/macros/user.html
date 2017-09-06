@@ -1,5 +1,5 @@
 {% macro Info(user) %}
-{% from "macros/info.html" import Field %}
+{% from "frontend/macros/info.html" import Field %}
 {{Field("Firstname", user.firstname)}}
 {{Field("Lastname", user.lastname)}}
 {{Field("Email", user.email)}}
@@ -10,7 +10,7 @@
 {% endmacro %}
 
 {% macro AdminSettings(User, Form, Form2) %}
-{% from "macros/form.html" import render_field_with_errors, render_submit %}
+{% from "frontend/macros/form.html" import render_field_with_errors, render_submit %}
 <div class="modal fade" id="UserConfigure" role="dialog">
 	<div class="modal-dialog">
 		<div class="modal-content">	
@@ -62,7 +62,7 @@ $(document).ready(function() {
 {% endmacro %}
 
 {% macro UserSettingsModal(User) %}
-{% from "macros/form.html" import render_manual %}
+{% from "frontend/macros/form.html" import render_manual %}
 <div class="modal fade" id="userSettingsModal" role="dialog">
 	<div class="modal-dialog">
 		<div class="modal-content">	

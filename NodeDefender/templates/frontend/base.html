@@ -30,10 +30,10 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.js"></script>
 
 	<!-- Custom CSS -->
-	<link href="static/css/colors.css" rel="stylesheet">
-	<link href="static/css/main.css" rel="stylesheet">
+	<link href="{{url_for('static', filename="css/colors.css")}}" rel="stylesheet">
+	<link href="{{url_for('static', filename="css/main.css")}}" rel="stylesheet">
 
-	<script src="static/js/sockets.js"></script>
+	<script src="{{url_for('static', filename="js/sockets.js")}}"></script>
 	<script>
 	var current_email = "{{current_user.email}}";
 	</script>

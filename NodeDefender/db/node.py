@@ -1,4 +1,5 @@
-from NodeDefender.db.sql import SQL, NodeModel, UserModel
+from NodeDefender.db.sql import SQL, GroupModel, NodeModel, UserModel
+import NodeDefender
 
 def get_sql(name):
     return NodeModel.query.filter_by(name = name).first()
@@ -33,16 +34,16 @@ def delete_sql(name):
 def get(name):
     return get_sql(name)
 
-def list(group = None, user = None):
-    if user:
+def list(group_name = None, user_name = None):
+    if user_name:
         return []
-    if not groupName:
+    if not group_name:
         return [node.to_json() for node in NodeModel.query.all()]
     
-    group = db.group.get(groupName)
+    group = NodeDefender.db.group.get(group_name)
     return [node.to_json() for node in \
-            db.session.query(NodeModel).join(NodeModel.group).\
-            filter(GroupModel.name == groupName).all()]
+            SQL.session.query(NodeModel).join(NodeModel.groups).\
+            filter(GroupModel.name == group_name).all()]
 
 def create(name):
     return create_sql(name)

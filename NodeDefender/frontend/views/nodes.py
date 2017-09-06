@@ -1,6 +1,6 @@
 from NodeDefender.frontend.views import node_view
 from flask import render_template, request, flash, redirect, url_for
-from flask_login import login_required
+from flask_login import login_required, current_user
 from NodeDefender.frontend.forms.node import (LocationForm, iCPEForm, SensorForm,
 NodeCreateForm)
 from NodeDefender import serializer
@@ -13,7 +13,7 @@ def nodes_list():
 
     if request.method == 'GET':
         nodes = NodeDefender.db.node.list(current_user.email)
-        return render_template('nodes/list.html', nodes = nodes, NodeCreateForm =
+        return render_template('frontend/nodes/list.html', nodes = nodes, NodeCreateForm =
                                CreateForm)
     else:
         CreateForm.validate_on_submit()
@@ -49,7 +49,7 @@ def nodes_node(name):
     icpeform = iCPEForm()
     locationform = LocationForm()
     if request.method == 'GET':
-        return render_template('nodes/node.html', iCPE = icpe, Node = node,
+        return render_template('frontend/nodes/node.html', iCPE = icpe, Node = node,
                                iCPEForm = icpeform, LocationForm = locationform,
                                SensorForm = sensorform)
     
@@ -64,7 +64,7 @@ def nodes_node(name):
 
     db.session.add(icpe)
     db.session.commit()
-    return render_template('nodes/node.html', mac=mac, form=form, iCPE = iCPE,
+    return render_template('frontend/nodes/node.html', mac=mac, form=form, iCPE = iCPE,
                                 iCPEAddressForm = AddressForm, iCPEBasicForm =
                                 BasicForm, NodeBasicForm = NodeBasic)
 '''

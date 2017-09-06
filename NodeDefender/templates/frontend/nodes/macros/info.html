@@ -1,6 +1,6 @@
 {% macro NodeInfo(node) %}
-{% from "macros/data/node/power.html" import Current as CurrentPower %}
-{% from "macros/data/node/heat.html" import Current as CurrentHeat %}
+{% from "frontend/macros/data/node/power.html" import Current as CurrentPower %}
+{% from "frontend/macros/data/node/heat.html" import Current as CurrentHeat %}
 <div class="row" style="height: 50%;">
 	<div class="col-lg-4 textCenter">
 		<a href="#">
@@ -97,7 +97,7 @@ $(document).ready(function() {
 {% endmacro %}
 
 {% macro AddiCPE(iCPE) %}
-{% from "macros/icpe.html" import SelectiCPE %}
+{% from "frontend/macros/icpe.html" import SelectiCPE %}
 <div class="row">
 	<div class="col-lg-12">
 		<a href="#" style="display: inline-block; width: 100%; text-align: center;" data-toggle="modal" data-target="#AddiCPEModal">

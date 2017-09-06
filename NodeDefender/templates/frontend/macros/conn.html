@@ -1,5 +1,5 @@
 {% macro ListMQTT(mqtts, Form) %}
-{% from "macros/info.html" import FieldID %}
+{% from "frontend/macros/info.html" import FieldID %}
 <table class="table table-hover">
 	<thead>
 		<tr>
@@ -30,8 +30,8 @@
 		{% endfor %}
 	</tbody>
 </table>
-{% from "macros/icpe.html" import iCPEList %}
-{% from "macros/group.html" import ListGroups %}
+{% from "frontend/macros/icpe.html" import iCPEList %}
+{% from "frontend/macros/group.html" import ListGroups %}
 <div class="modal fade" id="MQTTInfoModal" role="dialog">
 	<div class="modal-dialog">
 		<div class="modal-content">

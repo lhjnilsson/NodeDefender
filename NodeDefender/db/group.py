@@ -39,7 +39,7 @@ def list(user_mail = None):
         return [group.to_json() for group in GroupModel.query.all()]
     
     user = NodeDefender.db.user.get(user_mail)
-    if user.superuser():
+    if user.superuser:
         return [group.to_json() for group in GroupModel.query.all()]
     return [group.to_json() for group in user.groups]
 

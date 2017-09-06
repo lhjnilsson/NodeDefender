@@ -78,7 +78,7 @@ grouptable = document.getElementById('grouptable');
 {% endmacro %}
 
 {% macro CreateGroup(Form) %}
-{% from "macros/form.html" import render_field_with_errors, render_field %}
+{% from "frontend/macros/form.html" import render_field_with_errors, render_field %}
 <form action="{{url_for('AdminView.AdminGroups')}}" method="POST" class="form-horizontal">
 	{{ Form.csfr_token }}
 	{{ Form.hidden_tag() }}
@@ -90,7 +90,7 @@ grouptable = document.getElementById('grouptable');
 {% endmacro %}
 
 {% macro GroupInfo(Group) %}
-{% from "macros/info.html" import Field %}
+{% from "frontend/macros/info.html" import Field %}
 <div class="row">
 	{{Field('Name', Group.name)}}
 	{{Field('Description', Group.description)}}
@@ -101,7 +101,7 @@ grouptable = document.getElementById('grouptable');
 {% endmacro %}
 
 {% macro SelectGroup(user) %}
-{% from "macros/info.html" import FieldID %}
+{% from "frontend/macros/info.html" import FieldID %}
 <div class="form-group">
 	<label for="sell">Avalible Groups: </label>
 	<select class="form-control" id="GroupsList"></select>

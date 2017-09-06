@@ -1,6 +1,6 @@
 {% macro NodeInformation(node) %}
-{% from "macros/info.html" import Field %}
-{% from "macros/form.html" import render_manual %}
+{% from "frontend/macros/info.html" import Field %}
+{% from "frontend/macros/form.html" import render_manual %}
 <div class="modal fade" id="nodeInfo" role="dialog">
 	<div class="modal-dialog">
 		<div class="modal-content">
@@ -58,7 +58,7 @@ $(document).ready(function() {
 {% endmacro %}
 
 {% macro ModalGrouplist(grouplist) %}
-{% from "macros/group.html" import ListGroups with context %}
+{% from "frontend/macros/group.html" import ListGroups with context %}
 <div class="modal fade" id="groupList" role="dialog">
 	<div class="modal-dialog">
 		<div class="modal-content">
@@ -78,7 +78,7 @@ $(document).ready(function() {
 {% endmacro %}
 
 {% macro ModifyLocation(nodename) %}
-{% from "macros/form.html" import render_manual %}
+{% from "frontend/macros/form.html" import render_manual %}
 <div class="modal fade" id="modifyLocation" role="dialog">
 	<div class="modal-dialog">
 		<div class="modal-content">
@@ -112,7 +112,7 @@ $(document).ready(function() {
 		$("#formlatitude").val(loc.latitude);
 		$("#formlongitude").val(loc.longitude);
 	});
-	
+
 	nodeSocket.on('coordinates', function(coordinates) {
 		if (coordinates.latitude == 'Not Found') {
 			toastr.error('Coordinates not found');
@@ -138,10 +138,10 @@ $(document).ready(function() {
 </script>
 {% endmacro %}
 {% macro CreateNode() %}
-{% from "macros/form.html" import render_manual %}
-{% from "macros/group.html" import SelectGroup %}
-{% from "macros/icpe.html" import SelectiCPE %}
-{% from "macros/info.html" import FieldID %}
+{% from "frontend/macros/form.html" import render_manual %}
+{% from "frontend/macros/group.html" import SelectGroup %}
+{% from "frontend/macros/icpe.html" import SelectiCPE %}
+{% from "frontend/macros/info.html" import FieldID %}
 <div class="modal fade" id="CreateNode" role="dialog">
 	<div class="modal-dialog">
 		<div class="modal-content">
@@ -195,7 +195,7 @@ $(document).ready(function() {
 			toastr.error('Please enter City');
 			return false;
 		}
-			
+
 		$('#SubmitName').text($('#nodeName').val());
 		$('#SubmitStreet').text($('#nodeStreet').val());
 		$('#SubmitCity').text($('#nodeCity').val());

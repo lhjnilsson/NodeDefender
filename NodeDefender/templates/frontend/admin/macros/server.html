@@ -1,5 +1,5 @@
 {% macro LoggingSettings() %}
-{% from "macros/info.html" import FieldID %}
+{% from "frontend/macros/info.html" import FieldID %}
 {{ FieldID('Type', '-', 'loggType') }}
 
 <script>
@@ -32,7 +32,7 @@ adminSocket.on('syslogPort', function(port) {
 {% endmacro %}
 
 {% macro DatabaseSettings() %}
-{% from "macros/info.html" import FieldID %}
+{% from "frontend/macros/info.html" import FieldID %}
 {{ FieldID('Engine', '-', 'dbEngine') }}
 
 	<script>
@@ -65,7 +65,7 @@ adminSocket.on('dbPort', function(port) {
 {% endmacro %}
 
 {% macro CelerySettings() %}
-{% from "macros/info.html" import FieldID %}
+{% from "frontend/macros/info.html" import FieldID %}
 {{ FieldID('Broker', '-', 'celeryBroker') }}
 {{ FieldID('Server', '-', 'celeryServer') }}
 {{ FieldID('Port', '-', 'celeryPort') }}
@@ -94,7 +94,7 @@ adminSocket.emit('celeryDatabase');
 {% endmacro %}
 
 {% macro MailSettings() %}
-{% from "macros/info.html" import FieldID %}
+{% from "frontend/macros/info.html" import FieldID %}
 {{ FieldID('Server', '-', 'mailServer') }}
 {{ FieldID('Port', '-', 'mailPort') }}
 {{ FieldID('TLS', '-', 'mailTLS') }}

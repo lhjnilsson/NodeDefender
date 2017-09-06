@@ -26,7 +26,7 @@ var socket = io.connect('//' + document.domain + ':' + location.port + namespace
 </div>
 {% include "flash.html" %}
 {% from "nodes/macros/info.html" import NodeInfo, iCPEInfo, AddiCPE with context %}
-{% from "macros/map.html" import Map %}
+{% from "frontend/macros/map.html" import Map %}
 <div class="row">
 	<div class="col-lg-6">
 		<div class="panel panel-primary">
@@ -91,10 +91,10 @@ var socket = io.connect('//' + document.domain + ':' + location.port + namespace
 </div>
 {% endfor %}
 {% endif %}
-{% from "macros/statistics.html" import PowerGraph, HeatGraph, EventList with context %}
-{% from "macros/data/node/power.html" import Chart as PowerChart %}
-{% from "macros/data/node/heat.html" import Chart as HeatChart %}
-{% from "macros/data/node/event.html" import EventList %}
+{% from "frontend/macros/statistics.html" import PowerGraph, HeatGraph, EventList with context %}
+{% from "frontend/macros/data/node/power.html" import Chart as PowerChart %}
+{% from "frontend/macros/data/node/heat.html" import Chart as HeatChart %}
+{% from "frontend/macros/data/node/event.html" import EventList %}
 <div class="row">
 	{% if iCPE.power %}
 	<div class="col-lg-4">

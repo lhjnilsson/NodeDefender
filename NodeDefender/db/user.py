@@ -1,11 +1,11 @@
 from NodeDefender.db.sql import SQL, UserModel
 from NodeDefender import bcrypt
 
-def get_sql(mail):
-    return UserModel.query.filter_by(mail = mail).first()
+def get_sql(email):
+    return UserModel.query.filter_by(email = email).first()
 
-def update_sql(mail, **kwargs):
-    user = get_sql(mail)
+def update_sql(email, **kwargs):
+    user = get_sql(email)
     if user is None:
         return False
     for key, value in kwargs:
@@ -16,10 +16,10 @@ def update_sql(mail, **kwargs):
     SQL.session.commit()
     return user
 
-def create_sql(mail):
-    if get_sql(mail):
-        return get_sql(mail)
-    user = UserModel(mail)
+def create_sql(email):
+    if get_sql(email):
+        return get_sql(email)
+    user = UserModel(email)
     SQL.session.add(user)
     SQL.session.commit()
     return user
@@ -28,36 +28,36 @@ def save_sql(user):
     SQL.session.add(user)
     return SQL.session.commit()
 
-def delete_sql(mail):
-    if not get_sql(mail):
+def delete_sql(email):
+    if not get_sql(email):
         return False
-    SQL.session.delete(get_sql(mail))
+    SQL.session.delete(get_sql(email))
     SQL.session.commit()
     return True
 
-def get(mail):
-    return get_sql(mail)
+def get(email):
+    return get_sql(email)
 
-def set_password(email, raw_password):
-    user = get_sql(email)
+def set_password(eemail, raw_password):
+    user = get_sql(eemail)
     user.password = bcrypt.generate_password_hash(password).decode('utf-8')
     return save_sql(user)
 
-def groups(mail):
+def groups(email):
     try:
-        return [group.to_json() for group in get_sql(mail).groups]
+        return [group.to_json() for group in get_sql(email).groups]
     except AttributeError:
         return []
 
-def set_role(mail, role):
-    user = get_sql(mail)
+def set_role(email, role):
+    user = get_sql(email)
     user.set_role(role)
     SQL.session.add(user)
     SQL.session.commit()
     return user
 
-def get_role(mail):
-    return get_sql(mail).role()
+def get_role(email):
+    return get_sql(email).role()
 
 def list(*group_names):
     if not groupName:
@@ -66,13 +66,13 @@ def list(*group_names):
             db.session.query(UserModel).join(UserModel.group).\
             filter(GroupModel.name == groupName).all()]
 
-def create(mail, firstname = None, lastname = None):
-    create_sql(mail)
-    update_sql(mail, **{'fistname' : firstname, 'lastname' : lastname})
-    return get_sql(mail)
+def create(email, firstname = None, lastname = None):
+    create_sql(email)
+    update_sql(email, **{'fistname' : firstname, 'lastname' : lastname})
+    return get_sql(email)
 
-def update(mail, **kwargs):
-    return update_sql(mail, **kwargs)
+def update(email, **kwargs):
+    return update_sql(email, **kwargs)
 
-def delete(mail):
-    return delete_sql(mail)
+def delete(email):
+    return delete_sql(email)
