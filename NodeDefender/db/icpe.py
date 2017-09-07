@@ -2,6 +2,7 @@ from NodeDefender.db.sql import SQL, iCPEModel, NodeModel
 import NodeDefender
 from NodeDefender.db import redis, logger
 from redlock import RedLock
+from datetime import datetime
 
 def get_sql(macaddr):
     return SQL.session.query(iCPEModel).filter(macaddr == macaddr).first()
@@ -53,6 +54,7 @@ def get(macaddr):
     if len(icpe):
         return icpe
     if redis.icpe.load(get_sql(macaddr)):
+        logger.debug('Loaded iCPE: {!r}'.format(macaddr))
         return get_redis(macaddr)
     return False
 
@@ -75,11 +77,31 @@ def delete(macaddr):
     return True
 
 def list(node = None):
-    if not node:
-        return iCPEModel.query.all()
-    nodes = SQL.session.query(iCPEModel).join(iCPEModel.node).\
-            filter(NodeModel.name == node).all()
-    return [node.name for node in nodes]
+    if node:
+        icpes = SQL.session.query(iCPEModel).join(iCPEModel.node).\
+                filter(NodeModel.name == node).all()
+    else:
+        icpes = SQL.session.query(iCPEModel).all()
+    return [icpe.macaddr for icpe in icpes]
+
+def detailed_list(node = None):
+    return_list = []
+    icpes = list(node)
+    for icpe in icpes:
+        icpe = get(icpe)
+        if not icpe:
+            continue
+        return_list.append(icpe)
+    return return_list
+
+def load(node = None):
+    icpes = list(node)
+    current_time = datetime.now().timestamp()
+    for icpe in icpes:
+        cached = get(icpe)
+        if float(cached['lastUpdated']) - current_time > 1200:
+            mark_offline(cached)
+        NodeDefender.mqtt.command.icpe.zwave.info.qry(icpe)
 
 def unassigned(user):
     icpes = SQL.session.query(iCPEModel).\

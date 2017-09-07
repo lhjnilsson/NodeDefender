@@ -51,7 +51,8 @@ class iCPEModel(SQL.Model):
                 'ipaddr' : self.ipaddr,
                 'createdAt' : str(self.created_on),
                 'sensors' : str(len(self.sensors)),
-                'mqttConnection' : self.mqtt[0].host,
+                'mqtt' : {'host' : self.mqtt[0].host,
+                          'port' : self.mqtt[0].port},
                 'node' : node,
                 'online' : 'false'}
         return icpe

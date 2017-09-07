@@ -41,3 +41,7 @@ import NodeDefender.mqtt
 import NodeDefender.icpe
 #import NodeDefender.mail
 import NodeDefender.frontend
+
+db.icpe.load()
+db.sensor.load()
+db.field.load()

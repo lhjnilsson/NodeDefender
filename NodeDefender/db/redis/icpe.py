@@ -7,30 +7,35 @@ def load(icpe, conn):
         return None
     i = {
         'name' : icpe.name,
-        'mac' : icpe.macaddr,
+        'macaddr' : icpe.macaddr,
         'ipaddr' : icpe.ipaddr,
         'online' : False,
         'battery' : None,
-        'loaded_at' : str(datetime.now()),
-        'last_online' : False
+        'lastUpdated' : datetime.now().timestamp(),
+        'loadedAt' : datetime.now().timestamp()
     }
 
     return conn.hmset(icpe.macaddr, i)
 
 @redisconn
-def get(mac, conn):
-    return conn.hgetall(mac)
+def get(macaddr, conn):
+    return conn.hgetall(macaddr)
 
 @redisconn
-def save(mac, conn, **kwargs):
-    icpe = conn.hgetall(mac)
+def save(macaddr, conn, **kwargs):
+    icpe = conn.hgetall(macaddr)
     for key, value in kwargs.items():
         icpe[key] = value
-    return conn.hmset(mac, icpe)
+    icpe['lastUpdated'] = datetime.now().timestamp()
+    return conn.hmset(macaddr, icpe)
 
 @redisconn
 def list(node, conn):
     return conn.smembers(node + ":icpes")
+
+@redisconn
+def updated(macaddr, conn):
+    return conn.hmset(macaddr, {'lastUpdated' : datetime.now().timestamp()})
 
 @redisconn
 def flush(macaddr, conn):

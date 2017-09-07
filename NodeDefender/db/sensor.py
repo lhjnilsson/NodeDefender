@@ -70,15 +70,20 @@ def update(macaddr, sensorid, **kwargs):
     update_redis(macaddr, sensorid, **kwargs)
     return True
 
-def list(macaddr):
-    sensors = redis.sensor.list(macaddr)
-    if len(sensors):
-        return sensors
-    if len(NodeDefender.db.icpe.get_sql(macaddr).sensors):
-        for sensor in NodeDefender.db.icpe.get_sql(macaddr).sensors:
-            redis.sensor.load(sensor)
-        return redis.sensor.list(macaddr)
-    return []
+def list(icpe):
+    sensors = SQL.session.query(SensorModel).join(SensorModel.icpe).\
+            filter(iCPEModel.macaddr == icpe).all()
+    return [sensor.sensorid for sensor in sensors]
+
+def load(*icpes):
+    if not len(icpes):
+        icpes = NodeDefender.db.icpe.list()
+    
+    for icpe in icpes:
+        sensors = list(icpe)
+        for sensor in sensors:
+            get(icpe, sensor)
+            NodeDefender.mqtt.command.sensor.info.qry(icpe, sensor)
 
 def create(macaddr, sensorid):
     if not create_sql(macaddr, sensorid):

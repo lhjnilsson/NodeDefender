@@ -103,7 +103,7 @@ def average(*groups):
 def chart(*groups):    
     from_date = (datetime.now() - timedelta(days=30))
     to_date = datetime.now()
-    groups = SQL.session.query(GroupModel).filter(GroupModel.name.in_([*groups])).all()
+    groups = SQL.session.query(GroupModel).filter(GroupModel.name.in_(groups)).all()
     if not len(groups):
         return False
 

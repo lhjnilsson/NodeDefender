@@ -1,4 +1,5 @@
 from NodeDefender.db.redis import redisconn
+import NodeDefender
 from datetime import datetime
 
 @redisconn
@@ -16,7 +17,9 @@ def load(sensor, conn):
         'genericClass' : sensor.generic_class,
         'specificClass' : sensor.specific_class,
         'sleepable' : sensor.sleepable,
-        'wakeup_interval' : sensor.wakeup_interval
+        'wakeup_interval' : sensor.wakeup_interval,
+        'lastUpdated' : datetime.now().timestamp(),
+        'loadedAt' : datetime.now().timestamp()
     }
     conn.sadd(sensor.icpe.macaddr + ':sensors', sensor.sensorid)
     return conn.hmset(sensor.icpe.macaddr + sensor.sensorid, s)
@@ -30,11 +33,18 @@ def save(macaddr, sensorid, conn, **kwargs):
     sensor = conn.hgetall(macaddr + sensorid)
     for key, value in kwargs.items():
         sensor[key] = value
+    sensor['lastUpdated'] = datetime.now().timestamp()
+    NodeDefender.db.redis.icpe.updated(macaddr)
     return conn.hmset(macaddr + sensorid, sensor)
 
 @redisconn
 def list(macaddr, conn):
     return conn.smembers(macaddr + ':sensors')
+
+@redisconn
+def updated(macaddr, sensorid, conn):
+    return conn.hmset(macaddr + sensorid, {'lastUpdated' : \
+                                           datetime.now().timestamp()})
 
 @redisconn
 def flush(macaddr, sensorid, conn):
