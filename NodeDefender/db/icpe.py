@@ -17,7 +17,7 @@ def update_sql(macaddr, **kwargs):
             continue
         setattr(icpe, key, value)
 
-    SQL.session.save(icpe)
+    SQL.session.add(icpe)
     SQL.session.comit()
     return icpe
 

@@ -12,7 +12,7 @@ def update_sql(name, **kwargs):
         if key not in node.columns():
             continue
         setattr(node, key, value)
-    SQL.session.save(node)
+    SQL.session.add(node)
     SQL.session.commit()
     return node
 
@@ -20,7 +20,7 @@ def create_sql(name):
     if get_sql(name):
         return get_sql(name)
     node = NodeModel(name)
-    SQL.session.save(node)
+    SQL.session.add(node)
     SQL.session.commit()
     return node
 
@@ -73,7 +73,7 @@ def add_icpe(nodeName, icpeMac):
         return False
 
     node.icpes.append(icpe)
-    SQL.session.save(node)
+    SQL.session.add(node)
     SQL.session.commit()
     return node
 
@@ -84,6 +84,6 @@ def remove_icpe(nodeName, icpeMac):
         return False
 
     node.icpes.remove(icpe)
-    SQL.session.save(node)
+    SQL.session.add(node)
     SQL.session.commit()
     return node

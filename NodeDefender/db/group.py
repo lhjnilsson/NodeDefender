@@ -2,7 +2,10 @@ from NodeDefender.db.sql import SQL, GroupModel, UserModel
 import NodeDefender
 
 def get_sql(name):
-    return GroupModel.query.filter_by(name = name).first()
+    try:
+        return GroupModel.query.filter_by(name = name).first()
+    except Exception:
+        print("Cannot fetch group: ", name)
 
 def update_sql(name, **kwargs):
     group = get_sql(name)
@@ -73,7 +76,7 @@ def add_user(group_name, user_mail):
         return False
 
     group.users.append(user)
-    SQL.session.save(group)
+    SQL.session.add(group)
     SQL.session.commit()
     return group
 
@@ -84,7 +87,7 @@ def remove_user(group_name, user_mail):
         return False
 
     group.users.remove(user)
-    SQL.session.save(group)
+    SQL.session.add(group)
     SQL.session.commit()
     return group
 
@@ -95,7 +98,7 @@ def add_node(group_name, node_name):
         return False
 
     group.nodes.append(node)
-    SQL.session.save(group)
+    SQL.session.add(group)
     SQL.session.commit()
     return group
 
@@ -106,6 +109,6 @@ def remove_node(group_name, node_name):
         return False
 
     group.nodes.remove(node)
-    SQL.session.save(group)
+    SQL.session.add(group)
     SQL.session.commit()
     return group

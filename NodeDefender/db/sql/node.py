@@ -30,9 +30,8 @@ class NodeModel(SQL.Model):
     messages = SQL.relationship('MessageModel', backref='node',
                                cascade='save-update, merge, delete')
 
-    def __init__(self, name, location):
+    def __init__(self, name):
         self.name = name
-        self.location = location
         self.created_on = datetime.now()
 
 
