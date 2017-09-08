@@ -19,7 +19,7 @@ def load(sensor, conn, **kwargs):
 def save(macaddr, sensorid, name, conn, **kwargs):
     field  = conn.hgetall(macaddr + sensorid + name)
     for key, value in kwargs.items():
-        field[key] = value
+        field[key] = str(value)
     field['lastUpdated'] = datetime.now().timestamp()
     NodeDefender.db.redis.icpe.updated(macaddr)
     NodeDefender.db.redis.sensor.updated(macaddr, sensorid)

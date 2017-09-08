@@ -9,5 +9,6 @@ if app.config['TESTING']:
 
 #LoadiCPE()
 connection.load()
+db.load()
 
 socketio.run(app, host='0.0.0.0')
