@@ -38,6 +38,7 @@ def event(topic, payload, mqtt):
     if not NodeDefender.db.icpe.get(topic['macAddress']):
         NodeDefender.db.icpe.create(topic['macAddress'], mqtt)
 
+    print(topic, payload)
     if topic['messageType'] == 'rpt':
         report.event(topic, payload)
     elif topic['messageType'] == 'rsp':

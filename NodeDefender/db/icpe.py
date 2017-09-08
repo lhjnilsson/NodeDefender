@@ -102,6 +102,7 @@ def load(node = None):
         if float(cached['lastUpdated']) - current_time > 1200:
             mark_offline(cached)
         NodeDefender.mqtt.command.icpe.zwave.info.qry(icpe)
+        NodeDefender.mqtt.command.icpe.zwave.node.list(icpe)
 
 def unassigned(user):
     icpes = SQL.session.query(iCPEModel).\

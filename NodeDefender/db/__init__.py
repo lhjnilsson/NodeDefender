@@ -7,6 +7,11 @@ logger = logging.getLogger('db')
 logger.setLevel('DEBUG')
 logger.addHandler(loggHandler)
 
+def load():
+    icpe.load()
+    sensor.load()
+    field.load()
+
 import NodeDefender.db.data
 import NodeDefender.db.group
 import NodeDefender.db.user

@@ -24,3 +24,5 @@ def operation(icpe, mode, status):
     elif status > 251 and status < 250:
         status = 'intermediate'
 
+    if mode == "remove node" and status == "done":
+        NodeDefender.mqtt.command.icpe.zwave.node.list(icpe)
