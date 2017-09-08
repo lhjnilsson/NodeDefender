@@ -68,7 +68,7 @@ def delete(name):
 
 def add_icpe(nodeName, icpeMac):
     node = get_sql(nodeName)
-    icpe = db.icpe.get_sql(icpeMac)
+    icpe = NodeDefender.db.icpe.get_sql(icpeMac)
     if icpe is None or node is None:
         return False
 
@@ -79,7 +79,7 @@ def add_icpe(nodeName, icpeMac):
 
 def remove_icpe(nodeName, icpeMac):
     node = get_sql(nodeName)
-    icpe = db.icpe.get(icpeMAc)
+    icpe = NodeDefender.db.icpe.get(icpeMAc)
     if icpe is None or node is None:
         return False
 

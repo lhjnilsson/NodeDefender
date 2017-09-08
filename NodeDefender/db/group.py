@@ -71,7 +71,7 @@ def delete(name):
 
 def add_user(group_name, user_mail):
     group = get_sql(group_name)
-    user = db.user.get(user_mail)
+    user = NodeDefender.db.user.get(user_mail)
     if user is None or group is None:
         return False
 
@@ -82,7 +82,7 @@ def add_user(group_name, user_mail):
 
 def remove_user(group_name, user_mail):
     group = get_sql(group_name)
-    user = db.user.get(user_mail)
+    user = NodeDefender.db.user.get(user_mail)
     if user is None or group is None:
         return False
 
@@ -93,7 +93,7 @@ def remove_user(group_name, user_mail):
 
 def add_node(group_name, node_name):
     group = get_sql(group_name)
-    node = db.user.get(node_name)
+    node = NodeDefender.db.user.get(node_name)
     if node is None or group is None:
         return False
 
@@ -104,7 +104,7 @@ def add_node(group_name, node_name):
 
 def remove_node(group_name, node_name):
     group = get_sql(group_name)
-    node = db.node.get(node_name)
+    node = NodeDefender.db.node.get(node_name)
     if node is None or group is None:
         return False
 
