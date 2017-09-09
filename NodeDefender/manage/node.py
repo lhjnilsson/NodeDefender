@@ -1,5 +1,5 @@
 from flask_script import Manager, prompt
-import NodeDefender.db
+import NodeDefender
 
 manager = Manager(usage='Manage Nodes')
 
@@ -22,13 +22,13 @@ def create(name, group, street, city):
         city = prompt('City')
     
     try:
-        location = db.node.location(street, city)
+        location = NodeDefender.db.node.location(street, city)
     except LookupError as e:
         print("Error: ", e)
         return
 
     try:
-        db.node.create(name, group, location)
+        NodeDefender.db.node.create(name, group, location)
     except (LookupError, ValueError) as e:
         print("Error: ", e)
         return

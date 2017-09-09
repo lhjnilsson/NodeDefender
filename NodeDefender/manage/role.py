@@ -1,5 +1,5 @@
 from flask_script import Manager, prompt
-import NodeDefender.db
+import NodeDefender
 
 manager = Manager(usage="Administrate Roles")
 

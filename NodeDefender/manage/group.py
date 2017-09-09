@@ -1,5 +1,5 @@
 from flask_script import Manager, prompt
-import NodeDefender.db
+import NodeDefender
 
 manager = Manager(usage='Manage Groups')
 
@@ -10,7 +10,7 @@ def create(name, description):
         name = prompt('Group Name')
 
     try:
-        db.group.create(name)
+        NodeDefender.db.group.create(name)
     except ValueError as e:
         print("Error: ", e)
 
@@ -23,7 +23,7 @@ def delete(name):
         name = prompt('Group Name')
 
     try:
-        db.group.delete(name)
+        NodeDefender.db.group.delete(name)
     except ValueError as e:
         print("Error: ", e)
 
@@ -32,7 +32,7 @@ def delete(name):
 @manager.command
 def list():
     'List Groups'
-    for group in db.group.list():
+    for group in NodeDefender.db.group.list():
         print("ID: {}, Name: {}".format(group.id, group.name))
 
 @manager.option('-n', '-g', '--group', '--name', dest='name', default=None)
@@ -41,7 +41,7 @@ def info(name):
     if name is None:
         name = prompt('Group Name')
 
-    group = db.group.get_sql(name)
+    group = NodeDefender.db.group.get_sql(name)
     if group is None:
         print("Cant find group ", name)
         return

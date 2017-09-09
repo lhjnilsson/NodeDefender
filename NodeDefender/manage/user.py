@@ -1,5 +1,5 @@
 from flask_script import Manager, Command, prompt, prompt_pass
-import NodeDefender.db
+import NodeDefender
 
 manager = Manager(usage="Preform User- operations in SQL Database")
 

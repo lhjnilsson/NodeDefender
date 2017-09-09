@@ -28,7 +28,7 @@ def create(host, port, username, password):
     '''
 
     try:
-        db.mqtt.create(host, port)
+        NodeDefender.db.mqtt.create(host, port)
     except ValueError as e:
         print("Error: ", e)
         return
@@ -43,7 +43,7 @@ def delete(host):
         host = prompt('Host Address')
     
     try:
-         db.mqtt.delete(host)
+         NodeDefender.db.mqtt.delete(host)
     except LookupError as e:
         print("Error: ", e)
         return
@@ -52,6 +52,6 @@ def delete(host):
 
 @manager.command
 def list():
-    for mqtt in db.mqtt.list():
+    for mqtt in NodeDefender.db.mqtt.list():
         print("ID: {}, IP: {}:{}".format(mqtt['id'], mqtt['host'], mqtt['port']))
 

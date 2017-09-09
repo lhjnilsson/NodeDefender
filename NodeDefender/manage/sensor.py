@@ -1,5 +1,5 @@
 from flask_script import Manager, prompt
-import NodeDefender.db
+import NodeDefender
 
 manager = Manager(usage='Manage Sensors')
 
@@ -24,8 +24,8 @@ def delete(mac, index):
 def purge():
     'Purge Sensors'
     for s in sensor.List():
-        db.session.delete(s)
-    db.session.commit()
+        SQL.session.delete(s)
+    SQL.session.commit()
     print("Sensors succesfully purged")
 
 @manager.command

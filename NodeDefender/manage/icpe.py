@@ -1,5 +1,5 @@
 from flask_script import Manager, prompt
-from NodeDefender import db
+import NodeDefender
 
 manager = Manager(usage='Manage iCPE Devices')
 
@@ -10,7 +10,7 @@ def delete(mac):
         mac = prompt('Mac')
 
     try:
-        db.icpe.delete(mac)
+        NodeDefender.db.icpe.delete(mac)
     except LookupError as e:
         print("Error: ", str(e))
         return
@@ -19,7 +19,7 @@ def delete(mac):
 @manager.command
 def list():
     'List iCPEs'
-    icpes = db.icpe.list()
+    icpes = NodeDefender.db.icpe.list()
     if not icpes:
         print("No icpes")
         return False
@@ -30,7 +30,7 @@ def list():
 
 @manager.command
 def unassigned():
-    icpes = db.icpe.unassigned()
+    icpes = NodeDefender.db.icpe.unassigned()
     if not icpes:
         print("No Unassigned iCPEs")
         return False
@@ -45,7 +45,7 @@ def info(mac):
     if mac is None:
         mac = prompt('Mac')
     
-    icpe = db.icpe.get_sql(mac)
+    icpe = NodeDefender.db.icpe.get_sql(mac)
     if icpe is None:
         print("Unable to find iCPE {}".format(mac))
 
