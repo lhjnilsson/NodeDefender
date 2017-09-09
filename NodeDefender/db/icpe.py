@@ -78,21 +78,9 @@ def delete(macaddr):
 
 def list(node = None):
     if node:
-        icpes = SQL.session.query(iCPEModel).join(iCPEModel.node).\
+        return  SQL.session.query(iCPEModel).join(iCPEModel.node).\
                 filter(NodeModel.name == node).all()
-    else:
-        icpes = SQL.session.query(iCPEModel).all()
-    return [icpe.macaddr for icpe in icpes]
-
-def detailed_list(node = None):
-    return_list = []
-    icpes = list(node)
-    for icpe in icpes:
-        icpe = get(icpe)
-        if not icpe:
-            continue
-        return_list.append(icpe)
-    return return_list
+    return SQL.session.query(iCPEModel).all()
 
 def load(node = None):
     icpes = list(node)
@@ -105,11 +93,8 @@ def load(node = None):
         NodeDefender.mqtt.command.icpe.zwave.node.list(icpe)
 
 def unassigned(user):
-    icpes = SQL.session.query(iCPEModel).\
+    return SQL.session.query(iCPEModel).\
             filter(iCPEModel.node == None).all()
-    if icpes:
-        return [icpe.to_json() for icpe in icpes]
-    return []
 
 def sensors(macaddr):
     sensors = redis.sensor.list(macaddr)

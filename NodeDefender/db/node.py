@@ -36,15 +36,13 @@ def get(name):
     return get_sql(name)
 
 def list(group_name = None, user_email = None):
-    print("QUERY")
     if user_email:
-        print("Here")
         return [node for node in NodeModel.query.all()]
     if not group_name:
-        return [node.to_json() for node in NodeModel.query.all()]
+        return [node for node in NodeModel.query.all()]
     
     group = NodeDefender.db.group.get(group_name)
-    return [node.to_json() for node in \
+    return [node for node in \
             SQL.session.query(NodeModel).join(NodeModel.groups).\
             filter(GroupModel.name == group_name).all()]
 

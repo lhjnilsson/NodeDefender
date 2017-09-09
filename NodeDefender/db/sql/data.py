@@ -63,29 +63,32 @@ class EventModel(SQL.Model):
     commandclasstype_id = SQL.Column(SQL.Integer,
                                     SQL.ForeignKey('commandclasstype.id'))
 
+    state = SQL.Column(SQL.Boolean)
     value = SQL.Column(SQL.String(16))
 
     critical = SQL.Column(SQL.Boolean)
     normal = SQL.Column(SQL.Boolean)
 
-    def __init__(self, value, date = None):
+    def __init__(self, state, value, date = None):
+        self.state = bool(state)
         self.value = value
         self.date = date if date else datetime.now()
 
     def to_json(self):
-        if self.commandclasstype:
-            name = self.commandclasstype.name
-            icon = eval('commandclass.'+self.commandclass.name+'.'+\
-                        self.commandclasstype.name+'.Icon')(self.value)
-        elif self.commandclass:
-            name = self.commandclass.name
-            icon = eval('commandclass.'+self.commandclass.name+'.Icon')\
-                        (self.value)
-        else:
-            name = 'unkown'
-            icon = 'fa fa-question'
+        commandclass = self.commandclass.name
 
-        return {'iCPE' : self.icpe.macaddr, 'sensor' : self.sensor.productname, 'node' :
+        if self.commandclasstype:
+            commandclasstype = self.commandclasstype.name
+            icon = eval('NodeDefender.icpe.zwave.commandclass.'+commandclasss\
+                        +'.'+commandclasstype+'.icon')(self.value)
+            name = eval('NodeDefender.icpe.zwave.commandclass.'+commandclasss\
+                        +'.'+commandclasstype+'.fields')['name']
+
+        elif self.commandclass:
+            icon = eval('commandclass.'+commandclass+'.icon')(self.value)
+            name = eval('commandclass.'+commandclass+'.fields')['name']
+
+        return {'icpe' : self.icpe.macaddr, 'sensor' : self.sensor.productname, 'node' :
                 self.icpe.node.name, 'value' : self.value,\
                 'date' : str(self.date), 'icon' : icon,\
                 'name' : name}

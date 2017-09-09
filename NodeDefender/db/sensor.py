@@ -71,9 +71,8 @@ def update(macaddr, sensorid, **kwargs):
     return True
 
 def list(icpe):
-    sensors = SQL.session.query(SensorModel).join(SensorModel.icpe).\
+    return SQL.session.query(SensorModel).join(SensorModel.icpe).\
             filter(iCPEModel.macaddr == icpe).all()
-    return [sensor.sensorid for sensor in sensors]
 
 def load(*icpes):
     if not len(icpes):

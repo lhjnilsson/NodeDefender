@@ -38,24 +38,23 @@ def average(icpe, sensor, time_ago = None):
     return ret_data
 
 
-def put(icpe, sensor, event):
-    icpe = NodeDefender.db.icpe.get_sql(icpe)
-    sensor = NodeDefender.db.sensor.get_sql(icpe.macaddr, sensor)
-    commandclass = NodeDefender.db.commandclass.get_sql(icpe.macaddr, \
-                                                        sensor.sensorid,\
-                                                        classnumber = event.cc)
-    e = EventModel(event.value)
-    if event.cctype:
+def put(mac, sensorid, commandclass, commandclasstype, state, value):
+    icpe = NodeDefender.db.icpe.get_sql(mac)
+    sensor = NodeDefender.db.sensor.get_sql(mac, sensorid)
+    commandclass = NodeDefender.db.commandclass.\
+            get_sql(mac, sensorid, classnumber = commandclass)
+    
+    event = EventModel(state, value)
+
+    event.node = icpe.node
+    event.icpe = icpe
+    event.sensor = sensor
+    event.commandclass = commandclass
+
+    if commandclasstype:
         commandclasstype = NodeDefender.db.commandclass.\
-                get_type(icpe.macaddr, sensor.sensorid, event.cc, event.cctype)
-        e.commandclasstype = commandclasstype
+                get_type(mac, sensorid, commandclass, commandclasstype)
 
-    e.node = icpe.node
-    e.icpe = icpe
-    e.sensor = sensor
-    e.commandclass = commandclass
-
-    SQL.session.add(e)
+    SQL.session.add(event)
     SQL.session.commit()
-
-    redis = FieldRedis.Update(e, event)
+    return True

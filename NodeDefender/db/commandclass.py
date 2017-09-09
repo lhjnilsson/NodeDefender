@@ -80,12 +80,8 @@ def delete_sql(macaddr, sensorid, classnumber = None, classname = None):
     return SQL.session.commit()
 
 def get(macaddr, sensorid, classnumber = None, classname = None):
-    cc = get_sql(macaddr, sensorid, classnumber = classnumber, \
+    return get_sql(macaddr, sensorid, classnumber = classnumber, \
                  classname = classname)
-    if cc:
-        return cc.to_json()
-    else:
-        return False
 
 def update(macaddr, sensorid, classnumber = None, classname = None, **kwargs):
     return update_sql(macaddr, sensorid, classnumber = classnumber, \
@@ -95,7 +91,7 @@ def list(macaddr, sensorid):
     sensor = NodeDefender.db.sensor.get_sql(macaddr, sensorid)
     if not sensor:
         return []
-    return [commandclass.to_json() for commandclass in sensor.commandclasses]
+    return sensor.commandclasses
 
 def number_list(macaddr, sensorid):
     sensor = NodeDefender.db.sensor.get_sql(macaddr, sensorid)
@@ -147,3 +143,13 @@ def add_types(macaddr, sensorid, classname, classtypes):
         SQL.session.add(commandclass, typeModel)
         SQL.session.commit()
     return True
+
+def get_type(mac, sensorid, classname, classtype):
+    return SQL.session.query(CommandClassTypeModel).\
+            join(CommandClassTypeModel.commandclass).\
+            join(CommandClassModel.sensor).\
+            join(SensorModel.icpe).\
+            filter(iCPEModel.macaddr == mac).\
+            filter(SensorModel.sensorid == sensorid).\
+            filter(CommandClassModel.name == classname).\
+            filter(CommandClassTypeModel.name == classtype).first()

@@ -45,7 +45,7 @@ def set_password(eemail, raw_password):
 
 def groups(email):
     try:
-        return [group.to_json() for group in get_sql(email).groups]
+        return get_sql(email).groups
     except AttributeError:
         return []
 

@@ -42,7 +42,7 @@ def online(host, port):
 
 def icpe(macaddr):
     return SQL.session.query(MQTTModel).join(MQTTModel.icpes).\
-            filter(iCPEModel.macaddr == macaddr).first().to_json()
+            filter(iCPEModel.macaddr == macaddr).first()
 
 def create(host, port = 1883):
     return create_sql(host, port)
@@ -52,11 +52,9 @@ def delete(host, port = 1883):
 
 def list(group = None, user = None, icpe = None):
     if group:
-        return [mqtt.to_json() for mqtt in \
-                SQL.session.query(MQTTModel).join(MQTTModel.group).\
-                filter(GroupModel.name == group).all()]
+        return SQL.session.query(MQTTModel).join(MQTTModel.group).\
+                filter(GroupModel.name == group).all()
     if icpe:
-        return [mqtt.to_json() for mqtt in \
-                SQL.session.query(MQTTModel).join(MQTTModel.icpe).\
-                filter(iCPEModel.macaddr == icpe).all()]
-    return [mqtt.to_json() for mqtt in MQTTModel.query.all()]
+        return SQL.session.query(MQTTModel).join(MQTTModel.icpe).\
+                filter(iCPEModel.macaddr == icpe).all()
+    return MQTTModel.query.all()
