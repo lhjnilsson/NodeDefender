@@ -1,4 +1,4 @@
-from NodeDefender.db.sql import SQL, UserModel
+from NodeDefender.db.sql import SQL, UserModel, GroupModel
 from NodeDefender import bcrypt
 
 def get_sql(email):
@@ -60,11 +60,11 @@ def get_role(email):
     return get_sql(email).role()
 
 def list(*group_names):
-    if not groupName:
-        return [user.to_json() for user in UserModel.query.all()]
-    return [user.to_json() for user in \
-            db.session.query(UserModel).join(UserModel.group).\
-            filter(GroupModel.name == groupName).all()]
+    if not group_names:
+        return [user for user in UserModel.query.all()]
+    return [user for user in \
+            SQL.session.query(UserModel).join(UserModel.groups).\
+            filter(GroupModel.name.in_(group_names)).all()]
 
 def create(email, firstname = None, lastname = None):
     create_sql(email)

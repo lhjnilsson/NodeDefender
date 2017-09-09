@@ -2,6 +2,7 @@ from flask_socketio import emit, send, disconnect, join_room, leave_room, \
         close_room, rooms
 from NodeDefender import socketio
 import NodeDefender
+from flask_login import current_user
 
 @socketio.on('list', namespace='/icpe')
 def list(node):
@@ -10,8 +11,7 @@ def list(node):
 
 @socketio.on('unassigned', namespace='/icpe')
 def unassigned():
-    emit('unassigned', [icpe.to_json() for icpe in
-            NodeDefender.db.icpe.unassigned(current_user)])
+    emit('unassigned', NodeDefender.db.icpe.unassigned(current_user))
     return True
 
 @socketio.on('info', namespace='/icpe')

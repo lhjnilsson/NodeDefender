@@ -5,7 +5,7 @@ SQL = SQLAlchemy(app)
 
 from NodeDefender.db.sql.group import GroupModel
 from NodeDefender.db.sql.user import UserModel
-from NodeDefender.db.sql.node import NodeModel
+from NodeDefender.db.sql.node import NodeModel, LocationModel
 from NodeDefender.db.sql.icpe import iCPEModel, SensorModel,\
         CommandClassModel, CommandClassTypeModel
 from NodeDefender.db.sql.data import PowerModel, HeatModel, EventModel

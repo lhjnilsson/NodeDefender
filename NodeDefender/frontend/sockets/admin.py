@@ -1,91 +1,71 @@
 from flask_socketio import emit, send
 from NodeDefender import socketio, settings, config
+import NodeDefender
 
-@socketio.on('generalInfo', namespace='/admin')
+@socketio.on('general', namespace='/admin')
 def general_info():
     info = {'hostname' : settings.hostname, 'release' : settings.release,
             'uptime' : settings.uptime()}
-    emit('generalInfo', info)
+    emit('general', info)
     return True
 
-@socketio.on('loggType', namespace='/admin')
-def logg_type():
-    emit('loggType', (config.logging.type()))
+@socketio.on('logging', namespace='/admin')
+def logging():
+    info = {'enabled' : config.logging.enabled(),
+            'type' : config.logging.type(),
+            'name' : config.logging.name(),
+            'server' : config.logging.server(),
+            'port' : config.logging.port()}
+    return emit('logging', info)
+
+@socketio.on('database', namespace='/admin')
+def database():
+    info = {'enabled' : config.database.enabled(),
+            'engine' : config.database.engine(),
+            'server' : config.database.server(),
+            'port' : config.database.port(),
+            'database' : config.database.db(),
+            'file' : config.database.file()}
+    return emit('database', info)
+
+@socketio.on('celery', namespace='/admin')
+def celery():
+    info = {'enabled' : config.celery.enabled(),
+            'broker' : config.celery.broker(),
+            'server' : config.celery.server(),
+            'port' : config.celery.port(),
+            'database' : config.celery.database()}
+    return emit('celery', info)
+
+@socketio.on('mail', namespace='/admin')
+def mail():
+    info = {'enabled' : config.mail.enabled(),
+            'server' : config.mail.server(),
+            'port' : config.mail.port(),
+            'tls' : config.mail.tls(),
+            'ssl' : config.mail.ssl(),
+            'username' : config.mail.username(),
+            'password' : config.mail.password()}
+    return emit('mail', info)
+
+@socketio.on('mqttCreate', namespace='/admin')
+def create(host, port, group):
+    try:
+        NodeDefender.db.mqtt.create(host, port)
+    except AttributeError as e:
+        emit('error', e, namespace='/general')
+    NodeDefender.db.group.add_mqtt(group, host, port)
+    NodeDefender.new_mqtt.delay(group.name, mqtt.host, mqtt.port)
+    LoadMQTT([mqtt])
+    emit('reload', namespace='/general')
     return True
 
-@socketio.on('loggFile', namespace='/admin')
-def logg_file():
-    emit('loggFile', (config.logging.name()))
+@socketio.on('mqttList', namespace='/admin')
+def list(group):
+    emit('list', NodeDefender.db.mqtt.list(group))
     return True
 
-@socketio.on('syslogAddress', namespace='/admin')
-def logg_address():
-    emit('syslogAddress', (config.logging.server()))
+@socketio.on('mqttInfo', namespace='/admin')
+def info(host, port):
+    emit('mqttInfo', NodeDefender.db.mqtt.get(host, port).to_json())
     return True
-
-@socketio.on('syslogPort', namespace='/admin')
-def logg_port():
-    emit('syslogPort', (config.logging.port()))
-    return True
-
-@socketio.on('dbEngine', namespace='/admin')
-def db_engine():
-    emit('dbEngine', (config.database.engine()))
-    return True
-
-@socketio.on('dbFile', namespace='/admin')
-def db_file():
-    emit('dbFile', (config.database.file()))
-    return True
-
-@socketio.on('dbServer', namespace='/admin')
-def db_server():
-    emit('dbServer', (config.database.server()))
-    return True
-
-@socketio.on('dbPort', namespace='/admin')
-def db_port():
-    emit('dbPort', (config.database.port()))
-    return True
-
-@socketio.on('celeryBroker', namespace='/admin')
-def celery_broker():
-    emit('celeryBroker', (config.celery.broker()))
-    return True
-
-@socketio.on('celeryServer', namespace='/admin')
-def celery_server():
-    emit('celeryServer', (config.celery.server()))
-    return True
-
-@socketio.on('celeryPort', namespace='/admin')
-def celery_port():
-    emit('celeryPort', (config.celery.port()))
-    return True
-
-@socketio.on('celeryDatabase', namespace='/admin')
-def celery_database():
-    emit('celeryDatabase', (config.celery.database()))
-    return True
-
-@socketio.on('mailServer', namespace='/admin')
-def mail_server():
-    emit('mailServer', (config.mail.server()))
-    return True
-
-@socketio.on('mailPort', namespace='/admin')
-def mail_port():
-    emit('mailPort', (config.mail.port()))
-    return True
-
-@socketio.on('mailTLS', namespace='/admin')
-def mail_tls():
-    emit('mailTLS', (config.mail.tls()))
-    return True
-
-@socketio.on('mailSSL', namespace='/admin')
-def mail_ssl():
-    emit('mailSSL', (config.mail.ssl()))
-    return True
-
-

@@ -1,5 +1,6 @@
-from NodeDefender.db.sql import SQL, GroupModel, NodeModel, UserModel
+from NodeDefender.db.sql import SQL, GroupModel, NodeModel, LocationModel, UserModel
 import NodeDefender
+from geopy.geocoders import Nominatim
 
 def get_sql(name):
     return NodeModel.query.filter_by(name = name).first()
@@ -34,9 +35,11 @@ def delete_sql(name):
 def get(name):
     return get_sql(name)
 
-def list(group_name = None, user_name = None):
-    if user_name:
-        return []
+def list(group_name = None, user_email = None):
+    print("QUERY")
+    if user_email:
+        print("Here")
+        return [node for node in NodeModel.query.all()]
     if not group_name:
         return [node.to_json() for node in NodeModel.query.all()]
     
@@ -48,7 +51,7 @@ def list(group_name = None, user_name = None):
 def create(name):
     return create_sql(name)
 
-def location(name, street, city):
+def set_location(name, street, city):
     node = get_sql(name)
     if node is None:
         return False
@@ -60,7 +63,7 @@ def location(name, street, city):
                                    coord.longitude)
     SQL.session.add(node)
     SQL.session.commit()
-    return group
+    return node
 
 
 def delete(name):

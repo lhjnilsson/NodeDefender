@@ -53,10 +53,10 @@ def delete(host, port = 1883):
 def list(group = None, user = None, icpe = None):
     if group:
         return [mqtt.to_json() for mqtt in \
-                db.session.query(MQTTModel).join(MQTTModel.group).\
+                SQL.session.query(MQTTModel).join(MQTTModel.group).\
                 filter(GroupModel.name == group).all()]
     if icpe:
         return [mqtt.to_json() for mqtt in \
-                db.session.query(MQTTModel).join(MQTTModel.icpe).\
+                SQL.session.query(MQTTModel).join(MQTTModel.icpe).\
                 filter(iCPEModel.macaddr == icpe).all()]
     return [mqtt.to_json() for mqtt in MQTTModel.query.all()]

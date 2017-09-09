@@ -7,7 +7,8 @@ def load(icpe, conn):
         return None
     i = {
         'name' : icpe.name,
-        'macaddr' : icpe.macaddr,
+        'node' : icpe.node.name if icpe.node else "unassigned",
+        'macAddress' : icpe.macaddr,
         'ipaddr' : icpe.ipaddr,
         'online' : False,
         'battery' : None,

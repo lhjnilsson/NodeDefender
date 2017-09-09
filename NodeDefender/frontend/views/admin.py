@@ -4,16 +4,16 @@ from NodeDefender.frontend.forms.admin import (GeneralForm, CreateUserForm, Crea
 from flask_login import login_required, current_user
 from flask import Blueprint, request, render_template, flash, redirect, url_for
 from NodeDefender import serializer
+import NodeDefender
 #from ...security import group_required
 
 @admin_view.route('/admin/server', methods=['GET', 'POST'])
 @login_required
 def admin_server():
-    General = GeneralForm()
     MQTTList = NodeDefender.db.mqtt.list(user = current_user.email)
     MQTT = CreateMQTTForm()
     if request.method == 'GET':
-        return render_template('admin/server.html', GeneralForm = General,
+        return render_template('frontend/admin/server.html',
                                MQTTList = MQTTList, MQTTForm = MQTT)
     if MQTT.Submit.data and MQTT.validate_on_submit():
         try:
@@ -37,9 +37,9 @@ def admin_server():
 @login_required
 def admin_groups():
     GroupForm = CreateGroupForm()
-    groups = NodeDefender.db.group.list(user = current_user.email)
+    groups = NodeDefender.db.group.list(user_mail = current_user.email)
     if request.method == 'GET':
-        return render_template('admin/groups.html', groups = groups,
+        return render_template('frontend/admin/groups.html', groups = groups,
                                 CreateGroupForm = GroupForm)
     else:
         if not GroupForm.validate_on_submit():
@@ -66,7 +66,7 @@ def admin_group(name):
     if group is None:
         flash('Group {} not found'.format(name), 'danger')
         return redirect(url_for('admin_view.admin_groups'))
-    return render_template('admin/group.html', Group = group)
+    return render_template('frontend/admin/group.html', Group = group)
 
 @admin_view.route('/admin/users', methods=['GET', 'POST'])
 @login_required
@@ -74,8 +74,9 @@ def admin_users():
     UserForm = CreateUserForm()
     if request.method == 'GET':
         groups = NodeDefender.db.group.list(current_user.email)
+        groups = [group.name for group in groups]
         users = NodeDefender.db.user.list(*groups)
-        return render_template('admin/users.html', Users = users,\
+        return render_template('frontend/admin/users.html', Users = users,\
                                CreateUserForm = UserForm)
     if not UserForm.validate():
         flash('Error adding user', 'danger')
@@ -102,7 +103,7 @@ def admin_user(email):
         if user is None:
             flash('User {} not found'.format(id), 'danger')
             return redirect(url_for('admin_view.admin_groups'))
-        return render_template('admin/user.html', User = user, UserSettings =
+        return render_template('frontend/admin/user.html', User = user, UserSettings =
                                usersettings, UserPassword = userpassword,
                                UserGroupAdd = usergroupadd)
     
@@ -117,4 +118,4 @@ def admin_user(email):
 @admin_view.route('/admin/backup')
 @login_required
 def admin_backup():
-    return render_template('admin/backup.html')
+    return render_template('frontend/admin/backup.html')

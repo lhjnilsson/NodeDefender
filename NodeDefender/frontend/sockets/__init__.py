@@ -1,3 +1,4 @@
+import NodeDefender.frontend.sockets.admin
 import NodeDefender.frontend.sockets.node
 import NodeDefender.frontend.sockets.group
 import NodeDefender.frontend.sockets.icpe

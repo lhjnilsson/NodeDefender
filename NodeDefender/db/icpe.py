@@ -106,10 +106,10 @@ def load(node = None):
 
 def unassigned(user):
     icpes = SQL.session.query(iCPEModel).\
-            filter_by(iCPEModel.node is none).all()
+            filter(iCPEModel.node == None).all()
     if icpes:
-        emit('unassigned', [icpe.to_json() for icpe in icpes])
-    return True
+        return [icpe.to_json() for icpe in icpes]
+    return []
 
 def sensors(macaddr):
     sensors = redis.sensor.list(macaddr)

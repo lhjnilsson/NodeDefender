@@ -9,12 +9,9 @@ import NodeDefender
 @node_view.route('/nodes/list', methods=['GET', 'POST'])
 @login_required
 def nodes_list():
-    CreateForm = NodeCreateForm()
-
     if request.method == 'GET':
-        nodes = NodeDefender.db.node.list(current_user.email)
-        return render_template('frontend/nodes/list.html', nodes = nodes, NodeCreateForm =
-                               CreateForm)
+        nodes = NodeDefender.db.node.list(user_email = current_user.email)
+        return render_template('frontend/nodes/list.html', nodes = nodes)
     else:
         CreateForm.validate_on_submit()
         try:
@@ -44,14 +41,8 @@ def nodes_list():
 def nodes_node(name):
     name = serializer.loads(name)
     node = NodeDefender.db.node.get(name)
-    icpe = node.icpe
-    sensorform = SensorForm()
-    icpeform = iCPEForm()
-    locationform = LocationForm()
     if request.method == 'GET':
-        return render_template('frontend/nodes/node.html', iCPE = icpe, Node = node,
-                               iCPEForm = icpeform, LocationForm = locationform,
-                               SensorForm = sensorform)
+        return render_template('frontend/nodes/node.html', Node = node)
     
     if icpeform.Submit.data and icpeform.validate_on_submit():
         icpe.alias = BasicForm.alias.data
@@ -64,9 +55,8 @@ def nodes_node(name):
 
     db.session.add(icpe)
     db.session.commit()
-    return render_template('frontend/nodes/node.html', mac=mac, form=form, iCPE = iCPE,
-                                iCPEAddressForm = AddressForm, iCPEBasicForm =
-                                BasicForm, NodeBasicForm = NodeBasic)
+    return render_template('frontend/nodes/node.html', Node = node)
+
 '''
 @node_view.route('/nodes/list/<macaddr>/<sensorid>', methods=['GET', 'POST'])
 @login_required

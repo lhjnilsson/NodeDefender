@@ -1,5 +1,6 @@
 from flask_socketio import emit, send
 from NodeDefender import socketio, settings, config
+import NodeDefender
 
 @socketio.on('create', namespace='/mqtt')
 def create(host, port, group):

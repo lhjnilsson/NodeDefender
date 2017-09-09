@@ -9,7 +9,7 @@ from geopy.geocoders import Nominatim
 def create(name, group, location):
     NodeDefender.db.node.create(name)
     NodeDefender.db.group.add_node(group, name)
-    NodeDefender.db.node.set_location(group, **location)
+    NodeDefender.db.node.set_location(name, **location)
     NodeDefender.mail.node.new_node(name)
     url = url_for('NodeView.NodesNode', name = serializer.dumps(name))
     emit('redirect', (url), namespace='/general')
