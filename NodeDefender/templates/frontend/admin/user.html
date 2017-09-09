@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "frontend/base.html" %}
 {% block content %}
 <div class="row">
     <div class="col-lg-12">
@@ -13,7 +13,7 @@
        </ol>
     </div>
 </div>
-{% include "flash.html" %}
+{% include "frontend/flash.html" %}
 {% from "frontend/macros/group.html" import ListGroups, SelectGroup with context %}
 {% from "frontend/macros/user.html" import Info, Events, AdminSettings with context %}
 <div class="row">
@@ -66,7 +66,7 @@
 		</div>
 	</div>
 </div>
-{{ AdminSettings(User, UserSettings, UserPassword) }} 
+{{ AdminSettings(User, UserSettings, UserPassword) }}
 
 <script>
 	$(document).ready(function() {

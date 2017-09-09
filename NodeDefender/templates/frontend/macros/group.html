@@ -13,22 +13,22 @@
 		{% for group in groups %}
 		<tr>
 			<td>
-				<a href="{{url_for('AdminView.AdminGroup', name = serialize(group.name))}}">
+				<a href="{{url_for('admin_view.admin_group', name = serialize(group.name))}}">
 				{{group.name}}
 				</a>
 			</td>
 			<td>
-				<a href="{{url_for('AdminView.AdminGroup', name = serialize(group.name))}}">
+				<a href="{{url_for('admin_view.admin_group', name = serialize(group.name))}}">
 					{{group.description}}
 				</a>
 			</td>
 			<td>
-				<a href="{{url_for('AdminView.AdminGroup', name = serialize(group.name))}}">
+				<a href="{{url_for('admin_view.admin_group', name = serialize(group.name))}}">
 				{{group.users|count}}
 				</a>
 			</td>
 			<td>
-				<a href="{{url_for('AdminView.AdminGroup', name = serialize(group.name))}}">
+				<a href="{{url_for('admin_view.admin_group', name = serialize(group.name))}}">
 					{{group.nodes|count}}
 				</a>
 			</td>
@@ -45,7 +45,7 @@ grouptbody = document.getElementById('grouptbody');
 grouptable = document.getElementById('grouptable');
 	function groupList(groups) {
 		for (var i = 0; i < groups.length; i++) {
-			groupSocket.emit('info', ({'name' : groups[i]}));
+			groupSocket.emit('info', groups[i]);
 		}
 	};
 
@@ -68,25 +68,13 @@ grouptable = document.getElementById('grouptable');
 		var usersCell = newRow.insertCell(2);
 		var usersText = document.createTextNode(group.users.length);
 		usersCell.appendChild(usersText);
-		
+
 		var nodesCell = newRow.insertCell(3);
 		var nodesText = document.createTextNode(group.nodes.length);
 		nodesCell.appendChild(nodesText);
 	});
 	</script>
 {% endif %}
-{% endmacro %}
-
-{% macro CreateGroup(Form) %}
-{% from "frontend/macros/form.html" import render_field_with_errors, render_field %}
-<form action="{{url_for('AdminView.AdminGroups')}}" method="POST" class="form-horizontal">
-	{{ Form.csfr_token }}
-	{{ Form.hidden_tag() }}
-	{{ render_field_with_errors(Form.Name) }}
-	{{ render_field_with_errors(Form.Description) }}
-	{{ render_field_with_errors(Form.Email) }}
-	{{ render_field(Form.Submit) }}
-</form>
 {% endmacro %}
 
 {% macro GroupInfo(Group) %}
@@ -121,13 +109,13 @@ $(document).ready(function() {
 	groupSocket.on('list', function(groups) {
 		var glength = groups.length;
 		if (glength < 1) {
-			return 
+			return
 		}
-		
+
 		for (var i = 0; i < glength; i++) {
 			$('#GroupsList').append('<option>'+  groups[i].name + '</option>');
 		}
-		groupSocket.emit('info', {'name' : groups[0].name});
+		groupSocket.emit('info', groups[0].name);
 	});
 
 	groupSocket.on('info', function(group) {
@@ -139,7 +127,7 @@ $(document).ready(function() {
 
 	$('#GroupsList').change(function() {
 		var name = $('#GroupsList option:selected').text();
-		groupSocket.emit('info', {'name' : name});
+		groupSocket.emit('info', name);
 	});
 
 	var addToGroup = function() {

@@ -40,7 +40,7 @@
 					</div>
 					<div id="SensorModalConfig" class="tab-pane fade">
 						<div class="row">
-							{{ render_manual("Name", "sensorConfigName") }} 
+							{{ render_manual("Name", "sensorConfigName") }}
 						</div>
 					</div>
 				</div>
@@ -92,7 +92,7 @@ dataSocket.on('sensorEvents', function(events) {
 		var eventCell = newRow.insertCell(0);
 		var eventText = document.createTextNode(events[i].value);
 		eventCell.appendChild(eventText);
-		
+
 		var dateCell = newRow.insertCell(1);
 		var dateText = document.createTextNode(moment(events[i].date, "YYYYMMDD, hh:mm:ss").fromNow());
 		dateCell.appendChild(dateText);

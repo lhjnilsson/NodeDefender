@@ -6,7 +6,7 @@
 	<div class="panel-body">
 		<div class="row">
 			<div class="col-xs-4">
-				<h4 id="averageHeatMonthly">	
+				<h4 id="averageHeatMonthly">
 					0.0
 				</h4>
 				<small><i>Monthly Average</i></small>
@@ -90,18 +90,18 @@ plotlySocket.emit('heatChart', {'user' : "{{current_user.email}}"});
 				{% for group in groups %}
 				<tr>
 					<td>
-						<a href="{{ url_for('DataView.HeatGroup', name = serialize(group.name)) }}">
-							{{group.name}}	
+						<a href="{{ url_for('data_view.heat_group', name = serialize(group.name)) }}">
+							{{group.name}}
 						</a>
 					</td>
 					<td>
-						<p id="{{trim(group.name)}}CurrentHeat">0.0</p>	
+						<p id="{{trim(group.name)}}CurrentHeat">0.0</p>
 					</td>
 					<td>
-						<p id="{{trim(group.name)}}DailyHeat">0.0</p>	
+						<p id="{{trim(group.name)}}DailyHeat">0.0</p>
 					</td>
 					<td>
-						<p id="{{trim(group.name)}}WeeklyHeat">0.0</p>	
+						<p id="{{trim(group.name)}}WeeklyHeat">0.0</p>
 					</td>
 					<td>
 						<p id="{{trim(group.name)}}MonthlyHeat">0.0</p>

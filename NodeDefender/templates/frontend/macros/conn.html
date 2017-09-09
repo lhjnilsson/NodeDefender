@@ -69,12 +69,12 @@
 	</div>
 </div>
 <script>
-function MQTTInfo(hostes, port) {
+function MQTTInfo(host, port) {
 	$('#MQTTInfoModal').modal('show');
-	mqttSocket.emit("info", {'host' : hostes, 'port' : port});
-	$("#mqttTitle").text(hostess);
+	adminSocket.emit("mqttInfo", host, port);
+	$("#mqttTitle").text(host);
 }
-mqttSocket.on("info", function(info) {
+adminSocket.on("mqttInfo", function(info) {
 	cleariCPEList();
 	clearGroupList();
 
@@ -85,7 +85,7 @@ mqttSocket.on("info", function(info) {
 
 	iCPEList(info.icpes);
 	groupList(info.groups);
+	console.log(info)
 });
 </script>
 {% endmacro %}
-

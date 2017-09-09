@@ -15,7 +15,10 @@
 </div>
 {% include "frontend/flash.html" %}
 {% from "frontend/macros/node.html" import NodeList with context %}
-{% from "frontend/nodes/modals/node.html" import CreateNode with context %}
+{% from "frontend/macros/form.html" import render_manual %}
+{% from "frontend/macros/group.html" import SelectGroup %}
+{% from "frontend/macros/icpe.html" import SelectiCPE %}
+{% from "frontend/macros/info.html" import FieldID %}
 <div class="row">
 	<div class="col-lg-12">
 		<div class="panel panel-primary">
@@ -25,19 +28,100 @@
 			</div>
 			<div class="panel-body" style="padding: 0;">
 				{{ NodeList(nodes) }}
-
 			</div>
 		</div>
   </div>
 </div>
-{{ CreateNode() }}
+<div class="modal fade" id="CreateNode" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h2 class="modal-title">Create Node</h2>
+				<div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100"></div>
+			</div>
+			<div class="modal-body">
+				<div class="multiform-step">
+					<div class="row">
+						{{ render_manual('Name', 'nodeName') }}
+						{{ render_manual('Street', 'nodeStreet') }}
+						{{ render_manual('City', 'nodeCity') }}
+					</div>
+				</div>
+				<div class="multiform-step">
+					{{ SelectGroup(current_user) }}
+				</div>
+				<div class="multiform-step">
+					<div class="row">
+						{{ FieldID('Name', 'None', 'SubmitName') }}
+						{{ FieldID('Street', 'None', 'SubmitStreet') }}
+						{{ FieldID('City', 'None', 'SubmitCity') }}
+						{{ FieldID('Latitude', 'None', 'SubmitLatitude') }}
+						{{ FieldID('Longitude', 'None', 'SubmitLongitude') }}
+						{{ FieldID('Group', 'None', 'SubmitGroup') }}
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button class="multibtn multiform-back btn btn-info">Back</button>
+				<button class="multibtn multiform-next btn btn-info">Next</button>
+				<button class="multibtn multiform-submit btn btn-success">Submit</button>
+			</div>
+		</div>
+	</div>
+</div>
 <script>
 $(document).ready(function() {
-{% if current_user.has_role("technician") %}
-$('#createNode').prepend('<a style="color: #FFFFFF;" href="#" data-toggle="modal" data-target="#CreateNode"><i class="fa fa-plus" aria-hidden="true"></i></a>');
-{% endif %}
+	var basic = function() {
+		if ($('#nodeName').val() == '') {
+			toastr.error('Please Enter Name');
+			return false;
+		}
+		if ($('#nodeStreet').val() == '') {
+			toastr.error('Please Enter Street');
+			return false;
+		}
+		if ($('#nodeCity').val() == '') {
+			toastr.error('Please enter City');
+			return false;
+		}
+
+		$('#SubmitName').text($('#nodeName').val());
+		$('#SubmitStreet').text($('#nodeStreet').val());
+		$('#SubmitCity').text($('#nodeCity').val());
+		nodeSocket.emit('coordinates', {'street' : $('#SubmitStreet').text(), 'city' : $('#SubmitCity').text()})
+		return true;
+	}
+	var group = function() {
+		if ($('#GroupsList option:selected').text() == '') {
+			toastr.error('Please choose Group');
+			return false;
+		}
+		$('#SubmitGroup').text($('#GroupsList option:selected').text());
+
+		return true;
+	}
+
+	var submit = function() {
+		var macaddr = $('#SubmitiCPE').text();
+		var group = $('#SubmitGroup').text();
+		var node = $('#SubmitName').text();
+		var street = $('#SubmitStreet').text();
+		var city = $('#SubmitCity').text();
+		nodeSocket.emit('create', node, group, {'street' : street, 'city' : city});
+	}
+	initMultistep(basic, group, submit);
+
+	nodeSocket.on('coordinates', function(coordinates) {
+		$('#SubmitLatitude').text(coordinates.latitude);
+		$('#SubmitLongitude').text(coordinates.longitude);
+	});
+
+  {% if current_user.has_role("technician") %}
+  $('#createNode').prepend('<a style="color: #FFFFFF;" href="#" data-toggle="modal" data-target="#CreateNode"><i class="fa fa-plus" aria-hidden="true"></i></a>');
+  {% endif %}
 
 });
 </script>
-
+<script src="/static/js/multistep.js"></script>
 {% endblock %}

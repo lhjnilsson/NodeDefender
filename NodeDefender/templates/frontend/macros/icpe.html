@@ -38,14 +38,14 @@
 </form>
 <script>
 $(document).ready(function() {
-	iCPESocket.emit('unassigned', {'user' : '{{user.email}}'});
+	iCPESocket.emit('unassigned');
 
 	iCPESocket.on('unassigned', function(icpes) {
 		for (var i = 0; i < icpes.length; i++) {
 			$('#UnassignedList').append('<option>'+  icpes[i] + '</option>');
 		}
 	});
-	
+
 	iCPESocket.on('info', function(icpe) {
 		$('#addicpemac').text(icpe.macAddress);
 		$('#icpesensors').text(icpe.sensors);
@@ -109,7 +109,7 @@ iCPEtbody = document.getElementById('iCPEtbody');
 iCPEtable = document.getElementById('iCPEtable');
 	function iCPEList(icpes) {
 		for (var i = 0; i < icpes.length; i++) {
-			iCPESocket.emit('info', {'icpe' : icpes[i]});
+			iCPESocket.emit('info', icpes[i]);
 		}
 	};
 

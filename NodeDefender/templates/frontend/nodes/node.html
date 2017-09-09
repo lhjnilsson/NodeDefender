@@ -1,11 +1,54 @@
-{% extends "base.html" %}
+{% extends "frontend/base.html" %}
 {% block content %}
-{% from "nodes/macros/sockets.html" import Lookup, EventListener %}
-{{ EventListener(iCPE.macaddr) }}
-
 <script>
 namespace = '/nodedata';
 var socket = io.connect('//' + document.domain + ':' + location.port + namespace);
+var eventSocket = io.connect('//' + document.domain + ':' + location.port + '/icpe' + '{{macaddr}}');
+
+function switchChange(box, macaddr, sensorid, commandclass, classtype) {
+	if (box.checked) {
+		socket.emit('ZWaveSet', {'macaddr' : macaddr, 'sensorid' : sensorid, 'commandclass' : commandclass, 'value' : '1'});
+	} else {
+		socket.emit('ZWaveSet', {'macaddr' : macaddr, 'sensorid' : sensorid, 'commandclass' : commandclass, 'value' : '0'});
+	}
+}
+
+function switchEvent(field, enabled) {
+	if (enabled == "True") {
+		field.checked = true;
+	} else {
+		field.checked = false;
+	}
+}
+
+function boxEvent(box, enabled) {
+	if(enabled == "True" && !(box.classList.contains("lightboxlight")))
+			box.className += " lightboxlight";
+	else {
+		if(box.classList.contains("lightboxlight"))
+			 box.classList.remove("lightboxlight");
+	}
+}
+
+function valueEvent(box, value) {
+	$(box).text(value);
+}
+
+function eventToastr(event) {
+};
+
+eventSocket.on('ZWaveEvent', function(event) {
+	f = document.getElementById(event.sensor+event.name+"Value");
+	console.log(event);
+	if (event.type == 'switch') {
+		switchEvent(f, event.state);
+	} else if (event.type == 'box') {
+		boxEvent(f, event.state);
+	} else if (event.type == 'value') {
+		valueEvent(f, event.value);
+	}
+	eventToastr(event);
+});
 </script>
 
 <div class="row">
@@ -18,14 +61,13 @@ var socket = io.connect('//' + document.domain + ':' + location.port + namespace
 				<i class="fa fa-map-marker"></i><a href="{{url_for('index')}}"> Dashboard</a>
 			</li>
 			<li>
-				<a href="{{url_for('NodeView.NodesList')}}"> Node List</a>
+				<a href="{{url_for('node_view.nodes_list')}}"> Node List</a>
 			</li>
-			<li class="active">{{iCPE.mac}}</li>
+			<li class="active">{{Node.icpe.mac}}</li>
     </ol>
   </div>
 </div>
-{% include "flash.html" %}
-{% from "nodes/macros/info.html" import NodeInfo, iCPEInfo, AddiCPE with context %}
+{% include "frontend/flash.html" %}
 {% from "frontend/macros/map.html" import Map %}
 <div class="row">
 	<div class="col-lg-6">
@@ -39,7 +81,7 @@ var socket = io.connect('//' + document.domain + ':' + location.port + namespace
 				{{ Map(Node.location.latitude, Node.location.longitude) }}
 			</div>
 		</div>
-	</div>	
+	</div>
 	<div class="col-lg-3">
 		<div class="panel panel-primary">
 			<div class="panel-heading">
@@ -48,7 +90,36 @@ var socket = io.connect('//' + document.domain + ':' + location.port + namespace
 				</div>
 			</div>
 			<div class="panel-body" style="height: 200px;">
-				{{ NodeInfo(Node) }}
+				{% from "frontend/macros/data/node/power.html" import Current as CurrentPower %}
+				{% from "frontend/macros/data/node/heat.html" import Current as CurrentHeat %}
+				<div class="row" style="height: 50%;">
+					<div class="col-lg-4 textCenter">
+						<a href="#">
+							<i class="fa fa-unlock fa-2x" aria-hidden="true"></i>
+							<p><strong>Unlocked</strong></p>
+						</a>
+					</div>
+					<div class="col-lg-4 textCenter">
+						<a href="#">
+							<h3 style="margin: 0;">0</h3>
+							<p><strong>Issues</strong></p>
+						</a>
+					</div>
+					<div class="col-lg-4 textCenter">
+						<a href="#">
+							<i class="fa fa-book fa-2x" aria-hidden="true"></i>
+							<p><strong>Notifications</strong></p>
+						</a>
+					</div>
+				</div>
+				<div class="row" style="height: 50%;">
+					<div class="col-lg-6">
+						{{ CurrentPower(Node) }}
+					</div>
+					<div class="col-lg-6">
+						{{ CurrentHeat(Node) }}
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -61,17 +132,123 @@ var socket = io.connect('//' + document.domain + ':' + location.port + namespace
 			</div>
 			<div class="panel-body" style="height: 200px;">
 				{% if Node.icpe %}
-				{{ iCPEInfo(iCPE) }}
+					<div class="row" style="height: 50%">
+						<a href="#" class="col-lg-4 textCenter" data-toggle="tooltip" title="Update known Z-Wave devices">
+							<i class="fa fa-refresh fa-2x" aria-hidden="true"></i>
+							<p><strong>Update</strong></p>
+						</a>
+						<a href="#" class="col-lg-4 textCenter" data-toggle="tooltip" title="Include Z-Wave device">
+							<i class="fa fa-sign-in fa-2x" aria-hidden="true"></i>
+							<p><strong>Include</strong></p>
+						</a>
+						<a href="#" class="col-lg-4 textCenter" data-toggle="tooltip" title="Exclude Z-Wave device">
+							<i class="fa fa-sign-out fa-2x" aria-hidden="true"></i>
+							<p><strong>Exclude</strong></p>
+						</a>
+					</div>
+					<div class="row" style="height: 50%">
+						<div class="col-lg-6">
+							<p><strong>Connection</strong></p>
+							<p class="inline">Type: </p>
+							<p class="inline" id="connectionType">-</p>
+							<br>
+							<p class="inline">IP: </p>
+							<p class="inline" id="connectionAddr">-</p>
+						</div>
+						<div class="col-lg-6">
+							<p><strong>Power</strong></p>
+							<p class="inline">Source: </p>
+							<p class="inline" id="powerSource">-</p>
+							<br>
+							<p class="inline">Battery Level: </p>
+							<p class="inline" id="powerLevel">-</p>
+						</div>
+					</div>
+					<script>
+					$(document).ready(function() {
+						iCPE = "{{Node.icpe.macaddr}}";
+						updateButton = $('#update-icpe');
+						includeButton = $('#include-icpe');
+						excludeButton = $('#exclude-icpe');
+
+						iCPESocket.on('connection', function(conn) {
+							document.getElementById('connectionType').innerHTML = conn.type;
+							document.getElementById('connectionAddr').innerHTML = conn.address;
+						});
+						iCPESocket.on('power', function(power) {
+							document.getElementById('powerSource').innerHTML = power.source;
+							document.getElementById('powerLevel').innerHTML = power.battery;
+						});
+
+						iCPESocket.emit('connection', {'iCPE' : iCPE});
+						iCPESocket.emit('power', {'iCPE' : iCPE});
+
+						updateButton.click(function() {
+							iCPESocket('updateSensors', {'iCPE' : iCPE});
+						});
+						includeButton.click(function() {
+							iCPESocket('includeSensor', {'iCPE' : iCPE});
+						});
+						excludeButton.click(function() {
+							iCPESocket('excludeSensor', {'iCPE' : iCPE});
+						});
+					});
+					</script>
 				{% else %}
-				{{ AddiCPE(Node.icpe)}}
+					{% from "frontend/macros/icpe.html" import SelectiCPE %}
+					<div class="row">
+						<div class="col-lg-12">
+							<a href="#" style="display: inline-block; width: 100%; text-align: center;" data-toggle="modal" data-target="#AddiCPEModal">
+								<i class="fa fa-4x fa-plus-square-o" aria-hidden="true"></i>
+							</a>
+						</div>
+						<div class="col-lg-12" style="text-align: center">
+							<h3>Add iCPE Connection</h3>
+						</div>
+					</div>
+					<div class="modal fade" id="AddiCPEModal" role="dialog">
+						<div class="modal-dialog">
+							<div class="modal-content">
+								<div class="modal-header">
+									<button type="button" class="close" data-dismiss="modal">&times;</button>
+									<h2 class="modal-title">Add iCPE Connection</h2>
+								</div>
+								<div class="modal-body">
+									<div class="row">
+										{{ SelectiCPE(current_user) }}
+									</div>
+								</div>
+								<div class="modal-footer">
+									<button type="button" class="btn btn-success" id="AddiCPEButton">Add iCPE</button>
+									<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+								</div>
+							</div>
+						</div>
+					</div>
+						<script>
+					$(document).ready(function() {
+						node = "{{Node.name}}"
+						function addiCPE() {
+							if ($('addiCPEMac').text() != 'None') {
+								console.log($('#addicpemac').text());
+								nodeSocket.emit('addiCPE', node, $('#addicpemac').text());
+								return true;
+							} else {
+							 toastr.error("Please choose iCPE");
+								return false;
+							}
+						}
+						document.getElementById("AddiCPEButton").addEventListener("click", addiCPE);
+					});
+						</script>
 				{% endif %}
 			</div>
 		</div>
 	</div>
 </div>
-{% from "nodes/macros/sensor.html" import SensorBox, SensorScripts %}
+{% from "frontend/nodes/macros/sensor.html" import SensorBox, SensorScripts %}
 {% if Node.icpe.sensors|length > 0 %}
-{% for sensors in iCPE.sensors|batch(6) %}
+{% for sensors in Node.icpe.sensors|batch(6) %}
 <div class="row">
 	{% for sensor in sensors %}
 	<div class="col-lg-2">
@@ -96,29 +273,29 @@ var socket = io.connect('//' + document.domain + ':' + location.port + namespace
 {% from "frontend/macros/data/node/heat.html" import Chart as HeatChart %}
 {% from "frontend/macros/data/node/event.html" import EventList %}
 <div class="row">
-	{% if iCPE.power %}
+	{% if Node.icpe.power %}
 	<div class="col-lg-4">
 		{{ PowerChart(Node) }}
 	</div>
 	{% endif %}
-	{% if iCPE.heat %}
+	{% if Node.icpe.heat %}
 	<div class="col-lg-4">
-		{{ HeatChart(Node) }}	
+		{{ HeatChart(Node) }}
 	</div>
 	{% endif %}
-	{% if iCPE.events %}
+	{% if Node.icpe.events %}
 	<div class="col-lg-4">
-		{{ EventList(Node) }}			
+		{{ EventList(Node) }}
 	</div>
 	{% endif %}
 </div>
-{% from "nodes/modals/node.html" import ModalGrouplist, ModifyLocation with context %}
-{% from "nodes/modals/node.html" import NodeInformation with context %}
-{% from "nodes/modals/icpe.html" import iCPEModal %}
-{% from "nodes/modals/sensor.html" import SensorModal %}
+{% from "frontend/nodes/modals/node.html" import ModalGrouplist, ModifyLocation with context %}
+{% from "frontend/nodes/modals/node.html" import NodeInformation with context %}
+{% from "frontend/nodes/modals/icpe.html" import iCPEModal %}
+{% from "frontend/nodes/modals/sensor.html" import SensorModal %}
 <script>
 $(document).ready(function() {
-icpeMac = "{{iCPE.macaddr}}";
+icpeMac = "{{Node.icpe.macaddr}}";
 $('#general').prepend('<a style="color: #FFFFFF; margin: 0 5px;" href="#" data-toggle="modal" data-target="#groupList"><i class="fa fa-users" aria-hidden="true"></i></a>');
 $('#general').prepend('<a style="color: #FFFFFF; margin: 0 5px;" href="#" data-toggle="modal" data-target="#nodeInfo"><i class="fa fa-info" aria-hidden="true"></i></a>');
 $('#iCPEModals').prepend('<a style="color: #FFFFFF; margin: 0 5px;" href="#" onclick="iCPEModal(icpeMac)"><i class="fa fa-info" aria-hidden="true"></i></a>');
@@ -132,19 +309,17 @@ $('#location').prepend('<a style="color: #FFFFFF; margin: 0 5px;" href="#" data-
 function sensorModal(iCPE, sensor) {
 	sensorSocket.emit('info', {'icpe' : iCPE, 'sensor' : sensor});
 	dataSocket.emit('sensorEvents', {'icpe' : iCPE, 'sensor' : sensor});
-	
+
 	while (sensorEventTable.rows.length > 0)
 		sensorEventTable.deleteRow(0);
-	
+
 	$('#SensorModal').modal('show');
 }
 function iCPEModal(iCPE) {
 	iCPESocket.emit('info', {'icpe' : iCPE});
-	
+
 	$('#iCPEModal').modal('show');
 }
-
-
 </script>
 {{ ModalGrouplist(Node.groups) }}
 {{ NodeInformation(Node) }}
@@ -153,7 +328,7 @@ function iCPEModal(iCPE) {
 {{ ModifyLocation(Node.name) }}
 {% endif %}
 {% if Node.icpe.sensors|length > 0 %}
-	{{ SensorScripts(iCPE.sensors) }}
+	{{ SensorScripts(Node.icpe.sensors) }}
 {% endif %}
 {{ iCPEModal() }}
 {{ SensorModal() }}

@@ -13,13 +13,13 @@
 {% from "frontend/macros/form.html" import render_field_with_errors, render_submit %}
 <div class="modal fade" id="UserConfigure" role="dialog">
 	<div class="modal-dialog">
-		<div class="modal-content">	
+		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal">&times;</button>
 				<h2 class="modal-title">User Settings</h2>
 			</div>
 			<div class="modal-body">
-				<form action="{{url_for('AdminView.AdminUser', email = serialize(User.email))}}" method="post" class="form-horizontal">
+				<form action="{{url_for('admin_view.admin_user', email = serialize(User.email))}}" method="post" class="form-horizontal">
 					{{ Form.csfr_token }}
 					{{ Form.hidden_tag() }}
 					{{render_field_with_errors(Form.Firstname, User.firstname)}}
@@ -65,7 +65,7 @@ $(document).ready(function() {
 {% from "frontend/macros/form.html" import render_manual %}
 <div class="modal fade" id="userSettingsModal" role="dialog">
 	<div class="modal-dialog">
-		<div class="modal-content">	
+		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal">&times;</button>
 				<h2 class="modal-title">User Settings</h2>
@@ -89,7 +89,7 @@ $(document).ready(function() {
 	{% if User.firstname %}
 		document.getElementById("settingsFirstname").value = "{{User.firstname}}";
 	{% endif %}
-	
+
 	{% if User.lastname %}
 		document.getElementById("settingsLastname").value = "{{User.lastname}}";
 	{% endif %}
@@ -120,17 +120,17 @@ $(document).ready(function() {
 		{% for user in users %}
 		<tr>
 			<td>
-				<a href="{{url_for('AdminView.AdminUser', email = serialize(user.email))}}">
+				<a href="{{url_for('admin_view.admin_user', email = serialize(user.email))}}">
 				{{user.firstname}}
 				</a>
 			</td>
 			<td>
-				<a href="{{url_for('AdminView.AdminUser', email = serialize(user.email))}}">
+				<a href="{{url_for('admin_view.admin_user', email = serialize(user.email))}}">
 					{{user.lastname}}
 				</a>
 			</td>
 			<td>
-				<a href="{{url_for('AdminView.AdminUser', email = serialize(user.email))}}">
+				<a href="{{url_for('admin_view.admin_user', email = serialize(user.email))}}">
 				{{user.email}}
 				</a>
 			</td>

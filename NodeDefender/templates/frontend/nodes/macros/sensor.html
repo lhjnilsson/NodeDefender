@@ -37,7 +37,7 @@ function createFieldBox(field) {
 	box = document.createElement("LABEL");
 	box.setAttribute("class", "lightbox");
 	box.setAttribute("id", field.sensor+field.name+"Value");
-	if (field.state === "True") 
+	if (field.state === "True")
 		box.className += " lightboxlight";
 
 	div.innerHTML = ""
@@ -70,7 +70,7 @@ function createFieldSwitch(field) {
 		input.checked = true;
 	else
 		input.checked = false;
-	
+
 	_switch.appendChild(input);
 	_switch.appendChild(slider);
 

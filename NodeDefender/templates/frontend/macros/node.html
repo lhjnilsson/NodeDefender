@@ -12,22 +12,22 @@
 		{% for node in nodes %}
 		<tr>
 			<td>
-				<a href="{{ url_for('NodeView.NodesNode', name = serialize(node.name)) }}">
-					{{node.name}}	
+				<a href="{{ url_for('node_view.nodes_node', name = serialize(node.name)) }}">
+					{{node.name}}
 				</a>
 			</td>
 			<td>
-				<a href="{{ url_for('NodeView.NodesNode', name = serialize(node.name)) }}">
-					
+				<a href="{{ url_for('node_view.nodes_node', name = serialize(node.name)) }}">
+
 				</a>
 			</td>
 			<td>
-				<a href="{{ url_for('NodeView.NodesNode', name = serialize(node.name)) }}">
+				<a href="{{ url_for('node_view.nodes_node', name = serialize(node.name)) }}">
 					{{node.location.street}}
 				</a>
 			</td>
 			<td>
-				<a href="{{ url_for('NodeView.NodesNode', name = serialize(node.name)) }}">
+				<a href="{{ url_for('node_view.nodes_node', name = serialize(node.name)) }}">
 					{{node.location.city}}
 				</a>
 			</td>
@@ -97,5 +97,3 @@ $('input[name="geolong"]').val('{{Node.location.geolong}}');
 	</div>
 </div>
 {% endmacro %}
-
-
