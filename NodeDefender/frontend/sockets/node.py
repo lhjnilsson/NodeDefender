@@ -28,7 +28,7 @@ def list(user_mail):
     return True
 
 @socketio.on('addiCPE', namespace='/node')
-def add_icpe(node, macaddr):
+def add_icpe(node_name, icpe_macaddr):
     try:
         NodeDefender.db.node.add_icpe(node_name, icpe_macaddr)
         emit('reload', namespace='/general')

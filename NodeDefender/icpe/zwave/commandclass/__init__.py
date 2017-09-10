@@ -15,6 +15,28 @@ def to_number(classname):
     except NameError:
         return False
 
+def web_field(classnumber = None, classname = None, classtype = None):
+    if classnumber and not classname:
+        classname = to_name(classnumber)
+        if not classname:
+            return None
+    
+    if not classtype:
+        try:
+            return eval(classname + '.fields')['web_field']
+        except (NameError, TypeError):
+            return None
+
+    try:
+        typename = eval(classname + '.classtypes')[classtype]
+    except (KeyError, TypeError):
+        return None
+
+    try:
+        return eval(classname + '.' + typename + '.fields')['web_field']
+    except NameError:
+        return None
+
 def info(classnumber = None, classname = None, classtype = None):
     if classnumber and not classname:
         classname = to_name(classnumber)

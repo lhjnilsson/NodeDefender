@@ -1,6 +1,6 @@
 from NodeDefender.db.sql import SQL
 from datetime import datetime
-#from ...iCPE.zwave import commandclass
+import NodeDefender
 
 class HeatModel(SQL.Model):
     __tablename__ = 'heat'
@@ -79,16 +79,16 @@ class EventModel(SQL.Model):
 
         if self.commandclasstype:
             commandclasstype = self.commandclasstype.name
-            icon = eval('NodeDefender.icpe.zwave.commandclass.'+commandclasss\
+            icon = eval('NodeDefender.icpe.zwave.commandclass.'+commandclass\
                         +'.'+commandclasstype+'.icon')(self.value)
-            name = eval('NodeDefender.icpe.zwave.commandclass.'+commandclasss\
+            name = eval('NodeDefender.icpe.zwave.commandclass.'+commandclass\
                         +'.'+commandclasstype+'.fields')['name']
 
         elif self.commandclass:
-            icon = eval('commandclass.'+commandclass+'.icon')(self.value)
-            name = eval('commandclass.'+commandclass+'.fields')['name']
+            icon = eval('NodeDefender.commandclass.'+commandclass+'.icon')(self.value)
+            name = eval('NodeDefender.commandclass.'+commandclass+'.fields')['name']
 
-        return {'icpe' : self.icpe.macaddr, 'sensor' : self.sensor.productname, 'node' :
+        return {'icpe' : self.icpe.macaddr, 'sensor' : self.sensor.name, 'node' :
                 self.icpe.node.name, 'value' : self.value,\
                 'date' : str(self.date), 'icon' : icon,\
                 'name' : name}

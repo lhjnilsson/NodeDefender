@@ -22,6 +22,10 @@ def update_sql(macaddr, sensorid, **kwargs):
     SQL.session.commit()
     return sensor
 
+def save_sql(sensor):
+    SQL.session.add(sensor)
+    return SQL.session.commit()
+
 def create_sql(macaddr, sensorid):
     if get_sql(macaddr, sensorid):
         return False
@@ -66,6 +70,7 @@ def fields(macaddr, sensorid):
     return data
 
 def update(macaddr, sensorid, **kwargs):
+    add_zwave_info(macaddr, sensorid, kwargs['vid'], kwargs['pid'])
     update_sql(macaddr, sensorid, **kwargs)
     update_redis(macaddr, sensorid, **kwargs)
     return True
@@ -85,11 +90,34 @@ def load(*icpes):
             NodeDefender.mqtt.command.sensor.info.qry(icpe.macaddr,
                                                       sensor.sensorid)
 
-def create(macaddr, sensorid):
+def create(macaddr, sensorid, vendor_id = None, product_id = None):
     if not create_sql(macaddr, sensorid):
         return False
+    if vendor_id and product_id:
+        add_zwave_info(vendor_id, product_id)
+
     NodeDefender.mqtt.command.sensor.info.qry(macaddr, sensorid)
     return get_redis(macaddr, sensorid)
+
+def add_zwave_info(mac, sensorid, vendorid, productid):
+    sensor = get_sql(mac, sensorid)
+    if sensor is None:
+        return False
+    info = NodeDefender.icpe.zwave.devices.info(vendorid, productid)
+    if info is None:
+        return False
+    try:
+        sensor.vendor_id = vendorid
+        sensor.product_id = productid
+        sensor.product_type = info['ProductTypeId']
+        sensor.vendor_name = info['Brand']
+        sensor.product_name = info['Name']
+        sensor.device_type = info['DeviceType']
+        sensor.library_type = info['LibraryType']
+    except KeyError:
+        print(info)
+    save_sql(sensor)
+    return redis.sensor.load(sensor)
 
 def delete(macaddr, sensor):
     delete_sql(macaddr, sensor)

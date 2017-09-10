@@ -1,11 +1,11 @@
 {% macro SensorBox(sensor) %}
-{% from "nodes/macros/fields.html" import Switch, Box, Value %}
+{% from "frontend/nodes/macros/fields.html" import Switch, Box, Value %}
 <form name="#" class="form-horizontal" method="#">
 {% for commandclass in sensor.commandclasses %}
 
 {% if commandclass.types %}
 {% for commandclasstype in commandclass.types %}
-{% if commandclasstype.supported %}
+{% if commandclasstype.web_field %}
 <div class="form-group">
 	<label class="col-sm-2 control-label" id="{{sensor.sensorid}}{{commandclass.name}}Name">-</label>
 	<div class="col-sm-5 col-sm-offset-5" id="{{sensor.sensorid}}{{commandclass.name}}Div">
@@ -16,7 +16,7 @@
 {% endfor %}
 
 {% else %}
-{% if commandclass.supported %}
+{% if commandclass.web_field %}
 <div class="form-group">
 	<label class="col-sm-2 control-label" id="{{sensor.sensorid}}{{commandclass.name}}Name">-</label>
 	<div class="col-sm-5 col-sm-offset-5" id="{{sensor.sensorid}}{{commandclass.name}}Div">
@@ -83,7 +83,8 @@ function createFieldSwitch(field) {
 }
 
 sensorSocket.on('fields', function(fields) {
-	for (var i = 0; i < fields.length; i++) {
+		console.log(fields);
+		for (var i = 0; i < fields.length; i++) {
 		document.getElementById(fields[i].sensor+fields[i].commandclassName+"Name").innerHTML = fields[i].name;
 		if (fields[i].type == 'box')
 			createFieldBox(fields[i]);

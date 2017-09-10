@@ -20,5 +20,5 @@ def update_fields(icpe, sensor, kwargs):
 
 @socketio.on('fields', namespace='/sensor')
 def fields(icpe, sensor):
-    emit('fields', Nodedefender.db.sensor.fields(icpe, sensor))
+    emit('fields', NodeDefender.db.sensor.fields(icpe, sensor))
     return True

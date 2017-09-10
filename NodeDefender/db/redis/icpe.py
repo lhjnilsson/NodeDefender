@@ -8,10 +8,13 @@ def load(icpe, conn):
     i = {
         'name' : icpe.name,
         'node' : icpe.node.name if icpe.node else "unassigned",
+        'sensors' : len(icpe.sensors),
+        'mqtt' : icpe.mqtt[0].host + ':' + str(icpe.mqtt[0].port),
         'macAddress' : icpe.macaddr,
         'ipaddr' : icpe.ipaddr,
         'online' : False,
         'battery' : None,
+        'createdAt' : icpe.created_on.timestamp(),
         'lastUpdated' : datetime.now().timestamp(),
         'loadedAt' : datetime.now().timestamp()
     }

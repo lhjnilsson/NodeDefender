@@ -73,7 +73,7 @@ def add_icpe(nodeName, icpeMac):
     if icpe is None or node is None:
         return False
 
-    node.icpes.append(icpe)
+    node.icpe = icpe
     SQL.session.add(node)
     SQL.session.commit()
     return node
@@ -84,7 +84,7 @@ def remove_icpe(nodeName, icpeMac):
     if icpe is None or node is None:
         return False
 
-    node.icpes.remove(icpe)
+    node.icpe = None
     SQL.session.add(node)
     SQL.session.commit()
     return node

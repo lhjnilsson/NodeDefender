@@ -26,6 +26,10 @@ def save(macaddr, sensorid, name, conn, **kwargs):
     return conn.hmset(macaddr + sensorid + name, field)
 
 @redisconn
+def list(macaddr, sensorid, conn):
+    return conn.smembers(macaddr + sensorid + ":fields")
+
+@redisconn
 def get(macaddr, sensorid, name, conn):
     return conn.hgetall(macaddr + sensorid + name)
 

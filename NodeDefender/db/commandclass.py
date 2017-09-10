@@ -109,6 +109,10 @@ def create(macaddr, sensorid, classnumber):
         if info['types']:
             NodeDefender.mqtt.command.commandclass.sup(macaddr, sensorid, \
                                                        info['name'])
+    if NodeDefender.icpe.zwave.commandclass.\
+       web_field(classnumber = classnumber):
+        update(macaddr, sensorid, classnumber = classnumber, **{'web_field' :
+                                                                True})
     return get(macaddr, sensorid, classnumber = classnumber)
 
 def delete(macaddr, sensorid, classnumber = None, classname = None):
@@ -135,10 +139,14 @@ def add_types(macaddr, sensorid, classname, classtypes):
         typeModel = CommandClassTypeModel(classtype)
         info = NodeDefender.icpe.zwave.commandclass.info(classname = classname,\
                                                          classtype = classtype)
+        web_field = NodeDefender.icpe.zwave.commandclass.\
+                web_field(classname = classname, classtype = classtype)
         if not info:
             print("No info: ", commandclass.name, classtype)
             continue
         typeModel.name = info['name']
+        if web_field:
+            typeModel.web_field = True
         commandclass.types.append(typeModel)
         SQL.session.add(commandclass, typeModel)
         SQL.session.commit()

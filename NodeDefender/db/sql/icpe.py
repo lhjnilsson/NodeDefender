@@ -73,9 +73,8 @@ class SensorModel(SQL.Model):
     product_id = SQL.Column(SQL.String(16))
     vendor_name = SQL.Column(SQL.String(64))
     product_name = SQL.Column(SQL.String(64))
-
-    generic_class = SQL.Column(SQL.String(32))
-    specific_class = SQL.Column(SQL.String(32))
+    device_type = SQL.Column(SQL.String(48))
+    library_type = SQL.Column(SQL.String(48))
 
     sleepable = SQL.Column(SQL.Boolean)
     wakeup_interval = SQL.Column(SQL.Integer)
@@ -100,7 +99,7 @@ class SensorModel(SQL.Model):
                 print(key.lower(), value)
                 setattr(self, key.lower(), value)
 
-            self.productname = self.name
+            self.name = self.product_name
 
     def columns(self):
         return ['sensorid', 'vendor_id', 'product_type', 'product_id',

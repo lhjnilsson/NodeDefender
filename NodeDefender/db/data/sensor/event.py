@@ -43,8 +43,11 @@ def put(mac, sensorid, commandclass, commandclasstype, state, value):
     icpe = NodeDefender.db.icpe.get_sql(mac)
     sensor = NodeDefender.db.sensor.get_sql(mac, sensorid)
     commandclass = NodeDefender.db.commandclass.\
-            get_sql(mac, sensorid, classnumber = commandclass)
+            get_sql(mac, sensorid, classname = commandclass)
     
+    if commandclass is None:
+        return 
+
     event = EventModel(state, value)
 
     event.node = icpe.node
@@ -53,9 +56,8 @@ def put(mac, sensorid, commandclass, commandclasstype, state, value):
     event.commandclass = commandclass
 
     if commandclasstype:
-        commandclasstype = NodeDefender.db.commandclass.\
-                get_type(mac, sensorid, commandclass, commandclasstype)
-
+        event.commandclasstype = NodeDefender.db.commandclass.\
+                get_type(mac, sensorid, commandclass.name, commandclasstype)
     SQL.session.add(event)
     SQL.session.commit()
     return True

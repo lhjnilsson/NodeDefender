@@ -256,7 +256,7 @@ eventSocket.on('ZWaveEvent', function(event) {
 			<div class="panel-heading">
 				{{ sensor.name }}
 				<div class="floatRight">
-					<a href="#" style="color: #FFFFFF; margin: 0 5px;" onclick="sensorModal('{{iCPE.macaddr}}', '{{sensor.sensorid}}')"><i class="fa fa-info" aria-hidden="true"></i></a>
+					<a href="#" style="color: #FFFFFF; margin: 0 5px;" onclick="sensorModal('{{Node.icpe.macaddr}}', '{{sensor.sensorid}}')"><i class="fa fa-info" aria-hidden="true"></i></a>
 				</div>
 			</div>
 			<div class="panel-body" id="Box{{sensor.sensorid}}">
@@ -307,7 +307,7 @@ $('#location').prepend('<a style="color: #FFFFFF; margin: 0 5px;" href="#" data-
 });
 
 function sensorModal(iCPE, sensor) {
-	sensorSocket.emit('info', {'icpe' : iCPE, 'sensor' : sensor});
+	sensorSocket.emit('info', iCPE, sensor);
 	dataSocket.emit('sensorEvents', {'icpe' : iCPE, 'sensor' : sensor});
 
 	while (sensorEventTable.rows.length > 0)

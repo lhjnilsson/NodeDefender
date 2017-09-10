@@ -3,7 +3,8 @@ import NodeDefender
 icons = {'16' : 'fa fa-bell', '17' : 'fa fa-bell-slash-o',\
          '1' : 'fa fa-bell', '0' : 'fa fa-bell-slash-o'}
 
-fields = {'type' : bool, 'readonly' : True, 'name' : 'Door/Window'}
+fields = {'type' : bool, 'readonly' : True, 'name' : 'Door/Window', 'web_field'
+          : True}
 
 info = {'number' : '06', 'name' : 'AccessControl', 'commandclass' : 'alarm'}
 
