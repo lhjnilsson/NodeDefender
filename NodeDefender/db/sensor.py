@@ -79,10 +79,11 @@ def load(*icpes):
         icpes = NodeDefender.db.icpe.list()
     
     for icpe in icpes:
-        sensors = list(icpe)
+        sensors = list(icpe.macaddr)
         for sensor in sensors:
-            get(icpe, sensor)
-            NodeDefender.mqtt.command.sensor.info.qry(icpe, sensor)
+            get(icpe.macaddr, sensor.sensorid)
+            NodeDefender.mqtt.command.sensor.info.qry(icpe.macaddr,
+                                                      sensor.sensorid)
 
 def create(macaddr, sensorid):
     if not create_sql(macaddr, sensorid):
@@ -95,14 +96,14 @@ def delete(macaddr, sensor):
     delete_redis(macaddr, sensor)
     return True
 
-def verify_list(macaddr, sensorList):
-    knownSensors = list(macaddr)
-    for sensor in sensorList.split(','):
-        if sensor not in knownSensors:
+def verify_list(macaddr, sensor_list):
+    known_sensors = [sensor.sensorid for sensor in list(macaddr)]
+    for sensor in sensor_list.split(','):
+        if sensor not in known_sensors:
             create(macaddr, sensor)
 
-    for sensor in knownSensors:
-        if sensor not in sensorList:
+    for sensor in known_sensors:
+        if sensor not in sensor_list:
             delete(macaddr, sensor)
 
     return True

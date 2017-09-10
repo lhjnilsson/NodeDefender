@@ -59,18 +59,18 @@ plotlySocket.emit('nodeHeatChart', {'name' : "{{node.name}}"});
 				{% if sensor.heat %}
 				<tr>
 					<td>
-						<a href="{{ url_for('DataView.HeatSensor', icpe = serialize(node.icpe.macaddr), sensor = sensor.sensorid) }}">
+						<a href="{{ url_for('data_view.heat_sensor', icpe = serialize(node.icpe.macaddr), sensor = sensor.sensorid) }}">
 							{{sensor.name}}
 						</a>
 					</td>
 					<td>
-						<p id="{{node.icpe.macaddr}}{{sensor.sensorid}}CurrentHeat">0.0</p>	
+						<p id="{{node.icpe.macaddr}}{{sensor.sensorid}}CurrentHeat">0.0</p>
 					</td>
 					<td>
-						<p id="{{node.icpe.macaddr}}{{sensor.sensorid}}DailyHeat">0.0</p>	
+						<p id="{{node.icpe.macaddr}}{{sensor.sensorid}}DailyHeat">0.0</p>
 					</td>
 					<td>
-						<p id="{{node.icpe.macaddr}}{{sensor.sensorid}}WeeklyHeat">0.0</p>	
+						<p id="{{node.icpe.macaddr}}{{sensor.sensorid}}WeeklyHeat">0.0</p>
 					</td>
 					<td>
 						<p id="{{node.icpe.macaddr}}{{sensor.sensorid}}MonthlyHeat">0.0</p>

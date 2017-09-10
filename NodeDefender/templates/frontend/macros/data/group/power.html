@@ -6,7 +6,7 @@
 	<div class="panel-body">
 		<div class="row">
 			<div class="col-xs-4">
-				<h4 id="averagePowerMonthly">	
+				<h4 id="averagePowerMonthly">
 					0.0
 				</h4>
 				<small><i>Monthly Average</i></small>
@@ -91,18 +91,18 @@ plotlySocket.emit('groupPowerChart', {'name' : "{{group.name}}"});
 				{% for node in group.nodes %}
 				<tr>
 					<td>
-						<a href="{{ url_for('DataView.PowerNode', name = serialize(node.name)) }}">
-							{{node.name}}	
+						<a href="{{ url_for('data_view.power_node', name = serialize(node.name)) }}">
+							{{node.name}}
 						</a>
 					</td>
 					<td>
-						<p id="{{trim(node.name)}}CurrentPower">0.0</p>	
+						<p id="{{trim(node.name)}}CurrentPower">0.0</p>
 					</td>
 					<td>
-						<p id="{{trim(node.name)}}DailyPower">0.0</p>	
+						<p id="{{trim(node.name)}}DailyPower">0.0</p>
 					</td>
 					<td>
-						<p id="{{trim(node.name)}}WeeklyPower">0.0</p>	
+						<p id="{{trim(node.name)}}WeeklyPower">0.0</p>
 					</td>
 					<td>
 						<p id="{{trim(node.name)}}MonthlyPower">0.0</p>

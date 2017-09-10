@@ -107,15 +107,13 @@ $(document).ready(function() {
 	groupSocket.emit('list', ('{{user.email}}'));
 
 	groupSocket.on('list', function(groups) {
-		var glength = groups.length;
-		if (glength < 1) {
+		if (groups.length < 1) {
 			return
 		}
-
-		for (var i = 0; i < glength; i++) {
-			$('#GroupsList').append('<option>'+  groups[i].name + '</option>');
+		for (var i = 0; i < groups.length; i++) {
+			$('#GroupsList').append('<option>'+  groups[i] + '</option>');
 		}
-		groupSocket.emit('info', groups[0].name);
+		groupSocket.emit('info', groups[0]);
 	});
 
 	groupSocket.on('info', function(group) {

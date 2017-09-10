@@ -60,18 +60,18 @@ plotlySocket.emit('nodePowerChart', {'name' : "{{node.name}}"});
 				{% if sensor.power %}
 				<tr>
 					<td>
-						<a href="{{ url_for('DataView.PowerSensor', icpe = serialize(node.icpe.macaddr), sensor = sensor.sensorid) }}">
+						<a href="{{ url_for('data_view.power_sensor', icpe = serialize(node.icpe.macaddr), sensor = sensor.sensorid) }}">
 							{{sensor.name}}
 						</a>
 					</td>
 					<td>
-						<p id="{{node.icpe.macaddr}}{{sensor.sensorid}}CurrentPower">0.0</p>	
+						<p id="{{node.icpe.macaddr}}{{sensor.sensorid}}CurrentPower">0.0</p>
 					</td>
 					<td>
-						<p id="{{node.icpe.macaddr}}{{sensor.sensorid}}DailyPower">0.0</p>	
+						<p id="{{node.icpe.macaddr}}{{sensor.sensorid}}DailyPower">0.0</p>
 					</td>
 					<td>
-						<p id="{{node.icpe.macaddr}}{{sensor.sensorid}}WeeklyPower">0.0</p>	
+						<p id="{{node.icpe.macaddr}}{{sensor.sensorid}}WeeklyPower">0.0</p>
 					</td>
 					<td>
 						<p id="{{node.icpe.macaddr}}{{sensor.sensorid}}MonthlyPower">0.0</p>

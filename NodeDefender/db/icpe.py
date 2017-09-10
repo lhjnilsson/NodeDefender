@@ -86,11 +86,13 @@ def load(node = None):
     icpes = list(node)
     current_time = datetime.now().timestamp()
     for icpe in icpes:
-        cached = get(icpe)
+        cached = get(icpe.macaddr)
+        if not cached:
+            continue
         if float(cached['lastUpdated']) - current_time > 1200:
             mark_offline(cached)
-        NodeDefender.mqtt.command.icpe.zwave.info.qry(icpe)
-        NodeDefender.mqtt.command.icpe.zwave.node.list(icpe)
+        NodeDefender.mqtt.command.icpe.zwave.info.qry(icpe.macaddr)
+        NodeDefender.mqtt.command.icpe.zwave.node.list(icpe.macaddr)
 
 def unassigned(user):
     return SQL.session.query(iCPEModel).\

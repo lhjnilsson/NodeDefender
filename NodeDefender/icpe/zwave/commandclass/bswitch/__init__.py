@@ -8,7 +8,8 @@ def icon(value):
     return icons[eval(value)]
 
 def event(payload):
-    data = {'field' : field, 'info' : info}
+    data = {'commandclass' : info, 'commandclasstype' : False,
+            'fields' : fields}
     data['value'] = payload['value']
     data['state'] = True if int(data['value']) else False
     data['icon'] = icons[data['state']]

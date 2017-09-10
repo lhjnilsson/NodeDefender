@@ -18,7 +18,7 @@ def load(mqttlist = None):
         mqttlist = NodeDefender.db.mqtt.list()
 
     for m in mqttlist:
-        Thread(target=add, args=[m['host'], m['port']]).start()
+        Thread(target=add, args=[m.host, m.port]).start()
     return len(mqttlist)
 
 def connection(host, port):

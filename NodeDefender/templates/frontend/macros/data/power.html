@@ -66,7 +66,7 @@ plotlySocket.on('powerChart', function(data) {
 	Plotly.newPlot(chartElement, data.data, data.layout)
 });
 
-plotlySocket.emit('powerChart', {'user' : "{{current_user.email}}"});
+plotlySocket.emit('powerChart');
 </script>
 {% endmacro %}
 

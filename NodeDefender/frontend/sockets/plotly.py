@@ -2,6 +2,7 @@ from flask_socketio import emit, send, disconnect, join_room, leave_room, \
         close_room, rooms
 from flask_login import current_user
 from NodeDefender import socketio
+import NodeDefender
 
 power_layout = {'title' : '',
                'xaxis' : {'title' : 'Date'},

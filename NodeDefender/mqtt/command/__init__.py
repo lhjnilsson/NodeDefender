@@ -8,7 +8,7 @@ def fire(topic, payload = None, icpe = None, mqttsrc = None):
     print("icpe: ", icpe)
 
     if mqttsrc is None and icpe:
-        mqttsrc = NodeDefender.db.mqtt.icpe(icpe)
+        mqttsrc = NodeDefender.db.mqtt.icpe(icpe).to_json()
 
     conn = NodeDefender.mqtt.connection.connection(mqttsrc['host'], \
                                                    mqttsrc['port'])

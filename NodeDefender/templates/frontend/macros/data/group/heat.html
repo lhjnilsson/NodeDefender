@@ -6,7 +6,7 @@
 	<div class="panel-body">
 		<div class="row">
 			<div class="col-xs-4">
-				<h4 id="averageHeatMonthly">	
+				<h4 id="averageHeatMonthly">
 					0.0
 				</h4>
 				<small><i>Monthly Average</i></small>
@@ -91,18 +91,18 @@ plotlySocket.emit('groupHeatChart', {'name' : "{{group.name}}"});
 				{% for node in group.nodes %}
 				<tr>
 					<td>
-						<a href="{{ url_for('DataView.HeatNode', name = serialize(node.name)) }}">
-							{{node.name}}	
+						<a href="{{ url_for('data_view.heat_node', name = serialize(node.name)) }}">
+							{{node.name}}
 						</a>
 					</td>
 					<td>
-						<p id="{{trim(node.name)}}CurrentHeat">0.0</p>	
+						<p id="{{trim(node.name)}}CurrentHeat">0.0</p>
 					</td>
 					<td>
-						<p id="{{trim(node.name)}}DailyHeat">0.0</p>	
+						<p id="{{trim(node.name)}}DailyHeat">0.0</p>
 					</td>
 					<td>
-						<p id="{{trim(node.name)}}WeeklyHeat">0.0</p>	
+						<p id="{{trim(node.name)}}WeeklyHeat">0.0</p>
 					</td>
 					<td>
 						<p id="{{trim(node.name)}}MonthlyHeat">0.0</p>
@@ -116,7 +116,7 @@ plotlySocket.emit('groupHeatChart', {'name' : "{{group.name}}"});
 	<script>
 $(document).ready(function() {
 	dataSocket.on('nodeHeatAverage', function(data) {
-		if (!data.name) 
+		if (!data.name)
 			return false;
 		name = data.name.replace(/\s/g, '');
 		document.getElementById(name+"CurrentHeat").innerHTML = parseFloat(data.current).toFixed(1);

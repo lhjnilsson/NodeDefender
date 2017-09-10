@@ -1,12 +1,13 @@
 from datetime import datetime, timedelta
 from NodeDefender.db.sql import SQL, EventModel, iCPEModel, SensorModel
+import NodeDefender
 
-def Latest(icpe, sensor):
+def latest(icpe, sensor):
     return EventModel.query.join(iCPEModel).join(SensorModel).\
             filter(iCPEModel.macaddr == icpe).\
             filter(SensorModel.macaddr == sensor).first()
 
-def Get(icpe, sensor, limit = None):
+def get(icpe, sensor, limit = None):
     if limit is None:
         limit = 10
     return SQL.session.query(EventModel).\
