@@ -268,7 +268,6 @@ eventSocket.on('ZWaveEvent', function(event) {
 </div>
 {% endfor %}
 {% endif %}
-{% from "frontend/macros/statistics.html" import PowerGraph, HeatGraph, EventList with context %}
 {% from "frontend/macros/data/node/power.html" import Chart as PowerChart %}
 {% from "frontend/macros/data/node/heat.html" import Chart as HeatChart %}
 {% from "frontend/macros/data/node/event.html" import EventList %}

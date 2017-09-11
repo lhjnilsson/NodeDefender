@@ -5,7 +5,7 @@ var groupsArray = [];
 
 groupSocket.on('list', function(groups) {
 	for (var i = 0; i < groups.length; i++)
-		groupsArray.push(groups[i].name);
+		groupsArray.push(groups[i]);
 
 	dataSocket.emit('groupHeatAverage', groupsArray[0]);
 	dataSocket.emit('groupPowerAverage', groupsArray[0]);

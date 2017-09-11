@@ -6,24 +6,26 @@ import NodeDefender
 @user_view.route('/user/profile')
 @login_required
 def UserProfile():
-    Team =  UserModel.query.all()
-    return render_template('user/profile.html', Team = Team)
+    groups = [group.name for group in current_user.groups]
+    team = NodeDefender.db.user.list(*groups)
+    return render_template('frontend/user/profile.html', Team = team)
 
 @user_view.route('/user/groups')
 @login_required
 def UserGroups():
-    Team =  UserModel.query.all()
-    return render_template('user/groups.html', Team = Team)
+    groups = [group.name for group in current_user.groups]
+    team = NodeDefender.db.user.list(*groups)
+    return render_template('frontend/user/groups.html', Team = team)
 
 
 @user_view.route('/user/inbox')
 @login_required
 def UserInbox():
-    return render_template('user/inbox.html')
+    return render_template('frontend/user/inbox.html')
 
 @user_view.route('/user/inbox/<mailid>', methods=['GET', 'POST'])
 @login_required
 def UserInboxID(mailid):
     message = UserMessageModel.query.filter_by(uuid=mailid).first()
-    return render_template('user/inboxid.html', mailid=mailid, message =
+    return render_template('frontend/user/inboxid.html', mailid=mailid, message =
                            message)
