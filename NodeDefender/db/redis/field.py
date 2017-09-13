@@ -3,16 +3,19 @@ import NodeDefender
 from NodeDefender.db.redis import redisconn
 
 @redisconn
-def load(sensor, conn, **kwargs):
-    if sensor is None:
+def load(commandclass, conn, **kwargs):
+    if commandclass is None:
         return None
-    kwargs['icpe'] = sensor.icpe.macaddr
-    kwargs['sensor'] = sensor.sensorid
+    kwargs['icpe'] = commandclass.sensor.icpe.macaddr
+    kwargs['sensor'] = commandclass.sensor.sensorid
+    kwargs['commandclass'] = commandclass.name
     kwargs['value'] = None
-    kwargs['lastUpdated'] = datetime.now().timestamp(),
+    kwargs['lastUpdated'] = datetime.now().timestamp()
     kwargs['loadedAt'] = datetime.now().timestamp()
-    conn.sadd(sensor.icpe.macaddr + sensor.sensorid +':fields', kwargs['name'])
-    conn.hmset(sensor.icpe.macaddr + sensor.sensorid + kwargs['name'], kwargs)
+    conn.sadd(commandclass.sensor.icpe.macaddr +\
+              commandclass.sensor.sensorid +':fields', kwargs['name'])
+    conn.hmset(commandclass.sensor.icpe.macaddr +\
+               commandclass.sensor.sensorid + kwargs['name'], kwargs)
     return kwargs
 
 @redisconn

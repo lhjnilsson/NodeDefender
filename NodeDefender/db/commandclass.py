@@ -105,6 +105,8 @@ def create(macaddr, sensorid, classnumber):
         return False
     info = NodeDefender.icpe.zwave.commandclass.info(classnumber = classnumber)
     if info:
+        info['web_field'] = NodeDefender.icpe.zwave.commandclass.\
+                web_field(classname = classname)
         update(macaddr, sensorid, classnumber = classnumber, **info)
         if info['types']:
             NodeDefender.mqtt.command.commandclass.sup(macaddr, sensorid, \

@@ -45,7 +45,7 @@ def load_commandclass(*commandclasses):
         field = eval('NodeDefender.icpe.zwave.commandclass.'+\
                      commandclass.name+'.fields')
         if field:
-            redis.field.load(commandclass.sensor, **field)
+            redis.field.load(commandclass, **field)
         if commandclass.types:
             load_commandclasstype(*commandclass.types)
     return len(commandclasses)
@@ -55,7 +55,7 @@ def load_commandclasstype(*cctypes):
         field = eval('NodeDefender.icpe.zwave.commandclass.'+\
                      cctype.commandclass.name+'.'+cctype.name+'.fields')
         if field:
-            redis.field.load(cctype.commandclass.sensor, **field)
+            redis.field.load(cctype.commandclass, **field)
 
     return len(cctypes)
 
