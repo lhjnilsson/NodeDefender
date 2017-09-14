@@ -18,10 +18,8 @@ def create(name, mail, description, location):
 
 @socketio.on('list', namespace='/group')
 def list(user):
-    print("Mail: ", user)
     groups = [group.name for group in \
               NodeDefender.db.group.list(user_mail = user)]
-    print("Groups: ", groups)
     return emit('list', groups)
 
 @socketio.on('info', namespace='/group')

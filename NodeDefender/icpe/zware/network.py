@@ -1,3 +1,5 @@
+import NodeDefender
+
 OPERATION_MODES = {'0' : 'nop', '1' : 'initialize', '2' : 'include node',
                    '3' : 'exclude node', '4' : 'replace node', '5' : 'remove node',
                    '6' : 'initialize', '7' : 'update',

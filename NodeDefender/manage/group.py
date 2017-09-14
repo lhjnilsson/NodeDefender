@@ -4,7 +4,7 @@ import NodeDefender
 manager = Manager(usage='Manage Groups')
 
 @manager.option('-name', '--name', dest='name', default=None)
-def create(name, description):
+def create(name):
     'Create a Group'
     if name is None:
         name = prompt('Group Name')
