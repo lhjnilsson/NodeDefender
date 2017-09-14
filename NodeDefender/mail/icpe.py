@@ -18,7 +18,7 @@ def new_icpe(icpe, host, port):
     msg = Message('iCPE {} found on MQTT {}'.format(icpe.macaddr, mqtt.host),
                   sender='noreply@nodedefender.com', recipients=\
                   [group.email for group in mqtt.groups ])
-    url = url_for('NodeView.NodesList')
+    url = url_for('node_view.nodes_list')
     msg.body = render_template('mail/icpe/new_icpe.txt', icpe = icpe, mqtt =
                                mqtt, url = url)
     mail.send(msg)
@@ -37,7 +37,7 @@ def icpe_enabled(icpe, host, port):
     msg = Message('iCPE {} Enabled from MQTT {}'.format(icpe.macaddr, mqtt.host),
                   sender='noreply@nodedefender.com', recipients=\
                   [group.email for group in mqtt.groups ])
-    url = url_for('NodeView.NodesList')
+    url = url_for('node_view.nodes_list')
     msg.body = render_template('mail/icpe/icpe_enabled.txt', icpe = icpe, mqtt =
                                mqtt, url = url)
     mail.send(msg)

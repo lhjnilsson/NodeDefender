@@ -19,7 +19,7 @@ def new_node(group, node):
 
     msg = Message('Node added to {}'.format(group.name), sender='noreply@nodedefender.com',
                   recipients=[group.email])
-    url = url_for('NodeView.NodesNode', name = serializer.dumps(node.name))
+    url = url_for('node_view.nodes_node', name = serializer.dumps(node.name))
     msg.body = render_template('mail/node/new_node.txt', node = node, url =
                               url)
     mail.send(msg)

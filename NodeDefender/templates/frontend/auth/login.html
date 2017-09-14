@@ -38,7 +38,7 @@
 					<div class="row">
 						<div class="col-lg-12">
 							<h4 class="col-sm-offset-2"><b>Login</b></h4>
-							<form name="lform" class="form-horizontal" method="post" action="{{ url_for('AuthView.Login') }}">
+							<form name="lform" class="form-horizontal" method="post" action="{{ url_for('auth_view.login') }}">
 								{{ LoginForm.hidden_tag() }}
 								{{ render_field(LoginForm.email) }}
 								{{ render_field(LoginForm.password) }}

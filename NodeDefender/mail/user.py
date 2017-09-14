@@ -15,7 +15,7 @@ def new_user(user):
         return False
     msg = Message('Welcome to NodeDefender', sender='noreply@nodedefender.com',
                   recipients=[user.email])
-    url = url_for('AuthView.Register',\
+    url = url_for('auth_view.register',\
                   token = serializer.dumps_salted(user.email))
     msg.body = render_template('mail/user/create_user.txt', user = user, url =
                               url)
@@ -47,7 +47,7 @@ def reset_password(user):
 
     msg = Message('Reset password', sender='noreply@nodedefender.com',
                   recipients=[user.email])
-    url = url_for('AuthView.ResetPassword',\
+    url = url_for('auth_view.reset_password',\
                  token = serializer.dumps_salted(user.email))
     msg.body = render_template('mail/user/reset_password.txt', user = user, url =
                               url)

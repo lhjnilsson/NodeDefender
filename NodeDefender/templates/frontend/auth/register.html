@@ -38,7 +38,7 @@
 					<div class="row">
 						<div class="col-lg-12">
 							<h4 class="col-sm-offset-2"><b>Login</b></h4>
-							<form name="lform" class="form-horizontal" method="post" action="{{ url_for('AuthView.Register', token = serialize_salted(user.email)) }}">
+							<form name="lform" class="form-horizontal" method="post" action="{{ url_for('auth_view.register', token = serialize_salted(user.email)) }}">
 								{{ RegisterForm.hidden_tag() }}
 								{{ render_field(RegisterForm.firstname, user.firstname) }}
 								{{ render_field(RegisterForm.lastname, user.lastname) }}
