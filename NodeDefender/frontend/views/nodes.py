@@ -10,7 +10,8 @@ import NodeDefender
 @login_required
 def nodes_list():
     if request.method == 'GET':
-        nodes = NodeDefender.db.node.list(user_email = current_user.email)
+        groups = [group.name for group in current_user.groups]
+        nodes = NodeDefender.db.node.list(*groups)
         return render_template('frontend/nodes/list.html', nodes = nodes)
     else:
         CreateForm.validate_on_submit()

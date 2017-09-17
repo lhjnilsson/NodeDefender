@@ -6,7 +6,11 @@ from flask_login import current_user
 
 @socketio.on('list', namespace='/icpe')
 def list(node):
-    emit('list', [icpe.to_json() for icpe in NodeDefender.db.icpe.list(node)])
+    data = {}
+    data['node'] = NodeDefender.db.node.get(node).to_json()
+    data['icpes'] = [icpe.to_json() for icpe in
+                     NodeDefender.db.icpe.list(node)]
+    emit('list', data)
     return True
 
 @socketio.on('unassigned', namespace='/icpe')
@@ -16,9 +20,9 @@ def unassigned():
     emit('unassigned', icpes)
     return True
 
-@socketio.on('info', namespace='/icpe')
+@socketio.on('get', namespace='/icpe')
 def info(icpe):
-    emit('info', NodeDefender.db.icpe.get(icpe))
+    emit('get', NodeDefender.db.icpe.get(icpe))
     return True
 
 @socketio.on('connection', namespace='/icpe')

@@ -23,12 +23,11 @@ def delete(name):
     return True
 
 @socketio.on('list', namespace='/node')
-def list(group):
-    data = {}
-    data['group'] = NodeDefender.db.group.get(name).to_json()
-    data['nodes'] = [node.to_json() for node in
-                     NodeDefender.db.nodes.list(group)]
-    return emit('list', data)
+def list(groups):
+    if type(groups) is str:
+        groups = [groups]
+    nodes = NodeDefender.db.node.list(*groups)
+    return emit('list', [node.to_json() for node in nodes])
 
 @socketio.on('addiCPE', namespace='/node')
 def add_icpe(node_name, icpe_macaddr):
@@ -85,5 +84,3 @@ def coordinates(msg):
                            'latitude' : 'Not Found', 'longitude' :
                            'Not Found'})
     return True
-
-

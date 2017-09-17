@@ -35,16 +35,9 @@ def delete_sql(name):
 def get(name):
     return get_sql(name)
 
-def list(group_name = None, user_email = None):
-    if user_email:
-        return [node for node in NodeModel.query.all()]
-    if not group_name:
-        return [node for node in NodeModel.query.all()]
-    
-    group = NodeDefender.db.group.get(group_name)
-    return [node for node in \
-            SQL.session.query(NodeModel).join(NodeModel.groups).\
-            filter(GroupModel.name == group_name).all()]
+def list(*groups):
+    return SQL.session.query(NodeModel).join(NodeModel.groups).\
+            filter(GroupModel.name.in_(groups)).all()
 
 def create(name):
     return create_sql(name)

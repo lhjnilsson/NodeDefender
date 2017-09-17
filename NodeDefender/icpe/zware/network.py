@@ -28,3 +28,28 @@ def operation(icpe, mode, status):
 
     if mode == "remove node" and status == "done":
         NodeDefender.mqtt.command.icpe.zwave.node.list(icpe)
+
+def including_state(icpe, state):
+    pass
+
+def excluding_state(icpe, state):
+    pass
+
+def aborting_state(icpe, state):
+    pass
+def removing_state(icpe, state):
+    pass
+
+def replacing_state(icpe, state):
+    pass
+
+def learning_state(icpe, state):
+    pass
+
+def updating_state(icpe, state):
+    pass
+
+def transmitting_state(icpe, state):
+    pass
+
+

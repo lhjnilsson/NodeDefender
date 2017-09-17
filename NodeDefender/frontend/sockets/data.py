@@ -28,15 +28,16 @@ def user_messages(user):
 @socketio.on('groupEventsAverage', namespace='/data')
 def group_events(group, length = None):
     events = NodeDefender.db.data.group.event.average(group)
-    emit('groupEventsAverage', (events))
+    emit('groupEventsAverage', events)
     return True
 
 @socketio.on('groupEventsList', namespace='/data')
-def group_events(group, length = None):
-    events = NodeDefender.db.data.group.event.list(group, length)
+def group_events(groups, length):
+    events = NodeDefender.db.data.group.event.list(groups, length)
     if events:
         events = [event.to_json() for event in events]
-        emit('groupEventsList', (events))
+        print(events)
+        emit('groupEventsList', events)
     return True
 
 @socketio.on('nodeEvents', namespace='/data')

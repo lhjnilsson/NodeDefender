@@ -42,7 +42,7 @@ dataSocket.on('groupEventsAverage', function(data) {
 {% endmacro %}
 
 {% macro GroupEventList(length = 20) %}
-<div class="panel panel-primary">	
+<div class="panel panel-primary">
 	<div class="panel-heading">
 		Events
 	</div>
@@ -58,15 +58,11 @@ dataSocket.on('groupEventsAverage', function(data) {
 			</thead>
 			<tbody id="groupeventtable">
 			</tbody>
-		</table>		
+		</table>
 	</div>
 </div>
-{% if current_user.groups[0] %}
 	<script>
-var group = "{{current_user.groups[0].name}}";
 var tableRef = document.getElementById("groupeventtable");
-var length = "{{length}}";
-console.log(group);
 
 dataSocket.on('groupEventsList', function(events) {
 	for (i = 0; i < events.length; i++) {
@@ -90,13 +86,11 @@ dataSocket.on('groupEventsList', function(events) {
 		dateCell.appendChild(dateText);
 	}
 });
-dataSocket.emit('groupEventsList', group, length);
 	</script>
-{% endif %}
 {% endmacro %}
 
 {% macro iCPEEventList(iCPE, length = 20) %}
-<div class="panel panel-primary">	
+<div class="panel panel-primary">
 	<div class="panel-heading">
 		Events
 	</div>
@@ -111,7 +105,7 @@ dataSocket.emit('groupEventsList', group, length);
 			</thead>
 			<tbody id="{{iCPE.macaddr}}eventtable">
 			</tbody>
-		</table>		
+		</table>
 	</div>
 </div>
 	<script>
@@ -144,7 +138,7 @@ dataSocket.emit('icpeEvents', {'iCPE' : iCPE, 'length' : length});
 {% endmacro %}
 
 {% macro SensorEventList(length = 20) %}
-<div class="panel panel-primary">	
+<div class="panel panel-primary">
 	<div class="panel-heading">
 		Events
 	</div>
@@ -159,7 +153,7 @@ dataSocket.emit('icpeEvents', {'iCPE' : iCPE, 'length' : length});
 			</thead>
 			<tbody id="sensoreventtable">
 			</tbody>
-		</table>		
+		</table>
 	</div>
 </div>
 	<script>

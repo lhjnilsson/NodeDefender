@@ -17,10 +17,11 @@ def create(name, mail, description, location):
     return emit('redirect', (url), namespace='/general')
 
 @socketio.on('list', namespace='/group')
-def list(user):
-    groups = [group.name for group in \
-              NodeDefender.db.group.list(user_mail = user)]
-    return emit('list', groups)
+def list(user = None):
+    if user is None:
+        user = current_user.email
+    return emit('list',  [group.name for group in
+                      NodeDefender.db.group.list(user_mail = user)])
 
 @socketio.on('info', namespace='/group')
 def info(name):

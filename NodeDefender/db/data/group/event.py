@@ -31,11 +31,13 @@ def latest(group):
     return EventModel.query.join(NodeModel).\
             filter(NodeModel.groups.any(GroupModel.name == group)).first()
 
-def list(group, limit = 20):
-    group = GroupModel.query.filter(GroupModel.name == group).first()
-    if not group:
-        return False
+def list(groups, limit = 20):
+    if type(groups) is str:
+        groups = [groups]
+
+    nodes = SQL.session.query(NodeModel).join(NodeModel.groups).\
+            filter(GroupModel.name.in_(groups)).all()
     return EventModel.query.join(NodeModel).\
-            filter(NodeModel.name.in_([node.name for node in group.nodes])).\
+            filter(NodeModel.name.in_([node.name for node in nodes])).\
             order_by(EventModel.date.desc()).limit(int(limit)).all()
 
