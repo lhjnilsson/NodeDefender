@@ -121,37 +121,24 @@ def delete(macaddr, sensorid, classnumber = None, classname = None):
     return delete_sql(macaddr, sensorid, classnumber = classnumber, \
                       classname = classname)
 
-def verify_list(macaddr, sensorid, classList):
-    knownClasses = number_list(macaddr, sensorid)
-    for classnumber in classList.split(','):
-        if classnumber not in knownClasses:
-            create(macaddr, sensorid, classnumber = classnumber)
-
-    for classnumber in knownClasses:
-        if classnumber not in classList:
-            delete(macaddr, sensorid, classnumber = classnumber)
-
-    return True
-
-def add_types(macaddr, sensorid, classname, classtypes):
+def add_type(macaddr, sensorid, classname, classtype):
     commandclass = get_sql(macaddr, sensorid, classname = classname)
     if commandclass is None:
         return False
-    for classtype in classtypes.split(','):
-        typeModel = CommandClassTypeModel(classtype)
-        info = NodeDefender.icpe.zwave.commandclass.info(classname = classname,\
-                                                         classtype = classtype)
-        web_field = NodeDefender.icpe.zwave.commandclass.\
-                web_field(classname = classname, classtype = classtype)
-        if not info:
-            print("No info: ", commandclass.name, classtype)
-            continue
-        typeModel.name = info['name']
-        if web_field:
-            typeModel.web_field = True
-        commandclass.types.append(typeModel)
-        SQL.session.add(commandclass, typeModel)
-        SQL.session.commit()
+    typeModel = CommandClassTypeModel(classtype)
+    info = NodeDefender.icpe.zwave.commandclass.\
+            info(classname = classname, classtype = classtype)
+    web_field = NodeDefender.icpe.zwave.commandclass.\
+            web_field(classname = classname, classtype = classtype)
+    if not info:
+        print("No info: ", commandclass.name, classtype)
+        return False
+    typeModel.name = info['name']
+    if web_field:
+        typeModel.web_field = True
+    commandclass.types.append(typeModel)
+    SQL.session.add(commandclass, typeModel)
+    SQL.session.commit()
     return True
 
 def get_type(mac, sensorid, classname, classtype):

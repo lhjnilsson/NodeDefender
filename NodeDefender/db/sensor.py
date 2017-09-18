@@ -99,39 +99,7 @@ def create(macaddr, sensorid, vendor_id = None, product_id = None):
     NodeDefender.mqtt.command.sensor.info.qry(macaddr, sensorid)
     return get_redis(macaddr, sensorid)
 
-def add_zwave_info(mac, sensorid, vendorid, productid):
-    sensor = get_sql(mac, sensorid)
-    if sensor is None:
-        return False
-    info = NodeDefender.icpe.zwave.devices.info(vendorid, productid)
-    if info is None:
-        return False
-    try:
-        sensor.vendor_id = vendorid
-        sensor.product_id = productid
-        sensor.product_type = info['ProductTypeId']
-        sensor.vendor_name = info['Brand']
-        sensor.product_name = info['Name']
-        sensor.device_type = info['DeviceType']
-        sensor.library_type = info['LibraryType']
-    except KeyError:
-        print(info)
-    save_sql(sensor)
-    return redis.sensor.load(sensor)
-
 def delete(macaddr, sensor):
     delete_sql(macaddr, sensor)
     delete_redis(macaddr, sensor)
-    return True
-
-def verify_list(macaddr, sensor_list):
-    known_sensors = [sensor.sensorid for sensor in list(macaddr)]
-    for sensor in sensor_list.split(','):
-        if sensor not in known_sensors:
-            create(macaddr, sensor)
-
-    for sensor in known_sensors:
-        if sensor not in sensor_list:
-            delete(macaddr, sensor)
-
     return True
