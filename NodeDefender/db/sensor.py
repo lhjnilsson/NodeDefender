@@ -70,7 +70,6 @@ def fields(macaddr, sensorid):
     return data
 
 def update(macaddr, sensorid, **kwargs):
-    add_zwave_info(macaddr, sensorid, kwargs['vid'], kwargs['pid'])
     update_sql(macaddr, sensorid, **kwargs)
     update_redis(macaddr, sensorid, **kwargs)
     return True
@@ -87,16 +86,16 @@ def load(*icpes):
         sensors = list(icpe.macaddr)
         for sensor in sensors:
             get(icpe.macaddr, sensor.sensorid)
-            NodeDefender.mqtt.command.sensor.info.qry(icpe.macaddr,
-                                                      sensor.sensorid)
+            NodeDefender.mqtt.command.sensor.\
+                    sensor_info(icpe.macaddr, sensor.sensorid)
+    return True
 
-def create(macaddr, sensorid, vendor_id = None, product_id = None):
+def create(macaddr, sensorid):
+    if sensorid == 'sys' or int(sensorid) < 5:
+        return False
     if not create_sql(macaddr, sensorid):
         return False
-    if vendor_id and product_id:
-        add_zwave_info(vendor_id, product_id)
-
-    NodeDefender.mqtt.command.sensor.info.qry(macaddr, sensorid)
+    NodeDefender.mqtt.command.sensor.sensor_info(macaddr, sensorid)
     return get_redis(macaddr, sensorid)
 
 def delete(macaddr, sensor):

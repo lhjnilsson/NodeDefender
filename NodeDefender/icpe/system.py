@@ -1,0 +1,25 @@
+import NodeDefender
+
+def system_info(mac_address, **info):
+    if info:
+        NodeDefender.db.icpe.update(mac_address, **info)
+    icpe = NodeDefender.db.icpe.get(mac_address)
+    return {'macAddress' : icpe['macAddress'],
+            'serialNumber' : icpe['serialNumber'],
+            'hardware' : icpe['hardware'],
+            'software' : icpe['software']}
+
+def network_settings(mac_address, **settings):
+    if settings:
+        NodeDefender.db.icpe.update(mac_address, **settings)
+    icpe = NodeDefender.db.icpe.get(mac_address)
+    return {'ipDhcp' : icpe['ipDhcp'],
+            'ipAddress' : icpe['ipAddress'],
+            'ipSubnet' : icpe['ipSubnet'],
+            'ipGateway' : icpe['ipGateway']}
+
+def time_settings(mac_address, **settings):
+    pass
+
+def battery_info(mac_address, **info):
+    pass

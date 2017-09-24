@@ -12,13 +12,16 @@ def update_sql(macaddr, **kwargs):
     if icpe is None:
         return False
 
-    for key, value in kwargs:
-        if key not in icpe.columns():
-            continue
-        setattr(icpe, key, value)
+    try:
+        for key, value in kwargs.items():
+            if key not in icpe.columns():
+                continue
+            setattr(icpe, key, value)
+    except ValueError:
+        print("Wrong Data: ", kwargs)
 
     SQL.session.add(icpe)
-    SQL.session.comit()
+    SQL.session.commit()
     return icpe
 
 def create_sql(macaddr, mqttsrc):
@@ -61,11 +64,12 @@ def get(macaddr):
 def create(macaddr, mqttsrc):
     if not create_sql(macaddr, mqttsrc):
         return False
-    NodeDefender.mqtt.command.icpe.zwave.info.qry(macaddr)
-    NodeDefender.mqtt.command.icpe.zwave.node.list(macaddr)
+    NodeDefender.mqtt.command.icpe.zwave_info(macaddr)
+    NodeDefender.mqtt.command.icpe.system_info(macaddr)
     return get_redis(macaddr)
 
 def update(macaddr, **data):
+    update_sql(macaddr, **data)
     return update_redis(macaddr, **data)
 
 def delete(macaddr):
@@ -91,8 +95,9 @@ def load(node = None):
             continue
         if float(cached['lastUpdated']) - current_time > 1200:
             mark_offline(cached)
-        NodeDefender.mqtt.command.icpe.zwave.info.qry(icpe.macaddr)
-        NodeDefender.mqtt.command.icpe.zwave.node.list(icpe.macaddr)
+        NodeDefender.mqtt.command.icpe.zwave_info(icpe.macaddr)
+        NodeDefender.mqtt.command.icpe.system_info(icpe.macaddr)
+    return True
 
 def unassigned(user):
     return SQL.session.query(iCPEModel).\

@@ -1,6 +1,6 @@
 import NodeDefender
 
-TopicFormat = "icpe/0x{}/cmd/node/{}/class/{}/act/{}"
+topic_format = "icpe/0x{}/cmd/node/{}/class/{}/act/{}"
 
 def fire(topic, payload = None, icpe = None, mqttsrc = None):
     if icpe is None and mqttsrc is None:

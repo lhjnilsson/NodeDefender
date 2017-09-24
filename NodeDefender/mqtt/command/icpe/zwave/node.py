@@ -1,5 +1,5 @@
-from NodeDefender.mqtt.command import fire, TopicFormat
+from NodeDefender.mqtt.command import fire, topic_format
 
 def list(macaddr):
-    topic = TopicFormat.format(macaddr, "0", "node", "list")
+    topic = topic_format.format(macaddr, "0", "node", "list")
     return fire(topic, icpe = macaddr)

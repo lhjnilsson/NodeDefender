@@ -7,7 +7,7 @@ def qry(topic, payload):
 def sup(topic, payload):
     if type(payload) is not dict:
         return True
-    return NodeDefender.icpe.sensor.\
+    return NodeDefender.icpe.sensor.commandclass.\
             commandclass_types(topic['macAddress'], topic['node'],
                                topic['commandClass'], **payload)
 

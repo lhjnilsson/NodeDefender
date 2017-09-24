@@ -20,7 +20,8 @@ def mqtt_to_dict(func):
             NewTopic['subFunction'] = None
         NewTopic['action'] = topic[8]
         
-        if '=' not in payload:
+        if '=' not in payload and ',' in payload:
+            payload = payload.split(',')
             return func(NewTopic, payload, mqtt)
 
         NewPayload = {}

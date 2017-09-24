@@ -1,4 +1,4 @@
-from NodeDefender.mqtt.command import fire, TopicFormat
+from NodeDefender.mqtt.command import fire, topic_format
 
 def save(macaddr):
     topic = topic_format.format(macaddr, 'sys', 'config', 'save')

@@ -1,5 +1,5 @@
-from NodeDefender.mqtt.command import fire, TopicFormat
+from NodeDefender.mqtt.command import fire, topic_format
 
 def qry(macaddr, sensorid):
-    topic = TopicFormat.format(macaddr, sensorid, "info", "qry")
+    topic = topic_format.format(macaddr, sensorid, "info", "qry")
     return fire(topic, icpe = macaddr)

@@ -23,5 +23,5 @@ def event(topic, payload):
             return info.sup(topic, payload)
         elif topic['subFunction'] == 'evtsup':
             return info.evtsup(topic, payload)
-    return NodeDefender.icpe.event.sensor_event(topic['macAddress'], topic['node'],\
+    return NodeDefender.icpe.sensor.event(topic['macAddress'], topic['node'],\
                                                 topic['commandClass'], **payload)

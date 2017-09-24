@@ -11,10 +11,20 @@ class iCPEModel(SQL.Model):
     name = SQL.Column(SQL.String(64))
 
     macaddr = SQL.Column(SQL.String(12), unique=True)
-    ipaddr = SQL.Column(SQL.String(32))
-    
+    serial_number = SQL.Column(SQL.String(32))
+
+    ip_dhcp = SQL.Column(SQL.Boolean)
+    ip_address = SQL.Column(SQL.String(32))
+    ip_subnet = SQL.Column(SQL.String(32))
+    ip_gateway = SQL.Column(SQL.String(32))
+
     firmware = SQL.Column(SQL.String(12))
     hardware = SQL.Column(SQL.String(8))
+    
+    telnet = SQL.Column(SQL.Boolean)
+    ssh = SQL.Column(SQL.Boolean)
+    http = SQL.Column(SQL.Boolean)
+    snmp = SQL.Column(SQL.Boolean)
 
     enabled =  SQL.Column(SQL.Boolean)
     created_on = SQL.Column(SQL.DateTime)
@@ -39,6 +49,11 @@ class iCPEModel(SQL.Model):
 
     def __repr__(self):
         return '<Name %r, Mac %r>' % (self.name, self.macaddr)
+
+    def columns(self):
+        return ['name', 'macaddr', 'serial_number', 'ip_dhcp', 'ip_address',
+                'ip_subnet', 'ip_gateway', 'firmware', 'hardware', 'telnet',
+                'ssh', 'http', 'snmp', 'enabled', 'last_online']
 
     def to_json(self):
         if self.node:

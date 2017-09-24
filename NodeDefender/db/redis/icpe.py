@@ -11,7 +11,7 @@ def load(icpe, conn):
         'sensors' : len(icpe.sensors),
         'mqtt' : icpe.mqtt[0].host + ':' + str(icpe.mqtt[0].port),
         'macAddress' : icpe.macaddr,
-        'ipaddr' : icpe.ipaddr,
+        'ipaddr' : icpe.ip_address,
         'online' : False,
         'battery' : None,
         'createdAt' : icpe.created_on.timestamp(),
