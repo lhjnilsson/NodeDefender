@@ -51,8 +51,10 @@ def event(mac_address, sensor_id, CommandClass, **payload):
         return False
 
     commandclass = data['commandclass']['name']
-    commandclasstype = data['commandclasstype']['name']\
-            if data['commandclasstype'] else None
+    if data['commandclasstype']:
+        commandclasstype = data['commandclasstype']['name']
+    else:
+        commandclasstype = None
 
     NodeDefender.db.field.update(mac_address, sensor_id, data['fields']['name'], \
                     **{'value' : data['value'], 'state' : data['state']})

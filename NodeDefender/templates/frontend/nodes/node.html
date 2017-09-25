@@ -133,7 +133,7 @@ eventSocket.on('ZWaveEvent', function(event) {
 			<div class="panel-body" style="height: 200px;">
 				{% if Node.icpe %}
 					<div class="row" style="height: 50%">
-						<a href="#" class="col-lg-4 textCenter" data-toggle="tooltip" title="Update known Z-Wave devices">
+						<a href="#" id="mqttUpdate" class="col-lg-4 textCenter" data-toggle="tooltip" title="Update known Z-Wave devices">
 							<i class="fa fa-refresh fa-2x" aria-hidden="true"></i>
 							<p><strong>Update</strong></p>
 						</a>
@@ -173,18 +173,22 @@ eventSocket.on('ZWaveEvent', function(event) {
 
 						iCPESocket.on('connection', function(conn) {
 							document.getElementById('connectionType').innerHTML = conn.type;
-							document.getElementById('connectionAddr').innerHTML = conn.address;
+							document.getElementById('connectionAddr').innerHTML = conn.ipAddress;
 						});
 						iCPESocket.on('power', function(power) {
 							document.getElementById('powerSource').innerHTML = power.source;
 							document.getElementById('powerLevel').innerHTML = power.battery;
 						});
 
-						iCPESocket.emit('connection', {'iCPE' : iCPE});
-						iCPESocket.emit('power', {'iCPE' : iCPE});
+						iCPESocket.emit('connection', iCPE);
+						iCPESocket.emit('power', iCPE);
+
+						document.getElementById('mqttUpdate').addEventListener("click", function() {
+							iCPESocket.emit('mqttUpdate', iCPE);
+						})
 
 						updateButton.click(function() {
-							iCPESocket('updateSensors', {'iCPE' : iCPE});
+							iCPESocket('update', iCPE);
 						});
 						includeButton.click(function() {
 							iCPESocket('includeSensor', {'iCPE' : iCPE});

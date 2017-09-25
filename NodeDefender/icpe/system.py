@@ -13,10 +13,10 @@ def network_settings(mac_address, **settings):
     if settings:
         NodeDefender.db.icpe.update(mac_address, **settings)
     icpe = NodeDefender.db.icpe.get(mac_address)
-    return {'ipDhcp' : icpe['ipDhcp'],
-            'ipAddress' : icpe['ipAddress'],
-            'ipSubnet' : icpe['ipSubnet'],
-            'ipGateway' : icpe['ipGateway']}
+    return {'ipDhcp' : icpe['ip_dhcp'],
+            'ipAddress' : icpe['ip_address'],
+            'ipSubnet' : icpe['ip_subnet'],
+            'ipGateway' : icpe['ip_gateway']}
 
 def time_settings(mac_address, **settings):
     pass

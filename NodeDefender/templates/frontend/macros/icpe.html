@@ -46,7 +46,7 @@ $(document).ready(function() {
 		}
 	});
 
-	iCPESocket.on('info', function(icpe) {
+	iCPESocket.on('get', function(icpe) {
 		console.log(icpe);
 		$('#addicpemac').text(icpe.macAddress);
 		$('#icpesensors').text(icpe.sensors);
@@ -64,7 +64,7 @@ $(document).ready(function() {
 			$("#manual").hide();
 			$("#unassigned").show();
 			$("#manualMAC").text('');
-			iCPESocket.emit('info', macaddr);
+			iCPESocket.emit('get', macaddr);
 		}
 	});
 	$("#unassigned").hide();

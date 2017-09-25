@@ -85,8 +85,10 @@ class EventModel(SQL.Model):
                         +'.'+commandclasstype+'.fields')['name']
 
         elif self.commandclass:
-            icon = eval('NodeDefender.commandclass.'+commandclass+'.icon')(self.value)
-            name = eval('NodeDefender.commandclass.'+commandclass+'.fields')['name']
+            icon = eval('NodeDefender.icpe.zwave.commandclass.'+commandclass+\
+                        '.icon')(self.value)
+            name = eval('NodeDefender.icpe.zwave.commandclass.'+commandclass+\
+                        '.fields')['name']
 
         return {'icpe' : self.icpe.macaddr, 'sensor' : self.sensor.name, 'node' :
                 self.icpe.node.name, 'value' : self.value,\

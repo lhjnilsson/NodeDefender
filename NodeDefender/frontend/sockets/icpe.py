@@ -27,10 +27,26 @@ def info(icpe):
 
 @socketio.on('connection', namespace='/icpe')
 def connection(icpe):
-    emit('connection', NodeDefender.db.icpe.connection(icpe))
+    emit('connection', NodeDefender.icpe.system.network_settings(icpe))
     return True
 
 @socketio.on('power', namespace='/icpe')
 def power(icpe):
-    emit('power', NodeDefender.db.icpe.power(icpe))
+    #emit('power', NodeDefender.icpe.system.battery_info(icpe))
     return True
+
+@socketio.on('includeSensor', namespace='/icpe')
+def include_sensor(icpe):
+    NodeDefender.mqtt.command.icpe.include_mode(icpe)
+    return emit('info', 'Include Mode', namespace='/general')
+
+@socketio.on('excludeSensor', namespace='/icpe')
+def exclude_sensor(icpe):
+    NodeDefender.mqtt.command.icpe.exclude_mode(icpe)
+    return emit('info', 'Exclude Mode', namespace='/general')
+
+@socketio.on('mqttUpdate', namespace='/icpe')
+def update(icpe):
+    NodeDefender.mqtt.command.icpe.system_info(icpe)
+    NodeDefender.mqtt.command.icpe.zwave_info(icpe)
+    return emit('info', 'iCPE Updated', namespace='/general')

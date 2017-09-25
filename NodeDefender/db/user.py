@@ -8,7 +8,7 @@ def update_sql(email, **kwargs):
     user = get_sql(email)
     if user is None:
         return False
-    for key, value in kwargs:
+    for key, value in kwargs.items():
         if key not in user.columns():
             continue
         setattr(user, key, value)

@@ -7,9 +7,6 @@ class UserModel(SQL.Model):
     Table of Users
 
     Users is a part of a Group
-    Logins are logged with List- Relation(LoginLogModel)
-    Private messages are stored in List- relation(UserMessageModel)
-
     Password is encrypted
     '''
     __tablename__ = 'user'
@@ -48,6 +45,9 @@ class UserModel(SQL.Model):
         self.technician = False
         self.administrator = False
         self.superuser = False
+    
+    def columns(self):
+        return ['firstname', 'lastname']
 
     def to_json(self):
         return {'firstName': self.firstname,

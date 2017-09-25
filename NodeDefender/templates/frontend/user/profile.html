@@ -13,9 +13,8 @@
        </ol>
     </div>
 </div>
-
 {% from "frontend/macros/info.html" import Field %}
-{% from "frontend/macros/user.html" import UserSettingsModal %}
+{% from "frontend/macros/form.html" import render_manual %}
 <div class="row">
 	<div class="col-lg-4 col-lg-offset-2">
 		<div class="panel panel-primary">
@@ -43,6 +42,41 @@
 		</div>
 	</div>
 </div>
-{{ UserSettingsModal(current_user) }}
+<div class="modal fade" id="userSettingsModal" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h2 class="modal-title">User Settings</h2>
+			</div>
+			<div class="modal-body">
+				<div class="row">
+					{{ render_manual("Firstname", "settingsFirstname") }}
+					{{ render_manual("Lastname", "settingsLastname") }}
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-error" id="deleteUser">Delete User</button>
+				<button type="submit" class="btn btn-primary" id="saveSettings">Save changes</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+	<script>
+$(document).ready(function() {
+		document.getElementById("settingsFirstname").value = "{{current_user.firstname}}";
+		document.getElementById("settingsLastname").value = "{{current_user.lastname}}";
 
+	document.getElementById("deleteUser").onclick = function() {
+		userSocket.emit('delete', ('{{current_user.email}}'));
+	};
+
+	document.getElementById("saveSettings").onclick = function() {
+		firstname = document.getElementById("settingsFirstname").value;
+		lastname = document.getElementById("settingsLastname").value;
+		userSocket.emit('update', {'firstname' : firstname, 'lastname' : lastname});
+	};
+});
+	</script>
 {% endblock %}

@@ -71,7 +71,7 @@ document.getElementById('updateSensorConfig').addEventListener('click', function
 	var icpe = document.getElementById("sensoriCPE").innerHTML;
 	var sensorid = document.getElementById("sensorId").innerHTML;
 	var sensorName = document.getElementById('sensorConfigName').value;
-	sensorSocket.emit('updateConfig', icpe, sensorid, sensorName);
+	sensorSocket.emit('update', icpe, sensorid, {'name' : sensorName});
 });
 
 sensorSocket.on('info', function(info) {

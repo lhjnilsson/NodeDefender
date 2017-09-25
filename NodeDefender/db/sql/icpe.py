@@ -119,7 +119,7 @@ class SensorModel(SQL.Model):
     def columns(self):
         return ['sensorid', 'vendor_id', 'product_type', 'product_id',
                 'generic_class', 'specific_class', 'sleepable',
-                'wakeup_interval']
+                'wakeup_interval', 'name']
 
     def to_json(self):
         return {'name' : self.name, 'sensorId' : self.sensorid,\

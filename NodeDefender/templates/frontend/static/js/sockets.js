@@ -19,5 +19,9 @@ generalSocket.on('redirect', function(url) {
 });
 
 generalSocket.on('error', function(msg) {
-	toastr.error(msg)
+	toastr.error(msg);
 });
+
+generalSocket.on('info', function(msg) {
+	toastr.success(msg);
+})

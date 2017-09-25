@@ -16,6 +16,7 @@ def info(icpe, sensor):
 @socketio.on('update', namespace='/sensor')
 def update_fields(icpe, sensor, kwargs):
     NodeDefender.db.sensor.update(icpe, sensor, **kwargs)
+    emit('reload', namespace='/general')
     return True
 
 @socketio.on('fields', namespace='/sensor')
