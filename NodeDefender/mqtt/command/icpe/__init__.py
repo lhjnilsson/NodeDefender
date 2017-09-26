@@ -12,3 +12,13 @@ def zwave_info(mac_address):
     NodeDefender.mqtt.command.icpe.zwave.info.qry(mac_address)
     NodeDefender.mqtt.command.icpe.zwave.node.list(mac_address)
     return True
+
+
+def include_mode(mac_address):
+    NodeDefender.mqtt.command.icpe.zwave.mode.include(mac_address)
+    return True
+
+def exclude_mode(mac_address):
+    NodeDefender.mqtt.command.icpe.zwave.mode.exclude(mac_address)
+    return True
+

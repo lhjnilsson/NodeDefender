@@ -137,11 +137,11 @@ eventSocket.on('ZWaveEvent', function(event) {
 							<i class="fa fa-refresh fa-2x" aria-hidden="true"></i>
 							<p><strong>Update</strong></p>
 						</a>
-						<a href="#" class="col-lg-4 textCenter" data-toggle="tooltip" title="Include Z-Wave device">
+						<a href="#" id="mqttInclude" class="col-lg-4 textCenter" data-toggle="tooltip" title="Include Z-Wave device">
 							<i class="fa fa-sign-in fa-2x" aria-hidden="true"></i>
 							<p><strong>Include</strong></p>
 						</a>
-						<a href="#" class="col-lg-4 textCenter" data-toggle="tooltip" title="Exclude Z-Wave device">
+						<a href="#" id="mqttExclude" class="col-lg-4 textCenter" data-toggle="tooltip" title="Exclude Z-Wave device">
 							<i class="fa fa-sign-out fa-2x" aria-hidden="true"></i>
 							<p><strong>Exclude</strong></p>
 						</a>
@@ -186,16 +186,12 @@ eventSocket.on('ZWaveEvent', function(event) {
 						document.getElementById('mqttUpdate').addEventListener("click", function() {
 							iCPESocket.emit('mqttUpdate', iCPE);
 						})
-
-						updateButton.click(function() {
-							iCPESocket('update', iCPE);
-						});
-						includeButton.click(function() {
-							iCPESocket('includeSensor', {'iCPE' : iCPE});
-						});
-						excludeButton.click(function() {
-							iCPESocket('excludeSensor', {'iCPE' : iCPE});
-						});
+						document.getElementById('mqttInclude').addEventListener("click", function() {
+							iCPESocket.emit('mqttInclude', iCPE);
+						})
+						document.getElementById('mqttExclude').addEventListener("click", function() {
+							iCPESocket.emit('mqttExclude', iCPE);
+						})
 					});
 					</script>
 				{% else %}

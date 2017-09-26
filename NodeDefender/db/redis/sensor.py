@@ -8,6 +8,7 @@ def load(sensor, conn):
         return None
     s = {
         'name' : sensor.name,
+        'icpe' : sensor.icpe.macaddr,
         'sensorId' : sensor.sensorid,
         'vendorId' : sensor.vendor_id,
         'productType' : sensor.product_type,

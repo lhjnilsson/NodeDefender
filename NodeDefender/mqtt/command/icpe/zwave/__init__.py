@@ -1,1 +1,1 @@
-from NodeDefender.mqtt.command.icpe.zwave import node, info
+from NodeDefender.mqtt.command.icpe.zwave import mode, node, info

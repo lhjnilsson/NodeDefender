@@ -129,7 +129,7 @@ $(document).ready(function() {
 	});
 
 	locSubmit.click(function() {
-		nodeSocket.emit('updateLocation', {'node' : nodeName, 'city' : $("#formcity").val(), 'street' : $("#formstreet").val(), 'latitude' : $("#formlatitude").val(), 'longitude' : $("#formlongitude").val()})
+		nodeSocket.emit('updateLocation', nodeName, {'city' : $("#formcity").val(), 'street' : $("#formstreet").val(), 'latitude' : $("#formlatitude").val(), 'longitude' : $("#formlongitude").val()})
 	});
 
 	nodeSocket.emit('location', nodeName);

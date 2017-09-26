@@ -25,6 +25,10 @@ def create_sql(name):
     SQL.session.commit()
     return node
 
+def save_sql(node):
+    SQL.session.add(node)
+    return SQL.session.commit()
+
 def delete_sql(name):
     if not get_sql(name):
         return False

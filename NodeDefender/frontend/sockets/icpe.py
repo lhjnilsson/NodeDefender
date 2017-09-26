@@ -35,12 +35,12 @@ def power(icpe):
     #emit('power', NodeDefender.icpe.system.battery_info(icpe))
     return True
 
-@socketio.on('includeSensor', namespace='/icpe')
+@socketio.on('mqttInclude', namespace='/icpe')
 def include_sensor(icpe):
     NodeDefender.mqtt.command.icpe.include_mode(icpe)
     return emit('info', 'Include Mode', namespace='/general')
 
-@socketio.on('excludeSensor', namespace='/icpe')
+@socketio.on('mqttExclude', namespace='/icpe')
 def exclude_sensor(icpe):
     NodeDefender.mqtt.command.icpe.exclude_mode(icpe)
     return emit('info', 'Exclude Mode', namespace='/general')
