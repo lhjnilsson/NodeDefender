@@ -1,5 +1,5 @@
 from flask_script import Manager, prompt
-from NodeDefender import db
+import NodeDefender
 
 manager = Manager(usage='Manage MQTT')
 

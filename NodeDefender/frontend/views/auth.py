@@ -10,21 +10,21 @@ import NodeDefender
 def login():
     login_form = LoginForm(request.form)
     if request.method == 'GET':
-        return render_template('auth/login.html', LoginForm = login_form)
+        return render_template('frontend/auth/login.html', LoginForm = login_form)
     
     if login_form.validate_on_submit():
         user = NodeDefender.db.user.get(login_form.email.data)
         if user is None:
             flash('Email or Password Wrong', 'error')
-            return render_template('auth/login.html', LoginForm = login_form)
+            return render_template('frontend/auth/login.html', LoginForm = login_form)
        
         if not user.verify_password(login_form.password.data):
             flash('Email or Password Wrong', 'error')
-            return render_template('auth/login.html', LoginForm = login_form)
+            return render_template('frontend/auth/login.html', LoginForm = login_form)
  
         if not user.active:
             flash('Account Locked', 'error')
-            return render_template('auth/login.html', LoginForm = login_form)
+            return render_template('frontend/auth/login.html', LoginForm = login_form)
 
         if login_form.remember():
             login_user(user, remember = True)
@@ -51,7 +51,7 @@ def register(token):
 
     register_form = RegisterForm()
     if request.method == 'GET':
-        return render_template('auth/register.html', RegisterForm =
+        return render_template('frontend/auth/register.html', RegisterForm =
                                register_form, user = user)
     if register_form.validate_on_submit():
         user.firstname = register_form.firstname.data
@@ -78,7 +78,7 @@ def reset_password(token):
 
     password_form = PasswordForm()
     if request.method == 'GET':
-        return render_template('auth/reset_password.html', user = user,
+        return render_template('frontend/auth/reset_password.html', user = user,
                                PasswordForm = password_form)
 
     if password_form.validate_on_submit():

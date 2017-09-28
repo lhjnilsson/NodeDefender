@@ -26,7 +26,7 @@ celery = CreateCelery(app)
 # For the Authentication
 LoginMan = LoginManager()
 LoginMan.init_app(app)
-LoginMan.login_view = 'AuthView.Login'
+LoginMan.login_view = 'auth_view.login'
 LoginMan.login_message_category = "info"
 
 bcrypt = Bcrypt(app)
