@@ -16,7 +16,7 @@ class UserModel(SQL.Model):
     email = SQL.Column(SQL.String(191), unique=True)
     password = SQL.Column(SQL.String(191))
     
-    active = SQL.Column(SQL.Boolean())
+    enabled = SQL.Column(SQL.Boolean())
     confirmed_at = SQL.Column(SQL.DateTime)
     registered_at = SQL.Column(SQL.DateTime)
     

@@ -8,21 +8,21 @@ def technician(email):
     "List users that are member of a group"
     if email is None:
         email = prompt('Email of User')
-    return role.AddRole(email, 'technician')
+    return NodeDefender.db.user.set_role(email, 'technician')
 
 @manager.option('-n', '-e', '--email', dest='email', default=None)
 def admin(email):
     "List users that are member of a group"
     if email is None:
         email = prompt('Email of User')
-    return role.AddRole(email, 'administrator')
+    return NodeDefender.db.user.set_role(email, 'administrator')
 
 @manager.option('-n', '-e', '--email', dest='email', default=None)
 def superuser(email):
     "List users that are member of a group"
     if email is None:
         email = prompt('Email of User')
-    return role.AddRole(email, 'superuser')
+    return NodeDefender.db.user.set_role(email, 'superuser')
 
 
 @manager.option('-n', '--name', dest='name', default=None)
@@ -31,7 +31,7 @@ def get(name, index):
     if name is None and index is None:
         name = prompt("Index or Name")
         
-    r = role.Get((name if name else index))
+    r = NodeDefender.db.user.Get((name if name else index))
     if r is None:
         print("Unable to find Node")
         return
@@ -42,15 +42,3 @@ def get(name, index):
     for u in r.users:
         print("ID: {}, Email: {}".format(u.id, u.email))
 
-@manager.command
-def list():
-    "List Avalible Roles"
-    for r in role.List():
-        print("ID: {}, Role: {}".format(r.id, r.name))
-
-@manager.option('-n', '--name', dest='name', default=None)
-def users(name):
-    "List users that are member of a group"
-    print("Members of Role: ", name)
-    for user in role.Users(name):
-        print("ID: {}, Email: {}".format(user.id, user.email))

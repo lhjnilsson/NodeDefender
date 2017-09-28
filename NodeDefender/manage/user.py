@@ -14,9 +14,9 @@ def create(email, password):
         password = prompt_pass('Password')
     
     try:
-        user.Create(email)
-        user.Password(email, password)
-        user.Enable(email)
+        NodeDefender.db.user.create(email)
+        NodeDefender.db.user.set_password(email, password)
+        NodeDefender.db.user.enable(email)
     except ValueError:
         print("User already present")
         return
@@ -31,7 +31,7 @@ def delete(email):
         email = prompt('Email')
 
     try:
-        u = user.Delete(email)
+        u = NodeDefender.db.user.delete(email)
     except LookupError as e:
         print("Error: ", e)
 
@@ -63,15 +63,11 @@ def lock(email):
 
     print("User {} Successfully Locked!".format(u.email))
 
-
-
-
-
 @manager.command
 def list():
     "List Users"
-    for u in user.List():
-        print("ID: {}, Email: {}".format(u.id, u.email))
+    for user in NodeDefender.db.user.list():
+        print("ID: {}, Email: {}".format(user.id, user.email))
 
 @manager.option('-n', '-e', '--email', dest='email', default=None)
 def groups(email):

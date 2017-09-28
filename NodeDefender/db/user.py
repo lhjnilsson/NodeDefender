@@ -38,9 +38,19 @@ def delete_sql(email):
 def get(email):
     return get_sql(email)
 
-def set_password(eemail, raw_password):
-    user = get_sql(eemail)
-    user.password = bcrypt.generate_password_hash(password).decode('utf-8')
+def set_password(email, raw_password):
+    user = get_sql(email)
+    user.password = bcrypt.generate_password_hash(raw_password).decode('utf-8')
+    return save_sql(user)
+
+def enable(email):
+    user = get_sql(email)
+    user.enabled = True
+    return save_sql(user)
+
+def disable(email):
+    user = get_sql(email)
+    user.enabled = False
     return save_sql(user)
 
 def groups(email):
