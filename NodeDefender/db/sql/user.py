@@ -17,11 +17,11 @@ class UserModel(SQL.Model):
     password = SQL.Column(SQL.String(191))
     
     enabled = SQL.Column(SQL.Boolean())
-    confirmed_at = SQL.Column(SQL.DateTime)
-    registered_at = SQL.Column(SQL.DateTime)
+    date_confirmed = SQL.Column(SQL.DateTime)
+    date_created = SQL.Column(SQL.DateTime)
     
-    last_login_at = SQL.Column(SQL.DateTime)
-    current_login_at = SQL.Column(SQL.DateTime)
+    date_last_login = SQL.Column(SQL.DateTime)
+    date_current_login = SQL.Column(SQL.DateTime)
     last_login_ip = SQL.Column(SQL.String(100))
     current_login_ip = SQL.Column(SQL.String(100))
     login_count = SQL.Column(SQL.Integer)
@@ -39,8 +39,8 @@ class UserModel(SQL.Model):
         self.lastname = None
         self.password = None
         self.active = False
-        self.confirmed_at = None
-        self.registered_at = datetime.now()
+        self.date_confirmed = None
+        self.date_created = datetime.now()
 
         self.technician = False
         self.administrator = False
@@ -52,8 +52,7 @@ class UserModel(SQL.Model):
     def to_json(self):
         return {'firstName': self.firstname,
                 'lastName' : self.lastname,
-                'email' : self.email,
-               }
+                'email' : self.email}
 
     def is_active(self):
         return True

@@ -44,24 +44,24 @@ def enable(email):
         email = prompt('Email')
 
     try:
-        u = user.Enable(email)
+        user = NodeDefender.db.user.enable(email)
     except LookupError as e:
         print("Error: ", e)
 
-    print("User {} Successfully Enabled!".format(u.email))
+    print("User {} Successfully Enabled!".format(user.email))
 
 @manager.option('-n', '-e', '--email', dest='email', default=None)
-def lock(email):
-    "Lock User"
+def disable(email):
+    "Disable User"
     if email is None:
         email = prompt('Email')
 
     try:
-        u = user.Lock(email)
+        user = NodeDefender.db.user.disable(email)
     except LookupError as e:
         print("Error: ", e)
 
-    print("User {} Successfully Locked!".format(u.email))
+    print("User {} Successfully Locked!".format(user.email))
 
 @manager.command
 def list():
@@ -74,8 +74,8 @@ def groups(email):
     "List User Groups"
     if email is None:
         email = prompt('Email')
-    for g in user.Groups(email):
-        print("ID: {}, Name: {}".format(g.id, g.name))
+    for group in NodeDefender.db.user.groups(email):
+        print("ID: {}, Name: {}".format(group.id, group.name))
 
 @manager.option('-n', '-e', '--email', dest='email', default=None)
 @manager.option('-g', '--group', dest='group', default=None)
@@ -87,7 +87,7 @@ def join(email, group):
         group = prompt('Group')
 
     try:
-        user.Join(email, group)
+        NodeDefender.db.group.add_user(group, email)
     except LookupError as e:
         print("Error: ", e)
         return
@@ -104,51 +104,9 @@ def leave(email, group):
         group = prompt('Group')
         
     try:
-        user.Leave(email, group)
+        NodeDefender.db.group.remove_user(group, email)
     except LookupError as e:
         print("Error: ", e)
         return
 
     print("User {}, Successfully removed from {}".format(email, group))
-
-@manager.option('-n', '-e', '--email', dest='email', default=None)
-def roles(email):
-    "List User Roles"
-    if email is None:
-        email = prompt('Email')
-    for r in user.Roles(email):
-        print("ID: {}, Role: {}".format(r.id, r.name))
-
-@manager.option('-n', '-e', '--email', dest='email', default=None)
-@manager.option('-r', '--role', dest='role', default=None)
-def add(email, role):
-    'Add Role to User'
-    if email is None:
-        email = prompt('Email')
-    if role is None:
-        role = prompt('Role')
-
-    try:
-        user.Add(email, role)
-    except LookupError as e:
-        print("Error: ", e)
-        return
-
-    print("User {}, Successfully added to {}".format(email, role))
-
-@manager.option('-n', '-e', '--email', dest='email', default=None)
-@manager.option('-r', '--role', dest='role', default=None)
-def remove(email, role):
-    'Remove Role from User'
-    if email is None:
-        email = prompt('Email')
-    if role is None:
-        role = prompt('Role')
-
-    try:
-        user.Remove(email, role)
-    except LookupError as e:
-        print("Error: ", e)
-        return
-
-    print("User {}, Successfully removed from {}".format(email, role))

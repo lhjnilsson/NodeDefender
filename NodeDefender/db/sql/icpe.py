@@ -27,7 +27,7 @@ class iCPEModel(SQL.Model):
     snmp = SQL.Column(SQL.Boolean)
 
     enabled =  SQL.Column(SQL.Boolean)
-    created_on = SQL.Column(SQL.DateTime)
+    date_created = SQL.Column(SQL.DateTime)
     last_online = SQL.Column(SQL.DateTime)
     sensors = SQL.relationship('SensorModel', backref='icpe',
                               cascade='save-update, merge, delete')
@@ -45,7 +45,7 @@ class iCPEModel(SQL.Model):
     def __init__(self, macaddr):
         self.macaddr = macaddr.upper()
         self.enabled = False
-        self.created_on = datetime.now()
+        self.date_created = datetime.now()
 
     def __repr__(self):
         return '<Name %r, Mac %r>' % (self.name, self.macaddr)
@@ -62,14 +62,12 @@ class iCPEModel(SQL.Model):
             node = 'Not assigned'
 
         icpe = {'name' : self.name,
-                'macAddress' : self.macaddr,
-                'ipaddr' : self.ipaddr,
-                'createdAt' : str(self.created_on),
+                'mac_address' : self.macaddr,
+                'ip_address' : self.ipaddr,
+                'date_created' : str(self.created_on),
                 'sensors' : str(len(self.sensors)),
-                'mqtt' : {'host' : self.mqtt[0].host,
-                          'port' : self.mqtt[0].port},
-                'node' : node,
-                'online' : 'false'}
+                'mqtt' : [mqtt.to_json() for mqtt in self.mqtt],
+                'node' : node}
         return icpe
 
 class SensorModel(SQL.Model):
@@ -122,9 +120,10 @@ class SensorModel(SQL.Model):
                 'wakeup_interval', 'name']
 
     def to_json(self):
-        return {'name' : self.name, 'sensorId' : self.sensorid,\
+        return {'name' : self.name, 'sensor_id' : self.sensorid,\
                 'icpe' : self.icpe.macaddr,\
-                'brand' : self.brand, 'productName' : str(self.productname)}
+                'vendor_name' : self.vendor_name,
+                'product_name' : str(self.productname)}
 
 class CommandClassModel(SQL.Model):
     __tablename__ = 'commandclass'

@@ -53,5 +53,5 @@ def delete(host):
 @manager.command
 def list():
     for mqtt in NodeDefender.db.mqtt.list():
-        print("ID: {}, IP: {}:{}".format(mqtt['id'], mqtt['host'], mqtt['port']))
+        print("ID: {}, IP: {}:{}".format(mqtt.id, mqtt.host, mqtt.port))
 

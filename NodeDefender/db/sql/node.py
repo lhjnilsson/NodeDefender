@@ -17,7 +17,7 @@ class NodeModel(SQL.Model):
     id = SQL.Column(SQL.Integer, primary_key=True)
     name = SQL.Column(SQL.String(40), unique=True)
     location = SQL.relationship('LocationModel', uselist=False, backref='node')
-    created_on = SQL.Column(SQL.DateTime)
+    date_created = SQL.Column(SQL.DateTime)
     notes = SQL.relationship('NodeNotesModel', backref='node')
     notesticky = SQL.Column(SQL.String(150))
     icpe = SQL.relationship('iCPEModel', backref='node', uselist=False)
@@ -32,15 +32,15 @@ class NodeModel(SQL.Model):
 
     def __init__(self, name):
         self.name = name
-        self.created_on = datetime.now()
+        self.date_created = datetime.now()
 
 
     def to_json(self):
-        return {'name' : self.name,
-                'location' : {'latitude' : self.location.latitude,
-                              'longitude' : self.location.longitude
-                             }
-               }
+        if self.location:
+            location = self.location.to_json()
+        else:
+            location = None
+        return {'name' : self.name, 'location' : location}
 
 class LocationModel(SQL.Model):
     '''
@@ -75,9 +75,9 @@ class NodeNotesModel(SQL.Model):
     node_id = SQL.Column(SQL.Integer, SQL.ForeignKey('node.id'))
     author = SQL.Column(SQL.String(80))
     note = SQL.Column(SQL.String(150))
-    created_on = SQL.Column(SQL.DateTime)
+    date_created = SQL.Column(SQL.DateTime)
 
     def __init__(self, author, note):
         self.author = author
         self.note = note
-        self.created_on = datetime.now()
+        self.date_created = datetime.now()

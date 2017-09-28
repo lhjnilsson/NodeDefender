@@ -31,7 +31,7 @@ class GroupModel(SQL.Model):
     name = SQL.Column(SQL.String(50))
     email = SQL.Column(SQL.String(120))
     description = SQL.Column(SQL.String(250))
-    created_on = SQL.Column(SQL.DateTime)
+    date_created = SQL.Column(SQL.DateTime)
     users = SQL.relationship('UserModel', secondary=user_list,
                             backref=SQL.backref('groups', lazy='dynamic'))
     mqtts = SQL.relationship('MQTTModel', secondary=mqtt_list,
@@ -48,7 +48,7 @@ class GroupModel(SQL.Model):
         self.name = name
         self.email = email
         self.description = str(description)
-        self.created_on = datetime.now()
+        self.date_created = datetime.now()
     
     def to_json(self):
         return {'name' : self.name, 'email' : self.email, 'created' :

@@ -18,18 +18,18 @@ class MQTTModel(SQL.Model):
 
     icpes = SQL.relationship('iCPEModel', secondary=mqtt_icpe,
                             backref=SQL.backref('mqtt', lazy='dynamic'))
-    created_at = SQL.Column(SQL.DateTime)
+    date_created = SQL.Column(SQL.DateTime)
 
     def __init__(self, host, port, username = None, password = None):
         self.host = host
         self.port = int(port)
         self.username = username
         self.password = password
-        self.created_at = datetime.now()
+        self.date_created = datetime.now()
 
     def to_json(self):
-        return {'id' : str(self.id), 'host' : self.host, 'port' : self.port, 'createdAt' :
-                str(self.created_at), 'online' : True, 'username ' : None,
-                'password' : None,
+        return {'id' : str(self.id), 'host' : self.host, 'port' : self.port,
+                'date_created' : str(self.date_created),
+                'online' : True, 'username ' : None, 'password' : None,
                 'groups' : [group.name for group in self.groups],
                 'icpes' : [icpe.macaddr for icpe in self.icpes]}

@@ -22,7 +22,7 @@ def login():
             flash('Email or Password Wrong', 'error')
             return render_template('frontend/auth/login.html', LoginForm = login_form)
  
-        if not user.active:
+        if not user.enabled:
             flash('Account Locked', 'error')
             return render_template('frontend/auth/login.html', LoginForm = login_form)
 
@@ -33,7 +33,6 @@ def login():
         
         return redirect(url_for('index'))
     else:
-        print(login_form.errors)
         flash('error', 'error')
         return redirect(url_for('auth_view.login'))
 
@@ -56,14 +55,13 @@ def register(token):
     if register_form.validate_on_submit():
         user.firstname = register_form.firstname.data
         user.lastname = register_form.lastname.data
-        user.active = True
+        user.enabled = True
         user.confirmed_at = datetime.now()
         NodeDefender.db.user.save_sql(user)
         NodeDefender.db.user.set_password(user.email, register_form.password.data)
         NodeDefender.mail.user.confirm_user.delay(user.email)
         flash('Register Successful, please login', 'success')
     else:
-        print(register_form.errors)
         flash('Error doing register, please try again', 'error')
         return redirect(url_for('auth_view.login'))
     

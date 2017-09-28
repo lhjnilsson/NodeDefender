@@ -10,8 +10,8 @@ def load(commandclass, conn, **kwargs):
     kwargs['sensor'] = commandclass.sensor.sensorid
     kwargs['commandclass'] = commandclass.name
     kwargs['value'] = None
-    kwargs['lastUpdated'] = datetime.now().timestamp()
-    kwargs['loadedAt'] = datetime.now().timestamp()
+    kwargs['date_updated'] = datetime.now().timestamp()
+    kwargs['date_loaded'] = datetime.now().timestamp()
     conn.sadd(commandclass.sensor.icpe.macaddr +\
               commandclass.sensor.sensorid +':fields', kwargs['name'])
     conn.hmset(commandclass.sensor.icpe.macaddr +\
@@ -23,7 +23,7 @@ def save(macaddr, sensorid, name, conn, **kwargs):
     field  = conn.hgetall(macaddr + sensorid + name)
     for key, value in kwargs.items():
         field[key] = str(value)
-    field['lastUpdated'] = datetime.now().timestamp()
+    field['date_updated'] = datetime.now().timestamp()
     NodeDefender.db.redis.icpe.updated(macaddr)
     NodeDefender.db.redis.sensor.updated(macaddr, sensorid)
     return conn.hmset(macaddr + sensorid + name, field)

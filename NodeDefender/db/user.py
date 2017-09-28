@@ -26,7 +26,8 @@ def create_sql(email):
 
 def save_sql(user):
     SQL.session.add(user)
-    return SQL.session.commit()
+    SQL.session.commit()
+    return user
 
 def delete_sql(email):
     if not get_sql(email):

@@ -10,17 +10,16 @@ def load(icpe, conn):
         'node' : icpe.node.name if icpe.node else "unassigned",
         'sensors' : len(icpe.sensors),
         'mqtt' : icpe.mqtt[0].host + ':' + str(icpe.mqtt[0].port),
-        'macAddress' : icpe.macaddr,
-        'ipaddr' : icpe.ip_address,
+        'mac_address' : icpe.macaddr,
         'ip_address' : icpe.ip_address,
         'ip_dhcp' : icpe.ip_dhcp,
         'ip_gateway' : icpe.ip_gateway,
         'ip_subnet' : icpe.ip_subnet,
         'online' : False,
         'battery' : None,
-        'createdAt' : icpe.created_on.timestamp(),
-        'lastUpdated' : datetime.now().timestamp(),
-        'loadedAt' : datetime.now().timestamp()
+        'date_created' : icpe.created_on.timestamp(),
+        'date_updated' : datetime.now().timestamp(),
+        'date_loaded' : datetime.now().timestamp()
     }
 
     return conn.hmset(icpe.macaddr, i)
@@ -34,7 +33,7 @@ def save(macaddr, conn, **kwargs):
     icpe = conn.hgetall(macaddr)
     for key, value in kwargs.items():
         icpe[key] = value
-    icpe['lastUpdated'] = datetime.now().timestamp()
+    icpe['date_updated'] = datetime.now().timestamp()
     return conn.hmset(macaddr, icpe)
 
 @redisconn
@@ -43,7 +42,7 @@ def list(node, conn):
 
 @redisconn
 def updated(macaddr, conn):
-    return conn.hmset(macaddr, {'lastUpdated' : datetime.now().timestamp()})
+    return conn.hmset(macaddr, {'date_updated' : datetime.now().timestamp()})
 
 @redisconn
 def flush(macaddr, conn):

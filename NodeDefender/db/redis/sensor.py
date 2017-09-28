@@ -9,18 +9,19 @@ def load(sensor, conn):
     s = {
         'name' : sensor.name,
         'icpe' : sensor.icpe.macaddr,
-        'sensorId' : sensor.sensorid,
-        'vendorId' : sensor.vendor_id,
-        'productType' : sensor.product_type,
-        'productId' : sensor.product_id,
-        'vendorName' : sensor.vendor_name,
-        'productName' : sensor.product_name,
-        'deviceType' : sensor.device_type,
-        'libraryType' : sensor.library_type,
+        'sensor_id' : sensor.sensorid,
+        'vendor_id' : sensor.vendor_id,
+        'product_type' : sensor.product_type,
+        'product_id' : sensor.product_id,
+        'vendor_name' : sensor.vendor_name,
+        'product_name' : sensor.product_name,
+        'device_type' : sensor.device_type,
+        'library_type' : sensor.library_type,
         'sleepable' : sensor.sleepable,
         'wakeup_interval' : sensor.wakeup_interval,
-        'lastUpdated' : datetime.now().timestamp(),
-        'loadedAt' : datetime.now().timestamp()
+        'date_updated' : datetime.now().timestamp(),
+        'date_created' : sensor.date_created.timestamp(),
+        'date_loaded' : datetime.now().timestamp()
     }
     conn.sadd(sensor.icpe.macaddr + ':sensors', sensor.sensorid)
     return conn.hmset(sensor.icpe.macaddr + sensor.sensorid, s)
@@ -34,7 +35,7 @@ def save(macaddr, sensorid, conn, **kwargs):
     sensor = conn.hgetall(macaddr + sensorid)
     for key, value in kwargs.items():
         sensor[key] = value
-    sensor['lastUpdated'] = datetime.now().timestamp()
+    sensor['date_updated'] = datetime.now().timestamp()
     NodeDefender.db.redis.icpe.updated(macaddr)
     return conn.hmset(macaddr + sensorid, sensor)
 
@@ -44,7 +45,7 @@ def list(macaddr, conn):
 
 @redisconn
 def updated(macaddr, sensorid, conn):
-    return conn.hmset(macaddr + sensorid, {'lastUpdated' : \
+    return conn.hmset(macaddr + sensorid, {'date_updated' : \
                                            datetime.now().timestamp()})
 
 @redisconn
