@@ -1,21 +1,21 @@
 from NodeDefender.mqtt.command import fire, topic_format
 
-def qry(macaddr):
-    topic = topic_format.format(macaddr, "sys", "svc", "qry")
-    return fire(topic, icpe = macaddr)
+def qry(mac_address):
+    topic = topic_format.format(mac_address, "sys", "svc", "qry")
+    return fire(topic, icpe = mac_address)
 
-def telnet(macaddr, enabled):
-    topic = topic_format.format(macaddr, "sys", "svc:cli", "set")
-    return fire(topic, payload = str(int(enabled)), icpe = macaddr)
+def telnet(mac_address, enabled):
+    topic = topic_format.format(mac_address, "sys", "svc:cli", "set")
+    return fire(topic, payload = str(int(enabled)), icpe = mac_address)
 
-def ssh(macaddr, enabled):
-    topic = topic_format.format(macaddr, "sys", "svc:ssh", "set")
-    return fire(topic, payload = str(int(enabled)), icpe = macaddr)
+def ssh(mac_address, enabled):
+    topic = topic_format.format(mac_address, "sys", "svc:ssh", "set")
+    return fire(topic, payload = str(int(enabled)), icpe = mac_address)
 
-def web(macaddr, enabled):
-    topic = topic_format.format(macaddr, "sys", "svc:web", "st")
-    return fire(topic, payload = str(int(enabled)), icpe = macaddr)
+def web(mac_address, enabled):
+    topic = topic_format.format(mac_address, "sys", "svc:web", "st")
+    return fire(topic, payload = str(int(enabled)), icpe = mac_address)
 
-def snmp(macaddr, enabled):
-    topic = topic_format.format(macaddr, "sys", "svc:snmp", "set")
-    return fire(topic, payload = str(int(enabled)), icpe = macaddr)
+def snmp(mac_address, enabled):
+    topic = topic_format.format(mac_address, "sys", "svc:snmp", "set")
+    return fire(topic, payload = str(int(enabled)), icpe = mac_address)

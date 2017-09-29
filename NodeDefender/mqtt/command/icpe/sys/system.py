@@ -1,10 +1,10 @@
 from NodeDefender.mqtt.command import fire, topic_format
 
-def reboot(macaddr):
-    topic = topic_format.format(macaddr, "sys", "sys", "reboot")
-    return fire(topic, icpe = macaddr)
+def reboot(mac_address):
+    topic = topic_format.format(mac_address, "sys", "sys", "reboot")
+    return fire(topic, icpe = mac_address)
 
-def battery(macaddr):
-    topic = topic_format.format(macaddr, "sys", "sys:battery", "qry")
-    return fire(topic, icpe = macaddr)
+def battery(mac_address):
+    topic = topic_format.format(mac_address, "sys", "sys:battery", "qry")
+    return fire(topic, icpe = mac_address)
 

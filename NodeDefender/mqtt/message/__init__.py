@@ -6,7 +6,7 @@ def mqtt_to_dict(func):
     @wraps(func)
     def wrapper(topic, payload, mqtt):
         topic = topic.split('/')
-        NewTopic = {'macAddress' : topic[1][2:]}
+        NewTopic = {'mac_address' : topic[1][2:]}
         NewTopic['messageType'] = topic[2]
         NewTopic['node'] = topic[4].split(':')[0]
         try:
@@ -36,8 +36,8 @@ def mqtt_to_dict(func):
 
 @mqtt_to_dict
 def event(topic, payload, mqtt):
-    if not NodeDefender.db.icpe.get(topic['macAddress']):
-        NodeDefender.db.icpe.create(topic['macAddress'], mqtt)
+    if not NodeDefender.db.icpe.get(topic['mac_address']):
+        NodeDefender.db.icpe.create(topic['mac_address'], mqtt)
 
     print(topic, payload)
     if topic['messageType'] == 'rpt':

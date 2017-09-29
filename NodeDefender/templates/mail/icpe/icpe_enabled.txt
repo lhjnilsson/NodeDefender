@@ -1,6 +1,6 @@
 iCPE Enabled!,
 
-iCPE {{ icpe.macaddr }} has been discovered on MQTT Connection {{ mqtt.host}}:{{mqtt.port}}.
+iCPE {{ icpe.mac_address }} has been discovered on MQTT Connection {{ mqtt.host}}:{{mqtt.port}}.
 This iCPE was manually added, and has now been enabled.
 
 url : {{ url }}
@@ -8,7 +8,7 @@ url : {{ url }}
 {% if icpe.sensors %}
 Known Sensors: 
 {% for sensor in icpe.sensors %}
-{{ sensor.sensorid }}: {{ sensor.brand }}, {{ sensor.productname }}
+{{ sensor.sensor_id }}: {{ sensor.brand }}, {{ sensor.productname }}
 {% endfor %}
 {% endif %}
 Best Regards

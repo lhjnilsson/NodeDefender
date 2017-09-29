@@ -3,13 +3,13 @@
 <script>
 namespace = '/nodedata';
 var socket = io.connect('//' + document.domain + ':' + location.port + namespace);
-var eventSocket = io.connect('//' + document.domain + ':' + location.port + '/icpe' + '{{macaddr}}');
+var eventSocket = io.connect('//' + document.domain + ':' + location.port + '/icpe' + '{{mac_address}}');
 
-function switchChange(box, macaddr, sensorid, commandclass, classtype) {
+function switchChange(box, mac_address, sensor_id, commandclass, classtype) {
 	if (box.checked) {
-		socket.emit('ZWaveSet', {'macaddr' : macaddr, 'sensorid' : sensorid, 'commandclass' : commandclass, 'value' : '1'});
+		socket.emit('ZWaveSet', {'mac_address' : mac_address, 'sensor_id' : sensor_id, 'commandclass' : commandclass, 'value' : '1'});
 	} else {
-		socket.emit('ZWaveSet', {'macaddr' : macaddr, 'sensorid' : sensorid, 'commandclass' : commandclass, 'value' : '0'});
+		socket.emit('ZWaveSet', {'mac_address' : mac_address, 'sensor_id' : sensor_id, 'commandclass' : commandclass, 'value' : '0'});
 	}
 }
 
@@ -166,7 +166,7 @@ eventSocket.on('ZWaveEvent', function(event) {
 					</div>
 					<script>
 					$(document).ready(function() {
-						iCPE = "{{Node.icpe.macaddr}}";
+						iCPE = "{{Node.icpe.mac_address}}";
 						updateButton = $('#update-icpe');
 						includeButton = $('#include-icpe');
 						excludeButton = $('#exclude-icpe');
@@ -256,10 +256,10 @@ eventSocket.on('ZWaveEvent', function(event) {
 			<div class="panel-heading">
 				{{ sensor.name }}
 				<div class="floatRight">
-					<a href="#" style="color: #FFFFFF; margin: 0 5px;" onclick="sensorModal('{{Node.icpe.macaddr}}', '{{sensor.sensorid}}')"><i class="fa fa-info" aria-hidden="true"></i></a>
+					<a href="#" style="color: #FFFFFF; margin: 0 5px;" onclick="sensorModal('{{Node.icpe.mac_address}}', '{{sensor.sensor_id}}')"><i class="fa fa-info" aria-hidden="true"></i></a>
 				</div>
 			</div>
-			<div class="panel-body" id="Box{{sensor.sensorid}}">
+			<div class="panel-body" id="Box{{sensor.sensor_id}}">
 				{{ SensorBox(sensor) }}
 			</div>
 		</div>
@@ -294,7 +294,7 @@ eventSocket.on('ZWaveEvent', function(event) {
 {% from "frontend/nodes/modals/sensor.html" import SensorModal %}
 <script>
 $(document).ready(function() {
-icpeMac = "{{Node.icpe.macaddr}}";
+icpeMac = "{{Node.icpe.mac_address}}";
 $('#general').prepend('<a style="color: #FFFFFF; margin: 0 5px;" href="#" data-toggle="modal" data-target="#groupList"><i class="fa fa-users" aria-hidden="true"></i></a>');
 $('#general').prepend('<a style="color: #FFFFFF; margin: 0 5px;" href="#" data-toggle="modal" data-target="#nodeInfo"><i class="fa fa-info" aria-hidden="true"></i></a>');
 $('#iCPEModals').prepend('<a style="color: #FFFFFF; margin: 0 5px;" href="#" onclick="iCPEModal(icpeMac)"><i class="fa fa-info" aria-hidden="true"></i></a>');

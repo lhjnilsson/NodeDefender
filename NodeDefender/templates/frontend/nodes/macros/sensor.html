@@ -6,8 +6,8 @@
 {% for commandclasstype in commandclass.types %}
 {% if commandclasstype.web_field %}
 <div class="form-group">
-	<label class="col-sm-2 control-label" id="{{sensor.sensorid}}{{commandclass.name}}Name">-</label>
-	<div class="col-sm-5 col-sm-offset-5" id="{{sensor.sensorid}}{{commandclass.name}}Div">
+	<label class="col-sm-2 control-label" id="{{sensor.sensor_id}}{{commandclass.name}}Name">-</label>
+	<div class="col-sm-5 col-sm-offset-5" id="{{sensor.sensor_id}}{{commandclass.name}}Div">
 		---
 	</div>
 </div>
@@ -17,8 +17,8 @@
 {% else %}
 {% if commandclass.web_field %}
 <div class="form-group">
-	<label class="col-sm-2 control-label" id="{{sensor.sensorid}}{{commandclass.name}}Name">-</label>
-	<div class="col-sm-5 col-sm-offset-5" id="{{sensor.sensorid}}{{commandclass.name}}Div">
+	<label class="col-sm-2 control-label" id="{{sensor.sensor_id}}{{commandclass.name}}Name">-</label>
+	<div class="col-sm-5 col-sm-offset-5" id="{{sensor.sensor_id}}{{commandclass.name}}Div">
 		---
 	</div>
 </div>
@@ -98,7 +98,7 @@ sensorSocket.on('fields', function(fields) {
 	}
 });
 {% for sensor in sensors %}
-sensorSocket.emit('fields', "{{sensor.icpe.macaddr}}", "{{sensor.sensorid}}");
+sensorSocket.emit('fields', "{{sensor.icpe.mac_address}}", "{{sensor.sensor_id}}");
 {% endfor %}
 </script>
 {% endmacro %}

@@ -60,21 +60,21 @@ plotlySocket.emit('nodePowerChart', {'name' : "{{node.name}}"});
 				{% if sensor.power %}
 				<tr>
 					<td>
-						<a href="{{ url_for('data_view.power_sensor', icpe = serialize(node.icpe.macaddr), sensor = sensor.sensorid) }}">
+						<a href="{{ url_for('data_view.power_sensor', icpe = serialize(node.icpe.mac_address), sensor = sensor.sensor_id) }}">
 							{{sensor.name}}
 						</a>
 					</td>
 					<td>
-						<p id="{{node.icpe.macaddr}}{{sensor.sensorid}}CurrentPower">0.0</p>
+						<p id="{{node.icpe.mac_address}}{{sensor.sensor_id}}CurrentPower">0.0</p>
 					</td>
 					<td>
-						<p id="{{node.icpe.macaddr}}{{sensor.sensorid}}DailyPower">0.0</p>
+						<p id="{{node.icpe.mac_address}}{{sensor.sensor_id}}DailyPower">0.0</p>
 					</td>
 					<td>
-						<p id="{{node.icpe.macaddr}}{{sensor.sensorid}}WeeklyPower">0.0</p>
+						<p id="{{node.icpe.mac_address}}{{sensor.sensor_id}}WeeklyPower">0.0</p>
 					</td>
 					<td>
-						<p id="{{node.icpe.macaddr}}{{sensor.sensorid}}MonthlyPower">0.0</p>
+						<p id="{{node.icpe.mac_address}}{{sensor.sensor_id}}MonthlyPower">0.0</p>
 					</td>
 				</a>
 			</tr>
@@ -94,7 +94,7 @@ $(document).ready(function() {
 	});
 	{% for sensor in node.icpe.sensors %}
 	{% if sensor.power %}
-	dataSocket.emit('sensorPowerAverage', {'icpe': '{{node.icpe.macaddr}}', 'sensor' : '{{sensor.sensorid}}'});
+	dataSocket.emit('sensorPowerAverage', {'icpe': '{{node.icpe.mac_address}}', 'sensor' : '{{sensor.sensor_id}}'});
 	{% endif %}
 	{% endfor %}
 });

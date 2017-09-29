@@ -12,7 +12,7 @@ def average(node, time_ago = None):
 
     total_events = SQL.session.query(EventModel).\
             join(EventModel.icpe).\
-            filter(iCPEModel.macaddr == node.icpe.macaddr).\
+            filter(iCPEModel.mac_address == node.icpe.mac_address).\
             filter(EventModel.date > time_ago).all()
 
     ret_data = {}

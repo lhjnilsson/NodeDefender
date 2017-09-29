@@ -44,8 +44,8 @@ class PowerModel(SQL.Model):
 
     def to_json(self):
         node = self.node.name if self.node else None
-        icpe = self.icpe.macaddr if self.icpe else None
-        sensor = self.sensor.sensorid if self.sensor else None
+        icpe = self.icpe.mac_address if self.icpe else None
+        sensor = self.sensor.sensor_id if self.sensor else None
         
         return {'high' : self.high, 'low' : self.low, 'average' : self.average,
                 'node' : node, 'icpe' : icpe, 'sensor' : sensor,
@@ -90,7 +90,7 @@ class EventModel(SQL.Model):
             name = eval('NodeDefender.icpe.zwave.commandclass.'+commandclass+\
                         '.fields')['name']
 
-        return {'icpe' : self.icpe.macaddr, 'sensor' : self.sensor.name, 'node' :
+        return {'icpe' : self.icpe.mac_address, 'sensor' : self.sensor.name, 'node' :
                 self.icpe.node.name, 'value' : self.value,\
                 'date' : str(self.date), 'icon' : icon,\
                 'name' : name}

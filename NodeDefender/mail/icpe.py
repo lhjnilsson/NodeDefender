@@ -15,7 +15,7 @@ def new_icpe(icpe, host, port):
     if mqtt is None:
         return False
 
-    msg = Message('iCPE {} found on MQTT {}'.format(icpe.macaddr, mqtt.host),
+    msg = Message('iCPE {} found on MQTT {}'.format(icpe.mac_address, mqtt.host),
                   sender='noreply@nodedefender.com', recipients=\
                   [group.email for group in mqtt.groups ])
     url = url_for('node_view.nodes_list')
@@ -34,7 +34,7 @@ def icpe_enabled(icpe, host, port):
     if mqtt is None:
         return False
 
-    msg = Message('iCPE {} Enabled from MQTT {}'.format(icpe.macaddr, mqtt.host),
+    msg = Message('iCPE {} Enabled from MQTT {}'.format(icpe.mac_address, mqtt.host),
                   sender='noreply@nodedefender.com', recipients=\
                   [group.email for group in mqtt.groups ])
     url = url_for('node_view.nodes_list')

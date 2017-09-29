@@ -10,7 +10,7 @@ def latest(icpe):
                                   label('total', func.sum(PowerModel.average)),
                                   label('date', PowerModel.date)).\
             join(iCPEModel).\
-            filter(iCPEModel.macaddr == icpe).\
+            filter(iCPEModel.mac_address == icpe).\
             order_by(PowerModel.date.desc()).\
             group_by(PowerModel.date).first()
 
@@ -28,7 +28,7 @@ def Get(icpe, from_date = (datetime.now() - timedelta(days=7)), to_date =
                                   label('total', func.sum(PowerModel.average)),
                                   label('date', PowerModel.date)).\
             join(iCPEModel).\
-            filter(iCPEModel.macaddr == icpe).\
+            filter(iCPEModel.mac_address == icpe).\
             filter(PowerModel.date > from_date).\
             filter(PowerModel.date < to_date).\
             group_by(PowerModel.date).all()

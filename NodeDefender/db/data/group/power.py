@@ -26,7 +26,7 @@ def current(group):
                     label('sum', func.sum(PowerModel.average)),
                     label('count', func.count(PowerModel.average))).\
                     join(PowerModel.icpe).\
-                    filter(iCPEModel.macaddr == node.icpe.macaddr).\
+                    filter(iCPEModel.mac_address == node.icpe.mac_address).\
                     filter(PowerModel.date > min_ago).first()
         
         if latest_power.count:
@@ -57,34 +57,34 @@ def average(group):
     group_data['weekly'] = 0.0
     group_data['monthly'] = 0.0
     
-    icpes = [node.icpe.macaddr for node in group.nodes if node.icpe]
+    icpes = [node.icpe.mac_address for node in group.nodes if node.icpe]
     
     current_power = SQL.session.query(PowerModel,\
                 label('sum', func.sum(PowerModel.average)),
                 label('count', func.count(PowerModel.average))).\
                 join(PowerModel.icpe).\
-                filter(iCPEModel.macaddr.in_(*[icpes])).\
+                filter(iCPEModel.mac_address.in_(*[icpes])).\
                 filter(PowerModel.date > min_ago).first()
     
     daily_power = SQL.session.query(PowerModel,\
                 label('sum', func.sum(PowerModel.average)),
                 label('count', func.count(PowerModel.average))).\
                 join(PowerModel.icpe).\
-                filter(iCPEModel.macaddr.in_(*[icpes])).\
+                filter(iCPEModel.mac_address.in_(*[icpes])).\
                 filter(PowerModel.date > day_ago).first()
     
     weekly_power = SQL.session.query(PowerModel,\
                 label('sum', func.sum(PowerModel.average)),
                 label('count', func.count(PowerModel.average))).\
                 join(PowerModel.icpe).\
-                filter(iCPEModel.macaddr.in_(*[icpes])).\
+                filter(iCPEModel.mac_address.in_(*[icpes])).\
                 filter(PowerModel.date > week_ago).first()
 
     monthly_power = SQL.session.query(PowerModel,\
                 label('sum', func.sum(PowerModel.average)),
                 label('count', func.count(PowerModel.average))).\
                 join(PowerModel.icpe).\
-                filter(iCPEModel.macaddr.in_(*[icpes])).\
+                filter(iCPEModel.mac_address.in_(*[icpes])).\
                 filter(PowerModel.date > month_ago).first()
     
     if current_power.count:
@@ -134,7 +134,7 @@ def chart(group):
 
         power_data = SQL.session.query(PowerModel).\
                 join(PowerModel.icpe).\
-                filter(iCPEModel.macaddr == node.icpe.macaddr).\
+                filter(iCPEModel.mac_address == node.icpe.mac_address).\
                 filter(PowerModel.date > from_date).\
                 filter(PowerModel.date < to_date).all()
 

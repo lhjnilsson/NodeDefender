@@ -103,14 +103,14 @@ dataSocket.on('groupEventsList', function(events) {
 					<th>Date</th>
 				</tr>
 			</thead>
-			<tbody id="{{iCPE.macaddr}}eventtable">
+			<tbody id="{{iCPE.mac_address}}eventtable">
 			</tbody>
 		</table>
 	</div>
 </div>
 	<script>
-var iCPE = "{{iCPE.macaddr}}";
-var tableRef = document.getElementById("{{iCPE.macaddr}}eventtable");
+var iCPE = "{{iCPE.mac_address}}";
+var tableRef = document.getElementById("{{iCPE.mac_address}}eventtable");
 var length = "{{length}}";
 
 dataSocket.on('icpeEvents', function(events) {

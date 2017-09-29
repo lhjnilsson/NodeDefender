@@ -2,23 +2,23 @@ from NodeDefender.db import redis
 from NodeDefender.db.sql import SQL, CommandClassModel, CommandClassTypeModel
 import NodeDefender
 
-def get_redis(macaddr, sensorid, name):
-    return redis.field.get(macaddr, sensorid, name)
+def get_redis(mac_address, sensor_id, name):
+    return redis.field.get(mac_address, sensor_id, name)
 
-def update_redis(macaddr, sensorid, name, **kwargs):
-    return redis.field.save(macaddr, sensorid, name, **kwargs)
+def update_redis(mac_address, sensor_id, name, **kwargs):
+    return redis.field.save(mac_address, sensor_id, name, **kwargs)
 
-def delete_redis(macaddr, sensorid, name):
-    return redis.field.flush(macaddr, sensorid, name)
+def delete_redis(mac_address, sensor_id, name):
+    return redis.field.flush(mac_address, sensor_id, name)
 
-def get(macaddr, sensorid, name):
-    return get_redis(macaddr, sensorid, name)
+def get(mac_address, sensor_id, name):
+    return get_redis(mac_address, sensor_id, name)
 
-def update(macaddr, sensorid, name, **kwargs):
-    return update_redis(macaddr, sensorid, name, **kwargs)
+def update(mac_address, sensor_id, name, **kwargs):
+    return update_redis(mac_address, sensor_id, name, **kwargs)
 
-def list(macaddr, sensorid):
-    return redis.field.list(macaddr, sensorid)
+def list(mac_address, sensor_id):
+    return redis.field.list(mac_address, sensor_id)
 
 def load():
     commandclasses = SQL.session.query(CommandClassModel).\
@@ -59,5 +59,5 @@ def load_commandclasstype(*cctypes):
 
     return len(cctypes)
 
-def flush(macaddr, sensorid, name):
-    return delete_redis(macaddr, sensorid, name)
+def flush(mac_address, sensor_id, name):
+    return delete_redis(mac_address, sensor_id, name)

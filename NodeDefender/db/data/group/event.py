@@ -10,11 +10,11 @@ def average(group, time_ago = None):
     if group is None:
         return False
 
-    icpes = [node.icpe.macaddr for node in group.nodes if node.icpe]
+    icpes = [node.icpe.mac_address for node in group.nodes if node.icpe]
 
     total_events = SQL.session.query(EventModel).\
             join(EventModel.icpe).\
-            filter(iCPEModel.macaddr.in_(*[icpes])).\
+            filter(iCPEModel.mac_address.in_(*[icpes])).\
             filter(EventModel.date > time_ago).all()
 
     ret_data = {}

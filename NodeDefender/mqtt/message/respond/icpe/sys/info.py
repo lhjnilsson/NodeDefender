@@ -9,7 +9,7 @@ def qry(topic, payload):
 
     uptime = payload.pop(2)
     local_time = payload.pop(2)
-    return NodeDefender.db.icpe.update(topic['macAddress'],
+    return NodeDefender.db.icpe.update(topic['mac_address'],
                                        **{'serial_number' : sn,
                                           'hardware' : hw,
                                           'firmware' : sw})

@@ -25,7 +25,7 @@ def list():
         return False
 
     for icpe in icpes:
-        print("ID: {}, MAC: {}".format(icpe.id, icpe.macaddr))
+        print("ID: {}, MAC: {}".format(icpe.id, icpe.mac_address))
     return True
 
 @manager.command
@@ -36,7 +36,7 @@ def unassigned():
         return False
 
     for icpe in icpes:
-        print("ID: {}, MAC: {}".format(icpe.id, icpe.macaddr))
+        print("ID: {}, MAC: {}".format(icpe.id, icpe.mac_address))
     return True
 
 @manager.option('-mac', '--mac', dest='mac', default=None)
@@ -49,7 +49,7 @@ def info(mac):
     if icpe is None:
         print("Unable to find iCPE {}".format(mac))
 
-    print('ID: {}, MAC: {}'.format(icpe.id, icpe.macaddr))
+    print('ID: {}, MAC: {}'.format(icpe.id, icpe.mac_address))
     print('Alias {}, Node: {}'.format(icpe.alias, icpe.node.name))
     print('ZWave Sensors: ')
     for sensor in icpe.sensors:

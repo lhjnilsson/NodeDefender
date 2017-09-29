@@ -30,18 +30,18 @@ def list(groups):
     return emit('list', [node.to_json() for node in nodes])
 
 @socketio.on('addiCPE', namespace='/node')
-def add_icpe(node_name, icpe_macaddr):
+def add_icpe(node_name, icpe_mac_address):
     try:
-        NodeDefender.db.node.add_icpe(node_name, icpe_macaddr)
+        NodeDefender.db.node.add_icpe(node_name, icpe_mac_address)
         emit('reload', namespace='/general')
     except KeyError as e:
         emit('error', e, namespace='/general')
     return True
 
 @socketio.on('removeiCPE', namespace='/node')
-def remove_icpe(node, macaddr):
+def remove_icpe(node, mac_address):
     try:
-        NodeDefender.db.node.remove_icpe(node_name, icpe_macaddr)
+        NodeDefender.db.node.remove_icpe(node_name, icpe_mac_address)
         emit('reload', namespace='/general')
     except KeyError as e:
         emit('error', e, namespace='/general')

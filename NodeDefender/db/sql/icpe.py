@@ -10,7 +10,7 @@ class iCPEModel(SQL.Model):
     node_id = SQL.Column(SQL.Integer, SQL.ForeignKey('node.id'))
     name = SQL.Column(SQL.String(64))
 
-    macaddr = SQL.Column(SQL.String(12), unique=True)
+    mac_address = SQL.Column(SQL.String(12), unique=True)
     serial_number = SQL.Column(SQL.String(32))
 
     ip_dhcp = SQL.Column(SQL.Boolean)
@@ -42,16 +42,16 @@ class iCPEModel(SQL.Model):
     messages = SQL.relationship('MessageModel', backref='icpe',
                                cascade='save-update, merge, delete')
 
-    def __init__(self, macaddr):
-        self.macaddr = macaddr.upper()
+    def __init__(self, mac_address):
+        self.mac_address = mac_address.upper()
         self.enabled = False
         self.date_created = datetime.now()
 
     def __repr__(self):
-        return '<Name %r, Mac %r>' % (self.name, self.macaddr)
+        return '<Name %r, Mac %r>' % (self.name, self.mac_address)
 
     def columns(self):
-        return ['name', 'macaddr', 'serial_number', 'ip_dhcp', 'ip_address',
+        return ['name', 'mac_address', 'serial_number', 'ip_dhcp', 'ip_address',
                 'ip_subnet', 'ip_gateway', 'firmware', 'hardware', 'telnet',
                 'ssh', 'http', 'snmp', 'enabled', 'last_online']
 
@@ -62,7 +62,7 @@ class iCPEModel(SQL.Model):
             node = 'Not assigned'
 
         icpe = {'name' : self.name,
-                'mac_address' : self.macaddr,
+                'mac_address' : self.mac_address,
                 'ip_address' : self.ipaddr,
                 'date_created' : str(self.created_on),
                 'sensors' : str(len(self.sensors)),
@@ -79,7 +79,7 @@ class SensorModel(SQL.Model):
     icpe_id = SQL.Column(SQL.Integer, SQL.ForeignKey('icpe.id'))
     
     name = SQL.Column(SQL.String(64))
-    sensorid = SQL.Column(SQL.String(4))
+    sensor_id = SQL.Column(SQL.String(4))
 
     vendor_id = SQL.Column(SQL.String(16))
     product_type = SQL.Column(SQL.String(16))
@@ -105,8 +105,8 @@ class SensorModel(SQL.Model):
                                cascade='save-update, merge, delete')
 
 
-    def __init__(self, sensorid, sensorinfo = None):
-        self.sensorid = str(sensorid)
+    def __init__(self, sensor_id, sensorinfo = None):
+        self.sensor_id = str(sensor_id)
         if sensorinfo:
             for key, value in sensorinfo.items():
                 print(key.lower(), value)
@@ -115,13 +115,13 @@ class SensorModel(SQL.Model):
             self.name = self.product_name
 
     def columns(self):
-        return ['sensorid', 'vendor_id', 'product_type', 'product_id',
+        return ['sensor_id', 'vendor_id', 'product_type', 'product_id',
                 'generic_class', 'specific_class', 'sleepable',
                 'wakeup_interval', 'name']
 
     def to_json(self):
-        return {'name' : self.name, 'sensor_id' : self.sensorid,\
-                'icpe' : self.icpe.macaddr,\
+        return {'name' : self.name, 'sensor_id' : self.sensor_id,\
+                'icpe' : self.icpe.mac_address,\
                 'vendor_name' : self.vendor_name,
                 'product_name' : str(self.productname)}
 
@@ -146,7 +146,7 @@ class CommandClassModel(SQL.Model):
     def to_json(self):
         return {'name' : self.name, 'number' : self.number, 'webField' :
                 self.web_field, 'supported' : self.supported, 'sensor' :
-                self.sensor.sensorid, 'icpe' : self.sensor.icpe.macaddr}
+                self.sensor.sensor_id, 'icpe' : self.sensor.icpe.mac_address}
 
     def columns(self):
         return ['number', 'name']

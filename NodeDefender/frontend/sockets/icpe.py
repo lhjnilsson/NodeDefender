@@ -15,7 +15,7 @@ def list(node):
 
 @socketio.on('unassigned', namespace='/icpe')
 def unassigned():
-    icpes = [icpe.macaddr for icpe in
+    icpes = [icpe.mac_address for icpe in
             NodeDefender.db.icpe.unassigned(current_user)]
     emit('unassigned', icpes)
     return True

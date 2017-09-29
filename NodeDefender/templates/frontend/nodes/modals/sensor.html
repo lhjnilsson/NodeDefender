@@ -19,7 +19,7 @@
 						<div class="row">
 							{{ FieldID("Name", "-", "sensorName") }}
 							{{ FieldID("iCPE", "-", "sensoriCPE") }}
-							{{ FieldID("Sensor Id", "-", "sensorId") }}
+							{{ FieldID("Sensor Id", "-", "sensor_id") }}
 							{{ FieldID("Brand", "-", "sensorBrand") }}
 							{{ FieldID("Product Name", "-", "sensorProductName") }}
 							{{ FieldID("Library Type", "-", "sensorLibtype") }}
@@ -63,21 +63,21 @@ function reload() {
 
 document.getElementById('updateSensor').addEventListener('click', function() {
 	sensorSocket.emit('update', {'icpe' : document.getElementById('sensoriCPE').innerHTML,
-		'sensor' : document.getElementById('sensorId').innerHTML});
+		'sensor' : document.getElementById('sensor_id').innerHTML});
 	setTimeout(reload, 5000);
 });
 
 document.getElementById('updateSensorConfig').addEventListener('click', function() {
 	var icpe = document.getElementById("sensoriCPE").innerHTML;
-	var sensorid = document.getElementById("sensorId").innerHTML;
+	var sensor_id = document.getElementById("sensor_id").innerHTML;
 	var sensorName = document.getElementById('sensorConfigName').value;
-	sensorSocket.emit('update', icpe, sensorid, {'name' : sensorName});
+	sensorSocket.emit('update', icpe, sensor_id, {'name' : sensorName});
 });
 
 sensorSocket.on('info', function(info) {
 	document.getElementById("sensorName").innerHTML = info.name;
 	document.getElementById("sensorConfigName").value = info.name;
-	document.getElementById("sensorId").innerHTML = info.sensorId;
+	document.getElementById("sensor_id").innerHTML = info.sensor_id;
 	document.getElementById("sensoriCPE").innerHTML = info.icpe;
 	document.getElementById("sensorBrand").innerHTML = info.brand;
 	document.getElementById("sensorProductName").innerHTML = info.productName;

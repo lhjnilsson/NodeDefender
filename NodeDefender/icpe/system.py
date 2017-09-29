@@ -4,7 +4,7 @@ def system_info(mac_address, **info):
     if info:
         NodeDefender.db.icpe.update(mac_address, **info)
     icpe = NodeDefender.db.icpe.get(mac_address)
-    return {'macAddress' : icpe['macAddress'],
+    return {'mac_address' : icpe['mac_address'],
             'serialNumber' : icpe['serialNumber'],
             'hardware' : icpe['hardware'],
             'software' : icpe['software']}

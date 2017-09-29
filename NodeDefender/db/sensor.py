@@ -2,13 +2,13 @@ from NodeDefender.db.sql import SQL, iCPEModel, SensorModel
 from NodeDefender.db import redis, logger
 import NodeDefender
 
-def get_sql(macaddr, sensorid):
+def get_sql(mac_address, sensor_id):
     return SQL.session.query(SensorModel).join(SensorModel.icpe).\
-            filter(iCPEModel.macaddr == macaddr).\
-            filter(SensorModel.sensorid == sensorid).first()
+            filter(iCPEModel.mac_address == mac_address).\
+            filter(SensorModel.sensor_id == sensor_id).first()
 
-def update_sql(macaddr, sensorid, **kwargs):
-    sensor = get_sql(macaddr, sensorid)
+def update_sql(mac_address, sensor_id, **kwargs):
+    sensor = get_sql(mac_address, sensor_id)
     if sensor is None:
         return False
 
@@ -26,79 +26,79 @@ def save_sql(sensor):
     SQL.session.add(sensor)
     return SQL.session.commit()
 
-def create_sql(macaddr, sensorid):
-    if get_sql(macaddr, sensorid):
+def create_sql(mac_address, sensor_id):
+    if get_sql(mac_address, sensor_id):
         return False
 
-    icpe = NodeDefender.db.icpe.get_sql(macaddr)
-    sensor = SensorModel(sensorid)
+    icpe = NodeDefender.db.icpe.get_sql(mac_address)
+    sensor = SensorModel(sensor_id)
     icpe.sensors.append(sensor)
     SQL.session.add(icpe, sensor)
     SQL.session.commit()
-    logger.info("Created SQL Entry for {!r}:{!r}".format(macaddr, sensorid))
+    logger.info("Created SQL Entry for {!r}:{!r}".format(mac_address, sensor_id))
     return sensor
 
-def delete_sql(macaddr, sensorid):
-    sensor = get_sql(macaddr, sensorid)
+def delete_sql(mac_address, sensor_id):
+    sensor = get_sql(mac_address, sensor_id)
     if sensor is None:
         return False
     SQL.session.delete(sensor)
-    logger.info("Deleted SQL Entry for {!r}:{!r}".format(macaddr, sensorid))
+    logger.info("Deleted SQL Entry for {!r}:{!r}".format(mac_address, sensor_id))
     return SQL.session.commit()
 
-def get_redis(macaddr, sensorid):
-    return redis.sensor.get(macaddr, sensorid)
+def get_redis(mac_address, sensor_id):
+    return redis.sensor.get(mac_address, sensor_id)
 
-def update_redis(macaddr, sensorid, **kwargs):
-    return redis.sensor.save(macaddr, sensorid, **kwargs)
+def update_redis(mac_address, sensor_id, **kwargs):
+    return redis.sensor.save(mac_address, sensor_id, **kwargs)
 
-def delete_redis(macaddr, sensorid):
-    return redis.sensor.flush(macaddr, sensorid)
+def delete_redis(mac_address, sensor_id):
+    return redis.sensor.flush(mac_address, sensor_id)
 
-def get(macaddr, sensorid):
-    sensor = get_redis(macaddr, sensorid)
+def get(mac_address, sensor_id):
+    sensor = get_redis(mac_address, sensor_id)
     if len(sensor):
         return sensor
-    if redis.sensor.load(get_sql(macaddr, sensorid)):
-        return get_redis(macaddr, sensorid)
+    if redis.sensor.load(get_sql(mac_address, sensor_id)):
+        return get_redis(mac_address, sensor_id)
     return False
 
-def fields(macaddr, sensorid):
+def fields(mac_address, sensor_id):
     data = []
-    for name in redis.field.list(macaddr, sensorid):
-        data.append(redis.field.get(macaddr, sensorid, name))
+    for name in redis.field.list(mac_address, sensor_id):
+        data.append(redis.field.get(mac_address, sensor_id, name))
     return data
 
-def update(macaddr, sensorid, **kwargs):
-    update_sql(macaddr, sensorid, **kwargs)
-    update_redis(macaddr, sensorid, **kwargs)
+def update(mac_address, sensor_id, **kwargs):
+    update_sql(mac_address, sensor_id, **kwargs)
+    update_redis(mac_address, sensor_id, **kwargs)
     return True
 
 def list(icpe):
     return SQL.session.query(SensorModel).join(SensorModel.icpe).\
-            filter(iCPEModel.macaddr == icpe).all()
+            filter(iCPEModel.mac_address == icpe).all()
 
 def load(*icpes):
     if not len(icpes):
         icpes = NodeDefender.db.icpe.list()
     
     for icpe in icpes:
-        sensors = list(icpe.macaddr)
+        sensors = list(icpe.mac_address)
         for sensor in sensors:
-            get(icpe.macaddr, sensor.sensorid)
+            get(icpe.mac_address, sensor.sensor_id)
             NodeDefender.mqtt.command.sensor.\
-                    sensor_info(icpe.macaddr, sensor.sensorid)
+                    sensor_info(icpe.mac_address, sensor.sensor_id)
     return True
 
-def create(macaddr, sensorid):
-    if sensorid == 'sys' or int(sensorid) < 5:
+def create(mac_address, sensor_id):
+    if sensor_id == 'sys' or int(sensor_id) < 5:
         return False
-    if not create_sql(macaddr, sensorid):
+    if not create_sql(mac_address, sensor_id):
         return False
-    NodeDefender.mqtt.command.sensor.sensor_info(macaddr, sensorid)
-    return get_redis(macaddr, sensorid)
+    NodeDefender.mqtt.command.sensor.sensor_info(mac_address, sensor_id)
+    return get_redis(mac_address, sensor_id)
 
-def delete(macaddr, sensor):
-    delete_sql(macaddr, sensor)
-    delete_redis(macaddr, sensor)
+def delete(mac_address, sensor):
+    delete_sql(mac_address, sensor)
+    delete_redis(mac_address, sensor)
     return True

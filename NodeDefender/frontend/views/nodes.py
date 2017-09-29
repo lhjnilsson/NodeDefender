@@ -25,7 +25,7 @@ def nodes_list():
             iCPE = NodeDefender.db.icpe.get_sql(CreateForm.Mac.data)
             if iCPE:
                 NodeDefender.db.node.add_icpe(node.name, \
-                                             iCPE.macaddr)
+                                             iCPE.mac_address)
             if CreateForm.Group.data:
                 NodeDefender.db.group.add_node(CreateForm.Group.data,\
                                               node.name)
@@ -59,10 +59,10 @@ def nodes_node(name):
     return render_template('frontend/nodes/node.html', Node = node)
 
 '''
-@node_view.route('/nodes/list/<macaddr>/<sensorid>', methods=['GET', 'POST'])
+@node_view.route('/nodes/list/<mac_address>/<sensor_id>', methods=['GET', 'POST'])
 @login_required
-def sensor_configure(macaddr, nodeid):
-    icpe = NodeDefender.db.icpe.get_sql(macaddr)
+def sensor_configure(mac_address, nodeid):
+    icpe = NodeDefender.db.icpe.get_sql(mac_address)
     if icpe is None:
         return redirect(url_for('index'))
     NodeBasic = NodeBasicForm()
@@ -85,7 +85,7 @@ def sensor_configure(macaddr, nodeid):
 def NodesNotesAdd(mac):
     if request.method == 'POST':
         note = request.form['note']
-        icpe = iCPEModel.query.filter_by(macaddr = mac).first()
+        icpe = iCPEModel.query.filter_by(mac_address = mac).first()
         dbnote = NodeNotesModel(current_user.email, note)
         icpe.notes.append(dbnote)
         db.session.add(icpe)
@@ -99,7 +99,7 @@ def NodesNotesAdd(mac):
 def NodesNoteSticky(mac):
     if request.method == 'POST':
         note = request.form['note']
-        icpe = iCPEModel.query.filter_by(macaddr = mac).first()
+        icpe = iCPEModel.query.filter_by(mac_address = mac).first()
         icpe.notesticky = note
         db.session.add(icpe)
         db.session.commit()

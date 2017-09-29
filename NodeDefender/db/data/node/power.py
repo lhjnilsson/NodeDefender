@@ -21,8 +21,8 @@ def current(node):
 
         sensor_data = {}
         sensor_data['name'] = sensor.name
-        sensor_data['sensorid'] = sensor.sensorid
-        sensor_data['icpe'] = sensor.icpe.macaddr
+        sensor_data['sensor_id'] = sensor.sensor_id
+        sensor_data['icpe'] = sensor.icpe.mac_address
         
         min_ago = (datetime.now() - timedelta(hours=0.5))
         latest_power =  SQL.session.query(PowerModel,\
@@ -30,8 +30,8 @@ def current(node):
                     label('count', func.count(PowerModel.average))).\
                     join(PowerModel.icpe).\
                     join(PowerModel.sensor).\
-                    filter(iCPEModel.macaddr == node.icpe.macaddr).\
-                    filter(SensorModel.sensorid == sensor.sensorid).\
+                    filter(iCPEModel.mac_address == node.icpe.mac_address).\
+                    filter(SensorModel.sensor_id == sensor.sensor_id).\
                     filter(PowerModel.date > min_ago).first()
         
         if latest_power.count:
@@ -67,28 +67,28 @@ def average(node):
                 label('sum', func.sum(PowerModel.average)),
                 label('count', func.count(PowerModel.average))).\
                 join(PowerModel.icpe).\
-                filter(iCPEModel.macaddr == node.icpe.macaddr).\
+                filter(iCPEModel.mac_address == node.icpe.mac_address).\
                 filter(PowerModel.date > min_ago).first()
     
     daily_power = SQL.session.query(PowerModel,\
                 label('sum', func.sum(PowerModel.average)),
                 label('count', func.count(PowerModel.average))).\
                 join(PowerModel.icpe).\
-                filter(iCPEModel.macaddr == node.icpe.macaddr).\
+                filter(iCPEModel.mac_address == node.icpe.mac_address).\
                 filter(PowerModel.date > day_ago).first()
     
     weekly_power = SQL.session.query(PowerModel,\
                 label('sum', func.sum(PowerModel.average)),
                 label('count', func.count(PowerModel.average))).\
                 join(PowerModel.icpe).\
-                filter(iCPEModel.macaddr == node.icpe.macaddr).\
+                filter(iCPEModel.mac_address == node.icpe.mac_address).\
                 filter(PowerModel.date > week_ago).first()
 
     monthly_power = SQL.session.query(PowerModel,\
                 label('sum', func.sum(PowerModel.average)),
                 label('count', func.count(PowerModel.average))).\
                 join(PowerModel.icpe).\
-                filter(iCPEModel.macaddr == node.icpe.macaddr).\
+                filter(iCPEModel.mac_address == node.icpe.mac_address).\
                 filter(PowerModel.date > month_ago).first()
     
     if current_power.count:
@@ -139,8 +139,8 @@ def chart(node):
         power_data = SQL.session.query(PowerModel).\
                 join(PowerModel.icpe).\
                 join(PowerModel.sensor).\
-                filter(iCPEModel.macaddr == node.icpe.macaddr).\
-                filter(SensorModel.sensorid == sensor.sensorid).\
+                filter(iCPEModel.mac_address == node.icpe.mac_address).\
+                filter(SensorModel.sensor_id == sensor.sensor_id).\
                 filter(PowerModel.date > from_date).\
                 filter(PowerModel.date < to_date).all()
 
@@ -149,8 +149,8 @@ def chart(node):
         
         sensor_data = {}
         sensor_data['name'] = sensor.name
-        sensor_data['sensorid'] = sensor.sensorid
-        sensor_data['icpe'] = sensor.icpe.macaddr
+        sensor_data['sensor_id'] = sensor.sensor_id
+        sensor_data['icpe'] = sensor.icpe.mac_address
 
         sensor_data['power'] = []
         grouped_data = [list(v) for k, v in groupby(power_data, lambda p:

@@ -10,7 +10,7 @@ def latest(icpe):
                                   label('total', func.sum(HeatModel.average)),
                                   label('date', HeatModel.date)).\
             join(iCPEModel).\
-            filter(iCPEModel.macaddr == icpe).\
+            filter(iCPEModel.mac_address == icpe).\
             order_by(HeatModel.date.desc()).\
             group_by(HeatModel.date).first()
 
@@ -28,7 +28,7 @@ def get(icpe, from_date = (datetime.now() - timedelta(days=7)), to_date =
                                   label('total', func.sum(HeatModel.average)),
                                   label('date', HeatModel.date)).\
             join(iCPEModel).\
-            filter(iCPEModel.macaddr == icpe).\
+            filter(iCPEModel.mac_address == icpe).\
             filter(HeatModel.date > from_date).\
             filter(HeatModel.date < to_date).\
             group_by(HeatModel.date).all()

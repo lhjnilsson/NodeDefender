@@ -20,8 +20,8 @@ def current(node):
 
         sensor_data = {}
         sensor_data['name'] = sensor.name
-        sensor_data['sensorid'] = sensor.sensorid
-        sensor_data['icpe'] = sensor.icpe.macaddr
+        sensor_data['sensor_id'] = sensor.sensor_id
+        sensor_data['icpe'] = sensor.icpe.mac_address
         
         min_ago = (datetime.now() - timedelta(hours=0.5))
         latest_heat =  SQL.session.query(HeatModel,\
@@ -29,8 +29,8 @@ def current(node):
                     label('count', func.count(HeatModel.average))).\
                     join(HeatModel.icpe).\
                     join(HeatModel.sensor).\
-                    filter(iCPEModel.macaddr == node.icpe.macaddr).\
-                    filter(SensorModel.sensorid == sensor.sensorid).\
+                    filter(iCPEModel.mac_address == node.icpe.mac_address).\
+                    filter(SensorModel.sensor_id == sensor.sensor_id).\
                     filter(HeatModel.date > min_ago).first()
         
         if latest_heat.count:
@@ -66,28 +66,28 @@ def average(node):
                 label('sum', func.sum(HeatModel.average)),
                 label('count', func.count(HeatModel.average))).\
                 join(HeatModel.icpe).\
-                filter(iCPEModel.macaddr == node.icpe.macaddr).\
+                filter(iCPEModel.mac_address == node.icpe.mac_address).\
                 filter(HeatModel.date > min_ago).first()
     
     daily_heat = SQL.session.query(HeatModel,\
                 label('sum', func.sum(HeatModel.average)),
                 label('count', func.count(HeatModel.average))).\
                 join(HeatModel.icpe).\
-                filter(iCPEModel.macaddr == node.icpe.macaddr).\
+                filter(iCPEModel.mac_address == node.icpe.mac_address).\
                 filter(HeatModel.date > day_ago).first()
     
     weekly_heat = SQL.session.query(HeatModel,\
                 label('sum', func.sum(HeatModel.average)),
                 label('count', func.count(HeatModel.average))).\
                 join(HeatModel.icpe).\
-                filter(iCPEModel.macaddr == node.icpe.macaddr).\
+                filter(iCPEModel.mac_address == node.icpe.mac_address).\
                 filter(HeatModel.date > week_ago).first()
 
     monthly_heat = SQL.session.query(HeatModel,\
                 label('sum', func.sum(HeatModel.average)),
                 label('count', func.count(HeatModel.average))).\
                 join(HeatModel.icpe).\
-                filter(iCPEModel.macaddr == node.icpe.macaddr).\
+                filter(iCPEModel.mac_address == node.icpe.mac_address).\
                 filter(HeatModel.date > month_ago).first()
     
     if current_heat.count:
@@ -138,8 +138,8 @@ def chart(node):
         heat_data = SQL.session.query(HeatModel).\
                 join(HeatModel.icpe).\
                 join(HeatModel.sensor).\
-                filter(iCPEModel.macaddr == node.icpe.macaddr).\
-                filter(SensorModel.sensorid == sensor.sensorid).\
+                filter(iCPEModel.mac_address == node.icpe.mac_address).\
+                filter(SensorModel.sensor_id == sensor.sensor_id).\
                 filter(HeatModel.date > from_date).\
                 filter(HeatModel.date < to_date).all()
 
@@ -148,8 +148,8 @@ def chart(node):
         
         sensor_data = {}
         sensor_data['name'] = sensor.name
-        sensor_data['sensorid'] = sensor.sensorid
-        sensor_data['icpe'] = sensor.icpe.macaddr
+        sensor_data['sensor_id'] = sensor.sensor_id
+        sensor_data['icpe'] = sensor.icpe.mac_address
 
         sensor_data['heat'] = []
         grouped_data = [list(v) for k, v in groupby(heat_data, lambda p:

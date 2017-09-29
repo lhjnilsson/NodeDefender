@@ -3,7 +3,7 @@ import NodeDefender.icpe.sensor.command
 import NodeDefender.icpe.sensor.commandclass
 
 def verify_list(icpe, *sensors):
-    known = [sensor.sensorid for sensor in NodeDefender.db.sensor.list(icpe)]
+    known = [sensor.sensor_id for sensor in NodeDefender.db.sensor.list(icpe)]
 
     for sensor in sensors:
         if sensor not in known:
@@ -14,8 +14,8 @@ def verify_list(icpe, *sensors):
             NodeDefender.db.sensor.delete(icpe, sensor)
     return True
 
-def sensor_info(icpe, sensorid, **payload):
-    sensor = NodeDefender.db.sensor.get_sql(icpe, sensorid)
+def sensor_info(icpe, sensor_id, **payload):
+    sensor = NodeDefender.db.sensor.get_sql(icpe, sensor_id)
     
     sensor.sleepable = bool(eval(payload['sleepable']))
     sensor.wakeup_interval = payload['wakeup_interval']
@@ -36,11 +36,11 @@ def sensor_info(icpe, sensorid, **payload):
         return False
 
     NodeDefender.icpe.sensor.commandclass.\
-            commandclasses(icpe, sensorid, *payload['clslist_0'].split(','))
+            commandclasses(icpe, sensor_id, *payload['clslist_0'].split(','))
     
     NodeDefender.db.sensor.save_sql(sensor)
     NodeDefender.db.redis.sensor.load(sensor)
-    return NodeDefender.db.sensor.get(icpe, sensorid)
+    return NodeDefender.db.sensor.get(icpe, sensor_id)
 
 def event(mac_address, sensor_id, CommandClass, **payload):
     if CommandClass == 'info':

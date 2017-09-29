@@ -16,7 +16,7 @@ plotlySocket.on('sensorHeatChart', function(data) {
 	Plotly.newPlot(chartElement, data.data, data.layout)
 });
 
-plotlySocket.emit('sensorHeatChart', {'icpe' : "{{sensor.icpe.macaddr}}", 'sensor' : '{{sensor.sensorid}}' });
+plotlySocket.emit('sensorHeatChart', {'icpe' : "{{sensor.icpe.mac_address}}", 'sensor' : '{{sensor.sensor_id}}' });
 </script>
 {% endmacro %}
 
@@ -41,21 +41,21 @@ plotlySocket.emit('sensorHeatChart', {'icpe' : "{{sensor.icpe.macaddr}}", 'senso
 				{% if sensor.heat %}
 				<tr>
 					<td>
-						<a href="{{ url_for('data_view.heat_sensor', icpe = serialize(node.icpe.macaddr), sensor = sensor.sensorid) }}">
+						<a href="{{ url_for('data_view.heat_sensor', icpe = serialize(node.icpe.mac_address), sensor = sensor.sensor_id) }}">
 							{{sensor.name}}
 						</a>
 					</td>
 					<td>
-						<p id="{{node.icpe.macaddr}}{{sensor.sensorid}}CurrentHeat">0.0</p>
+						<p id="{{node.icpe.mac_address}}{{sensor.sensor_id}}CurrentHeat">0.0</p>
 					</td>
 					<td>
-						<p id="{{node.icpe.macaddr}}{{sensor.sensorid}}DailyHeat">0.0</p>
+						<p id="{{node.icpe.mac_address}}{{sensor.sensor_id}}DailyHeat">0.0</p>
 					</td>
 					<td>
-						<p id="{{node.icpe.macaddr}}{{sensor.sensorid}}WeeklyHeat">0.0</p>
+						<p id="{{node.icpe.mac_address}}{{sensor.sensor_id}}WeeklyHeat">0.0</p>
 					</td>
 					<td>
-						<p id="{{node.icpe.macaddr}}{{sensor.sensorid}}MonthlyHeat">0.0</p>
+						<p id="{{node.icpe.mac_address}}{{sensor.sensor_id}}MonthlyHeat">0.0</p>
 					</td>
 				</a>
 			</tr>
@@ -75,7 +75,7 @@ $(document).ready(function() {
 	});
 	{% for sensor in node.icpe.sensors %}
 	{% if sensor.heat %}
-	dataSocket.emit('sensorHeatAverage', {'icpe': '{{node.icpe.macaddr}}', 'sensor' : '{{sensor.sensorid}}'});
+	dataSocket.emit('sensorHeatAverage', {'icpe': '{{node.icpe.mac_address}}', 'sensor' : '{{sensor.sensor_id}}'});
 	{% endif %}
 	{% endfor %}
 });

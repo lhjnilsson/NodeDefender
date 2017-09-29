@@ -5,9 +5,9 @@ import NodeDefender
 def verify_sensor_and_class(func):
     @wraps(func)
     def wrapper(topic, payload):
-        if not NodeDefender.db.sensor.get(topic['macAddress'], topic['node']):
-            NodeDefender.db.sensor.create(topic['macAddress'], topic['node'])
-        if not NodeDefender.db.commandclass.get(topic['macAddress'], topic['node'],\
+        if not NodeDefender.db.sensor.get(topic['mac_address'], topic['node']):
+            NodeDefender.db.sensor.create(topic['mac_address'], topic['node'])
+        if not NodeDefender.db.commandclass.get(topic['mac_address'], topic['node'],\
                                    classname = topic['commandClass']):
             pass
         return func(topic, payload)

@@ -1,26 +1,26 @@
 import NodeDefender
 
-def commandclasses(icpe, sensorid, *commandclasses):
+def commandclasses(icpe, sensor_id, *commandclasses):
     known_classes = [commandclass.number for commandclass in \
-                     NodeDefender.db.commandclass.list(icpe, sensorid)]
+                     NodeDefender.db.commandclass.list(icpe, sensor_id)]
     
     
     for commandclass in commandclasses:
         if commandclass not in known_classes:
-            NodeDefender.db.commandclass.create(icpe, sensorid, commandclass)
+            NodeDefender.db.commandclass.create(icpe, sensor_id, commandclass)
 
     for commandclass in known_classes:
         if commandclass not in commandclasses:
-            NodeDefender.db.commandclass.delete(icpe, sensorid, commandclass)
+            NodeDefender.db.commandclass.delete(icpe, sensor_id, commandclass)
     return True
 
-def commandclass_types(icpe, sensorid, commandclass_name, *classtypes):
+def commandclass_types(icpe, sensor_id, commandclass_name, *classtypes):
     known_types = NodeDefender.db.commandclass.\
-            get_sql(icpe, sensorid, commandclass_name).commandclasstypes()
+            get_sql(icpe, sensor_id, commandclass_name).commandclasstypes()
 
     for classtype in classtypes:
         if classtype not in known_types:
-            NodeDefender.db.commandclass.add_type(icpe, sensorid,
+            NodeDefender.db.commandclass.add_type(icpe, sensor_id,
                                                   commandclass_name, classtype)
 
     return True

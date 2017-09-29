@@ -7,16 +7,16 @@ from itertools import groupby
 def current(icpe, sensor):
     sensor = SQL.session.query(SensorModel).\
             join(PowerModel.icpe).\
-            filter(iCPEModel.macaddr == icpe).\
-            filter(SensorModel.sensorid == sensor).first()
+            filter(iCPEModel.mac_address == icpe).\
+            filter(SensorModel.sensor_id == sensor).first()
 
     if sensor is None or sensor.power is None:
         return False
     
     sensor_data = {}
     sensor_data['name'] = sensor.name
-    sensor_data['sensor'] = sensor.sensorid
-    sensor_data['icpe'] = sensor.icpe.macaddr
+    sensor_data['sensor'] = sensor.sensor_id
+    sensor_data['icpe'] = sensor.icpe.mac_address
     
     min_ago = (datetime.now() - timedelta(hours=0.5))
     latest_power =  SQL.session.query(PowerModel,\
@@ -24,8 +24,8 @@ def current(icpe, sensor):
                 label('count', func.count(PowerModel.average))).\
                 join(PowerModel.icpe).\
                 join(PowerModel.sensor).\
-                filter(iCPEModel.macaddr == sensor.icpe.macaddr).\
-                filter(SensorModel.sensorid == sensor.sensorid).\
+                filter(iCPEModel.mac_address == sensor.icpe.mac_address).\
+                filter(SensorModel.sensor_id == sensor.sensor_id).\
                 filter(PowerModel.date > min_ago).first()
     
     if latest_power.count:
@@ -39,8 +39,8 @@ def current(icpe, sensor):
 def average(icpe, sensor):
     sensor = SQL.session.query(SensorModel).join(PowerModel.icpe).\
             join(PowerModel.sensor).\
-            filter(iCPEModel.macaddr == icpe).\
-            filter(SensorModel.sensorid == sensor).first()
+            filter(iCPEModel.mac_address == icpe).\
+            filter(SensorModel.sensor_id == sensor).first()
     
     if sensor is None or sensor.power is None:
         return False
@@ -50,8 +50,8 @@ def average(icpe, sensor):
     week_ago = (datetime.now() - timedelta(days=7))
     month_ago = (datetime.now() - timedelta(days=30))
     sensor_data = {}
-    sensor_data['icpe'] = sensor.icpe.macaddr
-    sensor_data['sensor'] = sensor.sensorid
+    sensor_data['icpe'] = sensor.icpe.mac_address
+    sensor_data['sensor'] = sensor.sensor_id
     sensor_data['name'] = sensor.name
     sensor_data['current'] = 0.0
     sensor_data['daily'] = 0.0
@@ -63,8 +63,8 @@ def average(icpe, sensor):
                 label('count', func.count(PowerModel.average))).\
                 join(PowerModel.icpe).\
                 join(PowerModel.sensor).\
-                filter(iCPEModel.macaddr == sensor.icpe.macaddr).\
-                filter(SensorModel.sensorid == sensor.sensorid).\
+                filter(iCPEModel.mac_address == sensor.icpe.mac_address).\
+                filter(SensorModel.sensor_id == sensor.sensor_id).\
                 filter(PowerModel.date > min_ago).first()
     
     daily_power = SQL.session.query(PowerModel,\
@@ -72,8 +72,8 @@ def average(icpe, sensor):
                 label('count', func.count(PowerModel.average))).\
                 join(PowerModel.icpe).\
                 join(PowerModel.sensor).\
-                filter(iCPEModel.macaddr == sensor.icpe.macaddr).\
-                filter(SensorModel.sensorid == sensor.sensorid).\
+                filter(iCPEModel.mac_address == sensor.icpe.mac_address).\
+                filter(SensorModel.sensor_id == sensor.sensor_id).\
                 filter(PowerModel.date > day_ago).first()
     
     weekly_power = SQL.session.query(PowerModel,\
@@ -81,8 +81,8 @@ def average(icpe, sensor):
                 label('count', func.count(PowerModel.average))).\
                 join(PowerModel.icpe).\
                 join(PowerModel.sensor).\
-                filter(iCPEModel.macaddr == sensor.icpe.macaddr).\
-                filter(SensorModel.sensorid == sensor.sensorid).\
+                filter(iCPEModel.mac_address == sensor.icpe.mac_address).\
+                filter(SensorModel.sensor_id == sensor.sensor_id).\
                 filter(PowerModel.date > week_ago).first()
 
     monthly_power = SQL.session.query(PowerModel,\
@@ -90,8 +90,8 @@ def average(icpe, sensor):
                 label('count', func.count(PowerModel.average))).\
                 join(PowerModel.icpe).\
                 join(PowerModel.sensor).\
-                filter(iCPEModel.macaddr == sensor.icpe.macaddr).\
-                filter(SensorModel.sensorid == sensor.sensorid).\
+                filter(iCPEModel.mac_address == sensor.icpe.mac_address).\
+                filter(SensorModel.sensor_id == sensor.sensor_id).\
                 filter(PowerModel.date > month_ago).first()
     
     if current_power.count:
@@ -130,8 +130,8 @@ def chart(icpe, sensor):
     
     sensor = SQL.session.query(SensorModel).\
             join(PowerModel.icpe).\
-            filter(iCPEModel.macaddr == icpe).\
-            filter(SensorModel.sensorid == sensor).first()
+            filter(iCPEModel.mac_address == icpe).\
+            filter(SensorModel.sensor_id == sensor).first()
     
     if sensor is None or sensor.power is None:
         return False
@@ -140,15 +140,15 @@ def chart(icpe, sensor):
     power_data = SQL.session.query(PowerModel).\
             join(PowerModel.icpe).\
             join(PowerModel.sensor).\
-            filter(iCPEModel.macaddr == sensor.icpe.macaddr).\
-            filter(SensorModel.sensorid == sensor.sensorid).\
+            filter(iCPEModel.mac_address == sensor.icpe.mac_address).\
+            filter(SensorModel.sensor_id == sensor.sensor_id).\
             filter(PowerModel.date > from_date).\
             filter(PowerModel.date < to_date).all()
     
     sensor_data = {}
     sensor_data['name'] = sensor.name
-    sensor_data['sensor'] = sensor.sensorid
-    sensor_data['icpe'] = sensor.icpe.macaddr
+    sensor_data['sensor'] = sensor.sensor_id
+    sensor_data['icpe'] = sensor.icpe.mac_address
 
     sensor_data['power'] = []
     
@@ -166,8 +166,8 @@ def put(icpe, sensor, event, date = None):
         date = datetime.now().replace(minute=0, second=0, microsecond=0)
 
     icpe, sensor = SQL.session.query(iCPEModel, SensorModel).\
-            filter(iCPEModel.macaddr == icpe).\
-            filter(SensorModel.sensorid == sensor).first()
+            filter(iCPEModel.mac_address == icpe).\
+            filter(SensorModel.sensor_id == sensor).first()
 
     if not icpe or not sensor:
         return False

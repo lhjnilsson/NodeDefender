@@ -1,5 +1,5 @@
 from NodeDefender.mqtt.command import fire, topic_format
 
-def sup(macaddr, sensorid, classname):
-    topic = topic_format.format(macaddr, sensorid, classname + ':sup', 'get')
-    return fire(topic, icpe = macaddr)
+def sup(mac_address, sensor_id, classname):
+    topic = topic_format.format(mac_address, sensor_id, classname + ':sup', 'get')
+    return fire(topic, icpe = mac_address)

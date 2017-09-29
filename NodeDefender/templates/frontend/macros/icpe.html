@@ -48,15 +48,15 @@ $(document).ready(function() {
 
 	iCPESocket.on('get', function(icpe) {
 		console.log(icpe);
-		$('#addicpemac').text(icpe.macAddress);
+		$('#addicpemac').text(icpe.mac_address);
 		$('#icpesensors').text(icpe.sensors);
 		$('#icpecreated').text(moment.unix(icpe.createdAt, "YYYYMMDD, hh:mm:ss"));
 		$('#icpemqtt').text(icpe.mqtt);
 	});
 
 	$('#UnassignedList').change(function() {
-		var macaddr = $('#UnassignedList option:selected').text();
-		if (macaddr == 'manual') {
+		var mac_address = $('#UnassignedList option:selected').text();
+		if (mac_address == 'manual') {
 			$("#unassigned").hide();
 			$("#manual").show();
 			$("#icpemac").text('None');
@@ -64,7 +64,7 @@ $(document).ready(function() {
 			$("#manual").hide();
 			$("#unassigned").show();
 			$("#manualMAC").text('');
-			iCPESocket.emit('get', macaddr);
+			iCPESocket.emit('get', mac_address);
 		}
 	});
 	$("#unassigned").hide();
@@ -87,7 +87,7 @@ $(document).ready(function() {
 		<tr>
 			<td>
 				<a href="#">
-					{{icpe.macaddr}}
+					{{icpe.mac_address}}
 				</a>
 			</td>
 			<td>
@@ -123,7 +123,7 @@ iCPEtable = document.getElementById('iCPEtable');
 		var newRow = iCPEtbody.insertRow(0);
 
 		var macCell = newRow.insertCell(0);
-		var macText = document.createTextNode(icpe.macAddress);
+		var macText = document.createTextNode(icpe.mac_address);
 		macCell.appendChild(macText);
 
 		var nodeCell = newRow.insertCell(1);

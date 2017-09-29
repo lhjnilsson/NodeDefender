@@ -4,8 +4,8 @@ import NodeDefender
 
 def latest(icpe, sensor):
     return EventModel.query.join(iCPEModel).join(SensorModel).\
-            filter(iCPEModel.macaddr == icpe).\
-            filter(SensorModel.macaddr == sensor).first()
+            filter(iCPEModel.mac_address == icpe).\
+            filter(SensorModel.mac_address == sensor).first()
 
 def get(icpe, sensor, limit = None):
     if limit is None:
@@ -13,8 +13,8 @@ def get(icpe, sensor, limit = None):
     return SQL.session.query(EventModel).\
             join(EventModel.sensor).\
             join(EventModel.icpe).\
-            filter(iCPEModel.macaddr == icpe).\
-            filter(SensorModel.sensorid == sensor).\
+            filter(iCPEModel.mac_address == icpe).\
+            filter(SensorModel.sensor_id == sensor).\
             order_by(EventModel.date.desc()).limit(int(limit)).all()
 
 def average(icpe, sensor, time_ago = None):
@@ -24,8 +24,8 @@ def average(icpe, sensor, time_ago = None):
     total_events = SQL.session.query(EventModel).\
             join(EventModel.sensor).\
             join(EventModel.icpe).\
-            filter(iCPEModel.macaddr == icpe).\
-            filter(SensorModel.sensorid == sensor).\
+            filter(iCPEModel.mac_address == icpe).\
+            filter(SensorModel.sensor_id == sensor).\
             filter(EventModel.date > time_ago).all()
 
     ret_data = {}
@@ -39,11 +39,11 @@ def average(icpe, sensor, time_ago = None):
     return ret_data
 
 
-def put(mac, sensorid, commandclass, commandclasstype, state, value):
+def put(mac, sensor_id, commandclass, commandclasstype, state, value):
     icpe = NodeDefender.db.icpe.get_sql(mac)
-    sensor = NodeDefender.db.sensor.get_sql(mac, sensorid)
+    sensor = NodeDefender.db.sensor.get_sql(mac, sensor_id)
     commandclass = NodeDefender.db.commandclass.\
-            get_sql(mac, sensorid, classname = commandclass)
+            get_sql(mac, sensor_id, classname = commandclass)
     
     if commandclass is None:
         return 
@@ -57,7 +57,7 @@ def put(mac, sensorid, commandclass, commandclasstype, state, value):
 
     if commandclasstype:
         event.commandclasstype = NodeDefender.db.commandclass.\
-                get_type(mac, sensorid, commandclass.name, commandclasstype)
+                get_type(mac, sensor_id, commandclass.name, commandclasstype)
     SQL.session.add(event)
     SQL.session.commit()
     return True

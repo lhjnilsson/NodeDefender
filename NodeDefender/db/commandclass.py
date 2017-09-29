@@ -3,29 +3,29 @@ from NodeDefender.db.sql import SQL, iCPEModel, SensorModel,\
 from NodeDefender.db import logger
 import NodeDefender
 
-def get_sql(macaddr, sensorid, classnumber = None, classname = None):
+def get_sql(mac_address, sensor_id, classnumber = None, classname = None):
     if classnumber is None and classname is None:
         raise TypeError('Please enter either classnumber or classname')
     if classnumber:
         return SQL.session.query(CommandClassModel).\
                 join(CommandClassModel.sensor).\
                 join(SensorModel.icpe).\
-                filter(iCPEModel.macaddr == macaddr).\
-                filter(SensorModel.sensorid == sensorid).\
+                filter(iCPEModel.mac_address == mac_address).\
+                filter(SensorModel.sensor_id == sensor_id).\
                 filter(CommandClassModel.number == classnumber).first()
     elif classname:
         return SQL.session.query(CommandClassModel).\
                 join(CommandClassModel.sensor).\
                 join(SensorModel.icpe).\
-                filter(iCPEModel.macaddr == macaddr).\
-                filter(SensorModel.sensorid == sensorid).\
+                filter(iCPEModel.mac_address == mac_address).\
+                filter(SensorModel.sensor_id == sensor_id).\
                 filter(CommandClassModel.name == classname).first()
 
-def update_sql(macaddr, sensorid, classnumber = None, classname = None, **kwargs):
+def update_sql(mac_address, sensor_id, classnumber = None, classname = None, **kwargs):
     if classnumber:
-        commandclass = get_sql(macaddr, sensorid, classnumber = classnumber)
+        commandclass = get_sql(mac_address, sensor_id, classnumber = classnumber)
     elif classname:
-        commandclass = get_sql(macaddr, sensorid, classname = classname)
+        commandclass = get_sql(mac_address, sensor_id, classname = classname)
     else:
         raise TypeError('Please enter either classnumber or classname')
 
@@ -42,11 +42,11 @@ def update_sql(macaddr, sensorid, classnumber = None, classname = None, **kwargs
     SQL.session.commit()
     return commandclass
 
-def create_sql(macaddr, sensorid, classnumber = None, classname = None):
+def create_sql(mac_address, sensor_id, classnumber = None, classname = None):
     if classnumber:
-        commandclass = get_sql(macaddr, sensorid, classnumber = classnumber)
+        commandclass = get_sql(mac_address, sensor_id, classnumber = classnumber)
     elif classname:
-        commandclass = get_sql(macaddr, sensorid, classname = classname)
+        commandclass = get_sql(mac_address, sensor_id, classname = classname)
     else:
         raise TypeError('Please enter either classnumber or classname')
     
@@ -54,21 +54,21 @@ def create_sql(macaddr, sensorid, classnumber = None, classname = None):
         return commandclass
 
     commandclass = CommandClassModel(classnumber, classname)
-    sensor = NodeDefender.db.sensor.get_sql(macaddr, sensorid)
+    sensor = NodeDefender.db.sensor.get_sql(mac_address, sensor_id)
     if sensor is None:
         return False
     sensor.commandclasses.append(commandclass)
     SQL.session.add(sensor, commandclass)
     SQL.session.commit()
     logger.debug("Created SQL Entry for {!r}:{!r}:{!r}".\
-                 format(macaddr, sensorid, commandclass.number))
+                 format(mac_address, sensor_id, commandclass.number))
     return commandclass
 
-def delete_sql(macaddr, sensorid, classnumber = None, classname = None):
+def delete_sql(mac_address, sensor_id, classnumber = None, classname = None):
     if classnumber:
-        commandclass = get_sql(macaddr, sensorid, classnumber = classnumber)
+        commandclass = get_sql(mac_address, sensor_id, classnumber = classnumber)
     elif classname:
-        commandclass = get_sql(macaddr, sensorid, classname = classname)
+        commandclass = get_sql(mac_address, sensor_id, classname = classname)
     else:
         raise TypeError('Please enter either classnumber or classname')
 
@@ -76,53 +76,53 @@ def delete_sql(macaddr, sensorid, classnumber = None, classname = None):
         return False
     SQL.session.delete(commandclass)
     logger.debug("Deleted SQL Entry for {!r}:{!r}:{!r}".\
-                 format(macaddr, sensorid, commandclass.number))
+                 format(mac_address, sensor_id, commandclass.number))
     return SQL.session.commit()
 
-def get(macaddr, sensorid, classnumber = None, classname = None):
-    return get_sql(macaddr, sensorid, classnumber = classnumber, \
+def get(mac_address, sensor_id, classnumber = None, classname = None):
+    return get_sql(mac_address, sensor_id, classnumber = classnumber, \
                  classname = classname)
 
-def update(macaddr, sensorid, classnumber = None, classname = None, **kwargs):
-    return update_sql(macaddr, sensorid, classnumber = classnumber, \
+def update(mac_address, sensor_id, classnumber = None, classname = None, **kwargs):
+    return update_sql(mac_address, sensor_id, classnumber = classnumber, \
                       classname = classname, **kwargs)
 
-def list(macaddr, sensorid):
-    sensor = NodeDefender.db.sensor.get_sql(macaddr, sensorid)
+def list(mac_address, sensor_id):
+    sensor = NodeDefender.db.sensor.get_sql(mac_address, sensor_id)
     if not sensor:
         return []
     return sensor.commandclasses
 
-def number_list(macaddr, sensorid):
-    sensor = NodeDefender.db.sensor.get_sql(macaddr, sensorid)
+def number_list(mac_address, sensor_id):
+    sensor = NodeDefender.db.sensor.get_sql(mac_address, sensor_id)
     if sensor:
         return [c.number for c in sensor.commandclasses]
     else:
         return []
 
-def create(macaddr, sensorid, classnumber):
-    if not create_sql(macaddr, sensorid, classnumber):
+def create(mac_address, sensor_id, classnumber):
+    if not create_sql(mac_address, sensor_id, classnumber):
         return False
     info = NodeDefender.icpe.zwave.commandclass.info(classnumber = classnumber)
     if info:
         info['web_field'] = NodeDefender.icpe.zwave.commandclass.\
                 web_field(classname = info['name'])
-        update(macaddr, sensorid, classnumber = classnumber, **info)
+        update(mac_address, sensor_id, classnumber = classnumber, **info)
         if info['types']:
-            NodeDefender.mqtt.command.commandclass.sup(macaddr, sensorid, \
+            NodeDefender.mqtt.command.commandclass.sup(mac_address, sensor_id, \
                                                        info['name'])
     if NodeDefender.icpe.zwave.commandclass.\
        web_field(classnumber = classnumber):
-        update(macaddr, sensorid, classnumber = classnumber, **{'web_field' :
+        update(mac_address, sensor_id, classnumber = classnumber, **{'web_field' :
                                                                 True})
-    return get(macaddr, sensorid, classnumber = classnumber)
+    return get(mac_address, sensor_id, classnumber = classnumber)
 
-def delete(macaddr, sensorid, classnumber = None, classname = None):
-    return delete_sql(macaddr, sensorid, classnumber = classnumber, \
+def delete(mac_address, sensor_id, classnumber = None, classname = None):
+    return delete_sql(mac_address, sensor_id, classnumber = classnumber, \
                       classname = classname)
 
-def add_type(macaddr, sensorid, classname, classtype):
-    commandclass = get_sql(macaddr, sensorid, classname = classname)
+def add_type(mac_address, sensor_id, classname, classtype):
+    commandclass = get_sql(mac_address, sensor_id, classname = classname)
     if commandclass is None:
         return False
     typeModel = CommandClassTypeModel(classtype)
@@ -141,12 +141,12 @@ def add_type(macaddr, sensorid, classname, classtype):
     SQL.session.commit()
     return True
 
-def get_type(mac, sensorid, classname, classtype):
+def get_type(mac, sensor_id, classname, classtype):
     return SQL.session.query(CommandClassTypeModel).\
             join(CommandClassTypeModel.commandclass).\
             join(CommandClassModel.sensor).\
             join(SensorModel.icpe).\
-            filter(iCPEModel.macaddr == mac).\
-            filter(SensorModel.sensorid == sensorid).\
+            filter(iCPEModel.mac_address == mac).\
+            filter(SensorModel.sensor_id == sensor_id).\
             filter(CommandClassModel.name == classname).\
             filter(CommandClassTypeModel.name == classtype).first()

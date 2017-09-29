@@ -40,9 +40,9 @@ def get(host, port = 1883):
 def online(host, port):
     return False
 
-def icpe(macaddr):
+def icpe(mac_address):
     return SQL.session.query(MQTTModel).join(MQTTModel.icpes).\
-            filter(iCPEModel.macaddr == macaddr).first()
+            filter(iCPEModel.mac_address == mac_address).first()
 
 def create(host, port = 1883):
     return create_sql(host, port)
@@ -56,5 +56,5 @@ def list(group = None, user = None, icpe = None):
                 filter(GroupModel.name == group).all()
     if icpe:
         return SQL.session.query(MQTTModel).join(MQTTModel.icpe).\
-                filter(iCPEModel.macaddr == icpe).all()
+                filter(iCPEModel.mac_address == icpe).all()
     return MQTTModel.query.all()

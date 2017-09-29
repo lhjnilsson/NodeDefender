@@ -32,4 +32,4 @@ class MQTTModel(SQL.Model):
                 'date_created' : str(self.date_created),
                 'online' : True, 'username ' : None, 'password' : None,
                 'groups' : [group.name for group in self.groups],
-                'icpes' : [icpe.macaddr for icpe in self.icpes]}
+                'icpes' : [icpe.mac_address for icpe in self.icpes]}

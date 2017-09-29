@@ -5,7 +5,7 @@ def qry(topic, payload):
     http = bool(eval(payload.pop(0)))
     snmp = bool(eval(payload.pop(0)))
     ssh = bool(eval(payload.pop(0)))
-    return NodeDefender.db.icpe.update(topic['macAddress'],
+    return NodeDefender.db.icpe.update(topic['mac_address'],
                                        **{'telnet' : telnet,
                                           'http' : http,
                                           'snmp' : snmp,
@@ -13,17 +13,17 @@ def qry(topic, payload):
 
 def cli(topic, payload):
     enabled = bool(eval(payload))
-    return NodeDefender.db.icpe.update(topic['macAddress'],
+    return NodeDefender.db.icpe.update(topic['mac_address'],
                                        **{'telnet' : telnet})
 def web(topic, payload):
     enabled = bool(eval(payload))
-    return NodeDefender.db.icpe.update(topic['macAddress'],
+    return NodeDefender.db.icpe.update(topic['mac_address'],
                                        **{'http' : telnet})
 def snmp(topic, payload):
     enabled = bool(eval(payload))
-    return NodeDefender.db.icpe.update(topic['macAddress'],
+    return NodeDefender.db.icpe.update(topic['mac_address'],
                                        **{'snmp' : telnet})
 def ssh(topic, payload):
     enabled = bool(eval(payload))
-    return NodeDefender.db.icpe.update(topic['macAddress'],
+    return NodeDefender.db.icpe.update(topic['mac_address'],
                                        **{'ssh' : telnet})

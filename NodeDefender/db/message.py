@@ -21,14 +21,14 @@ def messages(user, limit = 10):
     # Revert from list of models to a list of string
     groups = [group.name for group in groups]
     nodes = [node.name for node in nodes]
-    icpes = [icpe.macaddr for icpe in icpes]
+    icpes = [icpe.mac_address for icpe in icpes]
 
     gq = SQL.session.query(MessageModel).join(MessageModel.group).\
             filter(GroupModel.name.in_(groups))
     nq = SQL.session.query(MessageModel).join(MessageModel.node).\
             filter(NodeModel.name.in_(nodes))
     iq = SQL.session.query(MessageModel).join(MessageModel.icpe).\
-            filter(iCPEModel.macaddr.in_(icpes))
+            filter(iCPEModel.mac_address.in_(icpes))
 
     return gq.union(nq).union(iq).order_by(MessageModel.date.desc()).\
             limit(int(limit)).all()
@@ -47,7 +47,7 @@ def group_messages(group, limit = 10):
 
     # Revert from list for models to a list for strings
     nodes = [node.name for node in nodes]
-    icpes = [icpe.macaddr for icpe in icpes]
+    icpes = [icpe.mac_address for icpe in icpes]
 
     return SQL.session.query(MessageModel).\
             join(MessageModel.group).\
@@ -56,7 +56,7 @@ def group_messages(group, limit = 10):
             join(MessageModel.sensor).\
             filter(GroupModel.name == group.name,\
                        NodeModel.name.in_(*[nodes]),\
-                       iCPEModel.macaddr.in_(*[icpes]),\
+                       iCPEModel.mac_address.in_(*[icpes]),\
                        SensorModel.id.in_(*[sensors])\
                       ).order_by(MessageModel.date.desc()).limit(int(limit)).all()
 
@@ -79,10 +79,10 @@ def node_messages(node, limit = 10):
     if node is None:
         return False
     
-    sensors = [sensor.sensorid for sensor in node.icpe.sensors]
+    sensors = [sensor.sensor_id for sensor in node.icpe.sensors]
     return SQL.session.query(MessageModel).\
             filter(or_(MessageModel.node == node,
-                       MessageModel.sensors.sensorid.in_(*[sensors]),
+                       MessageModel.sensors.sensor_id.in_(*[sensors]),
                     )).order_by(MessageModel.date.desc()).limit(int(limit)).all()
 
 
@@ -116,7 +116,7 @@ def node_created(node):
 
 def icpe_created(icpe):
     subject = "iCPE Created"
-    body = _icpe_created_template.format(icpe.macaddr)
+    body = _icpe_created_template.format(icpe.mac_address)
     message = MessageModel(subject, body)
     icpe.messages.append(message)
     SQL.session.add(icpe)
@@ -126,7 +126,7 @@ def icpe_created(icpe):
 def sensor_created(sensor):
     subject = "Sensor Created"
     body = _sensor_created_template.format(sensor.name,
-                                              sensor.icpe.macaddr)
+                                              sensor.icpe.mac_address)
     message = MessageModel(subject, body)
     sensor.messages.append(message)
     SQL.session.add(message)
