@@ -1,15 +1,14 @@
-from .. import LoginMan, app, celery, serializer
-from . import mail
-from ..models.manage import user as UserSQL
-from ..models.SQL import UserModel
 from flask_mail import Message
 from flask import render_template, url_for
+import NodeDefender
+from NodeDefender import serializer
+from NodeDefender.mail import mail
 
-
-@celery.task
+@NodeDefender.decorators.mail_enabled
+@NodeDefender.decorators.celery_task
 def new_user(user):
     if type(user) == str:
-        user = UserSQL.Get(user)
+        user = NodeDefender.db.user.get(user)
 
     if user.email == None:
         return False
@@ -23,10 +22,10 @@ def new_user(user):
     return True
 
 
-@celery.task
+@NodeDefender.decorators.celery_task
 def confirm_user(user):
     if type(user) == str:
-        user = UserSQL.Get(user)
+        user = NodeDefender.db.user.get(user)
 
     if user.email == None:
         return False
@@ -37,10 +36,10 @@ def confirm_user(user):
     mail.send(msg)
     return True
 
-@celery.task
+@NodeDefender.decorators.celery_task
 def reset_password(user):
     if type(user) == str:
-        user = UserSQL.Get(user)
+        user = NodeDefender.db.user.get(user)
 
     if user.email == None:
         return False
@@ -54,10 +53,10 @@ def reset_password(user):
     mail.send(msg)
     return True
 
-@celery.task
+@NodeDefender.decorators.celery_task
 def login_changed(user):
     if type(user) == str:
-        user = UserSQL.Get(user)
+        user = NodeDefender.db.user.get(user)
     
     msg = Message('Login changed', sender='noreply@nodedefender.com',
                   recipients=[user.email])

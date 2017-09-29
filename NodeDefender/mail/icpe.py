@@ -1,17 +1,17 @@
-from ..models.manage import icpe as iCPESQL
-from ..models.manage import mqtt as MQTTSQL
-from .. import serializer, app, celery
-from . import mail
 from flask_mail import Message
 from flask import render_template, url_for
+import NodeDefender
+from NodeDefender import serializer
+from NodeDefender.mail import mail
 
-@celery.task
+@NodeDefender.decorators.mail_enabled
+@NodeDefender.decorators.celery_task
 def new_icpe(icpe, host, port):
-    icpe = iCPESQL.Get(icpe)
+    icpe = NodeDefender.db.icpe.get(icpe)
     if icpe is None:
         return False
 
-    mqtt = MQTTSQL.Get(host, port)
+    mqtt = NodeDefender.db.mqtt.get(host, port)
     if mqtt is None:
         return False
 
@@ -24,13 +24,14 @@ def new_icpe(icpe, host, port):
     mail.send(msg)
     return True
 
-@celery.task
+@NodeDefender.decorators.mail_enabled
+@NodeDefender.decorators.celery_task
 def icpe_enabled(icpe, host, port):
-    icpe = iCPESQL.Get(icpe)
+    icpe = NodeDefender.db.icpe.get(icpe)
     if icpe is None:
         return False
 
-    mqtt = MQTTSQL.Get(host, port)
+    mqtt = NodeDefender.db.mqtt.get(host, port)
     if mqtt is None:
         return False
 

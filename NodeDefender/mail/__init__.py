@@ -1,6 +1,8 @@
-from .. import app
+from NodeDefender import app
 from flask_mail import Mail
 
 mail = Mail(app)
 
-from . import user, group, icpe
+import NodeDefender.mail.user
+import NodeDefender.mail.group
+import NodeDefender.mail.icpe

@@ -35,9 +35,10 @@ serializer = Serializer(app)
 
 # Report that startup is successfull
 logger.info('NodeDefender Succesfully started')
-
+import NodeDefender.decorators
 import NodeDefender.db
 import NodeDefender.mqtt
 import NodeDefender.icpe
-#import NodeDefender.mail
+import NodeDefender.mail
 import NodeDefender.frontend
+

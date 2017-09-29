@@ -1,14 +1,14 @@
-from ..models.manage import group as GroupSQL
-from ..models.manage import mqtt as MQTTSQL
-from .. import serializer, app, celery
-from . import mail
 from flask_mail import Message
 from flask import render_template, url_for
+import NodeDefender
+from NodeDefender import serializer
+from NodeDefender.mail import mail
 
-@celery.task
+@NodeDefender.decorators.mail_enabled
+@NodeDefender.decorators.celery_task
 def new_group(group):
     if type(group) == str:
-        group = GroupSQL.Get(group)
+        group = NodeDefender.db.group.get(group)
 
     if group.email == None:
         return False
@@ -21,15 +21,16 @@ def new_group(group):
     mail.send(msg)
     return True
 
-@celery.task
+@NodeDefender.decorators.mail_enabled
+@NodeDefender.decorators.celery_task
 def new_mqtt(group, mqttip, mqttport):
-    group = GroupSQL.Get(group)
+    group = NodeDefender.db.group.get(group)
     if group is None:
         return False
     if group.email is None:
         return False
     
-    mqtt = MQTTSQL.Get(mqttip, mqttport)
+    mqtt = NodeDefender.db.mqtt.get(mqttip, mqttport)
     if mqtt is None:
         return False
 

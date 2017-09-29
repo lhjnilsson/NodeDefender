@@ -1,19 +1,19 @@
-from ..models.manage import group as GroupSQL
-from ..models.manage import node as NodeSQL
-from .. import serializer, app, celery
-from . import mail
 from flask_mail import Message
 from flask import render_template, url_for
+import Nodedefender
+from NodeDefender import serializer
+from NodeDefender.mail import mail
 
-@celery.task
+@NodeDefender.decorators.mail_enabled
+@NodeDefender.decorators.celery_task
 def new_node(group, node):
-    group = GroupSQL.Get(group)
+    group = NodeDefender.db.group.get(group)
     if group is None:
         return False
     if group.email is None:
         return False
     
-    node = NodeSQL.Get(node)
+    node = NodeDefender.db.node.get(node)
     if node is None:
         return False
 
