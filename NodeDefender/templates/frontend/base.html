@@ -9,6 +9,7 @@
   <meta name="author" content="">
 
   <title>NodeDefender</title>
+	<link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
 
   <!-- Bootstrap -->
 	<link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
@@ -69,7 +70,7 @@
 								<div class="media">
 									<div class="media-body">
 										<h5 class="media-heading"><strong>{{ message.subject }}</strong></h5>
-										<p class="small text-muted"><i class="fa fa-clock-o"></i> {{ moment(message.created_on).format('Do MMM YYYY, HH:mm:ss') }} </p>
+										<p class="small text-muted"><i class="fa fa-clock-o"></i> {{ moment(message.date_created).format('Do MMM YYYY, HH:mm:ss') }} </p>
 									</div>
 								</div>
 							</a>
