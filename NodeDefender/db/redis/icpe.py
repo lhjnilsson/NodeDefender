@@ -17,7 +17,7 @@ def load(icpe, conn):
         'ip_subnet' : icpe.ip_subnet,
         'online' : False,
         'battery' : None,
-        'date_created' : icpe.created_on.timestamp(),
+        'date_created' : icpe.date_created.timestamp(),
         'date_updated' : datetime.now().timestamp(),
         'date_loaded' : datetime.now().timestamp()
     }

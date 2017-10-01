@@ -52,6 +52,7 @@ class GroupModel(SQL.Model):
     
     def to_json(self):
         return {'name' : self.name, 'email' : self.email, 'created' :
-                str(self.created_on), 'description' : self.description,
+                str(self.date_created), 'description' : self.description,
                 'users' : [user.email for user in self.users],
-                'nodes' : [node.name for node in self.nodes]}
+                'nodes' : [node.name for node in self.nodes],
+                'location' : self.location.to_json()}

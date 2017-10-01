@@ -11,7 +11,7 @@
 			<div class="modal-body">
 				<div class="row">
 					{{ Field('Name', node.name) }}
-					{{ Field('Created At', moment(node.created_on).format('Do MMM YY, HH:mm:ss')) }}
+					{{ Field('Created At', moment(node.date_created).format('Do MMM YY, HH:mm:ss')) }}
 				</div>
 			</div>
 			<div class="modal-footer">
@@ -114,11 +114,6 @@ $(document).ready(function() {
 	});
 
 	nodeSocket.on('coordinates', function(coordinates) {
-		if (coordinates.latitude == 'Not Found') {
-			toastr.error('Coordinates not found');
-			return false;
-		}
-
 		$("#formlatitude").val(coordinates.latitude);
 		$("#formlongitude").val(coordinates.longitude);
 		return true;

@@ -45,6 +45,16 @@
 </div>
 {% endmacro %}
 
+{% macro render_submit_with_id(field, id) %}
+<div class="form-group">
+	<div class="col-sm-offset-10 col-sm-2">
+		<div class="control">
+			{{ field(class="form-control")|safe }}
+		</div>
+	</div>
+</div>
+{% endmacro %}
+
 {% macro render_manual(label, id) %}
 <div class="form-group">
 	<label class="control-label col-sm-2" for="{{id}}">{{label}}:</label>

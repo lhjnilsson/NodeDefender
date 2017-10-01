@@ -64,7 +64,7 @@ class iCPEModel(SQL.Model):
         icpe = {'name' : self.name,
                 'mac_address' : self.mac_address,
                 'ip_address' : self.ipaddr,
-                'date_created' : str(self.created_on),
+                'date_created' : str(self.date_created),
                 'sensors' : str(len(self.sensors)),
                 'mqtt' : [mqtt.to_json() for mqtt in self.mqtt],
                 'node' : node}

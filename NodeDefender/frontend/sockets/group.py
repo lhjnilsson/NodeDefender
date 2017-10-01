@@ -4,6 +4,7 @@ from NodeDefender import socketio, serializer
 import NodeDefender
 from flask_login import current_user
 from flask import url_for
+from geopy.geocoders import Nominatim
 
 @socketio.on('create', namespace='/group')
 def create(name, mail, description, location):
@@ -22,6 +23,19 @@ def list(user = None):
         user = current_user.email
     return emit('list',  [group.name for group in
                       NodeDefender.db.group.list(user_mail = user)])
+
+@socketio.on('delete', namespace='/group')
+def delete(name):
+    pass
+
+@socketio.on('coordinates', namespace='/group')
+def coordinates(street, city):
+    geo = Nominatim()
+    coords = geo.geocode(street + ' ' + city)
+    if coords:
+        emit('coordinates', (coords.latitude, coords.longitude))
+    else:
+        emit('error', "Coordinates not found", namespace='/general')
 
 @socketio.on('info', namespace='/group')
 def info(name):
