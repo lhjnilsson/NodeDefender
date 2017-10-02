@@ -14,7 +14,7 @@ def create(name, email, location):
     group = NodeDefender.db.group.create(name, email)
     NodeDefender.db.group.location(name, **location)
     NodeDefender.mail.group.new_group(name)
-    url = url_for('AdminView.AdminGroup', name = serializer.dumps(name))
+    url = url_for('admin_view.admin_group', name = serializer.dumps(name))
     return emit('redirect', (url), namespace='/general')
 
 @socketio.on('list', namespace='/group')

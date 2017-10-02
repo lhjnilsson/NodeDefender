@@ -16,6 +16,7 @@ class NodeModel(SQL.Model):
     __tablename__ = 'node'
     id = SQL.Column(SQL.Integer, primary_key=True)
     name = SQL.Column(SQL.String(40), unique=True)
+    description = SQL.Column(SQL.String(128))
     location = SQL.relationship('LocationModel', uselist=False, backref='node')
     date_created = SQL.Column(SQL.DateTime)
     notes = SQL.relationship('NodeNotesModel', backref='node')
@@ -40,7 +41,8 @@ class NodeModel(SQL.Model):
             location = self.location.to_json()
         else:
             location = None
-        return {'name' : self.name, 'location' : location}
+
+        return {'name' : self.name, 'description' : self.description, 'location' : location}
 
 class LocationModel(SQL.Model):
     '''

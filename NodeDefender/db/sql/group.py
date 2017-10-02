@@ -32,12 +32,9 @@ class GroupModel(SQL.Model):
     email = SQL.Column(SQL.String(120))
     description = SQL.Column(SQL.String(250))
     date_created = SQL.Column(SQL.DateTime)
-    users = SQL.relationship('UserModel', secondary=user_list,
-                            backref=SQL.backref('groups', lazy='dynamic'))
-    mqtts = SQL.relationship('MQTTModel', secondary=mqtt_list,
-                            backref=SQL.backref('groups', lazy='dynamic'))
-    nodes = SQL.relationship('NodeModel', secondary=node_list,
-                            backref=SQL.backref('groups', lazy='dynamic'))
+    users = SQL.relationship('UserModel', secondary=user_list, backref='groups')
+    mqtts = SQL.relationship('MQTTModel', secondary=mqtt_list, backref='groups')
+    nodes = SQL.relationship('NodeModel', secondary=node_list, backref='groups')
     location = SQL.relationship('LocationModel', uselist=False,
                                backref='group')
 

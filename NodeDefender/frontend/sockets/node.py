@@ -22,6 +22,11 @@ def delete(name):
     emit('redirect', (url), namespace='/general')
     return True
 
+@socketio.on('info', namespace='/node')
+def info(name):
+    node = NodeDefender.db.node.get_sql(name)
+    return emit('info', node.to_json())
+
 @socketio.on('list', namespace='/node')
 def list(groups):
     if type(groups) is str:
@@ -70,17 +75,11 @@ def update_location(name, location):
     return True
 
 @socketio.on('coordinates', namespace='/node')
-def coordinates(msg):
+def coordinates(street, city):
     geo = Nominatim()
-    geocords = geo.geocode(msg['city'] + ' ' + msg['street'])
+    geocords = geo.geocode(street + ' ' + city)
     if geocords:
-        latitude = geocords.latitude
-        longitude = geocords.longitude
-        emit('coordinates', {'street' : msg['street'], 'city' : msg['city'],
-                           'latitude' : str(latitude), 'longitude' :
-                           str(longitude)})
+        emit('coordinates', (geocords.latitude, geocords.longitude))
     else:
-         emit('coordinates', {'street' : msg['street'], 'city' : msg['city'],
-                           'latitude' : 'Not Found', 'longitude' :
-                           'Not Found'})
+        emit("Error", "Coordinated no found", namespace='/general')
     return True

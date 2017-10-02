@@ -292,6 +292,7 @@ eventSocket.on('ZWaveEvent', function(event) {
 {% from "frontend/nodes/modals/node.html" import NodeInformation with context %}
 {% from "frontend/nodes/modals/icpe.html" import iCPEModal %}
 {% from "frontend/nodes/modals/sensor.html" import SensorModal %}
+{% from "frontend/macros/form.html" import render_manual %}
 <script>
 $(document).ready(function() {
 icpeMac = "{{Node.icpe.mac_address}}";
@@ -299,8 +300,8 @@ $('#general').prepend('<a style="color: #FFFFFF; margin: 0 5px;" href="#" data-t
 $('#general').prepend('<a style="color: #FFFFFF; margin: 0 5px;" href="#" data-toggle="modal" data-target="#nodeInfo"><i class="fa fa-info" aria-hidden="true"></i></a>');
 $('#iCPEModals').prepend('<a style="color: #FFFFFF; margin: 0 5px;" href="#" onclick="iCPEModal(icpeMac)"><i class="fa fa-info" aria-hidden="true"></i></a>');
 
-{% if current_user.has_role("technician") %}
-$('#location').prepend('<a style="color: #FFFFFF; margin: 0 5px;" href="#" data-toggle="modal" data-target="#modifyLocation"><i class="fa fa-pencil" aria-hidden="true"></i></a>');
+{% if current_user.has_role("administrator") %}
+$('#general').prepend('<a style="color: #FFFFFF; margin: 0 5px;" href="#" data-toggle="modal" data-target="#nodeModifyModal"><i class="fa fa-pencil" aria-hidden="true"></i></a>');
 {% endif %}
 
 });
@@ -326,6 +327,145 @@ function iCPEModal(iCPE) {
 {% if current_user.has_role("technician") %}
 {{ ModifyLocation(Node.name) }}
 {% endif %}
+
+<div class="modal fade" id="nodeModifyModal" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h2 class="modal-title">Modify Node</h2>
+			</div>
+			<div class="modal-body">
+				<ul class="nav nav-pills nav-justified">
+					<li class="active"><a data-toggle="pill" href="#modifyNodeGeneral">General</a></li>
+					<li><a data-toggle="pill" href="#modifyNodeLocation">Location</a></li>
+					<li><a data-toggle="pill" href="#modifyNodeDelete">Delete</a></li>
+				</ul>
+				<br>
+				<div class="tab-content">
+					<div id="modifyNodeGeneral" class="tab-pane fade in active">
+						<div class="row">
+							{{ render_manual("Name", "modifyNodeName") }}
+							{{ render_manual("Description", "modifyNodeDescription") }}
+						</div>
+					</div>
+					<div id="modifyNodeLocation" class="tab-pane fade">
+						<div class="row">
+							<div class="form-group">
+								<label class="control-label col-sm-2">Street:</label>
+								<div class="col-sm-10">
+									<input type="string" class="form-control" id="modifyNodeStreet" onblur="getCoordinates()">
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="control-label col-sm-2">City:</label>
+								<div class="col-sm-10">
+									<input type="string" class="form-control" id="modifyNodeCity" onblur="getCoordinates()">
+								</div>
+							</div>
+							{{ render_manual("Latitude", "modifyNodeLatitude") }}
+							{{ render_manual("Longitude", "modifyNodeLongitude") }}
+						</div>
+				</div>
+				<div id="modifyNodeDelete" class="tab-pane fade">
+					<div class="row">
+						<div class="col-sm-10">
+							<i>By deleting this node you remove all the history associated with it.
+							Please confirm the action by entering the name of the node in the text- box below</i>
+						</div>
+					</div>
+					<div class="row">
+						<br>
+						<div class="form-group">
+							<label class="control-label col-sm-2">Node Name:</label>
+							<div class="col-sm-10">
+								<input type="string" class="form-control" id="confirmNodeDeleteName" onkeyup="confirmNodeDelete()">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" id="submitNodeGeneral" class="btn btn-primary">Update Genral</button>
+				<button type="button" id="submitNodeLocation" class="btn btn-primary">Update Location</button>
+        <button type="button" id="submitNodeDelete" class="btn btn-danger" disabled>Delete Group</button>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+$(document).ready(function() {
+	nodeName = "{{Node.name}}";
+	submitNodeGeneral = $('#submitNodeGeneral');
+	submitNodeLocation = $('#submitNodeLocation');
+	submitNodeDelete = $('#submitNodeDelete');
+	submitNodeLocation.hide();
+	submitNodeDelete.hide();
+
+	$("a[href='#modifyNodeLocation']").on('show.bs.tab', function(e) {
+	     submitNodeGeneral.hide();
+	     submitNodeDelete.hide()
+	     submitNodeLocation.show();
+	});
+	$("a[href='#modifyNodeGeneral']").on('show.bs.tab', function(e) {
+	  submitNodeLocation.hide();
+	  submitNodeDelete.hide()
+	  submitNodeGeneral.show();
+	});
+	$("a[href='#modifyNodeDelete']").on('show.bs.tab', function(e) {
+	  submitNodeLocation.hide();
+	  submitNodeGeneral.hide();
+	  submitNodeDelete.show()
+	});
+
+	nodeSocket.on("info", function(node) {
+		document.getElementById("modifyNodeName").value = node.name;
+		document.getElementById("modifyNodeDescription").value = node.description;
+		if (node.location) {
+			document.getElementById("modifyNodeStreet").value = node.location.street;
+			document.getElementById("modifyNodeCity").value = node.location.city;
+			document.getElementById("modifyNodeLatitude").value = node.location.latitude;
+			document.getElementById("modifyNodeLongitude").value = node.location.longitude;
+		}
+	})
+
+	document.getElementById("submitNodeGeneral").addEventListener("click", function() {
+	 name = document.getElementById("modifyNodeName").value;
+	 description = document.getElementById("modifyNodeDescription").value;
+	 nodeSocket.emit("update", nodeName, {'name' : name, 'description' : description});
+	});
+
+	document.getElementById("submitNodeLocation").addEventListener("click", function() {
+	 street = document.getElementById("modifyNodeStreet").value;
+	 city = document.getElementById("modifyNodeCity").value;
+	 nodeSocket.emit("updateLocation", nodeName, {'street' : street, 'city' : city});
+	});
+
+	document.getElementById("submitNodeDelete").addEventListener("click", function() {
+	 nodeSocket.emit("delete", nodeName);
+	});
+
+	nodeSocket.on('coordinates', function(latitude, longitude) {
+	  document.getElementById("modifyNodeLatitude").value = latitude;
+	  document.getElementById("modifyNodeLongitude").value = longitude;
+	});
+	nodeSocket.emit('info', nodeName);
+});
+
+function getCoordinates() {
+  nodeSocket.emit('coordinates', document.getElementById("modifyNodeStreet").value,
+document.getElementById("modifyNodeCity").value);
+}
+
+function confirmNodeDelete() {
+  if (document.getElementById("confirmNodeDeleteName").value === nodeName)
+    document.getElementById("submitNodeDelete").disabled = false;
+  else
+    document.getElementById("submitNodeDelete").disabled = true;
+}
+</script>
+
 {% if Node.icpe.sensors|length > 0 %}
 	{{ SensorScripts(Node.icpe.sensors) }}
 {% endif %}
