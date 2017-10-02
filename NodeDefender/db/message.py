@@ -15,8 +15,8 @@ def messages(user, limit = 10):
                 order_by(MessageModel.date.desc()).limit(int(limit)).all()
     
     groups = [group for group in user.groups]
-    nodes = [node for node in [group.nodes for group in groups][0]]
-    icpes = [node.icpe for node in nodes if node.icpe]
+    nodes = [node for node in group.nodes for group in groups]
+    icpes = [icpe for icpe in node.icpe for icpe in nodes]
 
     # Revert from list of models to a list of string
     groups = [group.name for group in groups]

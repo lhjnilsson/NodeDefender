@@ -1,5 +1,6 @@
-from NodeDefender.db.sql import SQL, GroupModel, UserModel
+from NodeDefender.db.sql import SQL, GroupModel, UserModel, LocationModel
 import NodeDefender
+from geopy.geocoders import Nominatim
 
 def get_sql(name):
     try:
@@ -7,11 +8,11 @@ def get_sql(name):
     except Exception:
         print("Cannot fetch group: ", name)
 
-def update_sql(name, **kwargs):
-    group = get_sql(name)
+def update_sql(group_name, **kwargs):
+    group = get_sql(group_name)
     if group is None:
         return False
-    for key, value in kwargs:
+    for key, value in kwargs.items():
         if key not in group.columns():
             continue
         setattr(group, key, value)
@@ -19,10 +20,10 @@ def update_sql(name, **kwargs):
     SQL.session.commit()
     return group
 
-def create_sql(name):
+def create_sql(name, email):
     if get_sql(name):
         return get_sql(name)
-    group = GroupModel(name)
+    group = GroupModel(name, email)
     SQL.session.add(group)
     SQL.session.commit()
     return group
@@ -46,11 +47,11 @@ def list(user_mail = None):
         return [group for group in GroupModel.query.all()]
     return [group for group in user.groups]
 
-def create(name):
-    return create_sql(name)
+def create(name, email = None):
+    return create_sql(name, email)
 
-def update(name, **kwargs):
-    return update_sql(name, **kwargs)
+def update(group_name, **kwargs):
+    return update_sql(group_name, **kwargs)
 
 def location(name, street, city):
     group = get_sql(name)

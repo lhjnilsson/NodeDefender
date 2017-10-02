@@ -7,11 +7,11 @@ from flask import url_for
 from geopy.geocoders import Nominatim
 
 @socketio.on('create', namespace='/group')
-def create(name, mail, description, location):
+def create(name, email, location):
     if NodeDefender.db.group.get(name):
         emit('error', ('Group exsists'), namespace='/general')
         return False
-    group = NodeDefender.db.group.create(name, mail, description)
+    group = NodeDefender.db.group.create(name, email)
     NodeDefender.db.group.location(name, **location)
     NodeDefender.mail.group.new_group(name)
     url = url_for('AdminView.AdminGroup', name = serializer.dumps(name))
@@ -26,7 +26,9 @@ def list(user = None):
 
 @socketio.on('delete', namespace='/group')
 def delete(name):
-    pass
+    NodeDefender.db.group.delete(name)
+    url = url_for('admin_view.admin_groups')
+    return emit('redirect', (url), namespace='/general')
 
 @socketio.on('coordinates', namespace='/group')
 def coordinates(street, city):
@@ -45,6 +47,18 @@ def info(name):
         return emit('info', group)
     else:
         print("Group: ", name)
+
+@socketio.on('update', namespace='/group')
+def update(name, kwargs):
+    group = NodeDefender.db.group.update(name, **kwargs)
+    url = url_for('admin_view.admin_group', name =
+                  serializer.dumps(group.name))
+    return emit('redirect', (url), namespace='/general')
+
+@socketio.on('updateLocation', namespace='/group')
+def update_location(name, address):
+    NodeDefender.db.group.location(name, **address)
+    return emit('reload', namespace='/general')
 
 @socketio.on('addUser', namespace='/group')
 def add_user(group_name, user_mail):

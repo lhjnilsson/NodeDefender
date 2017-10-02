@@ -81,6 +81,7 @@ grouptable = document.getElementById('grouptable');
 {% from "frontend/macros/info.html" import Field %}
 <div class="row">
 	{{Field('Name', Group.name)}}
+	{{Field('Email', Group.email)}}
 	{{Field('Description', Group.description)}}
 	{{Field('Street', Group.location.street)}}
 	{{Field('City', Group.location.city)}}
@@ -97,6 +98,7 @@ grouptable = document.getElementById('grouptable');
 <form class="form-horizontal">
 	<div class="row">
 		{{ FieldID('Name', '-', 'Groupname') }}
+		{{ FieldID('Email', '-', 'Groupemail') }}
 		{{ FieldID('Description', '-', 'Groupdesc') }}
 		{{ FieldID('Users', '-', 'Groupusers') }}
 		{{ FieldID('Nodes', '-', 'Groupnodes') }}
@@ -118,6 +120,7 @@ $(document).ready(function() {
 
 	groupSocket.on('info', function(group) {
 		$('#Groupname').text(group.name);
+		$('#Groupemail').text(group.email);
 		$('#Groupdesc').text(group.description);
 		$('#Groupusers').text(group.users.length);
 		$('#Groupnodes').text(group.nodes.length);

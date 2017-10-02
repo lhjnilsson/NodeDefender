@@ -44,15 +44,22 @@ class GroupModel(SQL.Model):
     messages = SQL.relationship('MessageModel', backref='group',
                                cascade='save-update, merge, delete')
 
-    def __init__(self, name, email, description):
+    def __init__(self, name, email = None, description = None):
         self.name = name
         self.email = email
         self.description = str(description)
         self.date_created = datetime.now()
     
+    def columns(self):
+        return ['name', 'email', 'description']
+
     def to_json(self):
+        if self.location:
+            location = self.location.to_json()
+        else:
+            location = None
         return {'name' : self.name, 'email' : self.email, 'created' :
                 str(self.date_created), 'description' : self.description,
                 'users' : [user.email for user in self.users],
                 'nodes' : [node.name for node in self.nodes],
-                'location' : self.location.to_json()}
+                'location' : location}

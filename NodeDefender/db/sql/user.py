@@ -73,19 +73,19 @@ class UserModel(SQL.Model):
             return False
 
     def set_role(self, role):
-        if role.lower() is 'observer':
+        if role.lower() == 'observer':
             self.technician = False
             self.administrator = False
             self.superuser = False
-        elif role.lower() is 'technician':
+        elif role.lower() == 'technician':
             self.technician = True
             self.administrator = False
             self.superuser = False
-        elif role.lower() is 'administrator':
+        elif role.lower() == 'administrator':
             self.technician = True
             self.administrator = True
             self.observer = False
-        elif role.lower() is 'superuser':
+        elif role.lower() == 'superuser':
             self.technician = True
             self.administrator = True
             self.superuser = True

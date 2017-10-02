@@ -91,7 +91,7 @@ $(document).ready(function() {
 		var mail = $('#submitMail').text();
 		var street = $('#submitStreet').text();
 		var city = $('#submitCity').text();
-		groupSocket.emit('create', {'name' : name, 'mail' : mail, 'street' : street, 'city' : city, 'description' : ''});
+		groupSocket.emit('create', name, mail, {'street' : street, 'city' : city});
 		return true;
 	}
 

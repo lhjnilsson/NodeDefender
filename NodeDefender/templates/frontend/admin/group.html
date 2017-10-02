@@ -97,11 +97,13 @@
           <li><a data-toggle="pill" href="#modifyGroupLocation">Location</a></li>
           <li><a data-toggle="pill" href="#modifyGroupDelete">Delete</a></li>
         </ul>
+				<br>
         <div class="tab-content">
           <div id="modifyGroupGeneral" class="tab-pane fade in active">
             <div class="row">
               {{ render_manual("Name", "modifyGroupName") }}
-              {{ render_manual("Description", "modifyGroupDescription") }}
+							{{ render_manual("Email", "modifyGroupEmail") }}
+							{{ render_manual("Description", "modifyGroupDescription") }}
             </div>
           </div>
           <div id="modifyGroupLocation" class="tab-pane fade">
@@ -124,6 +126,13 @@
           </div>
           <div id="modifyGroupDelete" class="tab-pane fade">
             <div class="row">
+							<div class="col-sm-10">
+								<i>By deleting this group you remove all the history associated with it.
+								Please confirm the action by entering the name of the group in the text- box below</i>
+							</div>
+						</div>
+						<div class="row">
+							<br>
               <div class="form-group">
               	<label class="control-label col-sm-2">Group Name:</label>
               	<div class="col-sm-10">
@@ -171,11 +180,31 @@ $("a[href='#modifyGroupDelete']").on('show.bs.tab', function(e) {
 });
 groupSocket.on("info", function(group) {
   document.getElementById("modifyGroupName").value = group.name;
-  document.getElementById("modifyGroupDescription").value = group.description;
-  document.getElementById("modifyGroupStreet").value = group.location.street;
-  document.getElementById("modifyGroupCity").value = group.location.city;
-  document.getElementById("modifyGroupLatitude").value = group.location.latitude;
-  document.getElementById("modifyGroupLongitude").value = group.location.longitude;
+  document.getElementById("modifyGroupEmail").value = group.email;
+	document.getElementById("modifyGroupDescription").value = group.description;
+	if (group.location) {
+		document.getElementById("modifyGroupStreet").value = group.location.street;
+		document.getElementById("modifyGroupCity").value = group.location.city;
+		document.getElementById("modifyGroupLatitude").value = group.location.latitude;
+		document.getElementById("modifyGroupLongitude").value = group.location.longitude;
+	}
+});
+
+document.getElementById("submitGeneral").addEventListener("click", function() {
+ name = document.getElementById("modifyGroupName").value;
+ email = document.getElementById("modifyGroupEmail").value;
+ description = document.getElementById("modifyGroupDescription").value;
+ groupSocket.emit("update", groupName, {'name' : name, 'email' : email, 'description' : description});
+});
+
+document.getElementById("submitLocation").addEventListener("click", function() {
+ street = document.getElementById("modifyGroupStreet").value;
+ city = document.getElementById("modifyGroupCity").value;
+ groupSocket.emit("updateLocation", groupName, {'street' : street, 'city' : city});
+});
+
+document.getElementById("submitDelete").addEventListener("click", function() {
+ groupSocket.emit("delete", groupName);
 });
 
 groupSocket.on('coordinates', function(latitude, longitude) {
@@ -195,8 +224,6 @@ function confirmDelete() {
     document.getElementById("submitDelete").disabled = true;
 }
 
-
 groupSocket.emit("info", groupName);
 </script>
-
 {% endblock %}
