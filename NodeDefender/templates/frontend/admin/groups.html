@@ -78,7 +78,7 @@ $(document).ready(function() {
 			return false;
 		}
 		if ($('#groupCity').val() != '') {
-			nodeSocket.emit('coordinates', {'street' : $('#groupStreet').val(), 'city' : $('#groupCity').val()});
+			groupSocket.emit('coordinates', $('#groupStreet').val(), $('#groupCity').val());
 		}
 		$('#submitName').text($('#groupName').val());
 		$('#submitMail').text($('#groupMail').val());
@@ -97,9 +97,9 @@ $(document).ready(function() {
 
 	initMultistep(groupInfo, groupSubmit);
 
-	nodeSocket.on('coordinates', function(coordinates) {
-		$('#submitLatitude').text(coordinates.latitude);
-		$('#submitLongitude').text(coordinates.longitude);
+	groupSocket.on('coordinates', function(latitude, longitude) {
+		$('#submitLatitude').text(latitude);
+		$('#submitLongitude').text(longitude);
 	});
 });
 	</script>

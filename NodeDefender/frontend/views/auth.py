@@ -59,7 +59,7 @@ def register(token):
         user.confirmed_at = datetime.now()
         NodeDefender.db.user.save_sql(user)
         NodeDefender.db.user.set_password(user.email, register_form.password.data)
-        NodeDefender.mail.user.confirm_user.delay(user.email)
+        NodeDefender.mail.user.confirm_user(user.email)
         flash('Register Successful, please login', 'success')
     else:
         flash('Error doing register, please try again', 'error')

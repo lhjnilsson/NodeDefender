@@ -55,8 +55,8 @@ def create(host, port, group):
     except AttributeError as e:
         emit('error', e, namespace='/general')
     NodeDefender.db.group.add_mqtt(group, host, port)
-    NodeDefender.new_mqtt.delay(group.name, mqtt.host, mqtt.port)
-    LoadMQTT([mqtt])
+    NodeDefender.mail.group.new_mqtt(group, host, port)
+    NodeDefender.mqtt.connection.add(host, port)
     emit('reload', namespace='/general')
     return True
 

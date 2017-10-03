@@ -92,6 +92,28 @@ def remove_user(group_name, user_mail):
     SQL.session.commit()
     return group
 
+def add_mqtt(group_name, mqtt_host, mqtt_port):
+    group = get_sql(group_name)
+    mqtt = NodeDefender.db.mqtt.get_sql(mqtt_host, mqtt_port)
+    if mqtt is None or group is None:
+        return False
+
+    group.mqtts.append(mqtt)
+    SQL.session.add(group)
+    SQL.session.commit()
+    return group
+
+def remove_mqtt(group_name, mqtt_host, mqtt_port):
+    group = get_sql(group_name)
+    mqtt = NodeDefender.db.mqtt.get(mqtt_host, mqtt_port)
+    if mqtt is None or group is None:
+        return False
+
+    group.mqtts.remove(mqtt)
+    SQL.session.add(group)
+    SQL.session.commit()
+    return group
+
 def add_node(group_name, node_name):
     group = get_sql(group_name)
     node = NodeDefender.db.user.get(node_name)

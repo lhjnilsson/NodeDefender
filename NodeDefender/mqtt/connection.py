@@ -3,7 +3,7 @@ from threading import Thread
 from NodeDefender.mqtt import logger, message
 import NodeDefender
 
-def add(host, port = 8883, username = None, password = None):
+def add(host, port = 1883, username = None, password = None):
     if NodeDefender.db.mqtt.online(host, port):
         return
     mqtt = _MQTT()
