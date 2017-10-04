@@ -42,11 +42,15 @@ def sensor_info(icpe, sensor_id, **payload):
     NodeDefender.db.redis.sensor.load(sensor)
     return NodeDefender.db.sensor.get(icpe, sensor_id)
 
-def event(mac_address, sensor_id, CommandClass, **payload):
-    if CommandClass == 'info':
+def event(mac_address, sensor_id, command_class, **payload):
+    if command_class == 'info':
         return True
-    data = NodeDefender.icpe.zwave.event(mac_address, sensor_id, \
-                                         CommandClass, **payload)
+    try:
+        data = NodeDefender.icpe.zwave.event(mac_address, sensor_id, \
+                                         command_class, **payload)
+    except AttributeError:
+        NodeDefender.icpe.logger.warning("Got unsuported Command Class:{!s}"\
+                                         .format(command_class))
     if not data:
         return False
 

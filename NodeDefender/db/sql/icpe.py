@@ -80,6 +80,7 @@ class SensorModel(SQL.Model):
     
     name = SQL.Column(SQL.String(64))
     sensor_id = SQL.Column(SQL.String(4))
+    date_created = SQL.Column(SQL.DateTime)
 
     vendor_id = SQL.Column(SQL.String(16))
     product_type = SQL.Column(SQL.String(16))
@@ -107,6 +108,7 @@ class SensorModel(SQL.Model):
 
     def __init__(self, sensor_id, sensorinfo = None):
         self.sensor_id = str(sensor_id)
+        self.date_created = datetime.now()
         if sensorinfo:
             for key, value in sensorinfo.items():
                 print(key.lower(), value)
@@ -142,6 +144,9 @@ class CommandClassModel(SQL.Model):
         self.number = str(number)[:2]
         self.name = name
         self.supported = False
+
+    def commandclasstypes(self):
+        return [ctype.number for ctype in self.types]
 
     def to_json(self):
         return {'name' : self.name, 'number' : self.number, 'webField' :

@@ -93,7 +93,7 @@ def load(node = None):
         cached = get(icpe.mac_address)
         if not cached:
             continue
-        if float(cached['lastUpdated']) - current_time > 1200:
+        if float(cached['date_updated']) - current_time > 1200:
             mark_offline(cached)
         NodeDefender.mqtt.command.icpe.zwave_info(icpe.mac_address)
         NodeDefender.mqtt.command.icpe.system_info(icpe.mac_address)

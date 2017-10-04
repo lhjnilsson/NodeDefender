@@ -7,9 +7,11 @@ def qry(topic, payload):
 def sup(topic, payload):
     if type(payload) is not dict:
         return True
-    return NodeDefender.icpe.sensor.\
+    
+    types = payload['typelist'].split(',')
+    return NodeDefender.icpe.sensor.commandclass.\
             commandclass_types(topic['mac_address'], topic['node'],
-                               topic['commandClass'], **payload)
+                               topic['commandClass'], *types)
 
 def evtsup(topic, payload):
     return True # Add support later
