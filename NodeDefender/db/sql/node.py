@@ -35,7 +35,9 @@ class NodeModel(SQL.Model):
         self.name = name
         self.date_created = datetime.now()
 
-
+    def columns(self):
+        return ['name', 'description', 'notesticky']
+    
     def to_json(self):
         if self.location:
             location = self.location.to_json()

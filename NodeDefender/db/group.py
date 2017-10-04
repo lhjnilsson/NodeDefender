@@ -53,16 +53,22 @@ def create(name, email = None):
 def update(group_name, **kwargs):
     return update_sql(group_name, **kwargs)
 
-def location(name, street, city):
+def location(name, street, city, latitude = None, longitude = None):
     group = get_sql(name)
     if group is None:
         return False
-    geo = Nominatim()
-    coord = geo.geocode(street + ' ' + city, timeout = 10)
-    if coord is None:
-        return False
-    group.location = LocationModel(street, city, coord.latitude,
-                                   coord.longitude)
+    
+    if not latitude and not longitude:
+        geo = Nominatim()
+        coord = geo.geocode(street + ' ' + city, timeout = 10)
+        if coord:
+            latitude = coord.latitude
+            longitude = coord.longitude
+        else:
+            longitude = 0.0
+            longitude = 0.0
+
+    group.location = LocationModel(street, city, latitude, longitude)
     SQL.session.add(group)
     SQL.session.commit()
     return group
@@ -116,7 +122,7 @@ def remove_mqtt(group_name, mqtt_host, mqtt_port):
 
 def add_node(group_name, node_name):
     group = get_sql(group_name)
-    node = NodeDefender.db.user.get(node_name)
+    node = NodeDefender.db.node.get(node_name)
     if node is None or group is None:
         return False
 

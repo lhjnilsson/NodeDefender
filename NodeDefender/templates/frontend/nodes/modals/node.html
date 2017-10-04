@@ -15,46 +15,11 @@
 				</div>
 			</div>
 			<div class="modal-footer">
-				{% if current_user.has_role('administrator') %}
-				<a href="#" data-dismiss="modal" data-toggle="modal" data-target="#modifyInfo">
-					<button type="button" class="btn btn-primary">Modify</button>
-				</a>
-				{% endif %}
 				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 			</div>
 		</div>
 	</div>
 </div>
-<div class="modal fade" id="modifyInfo" role="dialog">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal">&times;</button>
-				<h2 class="modal-title">{{node.name}}</h2>
-			</div>
-			<div class="modal-body">
-				<div class="row">
-					{{ render_manual("Name", "modifyNodeName") }}
-				</div>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-				<button type="button" class="btn btn-success" id="submitNodeModify">Update</button>
-			</div>
-		</div>
-	</div>
-</div>
-	<script>
-nodeName = "{{Node.name}}";
-$(document).ready(function() {
-	document.getElementById('modifyNodeName').value = "{{Node.name}}";
-	document.getElementById('submitNodeModify').addEventListener("click", function() {
-		newName = document.getElementById('modifyNodeName').value;
-		nodeSocket.emit('updateGeneral', {'node' : nodeName, 'newName' : newName});
-	});
-});
-
-	</script>
 {% endmacro %}
 
 {% macro ModalGrouplist(grouplist) %}
@@ -75,58 +40,4 @@ $(document).ready(function() {
 		</div>
 	</div>
 </div>
-{% endmacro %}
-
-{% macro ModifyLocation(nodename) %}
-{% from "frontend/macros/form.html" import render_manual %}
-<div class="modal fade" id="modifyLocation" role="dialog">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal">&times;</button>
-				<h2 class="modal-title">Modify Location</h2>
-			</div>
-			<div class="modal-body">
-				<form class="form-horizontal">
-					{{ render_manual("Street", "formstreet") }}
-					{{ render_manual("City", "formcity") }}
-					{{ render_manual("Latitude", "formlatitude") }}
-					{{ render_manual("Longitude", "formlongitude") }}
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="location-coordinates btn btn-info">Coordinates</button>
-				<button type="button" class="location-submit btn btn-primary">Update</button>
-			</div>
-		</div>
-	</div>
-</div>
-<script>
-$(document).ready(function() {
-	nodeName = "{{nodename}}";
-	locCoords = $(".location-coordinates");
-	locSubmit = $(".location-submit");
-
-	nodeSocket.on('location', function(loc) {
-		$("#formstreet").val(loc.street);
-		$("#formcity").val(loc.city);
-		$("#formlatitude").val(loc.latitude);
-		$("#formlongitude").val(loc.longitude);
-	});
-
-	nodeSocket.on('coordinates', function(coordinates) {
-		$("#formlatitude").val(coordinates.latitude);
-		$("#formlongitude").val(coordinates.longitude);
-		return true;
-	});
-
-	locCoords.click(function() {
-		nodeSocket.emit('coordinates', {'city' : $("#formcity").val(), 'street' : $("#formstreet").val()})
-	});
-
-	locSubmit.click(function() {
-		nodeSocket.emit('updateLocation', nodeName, {'city' : $("#formcity").val(), 'street' : $("#formstreet").val(), 'latitude' : $("#formlatitude").val(), 'longitude' : $("#formlongitude").val()})
-	});
-	nodeSocket.emit('location', nodeName);
-});
-</script>
 {% endmacro %}

@@ -5,11 +5,11 @@ from geopy.geocoders import Nominatim
 def get_sql(name):
     return NodeModel.query.filter_by(name = name).first()
 
-def update_sql(name, **kwargs):
-    node = get_sql(name)
+def update_sql(original_name, **kwargs):
+    node = get_sql(original_name)
     if node is None:
         return False
-    for key, value in kwargs:
+    for key, value in kwargs.items():
         if key not in node.columns():
             continue
         setattr(node, key, value)
@@ -43,19 +43,31 @@ def list(*groups):
     return SQL.session.query(NodeModel).join(NodeModel.groups).\
             filter(GroupModel.name.in_(groups)).all()
 
+def unassigned():
+    return SQL.session.query(NodeModel).filter(NodeModel.groups == None).all()
+
 def create(name):
     return create_sql(name)
 
-def set_location(name, street, city):
+def update(original_name, **kwargs):
+    return update_sql(original_name, **kwargs)
+
+def location(name, street, city, latitude = None, longitude = None):
     node = get_sql(name)
     if node is None:
         return False
-    geo = Nominatim()
-    coord = geo.geocode(street + ' ' + city, timeout = 10)
-    if coord is None:
-        return False
-    node.location = LocationModel(street, city, coord.latitude,
-                                   coord.longitude)
+
+    if not latitude and not longitude:
+        geo = Nominatim()
+        coord = geo.geocode(street + ' ' + city, timeout = 10)
+        if coord:
+            latitude = coord.latitude
+            longitude = coord.longitude
+        else:
+            latitude = 0.0
+            longitude = 0.0
+    
+    node.location = LocationModel(street, city, latitude, longitude)
     SQL.session.add(node)
     SQL.session.commit()
     return node
