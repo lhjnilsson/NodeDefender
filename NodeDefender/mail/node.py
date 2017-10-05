@@ -1,6 +1,6 @@
 from flask_mail import Message
 from flask import render_template, url_for
-import Nodedefender
+import NodeDefender
 from NodeDefender import serializer
 from NodeDefender.mail import mail
 

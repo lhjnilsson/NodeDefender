@@ -9,16 +9,16 @@ from geopy.geocoders import Nominatim
 def create(name, group, location):
     NodeDefender.db.node.create(name)
     NodeDefender.db.group.add_node(group, name)
-    NodeDefender.db.node.set_location(name, **location)
+    NodeDefender.db.node.location(name, **location)
     NodeDefender.mail.node.new_node(name)
-    url = url_for('NodeView.NodesNode', name = serializer.dumps(name))
+    url = url_for('node_view.nodes_node', name = serializer.dumps(name))
     emit('redirect', (url), namespace='/general')
     return True
 
 @socketio.on('delete', namespace='/node')
 def delete(name):
     NodeDefender.db.node.delete(name)
-    url = url_for('NodeView.NodesNodes')
+    url = url_for('node_view.nodes_list')
     emit('redirect', (url), namespace='/general')
     return True
 
@@ -57,22 +57,16 @@ def location(name):
     return emit('location', NodeDefender.db.node.get(name).location.to_json())
 
 @socketio.on('update', namespace='/node')
-def update_general(name, kwargs):
-    NodeDefender.db.node.update(name, **kwargs)
-    url = url_for('NodeView.NodesNode', name = serializer.dumps(node.name))
+def update(name, kwargs):
+    node = NodeDefender.db.node.update(name, **kwargs)
+    url = url_for('node_view.nodes_node', name = serializer.dumps(node.name))
     emit('redirect', (url), namespace='/general')
     return True
 
 @socketio.on('updateLocation', namespace='/node')
 def update_location(name, location):
-    node = NodeDefender.db.node.get_sql(name)
-    node.location.street = location['street']
-    node.location.city = location['city']
-    node.location.latitude = location['latitude']
-    node.location.longitude = location['longitude']
-    NodeDefender.db.node.save_sql(node)
-    emit('reload', namespace='/general')
-    return True
+    NodeDefender.db.node.location(name, **location)
+    return emit('reload', namespace='/general')
 
 @socketio.on('coordinates', namespace='/node')
 def coordinates(street, city):
@@ -81,5 +75,5 @@ def coordinates(street, city):
     if geocords:
         emit('coordinates', (geocords.latitude, geocords.longitude))
     else:
-        emit("Error", "Coordinated no found", namespace='/general')
+        emit("warning", "Coordinated no found", namespace='/general')
     return True

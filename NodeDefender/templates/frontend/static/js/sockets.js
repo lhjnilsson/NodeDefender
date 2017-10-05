@@ -22,6 +22,10 @@ generalSocket.on('error', function(msg) {
 	toastr.error(msg);
 });
 
+generalSocket.on('warning', function(msg) {
+	toastr.warning(msg);
+});
+
 generalSocket.on('info', function(msg) {
 	toastr.success(msg);
 })

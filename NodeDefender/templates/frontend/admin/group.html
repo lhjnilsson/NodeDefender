@@ -200,7 +200,9 @@ document.getElementById("submitGeneral").addEventListener("click", function() {
 document.getElementById("submitLocation").addEventListener("click", function() {
  street = document.getElementById("modifyGroupStreet").value;
  city = document.getElementById("modifyGroupCity").value;
- groupSocket.emit("updateLocation", groupName, {'street' : street, 'city' : city});
+ latitude = document.getElementById("modifyGroupLatitude").value;
+ longitude = document.getElementById("modifyGroupLongitude").value;
+ groupSocket.emit("updateLocation", groupName, {'street' : street, 'city' : city, 'latitude' : latitude, 'longitude' : longitude});
 });
 
 document.getElementById("submitDelete").addEventListener("click", function() {

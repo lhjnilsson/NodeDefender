@@ -288,7 +288,7 @@ eventSocket.on('ZWaveEvent', function(event) {
 	</div>
 	{% endif %}
 </div>
-{% from "frontend/nodes/modals/node.html" import ModalGrouplist, ModifyLocation with context %}
+{% from "frontend/nodes/modals/node.html" import ModalGrouplist with context %}
 {% from "frontend/nodes/modals/node.html" import NodeInformation with context %}
 {% from "frontend/nodes/modals/icpe.html" import iCPEModal %}
 {% from "frontend/nodes/modals/sensor.html" import SensorModal %}
@@ -323,10 +323,6 @@ function iCPEModal(iCPE) {
 </script>
 {{ ModalGrouplist(Node.groups) }}
 {{ NodeInformation(Node) }}
-
-{% if current_user.has_role("technician") %}
-{{ ModifyLocation(Node.name) }}
-{% endif %}
 
 <div class="modal fade" id="nodeModifyModal" role="dialog">
 	<div class="modal-dialog">
@@ -439,7 +435,9 @@ $(document).ready(function() {
 	document.getElementById("submitNodeLocation").addEventListener("click", function() {
 	 street = document.getElementById("modifyNodeStreet").value;
 	 city = document.getElementById("modifyNodeCity").value;
-	 nodeSocket.emit("updateLocation", nodeName, {'street' : street, 'city' : city});
+	 latitude = document.getElementById("modifyNodeLatitude").value;
+	 longitude = document.getElementById("modifyNodeLongitude").value;
+	 nodeSocket.emit("updateLocation", nodeName, {'street' : street, 'city' : city, 'latitude' : latitude, 'longitude' : longitude});
 	});
 
 	document.getElementById("submitNodeDelete").addEventListener("click", function() {

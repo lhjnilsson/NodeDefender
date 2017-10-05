@@ -10,8 +10,10 @@ import NodeDefender
 @login_required
 def nodes_list():
     if request.method == 'GET':
-        groups = [group.name for group in current_user.groups]
-        nodes = NodeDefender.db.node.list(*groups)
+        groups = NodeDefender.db.group.list(current_user.email)
+        nodes = NodeDefender.db.node.list(*[group.name for group in groups])
+        if current_user.superuser:
+            nodes = nodes + NodeDefender.db.node.unassigned()
         return render_template('frontend/nodes/list.html', nodes = nodes)
     else:
         CreateForm.validate_on_submit()

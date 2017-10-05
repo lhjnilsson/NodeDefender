@@ -43,9 +43,16 @@
 			<div class="modal-body">
 				<div class="multiform-step">
 					<div class="row">
-						{{ render_manual('Name', 'nodeName') }}
-						{{ render_manual('Street', 'nodeStreet') }}
-						{{ render_manual('City', 'nodeCity') }}
+						{{ render_manual('Name', 'createNodeName') }}
+						{{ render_manual('Street', 'createNodeStreet') }}
+            <div class="form-group">
+              <label class="control-label col-sm-2">City:</label>
+              <div class="col-sm-10">
+                <input type="string" class="form-control" id="createNodeCity" onblur="getCoordinates()">
+              </div>
+            </div>
+            {{ FieldID('Latitude', '0', 'createNodeLatitude') }}
+            {{ FieldID('Longitude', '0', 'createNodeLongitude') }}
 					</div>
 				</div>
 				<div class="multiform-step">
@@ -73,23 +80,22 @@
 <script>
 $(document).ready(function() {
 	var basic = function() {
-		if ($('#nodeName').val() == '') {
+		if ($('#createNodeName').val() == '') {
 			toastr.error('Please Enter Name');
 			return false;
 		}
-		if ($('#nodeStreet').val() == '') {
+		if ($('#createNodeStreet').val() == '') {
 			toastr.error('Please Enter Street');
 			return false;
 		}
-		if ($('#nodeCity').val() == '') {
+		if ($('#createNodeCity').val() == '') {
 			toastr.error('Please enter City');
 			return false;
 		}
 
-		$('#SubmitName').text($('#nodeName').val());
-		$('#SubmitStreet').text($('#nodeStreet').val());
-		$('#SubmitCity').text($('#nodeCity').val());
-		nodeSocket.emit('coordinates', {'street' : $('#SubmitStreet').text(), 'city' : $('#SubmitCity').text()})
+		$('#SubmitName').text($('#createNodeName').val());
+		$('#SubmitStreet').text($('#createNodeStreet').val());
+		$('#SubmitCity').text($('#createNodeCity').val());
 		return true;
 	}
 	var group = function() {
@@ -112,15 +118,20 @@ $(document).ready(function() {
 	}
 	initMultistep(basic, group, submit);
 
-	nodeSocket.on('coordinates', function(coordinates) {
-		$('#SubmitLatitude').text(coordinates.latitude);
-		$('#SubmitLongitude').text(coordinates.longitude);
-	});
-
   {% if current_user.has_role("technician") %}
   $('#createNode').prepend('<a style="color: #FFFFFF;" href="#" data-toggle="modal" data-target="#CreateNode"><i class="fa fa-plus" aria-hidden="true"></i></a>');
   {% endif %}
 
+});
+function getCoordinates() {
+  nodeSocket.emit('coordinates', document.getElementById("createNodeStreet").value,
+document.getElementById("createNodeCity").value);
+}
+nodeSocket.on('coordinates', function(latitude, longitude) {
+  document.getElementById('createNodeLatitude').innerHTML = latitude;
+  document.getElementById('createNodeLongitude').innerHTML = longitude;
+  document.getElementById('SubmitLatitude').innerHTML = latitude;
+  document.getElementById('SubmitLongitude').innerHTML = longitude;
 });
 </script>
 <script src="/static/js/multistep.js"></script>
