@@ -5,6 +5,54 @@
 
 {% macro SensorScripts(sensors) %}
 <script>
+var socket = io.connect('//' + document.domain + ':' + location.port + '/nodedata');
+var eventSocket = io.connect('//' + document.domain + ':' + location.port + '/icpe' + '{{mac_address}}');
+
+function switchChange(box, mac_address, sensor_id, commandclass, classtype) {
+	if (box.checked) {
+		socket.emit('ZWaveSet', {'mac_address' : mac_address, 'sensor_id' : sensor_id, 'commandclass' : commandclass, 'value' : '1'});
+	} else {
+		socket.emit('ZWaveSet', {'mac_address' : mac_address, 'sensor_id' : sensor_id, 'commandclass' : commandclass, 'value' : '0'});
+	}
+}
+
+function switchEvent(field, enabled) {
+	if (enabled == "True") {
+		field.checked = true;
+	} else {
+		field.checked = false;
+	}
+}
+
+function boxEvent(box, enabled) {
+	if(enabled == "True" && !(box.classList.contains("lightboxlight")))
+			box.className += " lightboxlight";
+	else {
+		if(box.classList.contains("lightboxlight"))
+			 box.classList.remove("lightboxlight");
+	}
+}
+
+function valueEvent(box, value) {
+	$(box).text(value);
+}
+
+function eventToastr(event) {
+};
+
+eventSocket.on('ZWaveEvent', function(event) {
+	f = document.getElementById(event.sensor+event.name+"Value");
+	console.log(event);
+	if (event.type == 'switch') {
+		switchEvent(f, event.state);
+	} else if (event.type == 'box') {
+		boxEvent(f, event.state);
+	} else if (event.type == 'value') {
+		valueEvent(f, event.value);
+	}
+	eventToastr(event);
+});
+
 function createFieldBox(field) {
 	box = document.createElement("LABEL");
 	box.setAttribute("class", "lightbox");

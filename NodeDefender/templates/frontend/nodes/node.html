@@ -1,56 +1,5 @@
 {% extends "frontend/base.html" %}
 {% block content %}
-<script>
-namespace = '/nodedata';
-var socket = io.connect('//' + document.domain + ':' + location.port + namespace);
-var eventSocket = io.connect('//' + document.domain + ':' + location.port + '/icpe' + '{{mac_address}}');
-
-function switchChange(box, mac_address, sensor_id, commandclass, classtype) {
-	if (box.checked) {
-		socket.emit('ZWaveSet', {'mac_address' : mac_address, 'sensor_id' : sensor_id, 'commandclass' : commandclass, 'value' : '1'});
-	} else {
-		socket.emit('ZWaveSet', {'mac_address' : mac_address, 'sensor_id' : sensor_id, 'commandclass' : commandclass, 'value' : '0'});
-	}
-}
-
-function switchEvent(field, enabled) {
-	if (enabled == "True") {
-		field.checked = true;
-	} else {
-		field.checked = false;
-	}
-}
-
-function boxEvent(box, enabled) {
-	if(enabled == "True" && !(box.classList.contains("lightboxlight")))
-			box.className += " lightboxlight";
-	else {
-		if(box.classList.contains("lightboxlight"))
-			 box.classList.remove("lightboxlight");
-	}
-}
-
-function valueEvent(box, value) {
-	$(box).text(value);
-}
-
-function eventToastr(event) {
-};
-
-eventSocket.on('ZWaveEvent', function(event) {
-	f = document.getElementById(event.sensor+event.name+"Value");
-	console.log(event);
-	if (event.type == 'switch') {
-		switchEvent(f, event.state);
-	} else if (event.type == 'box') {
-		boxEvent(f, event.state);
-	} else if (event.type == 'value') {
-		valueEvent(f, event.value);
-	}
-	eventToastr(event);
-});
-</script>
-
 <div class="row">
 	<div class="col-lg-12">
 		<h1 class="page-header">
@@ -128,6 +77,9 @@ eventSocket.on('ZWaveEvent', function(event) {
 			<div class="panel-heading">
 				iCPE Connections
 				<div class="floatRight" id="iCPEModals">
+					{% if Node.icpe %}
+						<a style="color: #FFFFFF; margin: 0 5px;" href="#" onclick="iCPEModal(icpeMac)"><i class="fa fa-info" aria-hidden="true"></i></a>
+					{% endif %}
 				</div>
 			</div>
 			<div class="panel-body" style="height: 200px;">
@@ -300,7 +252,6 @@ $(document).ready(function() {
 icpeMac = "{{Node.icpe.mac_address}}";
 $('#general').prepend('<a style="color: #FFFFFF; margin: 0 5px;" href="#" data-toggle="modal" data-target="#groupList"><i class="fa fa-users" aria-hidden="true"></i></a>');
 $('#general').prepend('<a style="color: #FFFFFF; margin: 0 5px;" href="#" data-toggle="modal" data-target="#nodeInfo"><i class="fa fa-info" aria-hidden="true"></i></a>');
-$('#iCPEModals').prepend('<a style="color: #FFFFFF; margin: 0 5px;" href="#" onclick="iCPEModal(icpeMac)"><i class="fa fa-info" aria-hidden="true"></i></a>');
 
 {% if current_user.has_role("administrator") %}
 $('#general').prepend('<a style="color: #FFFFFF; margin: 0 5px;" href="#" data-toggle="modal" data-target="#nodeModifyModal"><i class="fa fa-pencil" aria-hidden="true"></i></a>');

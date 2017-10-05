@@ -30,7 +30,12 @@ L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
 
 function addMarker(node) {
 	var marker = L.marker([node.location.latitude, node.location.longitude]).addTo(map);
-	marker.bindPopup(node.name);
+	marker.bindPopup("<a href="+node.url+"><strong>"+node.name+'</strong></a>\
+	<p>0<i class="fa fa-thermometer-full float-right" aria-hidden="true"></i><br>\
+	0<i class="fa fa-plug float-right" aria-hidden="true"></i></p>');
+	marker.on('click', function() {
+		console.log("Clicked!!" + node.name);
+	})
 	if (initialized === false) {
 		map.setView(new L.LatLng(node.location.latitude, node.location.longitude), 10);
 		initialized = true;
@@ -46,7 +51,7 @@ nodeSocket.on("list", function(nodes) {
 {% else %}
 	{% for node in nodes %}
 	var marker = L.marker([{{node.location.latitude}}, {{node.location.longitude}}]).addTo(map);
-		marker.bindPopup("{{node.name}}");
+		marker.bindPopup("<strong>{{node.name}}</strong><p>Last Event:<br>Heat</p>");
 {% endfor %}
 {% endif %}
 </script>

@@ -20,6 +20,10 @@ body {
 	right: 15px;
 }
 
+.float-right {
+  float: right;
+}
+
 h3 {
 	margin-left: 1vw;
 }
