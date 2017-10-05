@@ -2,7 +2,7 @@ icons = {True : 'fa fa-toggle-on', False : 'fa fa-toggle-off'}
 
 info = {'number' : '25', 'name' : 'bswitch', 'types' : False}
 
-fields = {'type' : bool, 'readonly' : False, 'name' : 'Switch'}
+fields = {'type' : "bool", 'readonly' : False, 'name' : 'Switch'}
  
 def icon(value):
     return icons[eval(value)]

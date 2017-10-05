@@ -66,7 +66,7 @@ def create(mac_address, mqttsrc):
         return False
     NodeDefender.mqtt.command.icpe.zwave_info(mac_address)
     NodeDefender.mqtt.command.icpe.system_info(mac_address)
-    return get_redis(mac_address)
+    return get(mac_address)
 
 def update(mac_address, **data):
     update_sql(mac_address, **data)

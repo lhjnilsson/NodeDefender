@@ -1,4 +1,5 @@
 {% macro SelectiCPE(user) %}
+{% from "frontend/macros/info.html" import FieldID %}
 <br>
 <div class="form-group">
 	<label for="sell">Unassigned iCPEs: </label>
@@ -9,30 +10,11 @@
 <form class="form-horizontal">
 	<div class="row">
 		<div id="unassigned">
-			<div class="col-md-6">
-				<p><strong>MAC</strong></p>
-			</div>
-			<div class="col-md-6">
-				<p id="addicpemac">None</p>
-			</div>
-			<div class="col-md-6">
-				<p><strong>Sensors</strong></p>
-			</div>
-			<div class="col-md-6">
-				<p id="icpesensors">None</p>
-			</div>
-			<div class="col-md-6">
-				<p><strong>Created at</strong></p>
-			</div>
-			<div class="col-md-6">
-				<p id="icpecreated">None</p>
-			</div>
-			<div class="col-md-6">
-				<p><strong>MQTT Connection</strong></p>
-			</div>
-			<div class="col-md-6">
-				<p id="icpemqtt">None</p>
-			</div>
+			{{ FieldID("MAC Address", "", "selectiCPEMacAddress") }}
+			{{ FieldID("IP Address", "", "selectiCPEIpAddress") }}
+			{{ FieldID("Serial Number", "", "selectiCPESerialNumber") }}
+			{{ FieldID("MQTT Connection", "", "selectiCPEMQTT") }}
+			{{ FieldID("Created", "", "selectiCPECreated") }}
 		</div>
 	</div>
 </form>
@@ -46,12 +28,13 @@ $(document).ready(function() {
 		}
 	});
 
-	iCPESocket.on('get', function(icpe) {
+	iCPESocket.on('info', function(icpe) {
 		console.log(icpe);
-		$('#addicpemac').text(icpe.mac_address);
-		$('#icpesensors').text(icpe.sensors);
-		$('#icpecreated').text(moment.unix(icpe.createdAt, "YYYYMMDD, hh:mm:ss"));
-		$('#icpemqtt').text(icpe.mqtt);
+		document.getElementById('selectiCPEMacAddress').innerHTML = icpe.mac_address;
+		document.getElementById('selectiCPEIpAddress').innerHTML = icpe.ip_address;
+		document.getElementById('selectiCPESerialNumber').innerHTML = icpe.serial_number;
+		document.getElementById('selectiCPEMQTT').innerHTML = icpe.mqtt;
+		document.getElementById('selectiCPECreated').innerHTML = moment.unix(icpe.date_created, "YYYMMMDDD, hh:mm:ss");
 	});
 
 	$('#UnassignedList').change(function() {
@@ -64,7 +47,7 @@ $(document).ready(function() {
 			$("#manual").hide();
 			$("#unassigned").show();
 			$("#manualMAC").text('');
-			iCPESocket.emit('get', mac_address);
+			iCPESocket.emit('info', mac_address);
 		}
 	});
 	$("#unassigned").hide();

@@ -11,6 +11,7 @@ def load(icpe, conn):
         'sensors' : len(icpe.sensors),
         'mqtt' : icpe.mqtt[0].host + ':' + str(icpe.mqtt[0].port),
         'mac_address' : icpe.mac_address,
+        'serial_number' : icpe.serial_number,
         'ip_address' : icpe.ip_address,
         'ip_dhcp' : icpe.ip_dhcp,
         'ip_gateway' : icpe.ip_gateway,

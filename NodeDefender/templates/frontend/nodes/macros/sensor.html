@@ -86,15 +86,19 @@ function createFieldSwitch(field) {
 sensorSocket.on('fields', function(fields) {
 		console.log(fields);
 		for (var i = 0; i < fields.length; i++) {
-		document.getElementById(fields[i].sensor+fields[i].commandclass+"Name").innerHTML = fields[i].name;
-		if (fields[i].type == 'box')
-			createFieldBox(fields[i]);
-		else if (fields[i].type == 'value')
-			createFieldValue(fields[i]);
-		else if (fields[i].type == 'switch')
-			createFieldSwitch(fields[i]);
-		else
-			console.log("unknown field " + fields[i].type);
+		try {
+			document.getElementById(fields[i].sensor_id+fields[i].commandclass+"Name").innerHTML = fields[i].name;
+			if (fields[i].type == 'box')
+				createFieldBox(fields[i]);
+			else if (fields[i].type == 'value')
+				createFieldValue(fields[i]);
+			else if (fields[i].type == 'switch')
+				createFieldSwitch(fields[i]);
+			else
+				console.log("unknown field " + fields[i].type);
+		} catch (err) {
+			console.log("Cant find field " + fields[i].name + " for sensor " + fields[i].sensor);
+		}
 	}
 });
 {% for sensor in sensors %}

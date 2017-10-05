@@ -20,9 +20,9 @@ def unassigned():
     emit('unassigned', icpes)
     return True
 
-@socketio.on('get', namespace='/icpe')
+@socketio.on('info', namespace='/icpe')
 def info(icpe):
-    emit('get', NodeDefender.db.icpe.get(icpe))
+    emit('info', NodeDefender.db.icpe.get(icpe))
     return True
 
 @socketio.on('connection', namespace='/icpe')

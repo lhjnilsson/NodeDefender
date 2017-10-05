@@ -214,8 +214,10 @@ eventSocket.on('ZWaveEvent', function(event) {
 									<h2 class="modal-title">Add iCPE Connection</h2>
 								</div>
 								<div class="modal-body">
-									<div class="row">
-										{{ SelectiCPE(current_user) }}
+									<div>
+										<div class="row" style="margin: 0 15px;">
+											{{ SelectiCPE(current_user) }}
+										</div>
 									</div>
 								</div>
 								<div class="modal-footer">
