@@ -1,62 +1,30 @@
 {% macro SensorBox(sensor) %}
-<form name="#" class="form-horizontal" method="#">
-{% for commandclass in sensor.commandclasses %}
-
-{% if commandclass.types %}
-{% for commandclasstype in commandclass.types %}
-{% if commandclasstype.web_field %}
-<div class="form-group">
-	<label class="col-sm-2 control-label" id="{{sensor.sensor_id}}{{commandclass.name}}Name">-</label>
-	<div class="col-sm-5 col-sm-offset-5" id="{{sensor.sensor_id}}{{commandclass.name}}Div">
-		---
-	</div>
-</div>
-{% endif %}
-{% endfor %}
-
-{% else %}
-{% if commandclass.web_field %}
-<div class="form-group">
-	<label class="col-sm-2 control-label" id="{{sensor.sensor_id}}{{commandclass.name}}Name">-</label>
-	<div class="col-sm-5 col-sm-offset-5" id="{{sensor.sensor_id}}{{commandclass.name}}Div">
-		---
-	</div>
-</div>
-{% endif %}
-{% endif %}
-
-{% endfor %}
+<form name="#" class="form-horizontal" method="#" id="{{sensor.sensor_id}}fields">
 </form>
 {% endmacro %}
 
 {% macro SensorScripts(sensors) %}
 <script>
 function createFieldBox(field) {
-	div = document.getElementById(field.sensor+field.commandclass+"Div");
 	box = document.createElement("LABEL");
 	box.setAttribute("class", "lightbox");
 	box.setAttribute("id", field.sensor+field.name+"Value");
 	if (field.state === "True")
 		box.className += " lightboxlight";
-
-	div.innerHTML = ""
-	div.appendChild(box);
+	return box;
 };
 
 function createFieldValue(field) {
-	div = document.getElementById(field.sensor+field.commandclass+"Div");
 	box = document.createElement("P");
 	box.setAttribute("id", field.sensor+field.name+"Value");
 	box.style.position = "absolute";
 	box.style.right = "0";
 	box.style.width = "60px";
 	box.innerHTML = field.value;
-	div.innerHTML = "";
-	div.appendChild(box);
+	return box;
 }
 
 function createFieldSwitch(field) {
-	div = document.getElementById(field.sensor+field.commandclass+"Div");
 	_switch = document.createElement("LABEL");
 	_switch.setAttribute("class", "switch");
 
@@ -75,27 +43,35 @@ function createFieldSwitch(field) {
 
 	_switch.appendChild(input);
 	_switch.appendChild(slider);
-
-	div.innerHTML = "";
-	div.appendChild(_switch);
-	document.getElementById(field.sensor+field.name+"Value").addEventListener("click", function() {
-		switchChange(this, field.icpe, field.sensor, field.commandclass, "");
-	});
+	return _switch;
 }
 
 sensorSocket.on('fields', function(fields) {
 		console.log(fields);
 		for (var i = 0; i < fields.length; i++) {
 		try {
-			document.getElementById(fields[i].sensor_id+fields[i].commandclass+"Name").innerHTML = fields[i].name;
+			sensorBox = document.getElementById(fields[i].sensor_id+"fields");
+			formGroup = document.createElement("DIV");
+			formGroup.setAttribute("class", "form-group");
+			formName = document.createElement("LABEL");
+			formName.setAttribute("class", "col-sm-2 control-label")
+			formName.innerHTML = field[i].name;
+			formField = document.createElement("DIV");
+			formField.setAttribute("class", "col-sm-5 col-sm-offset-5");
+			formField.setAttribute("id", fields[i].sensor_id + fields[i].name);
+
 			if (fields[i].type == 'box')
-				createFieldBox(fields[i]);
+				formField.appendChild(createFieldBox(fields[i]));
 			else if (fields[i].type == 'value')
-				createFieldValue(fields[i]);
+				formField.appendChild(createFieldValue(fields[i]));
 			else if (fields[i].type == 'switch')
-				createFieldSwitch(fields[i]);
+				formField.appenChild(createFieldSwitch(fields[i]));
 			else
 				console.log("unknown field " + fields[i].type);
+
+			formGroup.appenChild(formName);
+			formGroup.appenChild(formField);
+			sensorBox.appendChild(formGroup);
 		} catch (err) {
 			console.log("Cant find field " + fields[i].name + " for sensor " + fields[i].sensor);
 		}
