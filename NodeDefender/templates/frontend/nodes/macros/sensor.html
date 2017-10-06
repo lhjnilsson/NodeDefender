@@ -97,33 +97,29 @@ function createFieldSwitch(field) {
 sensorSocket.on('fields', function(fields) {
 		console.log(fields);
 		for (var i = 0; i < fields.length; i++) {
-		try {
 			sensorBox = document.getElementById(fields[i].sensor_id+"fields");
 			formGroup = document.createElement("DIV");
 			formGroup.setAttribute("class", "form-group");
 			formName = document.createElement("LABEL");
 			formName.setAttribute("class", "col-sm-2 control-label")
-			formName.innerHTML = field[i].name;
+			formName.innerHTML = fields[i].name;
 			formField = document.createElement("DIV");
 			formField.setAttribute("class", "col-sm-5 col-sm-offset-5");
 			formField.setAttribute("id", fields[i].sensor_id + fields[i].name);
 
-			if (fields[i].type == 'box')
+			if (fields[i].type == "bool" && fields[i].readonly == "True")
 				formField.appendChild(createFieldBox(fields[i]));
-			else if (fields[i].type == 'value')
+			else if (fields[i].type == "value")
 				formField.appendChild(createFieldValue(fields[i]));
-			else if (fields[i].type == 'switch')
+			else if (fields[i].type == "switch")
 				formField.appenChild(createFieldSwitch(fields[i]));
 			else
 				console.log("unknown field " + fields[i].type);
 
-			formGroup.appenChild(formName);
-			formGroup.appenChild(formField);
+			formGroup.appendChild(formName);
+			formGroup.appendChild(formField);
 			sensorBox.appendChild(formGroup);
-		} catch (err) {
-			console.log("Cant find field " + fields[i].name + " for sensor " + fields[i].sensor);
 		}
-	}
 });
 {% for sensor in sensors %}
 sensorSocket.emit('fields', "{{sensor.icpe.mac_address}}", "{{sensor.sensor_id}}");
