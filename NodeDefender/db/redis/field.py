@@ -27,7 +27,7 @@ def save(mac_address, sensor_id, field_name, conn, **kwargs):
     field['date_updated'] = datetime.now().timestamp()
     NodeDefender.db.redis.icpe.updated(mac_address)
     NodeDefender.db.redis.sensor.updated(mac_address, sensor_id)
-    return conn.hmset(mac_address + sensor_id + name, field_field)
+    return conn.hmset(mac_address + sensor_id + field_name, field)
 
 @redisconn
 def list(mac_address, sensor_id, conn):

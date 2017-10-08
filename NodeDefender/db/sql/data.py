@@ -76,6 +76,10 @@ class EventModel(SQL.Model):
 
     def to_json(self):
         commandclass = self.commandclass.name
+        if self.sensor.name:
+            sensor_name = self.sensor.name
+        else:
+            sensor_name = self.sensor.sensor_id + ', ' + self.sensor.product_name
 
         if self.commandclasstype:
             commandclasstype = self.commandclasstype.name
@@ -90,7 +94,7 @@ class EventModel(SQL.Model):
             name = eval('NodeDefender.icpe.zwave.commandclass.'+commandclass+\
                         '.fields')['name']
 
-        return {'icpe' : self.icpe.mac_address, 'sensor' : self.sensor.name, 'node' :
+        return {'icpe' : self.icpe.mac_address, 'sensor' : sensor_name, 'node' :
                 self.icpe.node.name, 'value' : self.value,\
                 'date' : str(self.date), 'icon' : icon,\
                 'name' : name}

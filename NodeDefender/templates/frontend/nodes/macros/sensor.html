@@ -5,14 +5,13 @@
 
 {% macro SensorScripts(sensors) %}
 <script>
-var socket = io.connect('//' + document.domain + ':' + location.port + '/nodedata');
-var eventSocket = io.connect('//' + document.domain + ':' + location.port + '/icpe' + '{{mac_address}}');
+var zwaveSocket = io.connect('//' + document.domain + ':' + location.port + '/icpe' + '{{sensors[0].icpe.mac_address}}');
 
 function switchChange(box, mac_address, sensor_id, commandclass, classtype) {
 	if (box.checked) {
-		socket.emit('ZWaveSet', {'mac_address' : mac_address, 'sensor_id' : sensor_id, 'commandclass' : commandclass, 'value' : '1'});
+		sensorSocket.emit('set', mac_address, sensor_id, commandclass, '1');
 	} else {
-		socket.emit('ZWaveSet', {'mac_address' : mac_address, 'sensor_id' : sensor_id, 'commandclass' : commandclass, 'value' : '0'});
+		sensorSocket.emit('set', mac_address, sensor_id, commandclass, '0');
 	}
 }
 
@@ -25,9 +24,11 @@ function switchEvent(field, enabled) {
 }
 
 function boxEvent(box, enabled) {
-	if(enabled == "True" && !(box.classList.contains("lightboxlight")))
+	if(enabled)
+	{
+		if (!box.classList.contains("lightboxlight"))
 			box.className += " lightboxlight";
-	else {
+	} else {
 		if(box.classList.contains("lightboxlight"))
 			 box.classList.remove("lightboxlight");
 	}
@@ -40,23 +41,22 @@ function valueEvent(box, value) {
 function eventToastr(event) {
 };
 
-eventSocket.on('ZWaveEvent', function(event) {
-	f = document.getElementById(event.sensor+event.name+"Value");
-	console.log(event);
-	if (event.type == 'switch') {
-		switchEvent(f, event.state);
-	} else if (event.type == 'box') {
-		boxEvent(f, event.state);
-	} else if (event.type == 'value') {
-		valueEvent(f, event.value);
+zwaveSocket.on('event', function(macAddress, sensorId, data) {
+	field = document.getElementById(sensorId + data.fields.name + "Value");
+	console.log(data);
+	if (data.fields.type == 'bool' && data.fields.readonly == false) {
+		switchEvent(field, data.state);
+	} else if (data.fields.type == 'bool' && data.fields.readonly == true) {
+		boxEvent(field, data.state);
+	} else if (data.fields.type == 'value') {
+		valueEvent(field, data.value);
 	}
-	eventToastr(event);
 });
 
 function createFieldBox(field) {
 	box = document.createElement("LABEL");
 	box.setAttribute("class", "lightbox");
-	box.setAttribute("id", field.sensor+field.name+"Value");
+	box.setAttribute("id", field.sensor_id+field.name+"Value");
 	if (field.state === "True")
 		box.className += " lightboxlight";
 	return box;
@@ -64,7 +64,7 @@ function createFieldBox(field) {
 
 function createFieldValue(field) {
 	box = document.createElement("P");
-	box.setAttribute("id", field.sensor+field.name+"Value");
+	box.setAttribute("id", field.sensor_id+field.name+"Value");
 	box.style.position = "absolute";
 	box.style.right = "0";
 	box.style.width = "60px";
@@ -78,9 +78,9 @@ function createFieldSwitch(field) {
 
 	input = document.createElement("INPUT");
 	input.setAttribute("type", "checkbox");
-	input.setAttribute("id", field.sensor+field.name+"Value");
+	input.setAttribute("id", field.sensor_id+field.name+"Value");
 	input.addEventListener("click", function(){
-			switchChange(this, field.icpe, field.sensor, field.commandclass, "");
+			switchChange(this, field.mac_address, field.sensor_id, field.commandclass_name, "");
 	})
 	slider = document.createElement("DIV");
 	slider.setAttribute("class", "slider");
@@ -97,6 +97,8 @@ function createFieldSwitch(field) {
 sensorSocket.on('fields', function(fields) {
 		console.log(fields);
 		for (var i = 0; i < fields.length; i++) {
+			if (fields[i].web_field == "False")
+				continue;
 			sensorBox = document.getElementById(fields[i].sensor_id+"fields");
 			formGroup = document.createElement("DIV");
 			formGroup.setAttribute("class", "form-group");
@@ -111,8 +113,8 @@ sensorSocket.on('fields', function(fields) {
 				formField.appendChild(createFieldBox(fields[i]));
 			else if (fields[i].type == "value")
 				formField.appendChild(createFieldValue(fields[i]));
-			else if (fields[i].type == "switch")
-				formField.appenChild(createFieldSwitch(fields[i]));
+			else if (fields[i].type == "bool" && fields[i].readonly == "False")
+				formField.appendChild(createFieldSwitch(fields[i]));
 			else
 				console.log("unknown field " + fields[i].type);
 

@@ -87,6 +87,22 @@ def update(mac_address, sensor_id, classnumber = None, classname = None, **kwarg
     return update_sql(mac_address, sensor_id, classnumber = classnumber, \
                       classname = classname, **kwargs)
 
+def update_nameless():
+    commandclasses = CommandClassModel.query.filter_by(name = None).all()
+    for commandclass in commandclasses:
+        mac_address = commandclass.sensor.icpe.mac_address
+        sensor_id = commandclass.sensor.sensor_id
+        classnumber = commandclass.number
+        info = NodeDefender.icpe.zwave.commandclass.info(classnumber=classnumber)
+        if info:
+            update(mac_address, sensor_id, classnumber=classnumber, **info)
+            print("updated: ", info['name'])
+            if info['types']:
+                NodeDefender.mqtt.command.commandclass.\
+                        sup(mac_address, sensor_id, info['name'])
+    return True
+
+
 def list(mac_address, sensor_id):
     sensor = NodeDefender.db.sensor.get_sql(mac_address, sensor_id)
     if not sensor:
@@ -105,8 +121,6 @@ def create(mac_address, sensor_id, classnumber):
         return False
     info = NodeDefender.icpe.zwave.commandclass.info(classnumber = classnumber)
     if info:
-        info['web_field'] = NodeDefender.icpe.zwave.commandclass.\
-                web_field(classname = info['name'])
         update(mac_address, sensor_id, classnumber = classnumber, **info)
         if info['types']:
             NodeDefender.mqtt.command.commandclass.sup(mac_address, sensor_id, \

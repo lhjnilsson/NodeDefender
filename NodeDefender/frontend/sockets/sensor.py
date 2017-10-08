@@ -23,3 +23,10 @@ def update_fields(icpe, sensor, kwargs):
 def fields(icpe, sensor):
     emit('fields', NodeDefender.db.sensor.fields(icpe, sensor))
     return True
+
+@socketio.on('set', namespace='/sensor')
+def set(mac_address, sensor_id, commandclass, payload):
+    NodeDefender.mqtt.command.sensor.set(mac_address, sensor_id, commandclass,
+                                         payload = payload)
+    return True
+

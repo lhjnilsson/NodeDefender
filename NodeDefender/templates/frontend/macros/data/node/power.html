@@ -6,7 +6,7 @@ $(document).ready(function() {
 	node = "{{node.name}}";
 
 	dataSocket.on('nodePowerCurrent', function(power) {
-		document.getElementById('nodeCurrentPower').innerHTML = power.power;
+		document.getElementById('nodeCurrentPower').innerHTML = parseFloat(power.power).toFixed(2);
 	});
 	var loopNodePowerCurrent = function() {
 		dataSocket.emit('nodePowerCurrent', {'name' : node});
@@ -35,7 +35,7 @@ plotlySocket.on('nodePowerChart', function(data) {
 	Plotly.newPlot(powerChart, data.data, data.layout)
 });
 
-plotlySocket.emit('nodePowerChart', {'name' : "{{node.name}}"});
+plotlySocket.emit('nodePowerChart', "{{node.name}}");
 </script>
 {% endmacro %}
 

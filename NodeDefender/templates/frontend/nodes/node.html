@@ -208,7 +208,11 @@
 	<div class="col-lg-2">
 		<div class="panel panel-info">
 			<div class="panel-heading">
-				{{ sensor.name }}
+				{% if sensor.name %}
+					{{ sensor.name }}
+				{% else %}
+					{{ sensor.sensor_id }}
+				{% endif %}
 				<div class="floatRight">
 					<a href="#" style="color: #FFFFFF; margin: 0 5px;" onclick="sensorModal('{{Node.icpe.mac_address}}', '{{sensor.sensor_id}}')"><i class="fa fa-info" aria-hidden="true"></i></a>
 				</div>
@@ -269,7 +273,7 @@ function sensorModal(iCPE, sensor) {
 	$('#SensorModal').modal('show');
 }
 function iCPEModal(iCPE) {
-	iCPESocket.emit('info', {'icpe' : iCPE});
+	iCPESocket.emit('info', iCPE);
 
 	$('#iCPEModal').modal('show');
 }

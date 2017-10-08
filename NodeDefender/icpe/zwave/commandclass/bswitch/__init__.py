@@ -2,10 +2,11 @@ icons = {True : 'fa fa-toggle-on', False : 'fa fa-toggle-off'}
 
 info = {'number' : '25', 'name' : 'bswitch', 'types' : False}
 
-fields = {'type' : "bool", 'readonly' : False, 'name' : 'Switch'}
+fields = {'type' : "bool", 'readonly' : False, 'name' : 'Switch',
+          "web_field" : True}
  
 def icon(value):
-    return icons[eval(value)]
+    return icons[bool(eval(value))]
 
 def event(payload):
     data = {'commandclass' : info, 'commandclasstype' : False,

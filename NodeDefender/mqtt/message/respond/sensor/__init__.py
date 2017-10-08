@@ -22,4 +22,4 @@ def event(topic, payload):
             return info.sup(topic, payload)
         elif topic['subFunction'] == 'evtsup':
             return info.evtsup(topic, payload)
-    return NodeDefender.icpe.zwave.event(topic, payload)
+    return True

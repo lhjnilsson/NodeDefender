@@ -6,7 +6,7 @@ $(document).ready(function() {
 	node = "{{node.name}}";
 
 	dataSocket.on('nodeHeatCurrent', function(heat) {
-		document.getElementById('nodeCurrentHeat').innerHTML = heat.heat;
+		document.getElementById('nodeCurrentHeat').innerHTML = parseFloat(heat.heat).toFixed(2);
 	});
 	var loopNodeHeatCurrent = function() {
 		dataSocket.emit('nodeHeatCurrent', {'name' : node});

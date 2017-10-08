@@ -161,7 +161,7 @@ def chart(icpe, sensor):
 
     return sensor_data
 
-def put(icpe, sensor, event, date = None):
+def put(icpe, sensor, value, date = None):
     if date is None:
         date = datetime.now().replace(minute=0, second=0, microsecond=0)
 
@@ -176,27 +176,22 @@ def put(icpe, sensor, event, date = None):
             filter(PowerModel.icpe == icpe,\
                    PowerModel.sensor == sensor,\
                    PowerModel.date == date).first()
-
-    power = event.value
-
+    
     if data:
-        if power > data.high:
-            data.high = power
+        if value > data.high:
+            data.high = value
 
-        if power < data.low or data.low == 0:
-            data.low = power
+        if value < data.low or data.low == 0:
+            data.low = value
 
-        data.average = (data.average + power) / 2
-        data.total = data.total + power
+        data.average = (data.average + value) / 2
+        data.total = data.total + value
         SQL.session.add(data)
     else:
-        data = PowerModel(power, date)
+        data = PowerModel(value, date)
         data.sensor = sensor
         data.icpe = sensor.icpe
         SQL.session.add(data)
 
     SQL.session.commit()
-    
-    redis = FieldRedis.Update(data, event)
-
-    ZWaveEvent(redis)
+    return data

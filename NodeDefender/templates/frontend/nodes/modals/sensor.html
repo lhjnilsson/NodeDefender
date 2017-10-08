@@ -20,7 +20,7 @@
 							{{ FieldID("Name", "-", "sensorName") }}
 							{{ FieldID("iCPE", "-", "sensoriCPE") }}
 							{{ FieldID("Sensor Id", "-", "sensor_id") }}
-							{{ FieldID("Brand", "-", "sensorBrand") }}
+							{{ FieldID("Vendor", "-", "sensorVendor") }}
 							{{ FieldID("Product Name", "-", "sensorProductName") }}
 							{{ FieldID("Library Type", "-", "sensorLibtype") }}
 							{{ FieldID("Device Type", "-", "sensorDevtype") }}
@@ -74,15 +74,15 @@ document.getElementById('updateSensorConfig').addEventListener('click', function
 	sensorSocket.emit('update', icpe, sensor_id, {'name' : sensorName});
 });
 
-sensorSocket.on('info', function(info) {
-	document.getElementById("sensorName").innerHTML = info.name;
-	document.getElementById("sensorConfigName").value = info.name;
-	document.getElementById("sensor_id").innerHTML = info.sensor_id;
-	document.getElementById("sensoriCPE").innerHTML = info.icpe;
-	document.getElementById("sensorBrand").innerHTML = info.brand;
-	document.getElementById("sensorProductName").innerHTML = info.productName;
-	document.getElementById("sensorLibtype").innerHTML = info.librarytype;
-	document.getElementById("sensorDevtype").innerHTML = info.devicetype;
+sensorSocket.on('info', function(sensor) {
+	console.log(sensor);
+	document.getElementById("sensorName").innerHTML = sensor.name;
+	document.getElementById("sensor_id").innerHTML = sensor.sensor_id;
+	document.getElementById("sensoriCPE").innerHTML = sensor.icpe;
+	document.getElementById("sensorVendor").innerHTML = sensor.vendor_name;
+	document.getElementById("sensorProductName").innerHTML = sensor.product_name;
+	document.getElementById("sensorLibtype").innerHTML = sensor.library_type;
+	document.getElementById("sensorDevtype").innerHTML = sensor.device_type;
 });
 
 dataSocket.on('sensorEvents', function(events) {
@@ -90,8 +90,9 @@ dataSocket.on('sensorEvents', function(events) {
 		var newRow = sensorEventBody.insertRow(i);
 
 		var eventCell = newRow.insertCell(0);
-		var eventText = document.createTextNode(events[i].value);
-		eventCell.appendChild(eventText);
+		var icon = document.createElement("i");
+		icon.className += events[i].icon;
+		eventCell.appendChild(icon);
 
 		var dateCell = newRow.insertCell(1);
 		var dateText = document.createTextNode(moment(events[i].date, "YYYYMMDD, hh:mm:ss").fromNow());

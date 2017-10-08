@@ -7,3 +7,4 @@ import NodeDefender.frontend.sockets.data
 import NodeDefender.frontend.sockets.plotly
 import NodeDefender.frontend.sockets.user
 import NodeDefender.frontend.sockets.mqtt
+import NodeDefender.frontend.sockets.zwave

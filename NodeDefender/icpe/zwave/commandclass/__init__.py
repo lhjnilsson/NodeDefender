@@ -1,7 +1,11 @@
-from NodeDefender.icpe.zwave.commandclass import alarm, basic, bswitch,\
-        meter, msensor
+import NodeDefender.icpe.zwave.commandclass.alarm
+import NodeDefender.icpe.zwave.commandclass.basic
+import NodeDefender.icpe.zwave.commandclass.bswitch
+import NodeDefender.icpe.zwave.commandclass.meter
+import NodeDefender.icpe.zwave.commandclass.msensor
 
-classnumbers = {'71': 'alarm', '20' : 'basic', '25' : 'bswitch'}
+classnumbers = {'71': 'alarm', '20' : 'basic', '25' : 'bswitch',
+                '31' : 'msensor', '32' : 'meter'}
 
 def to_name(classnumber):
     try:

@@ -1,7 +1,7 @@
 from NodeDefender.icpe.zwave.commandclass.meter import Electric
 
 classtypes = {'1' : 'Electric'}
-info = {'number' : '25', 'name' : 'meter', 'types' : True}
+info = {'number' : '32', 'name' : 'meter', 'types' : True}
 fields = None
 
 def icon(value):
@@ -9,6 +9,6 @@ def icon(value):
 
 def event(payload):
     try:
-        return eval(mtype[payload['mtype']] + '.event')(payload)
+        return eval(classtypes[payload['type']] + '.event')(payload)
     except KeyError as e:
         print(str(e))

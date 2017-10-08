@@ -9,7 +9,6 @@ def fire(topic, payload = None, icpe = None, mqttsrc = None):
 
     if mqttsrc is None and icpe:
         mqttsrc = NodeDefender.db.mqtt.icpe(icpe).to_json()
-
     conn = NodeDefender.mqtt.connection.connection(mqttsrc['host'], \
                                                    mqttsrc['port'])
     return conn.publish(topic, payload)

@@ -1,6 +1,7 @@
 import NodeDefender
 
-fields =  {'type' : 'value', 'readonly' : True, 'name' : 'Celsius'}
+fields =  {'type' : 'value', 'readonly' : True, 'name' : 'Celsius', 'web_field'
+           : True}
 info = {'number' : '1', 'name' : 'AirTemperature', 'commandclass' : 'msensor'}
 
 def event(payload):
