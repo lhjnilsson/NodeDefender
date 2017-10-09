@@ -13,8 +13,11 @@ def messages(user, limit = 10):
     if user.has_role('superuser'):
         return SQL.session.query(MessageModel).\
                 order_by(MessageModel.date.desc()).limit(int(limit)).all()
-    
+     
     groups = [group for group in user.groups]
+    if len(groups) < 1:
+        return []
+    
     nodes = [node for node in group.nodes for group in groups]
     icpes = [icpe for icpe in node.icpe for icpe in nodes]
 
