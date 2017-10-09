@@ -19,6 +19,9 @@ def server_name():
 def server_port():
     return parser['GENERAL']['PORT']
 
+def self_registration():
+    return parser['GENERAL']['SELF_REGISTRATION']
+
 def get_cfg(key):
     return parser['GENERAL'][key]
 
