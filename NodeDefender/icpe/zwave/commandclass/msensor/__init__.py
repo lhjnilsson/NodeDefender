@@ -7,7 +7,7 @@ fields = None
 
 def event(payload):
     try:
-        return eval(classtypes[payload['mtype']] + '.event')(payload)
+        return eval(classtypes[payload['type']] + '.event')(payload)
     except KeyError as e:
         print(str(e))
 

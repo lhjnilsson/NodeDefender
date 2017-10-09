@@ -16,11 +16,7 @@ function switchChange(box, mac_address, sensor_id, commandclass, classtype) {
 }
 
 function switchEvent(field, enabled) {
-	if (enabled == "True") {
-		field.checked = true;
-	} else {
-		field.checked = false;
-	}
+	field.checked = enabled;
 }
 
 function boxEvent(box, enabled) {

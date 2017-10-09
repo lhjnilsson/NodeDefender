@@ -160,7 +160,7 @@ def chart(icpe, sensor):
 
     return sensor_data
 
-def put(icpe, sensor, event, date = None):
+def put(icpe, sensor, heat, date = None):
     if date is None:
         date = datetime.now().replace(minute=0, second=0, microsecond=0)
     
@@ -176,8 +176,6 @@ def put(icpe, sensor, event, date = None):
                    HeatModel.sensor == sensor,\
                    HeatModel.date == date).first()
 
-    heat = event.value
-    
     if data:
         if heat > data.high:
             data.high = heat
@@ -194,7 +192,4 @@ def put(icpe, sensor, event, date = None):
         SQL.session.add(data)
 
     SQL.session.commit()
-        
-    redis = FieldRedis.Update(data, event)
-
-    ZWaveEvent(redis)
+    return data

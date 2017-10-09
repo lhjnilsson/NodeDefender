@@ -30,15 +30,16 @@ def sensor_info(icpe, sensor_id, **payload):
         sensor.device_type = info['DeviceType'].strip()
         sensor.library_type = info['LibraryType'].strip()
     else:
-        sensor.vendor_id = "Undefined"
-        sensor.product_id = "Undefined"
+        sensor.vendor_id = payload['vid']
+        sensor.product_id = payload['pid']
         sensor.product_type = "Undefined"
         sensor.vendor_name = "Undefined"
         sensor.product_name = "Undefined"
         sensor.device_type = "Undefined"
         sensor.library_type = "Undefined"
-        logger.warning("Unable to find Z-Wave- data for {}:{}".\
-                       format(payload['vid'], payload['pid']))
+        NodeDefender.icpe.logger.\
+                warning("Unable to find Z-Wave- data for {}:{}. On {}".\
+                       format(payload['vid'], payload['pid'], icpe))
 
     NodeDefender.icpe.sensor.commandclass.\
             commandclasses(icpe, sensor_id, *payload['clslist_0'].split(','))
@@ -54,8 +55,9 @@ def event(mac_address, sensor_id, command_class, **payload):
                                          command_class, **payload)
     except AttributeError:
         NodeDefender.icpe.logger.warning("Got unsuported Command Class:{!s}"\
-                                         .format(command_class))
-    print("data: ", data)
+                                        .format(command_class))
+        return False
+
     if not data:
         return False
     

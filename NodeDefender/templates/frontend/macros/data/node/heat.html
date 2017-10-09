@@ -34,7 +34,7 @@ plotlySocket.on('nodeHeatChart', function(data) {
 	Plotly.newPlot(heatChart, data.data, data.layout)
 });
 
-plotlySocket.emit('nodeHeatChart', {'name' : "{{node.name}}"});
+plotlySocket.emit('nodeHeatChart', "{{node.name}}");
 </script>
 {% endmacro %}
 
