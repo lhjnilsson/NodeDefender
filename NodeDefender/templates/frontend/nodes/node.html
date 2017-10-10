@@ -181,11 +181,11 @@
 					</div>
 						<script>
 					$(document).ready(function() {
-						node = "{{Node.name}}"
+						node = "{{Node.name}}";
 						function addiCPE() {
 							if ($('addiCPEMac').text() != 'None') {
-								console.log($('#addicpemac').text());
-								nodeSocket.emit('addiCPE', node, $('#addicpemac').text());
+								icpe = document.getElementById('selectiCPEMacAddress').innerHTML;
+								nodeSocket.emit('addiCPE', node, icpe);
 								return true;
 							} else {
 							 toastr.error("Please choose iCPE");

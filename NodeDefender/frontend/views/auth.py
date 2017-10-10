@@ -62,7 +62,7 @@ def register():
 @auth_view.route('/logout')
 def logout():
     logout_user()
-    return redirect(url_for('auth_view.login'))
+    return redirect(url_for('auth_view.authenticate'))
 
 @auth_view.route('/register/<token>', methods=['GET', 'POST'])
 def register_token(token):

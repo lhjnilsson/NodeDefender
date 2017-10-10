@@ -5,7 +5,8 @@ from redlock import RedLock
 from datetime import datetime
 
 def get_sql(mac_address):
-    return SQL.session.query(iCPEModel).filter(mac_address == mac_address).first()
+    return SQL.session.query(iCPEModel).\
+            filter(iCPEModel.mac_address == mac_address).first()
 
 def update_sql(mac_address, **kwargs):
     icpe = get_sql(mac_address)
@@ -62,6 +63,7 @@ def get(mac_address):
     return False
 
 def create(mac_address, mqttsrc):
+    print("CREATING: ", mac_address)
     if not create_sql(mac_address, mqttsrc):
         return False
     NodeDefender.mqtt.command.icpe.zwave_info(mac_address)
@@ -82,7 +84,7 @@ def delete(mac_address):
 
 def list(node = None):
     if node:
-        return  SQL.session.query(iCPEModel).join(iCPEModel.node).\
+        return SQL.session.query(iCPEModel).join(iCPEModel.node).\
                 filter(NodeModel.name == node).all()
     return SQL.session.query(iCPEModel).all()
 
