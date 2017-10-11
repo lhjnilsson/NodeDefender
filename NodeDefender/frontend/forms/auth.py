@@ -4,7 +4,6 @@ from wtforms.validators import DataRequired, EqualTo
 
 class LoginForm(Form):
     """The default login form"""
-
     email = StringField('Email Address', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
     remember = BooleanField('Remember Me', default=False)

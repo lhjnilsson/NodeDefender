@@ -3,6 +3,7 @@ from flask import render_template, url_for
 import NodeDefender
 from NodeDefender import serializer
 from NodeDefender.mail import mail
+from smtplib import SMTPAuthenticationError
 
 @NodeDefender.decorators.mail_enabled
 @NodeDefender.decorators.celery_task
@@ -18,7 +19,10 @@ def new_user(user):
                   token = serializer.dumps_salted(user.email))
     msg.body = render_template('mail/user/create_user.txt', user = user, url =
                               url)
-    mail.send(msg)
+    try:
+        mail.send(msg)
+    except SMTPAuthenticationError:
+        NodeDefender.mail.logger.error("Authentication error when sending Email")
     return True
 
 
@@ -33,7 +37,10 @@ def confirm_user(user):
     msg = Message('Confirm Successful!', sender='noreply@nodedefender.com',
                   recipients=[user.email])
     msg.body = render_template('mail/user/user_confirmed.txt', user = user)
-    mail.send(msg)
+    try:
+        mail.send(msg)
+    except SMTPAuthenticationError:
+        NodeDefender.mail.logger.error("Authentication error when sending Email")
     return True
 
 @NodeDefender.decorators.celery_task
@@ -50,7 +57,10 @@ def reset_password(user):
                  token = serializer.dumps_salted(user.email))
     msg.body = render_template('mail/user/reset_password.txt', user = user, url =
                               url)
-    mail.send(msg)
+    try:
+        mail.send(msg)
+    except SMTPAuthenticationError:
+        NodeDefender.mail.logger.error("Authentication error when sending Email")
     return True
 
 @NodeDefender.decorators.celery_task
@@ -61,5 +71,8 @@ def login_changed(user):
     msg = Message('Login changed', sender='noreply@nodedefender.com',
                   recipients=[user.email])
     msg.body = render_template('mail/user/reset_password.txt', user = user)
-    mail.send(msg)
+    try:
+        mail.send(msg)
+    except SMTPAuthenticationError:
+        NodeDefender.mail.logger.error("Authentication error when sending Email")
     return True

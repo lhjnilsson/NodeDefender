@@ -74,9 +74,12 @@ def admin_group(name):
 def admin_users():
     UserForm = CreateUserForm()
     if request.method == 'GET':
-        groups = NodeDefender.db.group.list(current_user.email)
-        groups = [group.name for group in groups]
-        users = NodeDefender.db.user.list(*groups)
+        if current_user.superuser:
+            users = NodeDefender.db.user.list()
+        else:
+            groups = NodeDefender.db.group.list(current_user.email)
+            groups = [group.name for group in groups]
+            users = NodeDefender.db.user.list(*groups)
         return render_template('frontend/admin/users.html', Users = users,\
                                CreateUserForm = UserForm)
     if not UserForm.validate():

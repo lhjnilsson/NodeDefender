@@ -54,10 +54,10 @@ def register():
         flash('Register Successful, please login', 'success')
     else:
         flash('Error doing register, please try again', 'error')
-        return redirect(url_for('auth_view.login'))
+        return redirect(url_for('auth_view.authenticate'))
     
     flash('error', 'error')
-    return redirect(url_for('auth_view.login'))
+    return redirect(url_for('auth_view.authenticate'))
 
 @auth_view.route('/logout')
 def logout():

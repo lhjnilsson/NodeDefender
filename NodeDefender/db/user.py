@@ -79,7 +79,7 @@ def list(*group_names):
 
 def create(email, firstname = None, lastname = None):
     create_sql(email)
-    update_sql(email, **{'fistname' : firstname, 'lastname' : lastname})
+    update_sql(email, **{'firstname' : firstname, 'lastname' : lastname})
     return get_sql(email)
 
 def update(email, **kwargs):
