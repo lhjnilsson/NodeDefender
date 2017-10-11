@@ -5,11 +5,11 @@ manager = flask_script.Manager(usage="Setup NodeDefender Configuration")
 
 @manager.command
 def all():
-    general()
-    database()
-    mail()
-    logging()
-    celery()
+    NodeDefender.manage.setup.general.general()
+    NodeDefender.manage.setup.database.database()
+    NodeDefender.manage.setup.mail.mail()
+    NodeDefender.manage.setup.logging.logging()
+    NodeDefender.manage.setup.celery.celery()
     print_topic("Configuration Successfully stored!")
     print("Dont forget to migrate and upgrade the database before running")
     print("./manage.py db migrate")

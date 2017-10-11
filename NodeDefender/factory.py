@@ -5,7 +5,9 @@ from celery import Celery
 from itsdangerous import URLSafeSerializer
 from flask_wtf.csrf import CSRFProtect
 from NodeDefender import config
+import NodeDefender
 import os
+import sys
 
 csfr = CSRFProtect()
 moment = Moment()
@@ -16,7 +18,6 @@ def CreateApp():
         mode = os.environ['NodeDefender_Mode']
         pass
     except KeyError:
-        print('NodeDefender_Mode not set, running as Production.')
         mode = 'Production'
         
     app.config.from_object('NodeDefender.config.'+mode+'Config')
@@ -27,32 +28,43 @@ def CreateApp():
 
 def CreateLogging(app = None):
     app = app or CreateApp()
-    try:
-        if app.config['LOGGING_TYPE'] == 'LOCAL':
+    if not app.config['LOGGING']:
+        loggHandler = logging.StreamHandler(sys.stdout)
+    else:
+        if app.config['LOGGING_TYPE'] == 'local':
             loggHandler = logging.FileHandler(app.config['LOGGING_NAME'])
-        elif app.config['LOGGING_TYPE'] == 'SYSLOG':
-            loggHandler = logging.handlers.SysLogHandler(address = (app.config['LOGGING_SERVER'],
-                                                  int(app.config['LOGGING_PORT'])))
-    except KeyError:
-        loggHandler = logging.StreamHandler()
+        elif app.config['LOGGING_TYPE'] == 'syslog':
+            loggHandler = logging.handler.\
+                    SysLogHandler(address = (app.config['LOGGING_SERVER'],
+                                             int(app.config['LOGGING_PORT'])))
+    level = app.config['LOGGING_LEVEL']
+    if level:
+        loggHandler.setLevel(level)
+    else:
+        loggHandler.setLevel("DEBUG")
     
-    loggHandler.setLevel(logging.DEBUG)
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     loggHandler.setFormatter(formatter)
 
-    logger = logging.getLogger(__name__)
+    logger = logging.getLogger("NodeDefender")
     logger.setLevel(logging.INFO)
     logger.addHandler(loggHandler)
     return logger, loggHandler
 
 def CreateCelery(app = None):
     app = app or CreateApp()
+    if not NodeDefender.config.celery.enabled():
+        NodeDefender.logger.info("Concurrency disabled")
+        return False
+
     try:
         celery = Celery(app.name, broker=app.config['CELERY_BROKER_URI'],
                    backend=app.config['CELERY_BACKEND_URI'])
     except KeyError:
-        print('Celery Configuration incomplete. Concurreny disabled')
         celery = Celery(app.name)
+        NodeDefender.logger.info("Concurreny configuration error")
+        return False
+    
     celery.conf.update(app.config)
     TaskBase = celery.Task
     class ContextTask(TaskBase):
@@ -61,6 +73,7 @@ def CreateCelery(app = None):
             with app.app_context():
                 return TaskBase.__call__(self, *args, **kwargs)
     celery.Task = ContextTask
+    NodeDefender.logger.info("Concurrency successfully enabled")
     return celery
 
 class Serializer:

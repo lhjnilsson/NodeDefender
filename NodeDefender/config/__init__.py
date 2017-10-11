@@ -32,13 +32,11 @@ class ProductionConfig(Config):
         SQLALCHEMY_DATABASE_URI = database_config.uri()
 
     LOGGING = logging_config.enabled()
-    if LOGGING:
-        LOGGING_TYPE = logging_config.type()
-        if LOGGING_TYPE == 'LOCAL':
-            LOGGING_NAME = logging_config.name()
-        if LOGGING_TYPE == 'SYSLOG':
-            LOGGING_SERVER = logging_config.server()
-            LOGGING_PORT = logging_config.port()
+    LOGGING_LEVEL = logging_config.enabled()
+    LOGGING_TYPE = logging_config.type()
+    LOGGING_NAME = logging_config.name()
+    LOGGING_SERVER = logging_config.server()
+    LOGGING_PORT = logging_config.port()
 
 
     MAIL = mail_config.enabled()
@@ -64,6 +62,7 @@ class DevelopmentConfig(Config):
         SQLALCHEMY_DATABASE_URI = database_config.uri()
 
     LOGGING = logging_config.enabled()
+    LOGGING_LEVEL = "DEBUG"
     if LOGGING:
         LOGGING_TYPE = logging_config.type()
         if LOGGING_TYPE == 'LOCAL':

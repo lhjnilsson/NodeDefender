@@ -26,14 +26,14 @@ def mail():
     return True
 
 def config_mail_host():
-    server = None
+    host = None
     while host is None:
         host = prompt("Enter Server Address")
 
     port = None
     while port is None:
         port = prompt("Enter Server Port")
-    NodeDefender.config.mail.set_cfg(host = host,
+    NodeDefender.config.mail.set_cfg(server = host,
                                      port = port)
     return True
 

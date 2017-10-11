@@ -9,5 +9,8 @@ def celery_task(func):
 def mail_enabled(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        return True
+        if NodeDefender.mail.enabled:
+            return func(*args, **kwargs)
+        else:
+            return True
     return wrapper

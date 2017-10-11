@@ -25,7 +25,7 @@ def new_user(user):
         NodeDefender.mail.logger.error("Authentication error when sending Email")
     return True
 
-
+@NodeDefender.decorators.mail_enabled
 @NodeDefender.decorators.celery_task
 def confirm_user(user):
     if type(user) == str:
@@ -43,6 +43,7 @@ def confirm_user(user):
         NodeDefender.mail.logger.error("Authentication error when sending Email")
     return True
 
+@NodeDefender.decorators.mail_enabled
 @NodeDefender.decorators.celery_task
 def reset_password(user):
     if type(user) == str:
@@ -63,6 +64,7 @@ def reset_password(user):
         NodeDefender.mail.logger.error("Authentication error when sending Email")
     return True
 
+@NodeDefender.decorators.mail_enabled
 @NodeDefender.decorators.celery_task
 def login_changed(user):
     if type(user) == str:

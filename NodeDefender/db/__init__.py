@@ -3,7 +3,7 @@ import NodeDefender.db.sql
 import NodeDefender.db.redis
 from NodeDefender import loggHandler
 
-logger = logging.getLogger('db')
+logger = logging.getLogger(__name__)
 logger.setLevel('DEBUG')
 logger.addHandler(loggHandler)
 
@@ -22,3 +22,5 @@ import NodeDefender.db.sensor
 import NodeDefender.db.commandclass
 import NodeDefender.db.field
 import NodeDefender.db.mqtt
+
+logger.info("Database initialized")

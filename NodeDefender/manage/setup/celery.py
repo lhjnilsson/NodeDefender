@@ -23,7 +23,7 @@ def celery():
             enabled = False
         else:
             enabled = None
-    NodeDefender.db.celery.set_cfg(enabled = enabled)
+    NodeDefender.config.celery.set_cfg(enabled = enabled)
     if not enabled:
         return True
     

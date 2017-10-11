@@ -7,7 +7,7 @@ def type():
     return parser['LOGGING']['TYPE']
 
 def name():
-    return parser['LOGGING']['NAME']
+    return parser['LOGGING']['FILEPATH']
 
 def server():
     return parser['LOGGING']['SERVER']

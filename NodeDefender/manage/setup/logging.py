@@ -15,14 +15,14 @@ def logging():
     
     enabled = None
     while enabled is None:
-        enabled = prompt("Enable Logging(YN)").upper()
+        enabled = prompt("Enable Logging(Y/N)").upper()
         if 'Y' in enabled:
             enabled = True
-        if 'N' in enabled:
+        elif 'N' in enabled:
             enabled = False
         else:
             enabled = None
-    NodeDefender.config.loigging.set_cfg(enabled = enabled)
+    NodeDefender.config.logging.set_cfg(enabled = enabled)
 
     if enabled:
         config_logging_type()
@@ -32,7 +32,7 @@ def config_logging_type():
     loggtype = None
     while loggtype is None:
         loggtype = prompt("Enter Logging Type(Syslog/Local)").lower()
-        if loggtype not in supported_loggtypes():
+        if loggtype not in supported_loggtypes:
             loggtype = None
     
     NodeDefender.config.logging.set_cfg(TYPE = loggtype)
@@ -47,7 +47,7 @@ def config_logging_filepath():
     filepath = None
 
     while not filepath:
-        print("Enter filepath for loggingfile. Leading slah(/) for absolute-\
+        print_info("Enter filepath for loggingfile. Leading slah(/) for absolute-\
               path. Otherwise relative to current directory")
         filepath = prompt("Please Filename")
 
@@ -71,8 +71,8 @@ def config_logging_level():
     level = None
     print_info("Logging Level can be: debug, info, warning, error, critical")
     while level is None:
-        level = prompt("Debug level:").lower()
+        level = prompt("Debug level").lower()
         if level not in supported_levels:
             level = None
-    Nodedefender.config.set_cfg(level = level)
+    NodeDefender.config.logging.set_cfg(level = level)
     return True

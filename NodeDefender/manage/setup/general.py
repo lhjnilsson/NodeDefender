@@ -8,12 +8,13 @@ import NodeDefender
 def general():
     print_topic("General configuration")
     print_info("Server Name. If you are using a local running server please enter\
-          as format NAME:PORT, e.g. 127.0.0.1:5000. Otherwise it will be\
+          as format NAME:PORT. Otherwise it will be\
           generating non- accessable URLs")
+    print("/ Example: 127.0.0.1:5000")
     servername = None
     while servername is None:
         servername = prompt("Enter Server Name")
-    NodeDefender.config.general.set_cfg(servername = severname)
+    NodeDefender.config.general.set_cfg(servername = servername)
 
     port = None
     while port is None:
@@ -24,7 +25,7 @@ def general():
     key = None
     while key is None:
         key = prompt("Enter Secret Key")
-    NodeDefender.config.genral.set_cfg(secret_key = key)
+    NodeDefender.config.general.set_cfg(secret_key = key)
 
     print_info("Salt is used to genereate URLS and more.")
     salt = None

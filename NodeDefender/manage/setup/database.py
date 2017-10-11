@@ -42,9 +42,11 @@ def config_database_engine():
     return True
 
 def config_database_host():
+    server = None
     while not server:
         server = prompt('Enter Server Address')
 
+    port = None
     while not port:
         port = prompt('Enter Server Port')
     
@@ -53,12 +55,15 @@ def config_database_host():
     return True
 
 def config_database_user():
+    username = None
     while not username:
         username = prompt('Enter Username')
 
+    password = None
     while not password:
         password = prompt('Enter Password')
 
+    db = None
     while not db:
         db = prompt("Enter DB Name/Number")
 
@@ -68,6 +73,7 @@ def config_database_user():
     return True
 
 def config_database_file():
+    filepath = None
     while not filepath:
         print("FilePath for SQLite Database, Enter leading slash(/) for\
               absolute- path. Otherwise relative to your current folder.")
