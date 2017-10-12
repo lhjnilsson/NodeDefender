@@ -96,6 +96,7 @@ def create(mac_address, sensor_id):
     if not create_sql(mac_address, sensor_id):
         return False
     NodeDefender.mqtt.command.sensor.sensor_info(mac_address, sensor_id)
+    NodeDefender.db.message.sensor_created(get_sql(mac_address, sensor_id))
     return get_redis(mac_address, sensor_id)
 
 def delete(mac_address, sensor):

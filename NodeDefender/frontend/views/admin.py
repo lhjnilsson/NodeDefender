@@ -93,7 +93,7 @@ def admin_users():
         flash('Error: {}'.format(e), 'danger')
         redirect(url_for('admin_view.admin_users'))
     flash('Successfully added user {}'.format(user.firstname), 'success')
-    return redirect(url_for('admin_view.admin_user', id = user.id))
+    return redirect(url_for('admin_view.admin_user', email = user.email))
 
 @admin_view.route('/admin/users/<email>', methods=['GET', 'POST'])
 @login_required

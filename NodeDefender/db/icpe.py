@@ -63,11 +63,11 @@ def get(mac_address):
     return False
 
 def create(mac_address, mqttsrc):
-    print("CREATING: ", mac_address)
     if not create_sql(mac_address, mqttsrc):
         return False
     NodeDefender.mqtt.command.icpe.zwave_info(mac_address)
     NodeDefender.mqtt.command.icpe.system_info(mac_address)
+    NodeDefender.db.message.icpe_created(get_sql(mac_address))
     return get(mac_address)
 
 def update(mac_address, **data):

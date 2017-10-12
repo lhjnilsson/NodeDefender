@@ -20,7 +20,11 @@ def current(node):
             continue
 
         sensor_data = {}
-        sensor_data['name'] = sensor.name
+        if sensor.name:
+            sensor_name = sensor.name
+        else:
+            sensor_name = sensor.sensor_id + ', ' + sensor.product_name
+        sensor_data['name'] = sensor_name
         sensor_data['sensor_id'] = sensor.sensor_id
         sensor_data['icpe'] = sensor.icpe.mac_address
         
@@ -148,7 +152,11 @@ def chart(node):
             continue
         
         sensor_data = {}
-        sensor_data['name'] = sensor.name
+        if sensor.name:
+            sensor_name = sensor.name
+        else:
+            sensor_name = sensor.sensor_id + ', ' + sensor.product_name
+        sensor_data['name'] = sensor_name
         sensor_data['sensor_id'] = sensor.sensor_id
         sensor_data['icpe'] = sensor.icpe.mac_address
 

@@ -1,6 +1,8 @@
 from NodeDefender.db.sql import SQL
 from datetime import datetime
 from NodeDefender.db.sql.node import LocationModel
+import NodeDefender
+from flask import url_for
 
 class MessageModel(SQL.Model):
     '''
@@ -27,18 +29,24 @@ class MessageModel(SQL.Model):
     def to_json(self):
         if self.group:
             group = self.group.name
+            url = url_for('admin_view.admin_group', name =
+                          NodeDefender.serializer.dumps(group))
             icon = 'fa fa-users fa-3x'
         else:
             group = False
         
         if self.user:
             user = self.user.email
+            url = url_for('admin_view.admin_user', email =
+                          NodeDefender.serializer.dumps(user))
             icon = 'fa fa-user fa-3x'
         else:
             user = False
 
         if self.node:
             node = self.node.name
+            url = url_for('node_view.nodes_node', name =
+                          NodeDefender.serializer.dumps(node))
             icon = 'fa fa-map-marker fa-3x'
         else:
             node = False
@@ -60,4 +68,4 @@ class MessageModel(SQL.Model):
                 'subject' : self.subject,
                 'body' : self.body,
                 'date' : str(self.date),
-                'icon' : icon}
+                'icon' : icon, 'url' : url}

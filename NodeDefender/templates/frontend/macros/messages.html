@@ -19,9 +19,8 @@ messageList = document.getElementById('message-list');
 dataSocket.on('messages', function(messages) {
 	for (var i = 0; i < messages.length; i++) {
 		message = document.createElement("DIV");
-		message.setAttribute("href", "#");
 		message.setAttribute("class", "list-group-item");
-		
+
 		messageIcon = document.createElement("DIV");
 		messageIcon.setAttribute("class", "message-list-icon");
 		icon = document.createElement("I");
@@ -42,7 +41,7 @@ dataSocket.on('messages', function(messages) {
 		body = document.createElement("P");
 		body.setAttribute("class", "mb-1");
 		body.innerHTML = messages[i].body;
-		
+
 		messageText.appendChild(subject);
 		messageText.appendChild(created);
 		messageText.appendChild(body);
@@ -50,7 +49,10 @@ dataSocket.on('messages', function(messages) {
 		message.appendChild(messageIcon);
 		message.appendChild(messageText);
 
-		messageList.appendChild(message);
+		link = document.createElement("A");
+		link.href = messages[i].url;
+		link.appendChild(message)
+		messageList.appendChild(link);
 	}
 });
 	</script>
@@ -59,23 +61,23 @@ dataSocket.on('messages', function(messages) {
 {% macro emit_messages() %}
 	<script>
 dataSocket.emit('messages');
-	</script>	
+	</script>
 {% endmacro %}
 
 {% macro emit_group_messages(group) %}
 	<script>
 dataSocket.emit('groupMessages', "{{group.name}}");
-	</script>	
+	</script>
 {% endmacro %}
 
 {% macro emit_node_messages(group) %}
 	<script>
 dataSocket.emit('nodeMessages', "{{node.name}}");
-	</script>	
+	</script>
 {% endmacro %}
 
 {% macro emit_user_messages(user) %}
 	<script>
 dataSocket.emit('groupMessages', "{{user.email}}");
-	</script>	
+	</script>
 {% endmacro %}

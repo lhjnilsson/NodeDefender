@@ -47,7 +47,9 @@ def unassigned():
     return SQL.session.query(NodeModel).filter(NodeModel.groups == None).all()
 
 def create(name):
-    return create_sql(name)
+    node = create_sql(name)
+    NodeDefender.db.message.node_created(node)
+    return node
 
 def update(original_name, **kwargs):
     return update_sql(original_name, **kwargs)

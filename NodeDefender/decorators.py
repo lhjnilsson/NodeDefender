@@ -1,4 +1,5 @@
 from functools import wraps
+import NodeDefender
 
 def celery_task(func):
     @wraps(func)

@@ -48,7 +48,9 @@ def list(user_mail = None):
     return [group for group in user.groups]
 
 def create(name, email = None):
-    return create_sql(name, email)
+    group = create_sql(name, email)
+    NodeDefender.db.message.group_created(group)
+    return group
 
 def update(group_name, **kwargs):
     return update_sql(group_name, **kwargs)

@@ -80,7 +80,9 @@ def list(*group_names):
 def create(email, firstname = None, lastname = None):
     create_sql(email)
     update_sql(email, **{'firstname' : firstname, 'lastname' : lastname})
-    return get_sql(email)
+    user = get_sql(email)
+    NodeDefender.db.message.user_message(user)
+    return user
 
 def update(email, **kwargs):
     return update_sql(email, **kwargs)

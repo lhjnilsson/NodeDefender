@@ -109,8 +109,7 @@ def user_created(user):
 
 def node_created(node):
     subject = "Node Created"
-    body = _node_created_template.format(node.name, node.location.street,
-                                            node.location.city)
+    body = _node_created_template.format(node.name)
     message = MessageModel(subject, body)
     node.messages.append(message)
     SQL.session.add(node)
@@ -138,6 +137,6 @@ def sensor_created(sensor):
 
 _group_created_template = "Group {} created. Mail Address: {}."
 _user_created_template = "User {} created"
-_node_created_template = "Node {} created, location {}, {}."
+_node_created_template = "Node {} created"
 _icpe_created_template = "iCPE {} created"
 _sensor_created_template = "Sensor {} created. Connected to iCPE {}"
