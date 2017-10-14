@@ -96,7 +96,8 @@ def update_nameless():
         info = NodeDefender.icpe.zwave.commandclass.info(classnumber=classnumber)
         if info:
             update(mac_address, sensor_id, classnumber=classnumber, **info)
-            print("updated: ", info['name'])
+            NodeDefender.db.logger.info("Updated Commandclass {}, for {}:{}".\
+                                        format(info['name'], mac_address, sensor_id))
             if info['types']:
                 NodeDefender.mqtt.command.commandclass.\
                         sup(mac_address, sensor_id, info['name'])
@@ -145,7 +146,8 @@ def add_type(mac_address, sensor_id, classname, classtype):
     web_field = NodeDefender.icpe.zwave.commandclass.\
             web_field(classname = classname, classtype = classtype)
     if not info:
-        print("No info: ", commandclass.name, classtype)
+        NodeDefender.db.logger.debug("Unsupported Commandclasstype {}:{}".\
+                                     format(commandclass.name, classtype))
         return False
     typeModel.name = info['name']
     if web_field:

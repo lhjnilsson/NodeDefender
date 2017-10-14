@@ -111,7 +111,6 @@ class SensorModel(SQL.Model):
         self.date_created = datetime.now()
         if sensorinfo:
             for key, value in sensorinfo.items():
-                print(key.lower(), value)
                 setattr(self, key.lower(), value)
 
             self.name = self.product_name

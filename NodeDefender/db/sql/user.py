@@ -96,4 +96,4 @@ class UserModel(SQL.Model):
         try:
             return getattr(self, role.lower())
         except AttributeError:
-            print(role)
+            return None

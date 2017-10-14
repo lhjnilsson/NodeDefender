@@ -4,23 +4,27 @@ from flask_moment import Moment
 from celery import Celery
 from itsdangerous import URLSafeSerializer
 from flask_wtf.csrf import CSRFProtect
-from NodeDefender import config
-import NodeDefender
 import os
 import sys
+import NodeDefender.config.factory
+import NodeDefender
 
 csfr = CSRFProtect()
 moment = Moment()
 
 def CreateApp():
     app = Flask(__name__)
-    try:
-        mode = os.environ['NodeDefender_Mode']
-        pass
-    except KeyError:
-        mode = 'Production'
-        
-    app.config.from_object('NodeDefender.config.'+mode+'Config')
+    mode = NodeDefender.config.general.run_mode()
+
+    if mode == 'Production':
+        app.config.from_object('NodeDefender.config.factory.ProductionConfig')
+    elif mode == 'Development':
+        app.config.from_object('NodeDefender.config.factory.DevelopmentConfig')
+    elif mode == 'Testing':
+        app.config.from_object('NodeDefender.config.factory.TestingConfig')
+    else:
+        raise ValueError("Mode {} not known".format(mode))
+
     app.template_folder = "templates"
     app.static_folder = "templates/frontend/static"
     moment.init_app(app)
@@ -37,9 +41,9 @@ def CreateLogging(app = None):
             loggHandler = logging.handler.\
                     SysLogHandler(address = (app.config['LOGGING_SERVER'],
                                              int(app.config['LOGGING_PORT'])))
-    level = app.config['LOGGING_LEVEL']
+    level = NodeDefender.config.logging.level()
     if level:
-        loggHandler.setLevel(level)
+        loggHandler.setLevel(level.upper())
     else:
         loggHandler.setLevel("DEBUG")
     

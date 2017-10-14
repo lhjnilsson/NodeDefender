@@ -11,6 +11,8 @@ def add(host, port = 1883, username = None, password = None):
     mqtt.port = port
     mqtt.connect()
     mqtt.loop_start()
+    NodeDefender.mqtt.logger.info("MQTT {}:{} initialized".\
+                                  format(host, port))
     return True
 
 def load(mqttlist = None):
@@ -27,11 +29,6 @@ def connection(host, port):
     return client
 
 class _MQTT:
-    '''
-    MQTT Service,
-    Start a thread listening for both incoming from MQTT Broker and also an
-    internal Queue. Puts Messages from broker another internal queue
-    '''
     def __init__(self):
         self.host = None
         self.port = None
@@ -40,7 +37,7 @@ class _MQTT:
         self.client = PahoMQTT.Client()
         self.client.on_message = self.on_message
         self.client.on_connect = self.on_connect
-       
+
     def __call__(self):
         if self.online:
             return str(self.host) + ':' + str(self.port)
@@ -54,7 +51,7 @@ class _MQTT:
             raise AttributeError('Port not set')
         self.info = {'host' : self.host, 'port' : self.port}
         self.client.loop_start()
-
+    
     def connect(self):
         self.client.connect(str(self.host), int(self.port), 60)
         self.connect = True
@@ -65,5 +62,3 @@ class _MQTT:
 
     def on_message(self, client, userdata, msg):
         message.event(msg.topic, msg.payload.decode('utf-8'), self.info)
-        #message.event.apply_async(args=[msg.topic, msg.payload.decode('utf-8'),
-        #                            self.info])

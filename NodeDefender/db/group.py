@@ -6,7 +6,7 @@ def get_sql(name):
     try:
         return GroupModel.query.filter_by(name = name).first()
     except Exception:
-        print("Cannot fetch group: ", name)
+        return None
 
 def update_sql(group_name, **kwargs):
     group = get_sql(group_name)

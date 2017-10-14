@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_socketio import SocketIO
 from flask_login import LoginManager
 from flask_bcrypt import Bcrypt
+import NodeDefender.config
 from NodeDefender.factory import CreateApp, CreateLogging, CreateCelery, Serializer
 from gevent import monkey
 monkey.patch_all()
@@ -41,4 +42,3 @@ import NodeDefender.mqtt
 import NodeDefender.icpe
 import NodeDefender.mail
 import NodeDefender.frontend
-

@@ -19,11 +19,10 @@ def commandclass_types(icpe, sensor_id, commandclass_name, *classtypes):
         known_types = NodeDefender.db.commandclass.\
                 get_sql(icpe, sensor_id, classname = commandclass_name).commandclasstypes()
     except AttributeError as e:
-        print("Commandclass not found: {}{} - {}".format(icpe, sensor_id,
-                                                         commandclass_name))
+        return False
+
     for classtype in classtypes:
         if classtype not in known_types:
-            print("Classtype: ", classtype)
             NodeDefender.db.commandclass.add_type(icpe, sensor_id,
                                                   commandclass_name, classtype)
 

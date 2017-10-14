@@ -9,7 +9,7 @@ def event(payload):
     try:
         return eval(classtypes[payload['type']] + '.event')(payload)
     except KeyError as e:
-        print(str(e))
+        return False
 
 def icon(value):
     return None

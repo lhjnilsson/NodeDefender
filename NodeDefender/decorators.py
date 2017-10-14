@@ -4,7 +4,10 @@ import NodeDefender
 def celery_task(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        return func(*args, **kwargs)
+        if NodeDefender.celery:
+            return func.delay(*args, **kwargs)
+        else:
+            return func(*args, **kwargs)
     return wrapper
 
 def mail_enabled(func):

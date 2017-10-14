@@ -7,7 +7,6 @@ def info(vendorid, productid):
     try:
         return zdb[vendorid][productid]
     except KeyError:
-        print('--- ' + vendorid + productid)
         return None
 
 with open(join(basedir, 'ZWaveDB.json')) as fr:

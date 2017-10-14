@@ -19,7 +19,7 @@ def update_sql(mac_address, **kwargs):
                 continue
             setattr(icpe, key, value)
     except ValueError:
-        print("Wrong Data: ", kwargs)
+        return False
 
     SQL.session.add(icpe)
     SQL.session.commit()

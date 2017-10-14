@@ -33,7 +33,6 @@ def main():
     with open('zwave_products.json') as fr:
         zdb = json.load(fr)
         x = [d for d in zdb if CheckExpected(d)]
-        print(len(x))
         f = FormatDict(x)
     with open('ZWaveDB.json', 'x+') as fw:
         json.dump(f, fw)

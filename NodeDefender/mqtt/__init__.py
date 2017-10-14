@@ -1,7 +1,7 @@
 import logging
 from NodeDefender import loggHandler
 
-logger = logging.getLogger('MQTT')
+logger = logging.getLogger(__name__)
 logger.setLevel('DEBUG')
 logger.addHandler(loggHandler)
 

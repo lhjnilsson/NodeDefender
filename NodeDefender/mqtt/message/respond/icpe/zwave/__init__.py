@@ -5,4 +5,7 @@ def event(topic, payload):
     try:
         eval(topic['commandClass'] + '.' + topic['action'])(topic, payload)
     except NameError:
-        print("Respond unsupport CC: ", topic['commandClass'])
+        NodeDefender.mqtt.logger.warning("Unsupported action {}, {}".\
+                                         format(topic['commandClass'],
+                                                topic['action']))
+        return False

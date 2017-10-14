@@ -15,8 +15,8 @@ def sup(topic, payload):
     elif 'type' in payload:
         types = payload['type'].split(',')
     else:
-        print("Neither Typelist not types found in payload")
         return False
+    
     return NodeDefender.icpe.sensor.commandclass.\
             commandclass_types(topic['mac_address'], topic['node'],
                                topic['commandClass'], *types)

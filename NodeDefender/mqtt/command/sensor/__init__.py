@@ -7,7 +7,6 @@ def set(mac_address, sensor_id, commandclass, endpoint = None, payload = None):
     else:
         node = sensor_id
     topic = topic_format.format(mac_address, node, commandclass, 'set')
-    print("MAC: ", mac_address)
     return fire(topic, payload = payload, icpe = mac_address)
 
 def sensor_info(mac_address, sensor_id):
