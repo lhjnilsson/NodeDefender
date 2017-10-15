@@ -13,7 +13,9 @@ def fire(topic, payload = None, icpe = None, mqttsrc = None):
         mqttsrc = NodeDefender.db.mqtt.icpe(icpe).to_json()
     conn = NodeDefender.mqtt.connection.connection(mqttsrc['host'], \
                                                    mqttsrc['port'])
-    return conn.publish(topic, payload)
+    conn.publish(topic, payload)
+    NodeDefender.db.mqtt.message_sent(mqttsrc['host'], mqttsrc['port'],
+                                      icpe)
 
 import NodeDefender.mqtt.command.icpe
 import NodeDefender.mqtt.command.sensor

@@ -12,17 +12,22 @@ def load(icpe, conn):
         'mqtt' : icpe.mqtt[0].host + ':' + str(icpe.mqtt[0].port),
         'mac_address' : icpe.mac_address,
         'serial_number' : icpe.serial_number,
+        'firmware' : icpe.firmware,
+        'hardware' : icpe.hardware,
         'ip_address' : icpe.ip_address,
         'ip_dhcp' : icpe.ip_dhcp,
         'ip_gateway' : icpe.ip_gateway,
         'ip_subnet' : icpe.ip_subnet,
         'online' : False,
+        'telnet' : icpe.telnet,
+        'ssh' : icpe.ssh,
+        'http' : icpe.http,
+        'snmp' : icpe.snmp,
         'battery' : None,
         'date_created' : icpe.date_created.timestamp(),
         'date_updated' : datetime.now().timestamp(),
         'date_loaded' : datetime.now().timestamp()
     }
-
     return conn.hmset(icpe.mac_address, i)
 
 @redisconn

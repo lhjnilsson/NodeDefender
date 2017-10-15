@@ -28,4 +28,4 @@ generalSocket.on('warning', function(msg) {
 
 generalSocket.on('info', function(msg) {
 	toastr.success(msg);
-})
+});

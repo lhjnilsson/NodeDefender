@@ -8,6 +8,7 @@ logger.setLevel('DEBUG')
 logger.addHandler(loggHandler)
 
 def load():
+    mqtt.load()
     icpe.load()
     sensor.load()
     field.load()

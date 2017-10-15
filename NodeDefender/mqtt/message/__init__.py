@@ -38,12 +38,14 @@ def mqtt_to_dict(func):
 def event(topic, payload, mqtt):
     if not NodeDefender.db.icpe.get(topic['mac_address']):
         NodeDefender.db.icpe.create(topic['mac_address'], mqtt)
-
+    if topic['messageType'] == 'cmd':
+        return command.event(topic, payload)
+    
+    NodeDefender.db.mqtt.message_recieved(mqtt['host'], mqtt['port'],
+                                          topic['mac_address'])
     if topic['messageType'] == 'rpt':
-        report.event(topic, payload)
+        return report.event(topic, payload)
     elif topic['messageType'] == 'rsp':
-        respond.event(topic, payload)
-    elif topic['messageType'] == 'cmd':
-        command.event(topic, payload)
+        return respond.event(topic, payload)
     elif topic['messageType'] == 'err':
-        error.event(topic, payload)
+        return error.event(topic, payload)

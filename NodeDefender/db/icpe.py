@@ -122,6 +122,28 @@ def update_state(mac_address, state):
     update_redis(icpe)
     return True
 
+def online(mac_address):
+    icpe = get(mac_address)
+    if not icpe:
+        return False
+    return eval(icpe['online'])
+
+def mark_online(mac_address):
+    icpe = get(mac_address)
+    if not icpe:
+        return False
+    icpe['online'] = True
+    NodeDefender.frontend.sockets.icpe.online(icpe)
+    return update_redis(icpe)
+
+def mark_offline(mac_address):
+    icpe = get(mac_address)
+    if not icpe:
+        return False
+    icpe['online'] = False
+    NodeDefender.frontend.sockets.icpe.offline(icpe)
+    return update_redis(icpe)
+
 def connection(mac_address):
     icpe = get(mac_address)
     if not icpe:

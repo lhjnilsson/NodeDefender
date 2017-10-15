@@ -1,5 +1,6 @@
 from NodeDefender.db.sql import SQL, MQTTModel, GroupModel, iCPEModel
 from redlock import RedLock
+import NodeDefender
 
 def get_sql(host, port = 1883):
     return MQTTModel.query.filter_by(host = host, port = port).first()
@@ -49,6 +50,19 @@ def create(host, port = 1883):
 
 def delete(host, port = 1883):
     return delete_sql(host, port)
+
+def load():
+    mqtts = MQTTModel.query.all()
+    for mqtt in mqtts:
+        NodeDefender.db.redis.mqtt.load(mqtt)
+    return len(mqtts)
+
+def message_sent(host, port, mac_address):
+    return NodeDefender.db.redis.mqtt.message_sent(host, str(port), mac_address)
+
+def message_recieved(host, port, mac_address):
+    return NodeDefender.db.redis.mqtt.message_recieved(host, str(port), mac_address)
+
 
 def list(group = None, user = None, icpe = None):
     if group:

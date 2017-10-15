@@ -4,6 +4,16 @@ from NodeDefender import socketio
 import NodeDefender
 from flask_login import current_user
 
+def online(icpe):
+    socketio.emit('info', 'iCPE {} Online'.format(icpe['mac_address']),
+         namespace='/general', broadcast=True)
+    return True
+
+def offline(icpe):
+    socketio.emit('warning', 'iCPE {} Offline'.format(icpe['mac_address']),
+         namespace='/general', broadcast=True)
+    return True
+
 @socketio.on('list', namespace='/icpe')
 def list(node):
     data = {}
