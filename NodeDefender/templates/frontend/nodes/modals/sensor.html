@@ -97,6 +97,10 @@ dataSocket.on('sensorEvents', function(events) {
 		var dateCell = newRow.insertCell(1);
 		var dateText = document.createTextNode(moment(events[i].date, "YYYYMMDD, hh:mm:ss").fromNow());
 		dateCell.appendChild(dateText);
+
+		var date2Cell = newRow.insertCell(2);
+		var date2Text = document.createTextNode(moment(events[i].date).format("ddd, hh:mm:ss"));
+		date2Cell.appendChild(date2Text);
 	}
 });
 	</script>

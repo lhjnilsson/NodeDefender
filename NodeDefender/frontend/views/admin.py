@@ -6,7 +6,6 @@ from flask_login import login_required, current_user
 from flask import Blueprint, request, render_template, flash, redirect, url_for
 from NodeDefender import serializer
 import NodeDefender
-#from ...security import group_required
 
 @admin_view.route('/admin/server', methods=['GET', 'POST'])
 @login_required

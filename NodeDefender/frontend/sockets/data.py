@@ -62,15 +62,15 @@ def group_power_average(group):
     return True
 
 @socketio.on('nodePowerAverage', namespace='/data')
-def node_power_average(msg):
-    data = NodeDefender.db.data.node.power.average(msg['name'])
-    emit('nodePowerAverage', (data))
+def node_power_average(node):
+    data = NodeDefender.db.data.node.power.average(node)
+    emit('nodePowerAverage', data)
     return True
 
 @socketio.on('nodePowerCurrent', namespace='/data')
-def node_power_current(msg):
-    data = NodeDefender.db.data.node.power.current(msg['name'])
-    emit('nodePowerCurrent', (data))
+def node_power_current(node):
+    data = NodeDefender.db.data.node.power.current(node)
+    emit('nodePowerCurrent', data)
     return True
 
 @socketio.on('sensorPowerAverage', namespace='/data')
@@ -94,9 +94,9 @@ def node_heat_average(msg):
     return True
 
 @socketio.on('nodeHeatCurrent', namespace='/data')
-def node_heat_current(msg):
-    data = NodeDefender.db.data.node.heat.current(msg['name'])
-    emit('nodeHeatCurrent', (data))
+def node_heat_current(node):
+    data = NodeDefender.db.data.node.heat.current(node)
+    emit('nodeHeatCurrent', data)
     return True
 
 @socketio.on('sensorHeatAverage', namespace='/data')

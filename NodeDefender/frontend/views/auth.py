@@ -16,8 +16,10 @@ def authenticate():
                                 RegisterForm = register_form)
     return render_template('frontend/auth/login.html', LoginForm = login_form)
 
-@auth_view.route("/login", methods=['POST'])
+@auth_view.route("/login", methods=['GET', 'POST'])
 def login():
+    if request.method == 'GET':
+        return redirect(url_for('auth_view.authenticate'))
     login_form = LoginForm()
     if login_form.validate() and login_form.email.data:
         user = NodeDefender.db.user.get(login_form.email.data)
@@ -40,8 +42,10 @@ def login():
         
     return redirect(url_for('index'))
 
-@auth_view.route("/register", methods=['POST'])
+@auth_view.route("/register", methods=['GET', 'POST'])
 def register():
+    if request.method == 'GET':
+        return redirect(url_for('auth_view.authenticate'))
     register_form = RegisterForm()
     if register_form.validate() and register_form.email.data:
         email = register_form.email.data

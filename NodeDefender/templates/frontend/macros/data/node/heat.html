@@ -9,7 +9,7 @@ $(document).ready(function() {
 		document.getElementById('nodeCurrentHeat').innerHTML = parseFloat(heat.heat).toFixed(2);
 	});
 	var loopNodeHeatCurrent = function() {
-		dataSocket.emit('nodeHeatCurrent', {'name' : node});
+		dataSocket.emit('nodeHeatCurrent', node);
 	}
 	loopNodeHeatCurrent();
 	setInterval(loopNodeHeatCurrent, 5000);

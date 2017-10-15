@@ -1,5 +1,5 @@
 from NodeDefender.db.sql import SQL, UserModel, GroupModel
-from NodeDefender import bcrypt
+import NodeDefender
 
 def get_sql(email):
     return UserModel.query.filter_by(email = email).first()
@@ -41,7 +41,8 @@ def get(email):
 
 def set_password(email, raw_password):
     user = get_sql(email)
-    user.password = bcrypt.generate_password_hash(raw_password).decode('utf-8')
+    user.password = NodeDefender.bcrypt.\
+            generate_password_hash(raw_password).decode('utf-8')
     return save_sql(user)
 
 def enable(email):
@@ -81,7 +82,7 @@ def create(email, firstname = None, lastname = None):
     create_sql(email)
     update_sql(email, **{'firstname' : firstname, 'lastname' : lastname})
     user = get_sql(email)
-    NodeDefender.db.message.user_message(user)
+    NodeDefender.db.message.user_created(user)
     return user
 
 def update(email, **kwargs):

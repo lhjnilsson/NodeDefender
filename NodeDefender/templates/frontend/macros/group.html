@@ -106,7 +106,7 @@ grouptable = document.getElementById('grouptable');
 </form>
 <script>
 $(document).ready(function() {
-	groupSocket.emit('list', ('{{user.email}}'));
+	groupSocket.emit('list');
 
 	groupSocket.on('list', function(groups) {
 		if (groups.length < 1) {
@@ -133,7 +133,7 @@ $(document).ready(function() {
 
 	var addToGroup = function() {
 		groupname = $('#Groupname').text();
-		groupSocket.emit('addUser', {'user' : '{{user.email}}', 'group' : groupname});
+		groupSocket.emit('addUser', groupname, '{{user.email}}');
 	}
 
 	try {

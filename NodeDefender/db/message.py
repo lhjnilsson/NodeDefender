@@ -16,7 +16,7 @@ def messages(user, limit = 10):
      
     groups = [group for group in user.groups]
     if len(groups) < 1:
-        return []
+        return user.messages
     
     nodes = [node for node in group.nodes for group in groups]
     icpes = [icpe for icpe in node.icpe for icpe in nodes]

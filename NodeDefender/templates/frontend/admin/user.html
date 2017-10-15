@@ -35,7 +35,9 @@
 				<div class="floatRight" id="addGroups"></div>
 			</div>
 			<div class="panel-body" style="padding: 0;">
-				{{ListGroups(User.groups)}}
+        {% if User.groups %}
+				    {{ListGroups(User.groups)}}
+        {% endif %}
 			</div>
 		</div>
 	</div>

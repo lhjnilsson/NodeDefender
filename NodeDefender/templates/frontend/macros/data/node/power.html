@@ -9,7 +9,7 @@ $(document).ready(function() {
 		document.getElementById('nodeCurrentPower').innerHTML = parseFloat(power.power).toFixed(2);
 	});
 	var loopNodePowerCurrent = function() {
-		dataSocket.emit('nodePowerCurrent', {'name' : node});
+		dataSocket.emit('nodePowerCurrent',  node);
 	}
 	loopNodePowerCurrent();
 	setInterval(loopNodePowerCurrent, 5000);
