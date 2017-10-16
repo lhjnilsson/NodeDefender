@@ -19,6 +19,12 @@ def update_fields(icpe, sensor, kwargs):
     emit('reload', namespace='/general')
     return True
 
+@socketio.on('mqttUpdate', namespace='/sensor')
+def mqtt_update(icpe, sensor):
+    NodeDefender.mqtt.command.sensor.sensor_info(icpe, sensor)
+    emit("info", "Sensor {} Updated".format(sensor), namespace='/general')
+    return True
+
 @socketio.on('fields', namespace='/sensor')
 def fields(icpe, sensor):
     emit('fields', NodeDefender.db.sensor.fields(icpe, sensor))

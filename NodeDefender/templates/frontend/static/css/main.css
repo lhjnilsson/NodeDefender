@@ -336,3 +336,10 @@ input:checked + .slider:before {
 	width: 80%;
 	display: inline-block;
 }
+.online-text {
+  color: white;
+}
+
+.offline-text {
+  color: red;
+}

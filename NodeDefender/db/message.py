@@ -81,13 +81,16 @@ def node_messages(node, limit = 10):
 
     if node is None:
         return False
+    node_query = SQL.session.query(MessageModel).join(MessageModel.node).\
+            filter(NodeModel.name == node.name)
+    icpe_query = SQL.session.query(MessageModel).join(MessageModel.icpe).\
+            filter(iCPEModel.mac_address == node.icpe.mac_address)
+    sensor_query = SQL.session.query(MessageModel).join(MessageModel.sensor).\
+            filter(SensorModel.sensor_id.\
+                   in_([sensor.sensor_id for sensor in node.icpe.sensors]))
     
-    sensors = [sensor.sensor_id for sensor in node.icpe.sensors]
-    return SQL.session.query(MessageModel).\
-            filter(or_(MessageModel.node == node,
-                       MessageModel.sensors.sensor_id.in_(*[sensors]),
-                    )).order_by(MessageModel.date.desc()).limit(int(limit)).all()
-
+    return node_query.union(icpe_query).union(sensor_query).order_by(MessageModel.date.desc()).\
+            limit(int(limit)).all()
 
 def group_created(group):
     subject = "Group Created"
@@ -121,6 +124,24 @@ def icpe_created(icpe):
     body = _icpe_created_template.format(icpe.mac_address)
     message = MessageModel(subject, body)
     icpe.messages.append(message)
+    SQL.session.add(icpe)
+    SQL.session.commit()
+    return True
+
+def icpe_online(icpe):
+    subject = "iCPE Online"
+    body = "iCPE {} became Online".format(icpe.mac_address)
+    message = MessageModel(subject, body)
+    icpes.messages.append(message)
+    SQL.session.add(icpe)
+    SQL.session.commit()
+    return True
+
+def icpe_offline(icpe):
+    subject = "iCPE Offline"
+    body = "iCPE {} became Offline".format(icpe.mac_address)
+    message = MessageModel(subject, body)
+    icpes.messages.append(message)
     SQL.session.add(icpe)
     SQL.session.commit()
     return True

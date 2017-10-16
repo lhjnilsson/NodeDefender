@@ -11,9 +11,10 @@
 			<div class="modal-body">
 				<ul class="nav nav-pills nav-justified">
 					<li class="active"><a data-toggle="pill" href="#SensorModalInfo">Information</a></li>
-					<li><a data-toggle="pill" href="#SensorModalRules">Events</a></li>
+					<li><a data-toggle="pill" href="#SensorModalEvents">Events</a></li>
 					<li><a data-toggle="pill" href="#SensorModalConfig">Configure</a></li>
 				</ul>
+				<br>
 				<div class="tab-content">
 					<div id="SensorModalInfo" class="tab-pane fade in active">
 						<div class="row">
@@ -26,7 +27,7 @@
 							{{ FieldID("Device Type", "-", "sensorDevtype") }}
 						</div>
 					</div>
-					<div id="SensorModalRules" class="tab-pane fade">
+					<div id="SensorModalEvents" class="tab-pane fade">
 						<table class="table table-striped" id="sensoreventtable">
 							<thead>
 								<tr>
@@ -46,9 +47,8 @@
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-primary" id="updateSensor">Update Fields</button>
+				<button type="button" class="btn btn-primary" id="updateSensorInfo">Send Update</button>
 				<button type="button" class="btn btn-primary" id="updateSensorConfig">Update Config</button>
-				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 			</div>
 		</div>
 	</div>
@@ -57,13 +57,30 @@
 var sensorEventTable = document.getElementById('sensoreventtable');
 var sensorEventBody = document.getElementById('sensoreventbody');
 
+updateSensorInfo = $('#updateSensorInfo');
+updateSensorConfig = $("#updateSensorConfig");
+updateSensorConfig.hide();
+
+$("a[href='#SensorModalInfo']").on('show.bs.tab', function(e) {
+		 updateSensorInfo.show();
+		 updateSensorConfig.hide()
+});
+$("a[href='#SensorModalEvents']").on('show.bs.tab', function(e) {
+	updateSensorInfo.hide();
+	updateSensorConfig.hide()
+});
+$("a[href='#SensorModalConfig']").on('show.bs.tab', function(e) {
+	updateSensorInfo.hide();
+	updateSensorConfig.show();
+});
+
 function reload() {
 	location.reload();
 };
 
-document.getElementById('updateSensor').addEventListener('click', function() {
-	sensorSocket.emit('update', {'icpe' : document.getElementById('sensoriCPE').innerHTML,
-		'sensor' : document.getElementById('sensor_id').innerHTML});
+document.getElementById('updateSensorInfo').addEventListener('click', function() {
+	sensorSocket.emit('mqttUpdate', document.getElementById('sensoriCPE').innerHTML,
+		document.getElementById('sensor_id').innerHTML);
 	setTimeout(reload, 5000);
 });
 
@@ -77,6 +94,7 @@ document.getElementById('updateSensorConfig').addEventListener('click', function
 sensorSocket.on('info', function(sensor) {
 	console.log(sensor);
 	document.getElementById("sensorName").innerHTML = sensor.name;
+	document.getElementById("sensorConfigName").value = sensor.name;
 	document.getElementById("sensor_id").innerHTML = sensor.sensor_id;
 	document.getElementById("sensoriCPE").innerHTML = sensor.icpe;
 	document.getElementById("sensorVendor").innerHTML = sensor.vendor_name;

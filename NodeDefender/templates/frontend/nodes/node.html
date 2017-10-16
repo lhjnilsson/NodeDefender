@@ -51,13 +51,13 @@
 					<div class="col-lg-4 textCenter">
 						<a href="#">
 							<h3 style="margin: 0;">0</h3>
-							<p><strong>Issues</strong></p>
+							<p><strong>Alarms</strong></p>
 						</a>
 					</div>
 					<div class="col-lg-4 textCenter">
-						<a href="#">
+						<a href="#" onclick="showNodeMessagesModal('{{Node.name}}')">
 							<i class="fa fa-book fa-2x" aria-hidden="true"></i>
-							<p><strong>Notifications</strong></p>
+							<p><strong>Messages</strong></p>
 						</a>
 					</div>
 				</div>
@@ -75,7 +75,9 @@
 	<div class="col-lg-3">
 		<div class="panel panel-primary">
 			<div class="panel-heading">
-				iCPE Connections
+				iCPE
+				<div id="iCPEMacAddress" style="display: inline;"></div>
+				<div id="iCPEOnlineStatus" style="display: inline;"></div>
 				<div class="floatRight" id="iCPEModals">
 					{% if Node.icpe %}
 						<a style="color: #FFFFFF; margin: 0 5px;" href="#" onclick="iCPEModal(icpeMac)"><i class="fa fa-info" aria-hidden="true"></i></a>
@@ -122,6 +124,16 @@
 						updateButton = $('#update-icpe');
 						includeButton = $('#include-icpe');
 						excludeButton = $('#exclude-icpe');
+						iCPESocket.on('info', function(icpe) {
+							document.getElementById("iCPEMacAddress").innerHTML = icpe.mac_address;
+							if (icpe.online == "True") {
+								document.getElementById("iCPEOnlineStatus").innerHTML = "ONLINE"
+								document.getElementById("iCPEOnlineStatus").className = 'online-text';
+							} else {
+								document.getElementById("iCPEOnlineStatus").innerHTML = "OFFLINE";
+								document.getElementById("iCPEOnlineStatus").className = 'offline-text';
+							}
+						});
 
 						iCPESocket.on('connection', function(conn) {
 							document.getElementById('connectionType').innerHTML = conn.type;
@@ -131,7 +143,7 @@
 							document.getElementById('powerSource').innerHTML = power.source;
 							document.getElementById('powerLevel').innerHTML = power.battery;
 						});
-
+						iCPESocket.emit("info", iCPE);
 						iCPESocket.emit('connection', iCPE);
 						iCPESocket.emit('power', iCPE);
 
@@ -282,6 +294,31 @@ function iCPEModal(iCPE) {
 </script>
 {{ ModalGrouplist(Node.groups) }}
 {{ NodeInformation(Node) }}
+{% from "frontend/macros/messages.html" import MessageList %}
+<div class="modal fade" id="NodeMessagesModal" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h2 class="modal-title">Messages</h2>
+			</div>
+			<div class="modal-body">
+				<div>
+					{{ MessageList() }}
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+	<script>
+	function showNodeMessagesModal(node) {
+		dataSocket.emit('nodeMessages', node);
+		$('#NodeMessagesModal').modal('show');
+	};
+	</script>
 
 <div class="modal fade" id="nodeModifyModal" role="dialog">
 	<div class="modal-dialog">
