@@ -36,3 +36,14 @@ def set(mac_address, sensor_id, commandclass, payload):
                                          payload = payload)
     return True
 
+
+@socketio.on('getParameter', namespace='/sensor')
+def get_parameter(mac_address, sensor_id, number):
+    NodeDefender.mqtt.command.sensor.parameter.get(mac_address, sensor_id, number)
+    return True
+
+@socketio.on('setParameter', namespace='/sensor')
+def set_parameter(mac_address, sensor_id, number, size, value):
+    NodeDefender.mqtt.command.sensor.parameter.set(mac_address, sensor_id, number,
+                                               size, value)
+    return True

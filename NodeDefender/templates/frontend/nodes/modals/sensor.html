@@ -42,12 +42,22 @@
 					<div id="SensorModalConfig" class="tab-pane fade">
 						<div class="row">
 							{{ render_manual("Name", "sensorConfigName") }}
+							<div class="col-lg-12">
+								<h4>Parameter</h4>
+							</div>
+							{{ render_manual("Number", "sensorParamNumber") }}
+							{{ render_manual("size", "sensorParamSize") }}
+							{{ render_manual("value", "sensorParamValue") }}
 						</div>
 					</div>
 				</div>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-primary" id="updateSensorInfo">Send Update</button>
+				<div style="display: inline; float: left;">
+					<button type="button" class="btn btn-primary" id="getSensorParam">Get Parameter</button>
+					<button type="button" class="btn btn-primary" id="setSensorParam">Set Parameter</button>
+				</div>
 				<button type="button" class="btn btn-primary" id="updateSensorConfig">Update Config</button>
 			</div>
 		</div>
@@ -59,19 +69,30 @@ var sensorEventBody = document.getElementById('sensoreventbody');
 
 updateSensorInfo = $('#updateSensorInfo');
 updateSensorConfig = $("#updateSensorConfig");
+getSensorParam = $('#getSensorParam');
+setSensorParam = $("#setSensorParam");
+
 updateSensorConfig.hide();
+getSensorParam.hide();
+setSensorParam.hide();
 
 $("a[href='#SensorModalInfo']").on('show.bs.tab', function(e) {
 		 updateSensorInfo.show();
-		 updateSensorConfig.hide()
+		 updateSensorConfig.hide();
+		 getSensorParam.hide();
+		 setSensorParam.hide();
 });
 $("a[href='#SensorModalEvents']").on('show.bs.tab', function(e) {
 	updateSensorInfo.hide();
 	updateSensorConfig.hide()
+	getSensorParam.hide();
+	setSensorParam.hide();
 });
 $("a[href='#SensorModalConfig']").on('show.bs.tab', function(e) {
 	updateSensorInfo.hide();
 	updateSensorConfig.show();
+	getSensorParam.show();
+	setSensorParam.show();
 });
 
 function reload() {
@@ -89,6 +110,23 @@ document.getElementById('updateSensorConfig').addEventListener('click', function
 	var sensor_id = document.getElementById("sensor_id").innerHTML;
 	var sensorName = document.getElementById('sensorConfigName').value;
 	sensorSocket.emit('update', icpe, sensor_id, {'name' : sensorName});
+});
+
+document.getElementById('getSensorParam').addEventListener('click', function() {
+	var icpe = document.getElementById("sensoriCPE").innerHTML;
+	var sensor_id = document.getElementById("sensor_id").innerHTML;
+	var paramNumber = document.getElementById('sensorParamNumber').value;
+	sensorSocket.emit('getParameter', icpe, sensor_id, paramNumber);
+});
+
+document.getElementById('setSensorParam').addEventListener('click', function() {
+	var icpe = document.getElementById("sensoriCPE").innerHTML;
+	var sensor_id = document.getElementById("sensor_id").innerHTML;
+	var sensorName = document.getElementById('sensorConfigName').value;
+	var paramNumber = document.getElementById('sensorParamNumber').value;
+	var paramSize = document.getElementById('sensorParamSize').value;
+	var paramValue = document.getElementById('sensorParamValue').value;
+	sensorSocket.emit('setParameter', icpe, sensor_id, paramNumber, paramSize, paramValue);
 });
 
 sensorSocket.on('info', function(sensor) {

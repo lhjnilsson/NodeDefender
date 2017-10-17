@@ -1,4 +1,5 @@
 import NodeDefender.mqtt.command.sensor.info
+import NodeDefender.mqtt.command.sensor.parameter
 from NodeDefender.mqtt.command import topic_format, fire
 
 def set(mac_address, sensor_id, commandclass, endpoint = None, payload = None):
