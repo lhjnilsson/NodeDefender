@@ -2,6 +2,8 @@ from NodeDefender.db.sql import SQL
 from datetime import datetime
 from NodeDefender import serializer
 from flask import url_for
+import NodeDefender
+
 class NodeModel(SQL.Model):
     '''
     Nodes represent a place that can contain one or more iCPEs
@@ -45,8 +47,15 @@ class NodeModel(SQL.Model):
         else:
             location = None
 
+        if self.icpe:
+            icpe = NodeDefender.db.icpe.get(self.icpe.mac_address)
+        else:
+            icpe = False
+
         return {'name' : self.name, 'description' : self.description, 'location' : location,
-                'url' : url_for('node_view.nodes_node', name=serializer.dumps(self.name))}
+                'url' : url_for('node_view.nodes_node',
+                                name=serializer.dumps(self.name)),
+                'icpe' : icpe}
 
 class LocationModel(SQL.Model):
     '''

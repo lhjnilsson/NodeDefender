@@ -25,7 +25,8 @@ def delete(name):
 @socketio.on('info', namespace='/node')
 def info(name):
     node = NodeDefender.db.node.get_sql(name)
-    return emit('info', node.to_json())
+    node = node.to_json()
+    return emit('info', node)
 
 @socketio.on('list', namespace='/node')
 def list(groups):
