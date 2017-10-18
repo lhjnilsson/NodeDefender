@@ -1,5 +1,6 @@
 from NodeDefender.mqtt.message.respond.icpe.zwave import info
 from NodeDefender.mqtt.message.respond.icpe.zwave import node
+import NodeDefender
 
 def event(topic, payload):
     try:
