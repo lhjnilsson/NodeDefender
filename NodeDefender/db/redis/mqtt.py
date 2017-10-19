@@ -9,6 +9,7 @@ def load(mqtt, conn):
     i = {
         'host' : mqtt.host,
         'port' : mqtt.port,
+        'online' : False,
         'date_created' : mqtt.date_created,
         'date_loaded' : datetime.now().timestamp()
      }

@@ -35,11 +35,39 @@ def delete_sql(host, port = 1883):
     SQL.session.delete(mqtt)
     return SQL.session.commit()
 
+def get_redis(host, port):
+    return NodeDefender.db.redis.mqtt.get(host, port)
+
+def update_redis(host, port, **kwargs):
+    return NodeDefender.db.redis.mqtt.update(host, port, **kwargs)
+
+def delete_redis(host, port):
+    return NodeDefender.db.redis.mqtt.delete(host, port)
+
 def get(host, port = 1883):
     return get_sql(host, port)
 
 def online(host, port):
-    return False
+    mqtt = get_redis(host, port)
+    return mqtt['online']
+
+def mark_online(host, port):
+    mqtt = get_redis(host, port)
+    if not mqtt:
+        return False
+    if mqtt['online']:
+        return mqtt
+    logger.info("MQTT {}:{} Online".format(host, port))
+    return update_redis(host, port, online = True)
+
+def mark_offline(host, port):
+    mqtt = get_redis(host, port)
+    if not mqtt:
+        return False
+    if not mqtt['online']:
+        return mqtt
+    logger.info("MQTT {}:{} Offline".format(host, port))
+    return update_redis(host, port, online = False)
 
 def icpe(mac_address):
     return SQL.session.query(MQTTModel).join(MQTTModel.icpes).\
