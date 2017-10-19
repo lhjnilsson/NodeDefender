@@ -52,7 +52,9 @@ class UserModel(SQL.Model):
     def to_json(self):
         return {'firstName': self.firstname,
                 'lastName' : self.lastname,
-                'email' : self.email}
+                'email' : self.email,
+                'dateCreated' : str(self.date_created),
+                'dateConfirmed' : str(self.date_confirmed)}
 
     def is_active(self):
         return True

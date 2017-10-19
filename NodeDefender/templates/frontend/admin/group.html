@@ -77,13 +77,64 @@
 		<div class="panel panel-primary">
 			<div class="panel-heading">
 				Users
-			</div>
+        {% if current_user.administrator %}
+        <div class="floatRight">
+          <a style="color: #FFFFFF;" href="#" data-toggle="modal" data-target="#AddUser">
+            <i class="fa fa-plus" aria-hidden="true"></i>
+          </a>
+        </div>
+        {% endif %}
+      </div>
 			<div class="panel-body" style="padding: 0";>
 				{{ListUsers(Group.users)}}
 			</div>
 		</div>
 	</div>
 </div>
+{% from "frontend/macros/info.html" import FieldID %}
+<div class="modal fade" id="AddUser" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h2 class="modal-title">Add Group</h2>
+			</div>
+			<div class="modal-body">
+        <div class="row">
+          <div class="form-group">
+            <label class="control-label col-sm-2">City:</label>
+            <div class="col-sm-10">
+              <input type="string" class="form-control" id="addUserMail" onblur="getUserInfo()">
+            </div>
+          </div>
+          {{ FieldID("Firstname", "", "addUserFirstname") }}
+          {{ FieldID("Lastname", "", "addUserLastname") }}
+        </div>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-success" id="submitAddUser" onclick="addUserToGroup()" disabled>Add User</button>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+group = "{{Group.name}}";
+userSocket.on('info', function(user){
+  console.log(user);
+  if (user) {
+    document.getElementById("addUserFirstname").innerHTML = user.firstName;
+    document.getElementById("addUserLastname").innerHTML = user.lastName;
+    document.getElementById("submitAddUser").disabled = false;
+  }
+})
+function getUserInfo() {
+  document.getElementById("submitAddUser").disabled = true;
+  userSocket.emit('info', document.getElementById("addUserMail").value);
+}
+function addUserToGroup() {
+  groupSocket.emit('addUser', group, document.getElementById("addUserMail").value)
+}
+</script>
 <div class="modal fade" id="modifyGroup" role="dialog">
 	<div class="modal-dialog">
 		<div class="modal-content">

@@ -22,6 +22,15 @@ def create(email, firstname, lastname, group, role):
     emit('reload', namespace='/general')
     return True
 
+@socketio.on('info', namespace='/user')
+def info(email):
+    user = NodeDefender.db.user.get(email)
+    if user:
+        return emit('info', user.to_json())
+    else:
+        return emit('error', "User {} not found".format(email),
+                    namespace='/general')
+
 @socketio.on('groups', namespace='/groups')
 def groups(email):
     return emit('groups', NodeDefender.db.user.groups(email))

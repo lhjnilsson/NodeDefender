@@ -17,7 +17,7 @@
 {% from "frontend/macros/group.html" import ListGroups, SelectGroup with context %}
 {% from "frontend/macros/user.html" import Info, Events, AdminSettings with context %}
 <div class="row">
-	<div class="col-lg-4">
+	<div class="col-lg-4 col-lg-offset-2">
 		<div class="panel panel-primary">
 			<div class="panel-heading">
 				User Information
@@ -38,16 +38,6 @@
         {% if User.groups %}
 				    {{ListGroups(User.groups)}}
         {% endif %}
-			</div>
-		</div>
-	</div>
-	<div class="col-lg-4">
-		<div class="panel panel-primary">
-			<div class="panel-heading">
-				Events
-			</div>
-			<div class="panel-body">
-				{{Events(user)}}
 			</div>
 		</div>
 	</div>
