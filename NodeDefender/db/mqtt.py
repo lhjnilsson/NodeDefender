@@ -39,7 +39,7 @@ def get_redis(host, port):
     return NodeDefender.db.redis.mqtt.get(host, port)
 
 def update_redis(host, port, **kwargs):
-    return NodeDefender.db.redis.mqtt.update(host, port, **kwargs)
+    return NodeDefender.db.redis.mqtt.save(host, port, **kwargs)
 
 def delete_redis(host, port):
     return NodeDefender.db.redis.mqtt.delete(host, port)
@@ -55,18 +55,18 @@ def mark_online(host, port):
     mqtt = get_redis(host, port)
     if not mqtt:
         return False
-    if mqtt['online']:
+    if eval(mqtt['online']):
         return mqtt
-    logger.info("MQTT {}:{} Online".format(host, port))
+    NodeDefender.db.logger.info("MQTT {}:{} Online".format(host, port))
     return update_redis(host, port, online = True)
 
 def mark_offline(host, port):
     mqtt = get_redis(host, port)
     if not mqtt:
         return False
-    if not mqtt['online']:
+    if not eval(mqtt['online']):
         return mqtt
-    logger.info("MQTT {}:{} Offline".format(host, port))
+    NodeDefender.db.logger.info("MQTT {}:{} Offline".format(host, port))
     return update_redis(host, port, online = False)
 
 def icpe(mac_address):

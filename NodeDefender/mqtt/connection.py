@@ -4,15 +4,21 @@ from NodeDefender.mqtt import logger, message
 import NodeDefender
 
 def add(host, port = 1883, username = None, password = None):
-    if NodeDefender.db.mqtt.online(host, port):
-        return
-    mqtt = _MQTT()
+    mqtt = MQTT()
     mqtt.host = host
     mqtt.port = port
-    mqtt.connect()
-    mqtt.loop_start()
+    NodeDefender.db.mqtt.mark_offline(host, port)
+    try:
+        mqtt.connect()
+    except TimeoutError:
+        NodeDefender.mqtt.logger.error("MQTT {}:{} unable to connect".\
+                                     format(host, port))
+        return False
+
+    NodeDefender.db.mqtt.mark_online(host, port)
     NodeDefender.mqtt.logger.info("MQTT {}:{} initialized".\
                                   format(host, port))
+    mqtt.loop_start()
     return True
 
 def load(mqttlist = None):
@@ -28,7 +34,7 @@ def connection(host, port):
     client.connect(host, port, 60)
     return client
 
-class _MQTT:
+class MQTT:
     def __init__(self):
         self.host = None
         self.port = None

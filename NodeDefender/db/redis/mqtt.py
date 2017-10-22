@@ -19,15 +19,23 @@ def load(mqtt, conn):
 
 @redisconn
 def get(host, port, conn):
-    return conn.hgetall(host + port)
+    return conn.hgetall(host + str(port))
+
+@redisconn
+def save(host, port, conn, **kwargs):
+    field  = conn.hgetall(host + str(port))
+    for key, value in kwargs.items():
+        field[key] = str(value)
+    field['date_updated'] = datetime.now().timestamp()
+    return conn.hmset(host + str(port), field)
 
 @redisconn
 def get_icpe(host, port, mac_address, conn):
-    return conn.hgetall(host + port + mac_address)
+    return conn.hgetall(host + str(port) + mac_address)
 
 @redisconn
 def list_icpes(host, port, conn):
-    return conn.smembers(host + port + ":icpes")
+    return conn.smembers(host + str(port) + ":icpes")
 
 @redisconn
 def load_icpe(mqtt, icpe, conn):
@@ -40,32 +48,32 @@ def load_icpe(mqtt, icpe, conn):
 
 @redisconn
 def message_sent(host, port, mac_address, conn):
-    sent = conn.hget(host + port + mac_address, "sent")
-    conn.hset(host + port + mac_address, "sent", (int(sent) + 1))
-    conn.hset(host + port + mac_address, "last_send",
+    sent = conn.hget(host + str(port) + mac_address, "sent")
+    conn.hset(host + str(port) + mac_address, "sent", (int(sent) + 1))
+    conn.hset(host + str(port) + mac_address, "last_send",
               datetime.now().timestamp())
-    sent = conn.srandmember(host + port + mac_address + ':sent')
+    sent = conn.srandmember(host + str(port) + mac_address + ':sent')
     if sent and NodeDefender.db.icpe.online(mac_address):
         if (datetime.now().timestamp() - float(sent)) > 10:
             NodeDefender.db.icpe.mark_offline(mac_address)
-    conn.sadd(host + port + mac_address + ':sent', datetime.now().timestamp())
+    conn.sadd(host + str(port) + mac_address + ':sent', datetime.now().timestamp())
     return True
 
 @redisconn
 def message_recieved(host, port, mac_address, conn):
-    recieved = conn.hget(host + port + mac_address, "recieved")
-    conn.hset(host + port + mac_address, "recieved", int(recieved) + 1)
-    conn.hset(host + port + mac_address, "last_recieved",
+    recieved = conn.hget(host + str(port) + mac_address, "recieved")
+    conn.hset(host + str(port) + mac_address, "recieved", int(recieved) + 1)
+    conn.hset(host + str(port) + mac_address, "last_recieved",
               datetime.now().timestamp())
-    conn.srem(host + port + mac_address + ':sent',\
-              conn.smembers(host + port + mac_address + ':sent'))
+    conn.srem(host + str(port) + mac_address + ':sent',\
+              conn.smembers(host + str(port) + mac_address + ':sent'))
     if not NodeDefender.db.icpe.online(mac_address):
         NodeDefender.db.icpe.mark_online(mac_address)
     return True
 
 @redisconn
 def updated(host, port, conn):
-    return conn.hmset(host + port, {'date_updated' : datetime.now().timestamp()})
+    return conn.hmset(host + str(port), {'date_updated' : datetime.now().timestamp()})
 
 @redisconn
 def flush(mac_address, conn):

@@ -44,8 +44,21 @@ def event(topic, payload, mqtt):
     NodeDefender.db.mqtt.message_recieved(mqtt['host'], mqtt['port'],
                                           topic['mac_address'])
     if topic['messageType'] == 'rpt':
+        NodeDefender.mqtt.logger.debug("Processing Report {}:{} for iCPE {}".\
+                                       format(topic['commandClass'],
+                                                  topic['action'],
+                                                  topic['mac_address']))
         return report.event(topic, payload)
     elif topic['messageType'] == 'rsp':
+        NodeDefender.mqtt.logger.debug("Processing Respond {}:{} for iCPE {}".\
+                                       format(topic['commandClass'],
+                                                  topic['action'],
+                                                  topic['mac_address']))
+
         return respond.event(topic, payload)
     elif topic['messageType'] == 'err':
+        NodeDefender.mqtt.logger.debug("Processing Error {}:{} for iCPE {}".\
+                                       format(topic['commandClass'],
+                                                  topic['action'],
+                                                  topic['mac_address']))
         return error.event(topic, payload)

@@ -132,7 +132,7 @@ def mark_online(mac_address):
     icpe = get(mac_address)
     if not icpe:
         return False
-    if icpe['online']:
+    if eval(icpe['online']):
         return icpe
     logger.info("iCPE {} Online".format(mac_address))
     NodeDefender.frontend.sockets.icpe.online(icpe)
@@ -142,7 +142,7 @@ def mark_offline(mac_address):
     icpe = get(mac_address)
     if not icpe:
         return False
-    if not icpe['online']:
+    if not eval(icpe['online']):
         return icpe
     logger.warning("iCPE {} Offline".format(mac_address))
     NodeDefender.frontend.sockets.icpe.offline(icpe)
