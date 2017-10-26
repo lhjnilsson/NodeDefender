@@ -1,6 +1,8 @@
 from NodeDefender.db.sql import SQL
 from datetime import datetime
 from NodeDefender.db.sql.node import LocationModel
+import NodeDefender
+from flask import url_for
 
 user_list = SQL.Table('user_list',
                      SQL.Column('group_id', SQL.Integer,
@@ -59,4 +61,6 @@ class GroupModel(SQL.Model):
                 str(self.date_created), 'description' : self.description,
                 'users' : [user.email for user in self.users],
                 'nodes' : [node.name for node in self.nodes],
-                'location' : location}
+                'location' : location,
+                'url' : url_for('admin_view.admin_group', name =
+                                NodeDefender.serializer.dumps(self.name))}

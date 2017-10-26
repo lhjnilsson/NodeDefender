@@ -35,9 +35,9 @@
 		<div class="panel panel-primary">
 			<div class="panel-heading">
 				Logging Settings
-				<div class="floatRight" id="generalSettings"></div>
 			</div>
 			<div class="panel-body" id="loggingPanel">
+        {{ FieldID("Enabled", "", "loggingEnabled") }}
         {{ FieldID('Type', '-', 'loggType') }}
 			</div>
 		</div>
@@ -49,6 +49,7 @@
 				<div class="floatRight" id="databaseSettings"></div>
 			</div>
 			<div class="panel-body" id="databasePanel">
+        {{ FieldID("Enabled", "", "databaseEnabled") }}
         {{ FieldID('Engine', '-', 'dbEngine') }}
 			</div>
 		</div>
@@ -73,6 +74,7 @@
 				Celery Settings
 			</div>
 			<div class="panel-body">
+        {{ FieldID("Enabled", "", "celeryEnabled") }}
         {{ FieldID('Broker', '-', 'celeryBroker') }}
         {{ FieldID('Server', '-', 'celeryServer') }}
         {{ FieldID('Port', '-', 'celeryPort') }}
@@ -86,6 +88,7 @@
 				Mail Settings
 			</div>
 			<div class="panel-body">
+        {{ FieldID("Enabled", "", "mailEnabled") }}
         {{ FieldID('Server', '-', 'mailServer') }}
         {{ FieldID('Port', '-', 'mailPort') }}
         {{ FieldID('TLS', '-', 'mailTLS') }}
@@ -97,13 +100,12 @@
 <script>
 $(document).ready(function() {
 {% if current_user.has_role("administrator") %}
-	$('#generalSettings').prepend('<a style="color: #FFFFFF;" href="#" data-toggle="modal" data-target="#modifyLocation"><i class="fa fa-cog" aria-hidden="true"></i></a>');
-	$('#databaseSettings').prepend('<a style="color: #FFFFFF;" href="#" data-toggle="modal" data-target="#modifyGeneral"><i class="fa fa-cog" aria-hidden="true"></i></a>');
 	$('#mqttAdd').prepend('<a style="color: #FFFFFF;" href="#" data-toggle="modal" data-target="#AddMQTT"><i class="fa fa-plus" aria-hidden="true"></i></a>');
 {% endif %}
 });
 
 adminSocket.on('mail', function(mail) {
+  $('#mailEnabled').text(mail.enabled);
   $('#mailServer').text(mail.server);
   $('#mailPort').text(mail.port);
   $('#mailTLS').text(mail.tls);
@@ -111,39 +113,42 @@ adminSocket.on('mail', function(mail) {
 
 });
 adminSocket.on('celery', function(celery) {
+  $('#celeryEnabled').text(celery.enabled);
   $('#celeryBroker').text(celery.broker);
   $('#celeryServer').text(celery.server);
   $('#celeryPort').text(celery.port);
  $('#celeryDatabase').text(celery.database);
 });
 adminSocket.on('logging', function(logging) {
-  if (logging.type == 'LOCAL') {
-    $('#loggType').text('Local');
-    $('#loggingPanel').append('<div class="col-lg-6"><strong>File Name:</strong></div><div class="col-lg-6"><p id="loggingFile">-</p></div>');
+  $('#loggingEnabled').text(logging.enabled);
+  if (logging.type == 'local') {
+    $('#loggType').text('local');
+    $('#loggingPanel').append('<div class="col-lg-4"><strong>File Name:</strong></div><div class="col-lg-6"><p id="loggingFile">-</p></div>');
     $('#loggingFile').text(logging.name)
   }
   else if (logging.type == 'SYSLOG') {
     $('#loggType').text('Syslog');
-    $('#loggingPanel').append('<div class="col-lg-6"><strong>File Name:</strong></div><div class="col-lg-6"><p id="syslogAddress">-</p></div>');
-    $('#loggingPanel').append('<div class="col-lg-6"><strong>File Name:</strong></div><div class="col-lg-6"><p id="syslogPort">-</p></div>');
+    $('#loggingPanel').append('<div class="col-lg-4"><strong>File Name:</strong></div><div class="col-lg-6"><p id="syslogAddress">-</p></div>');
+    $('#loggingPanel').append('<div class="col-lg-4"><strong>File Name:</strong></div><div class="col-lg-6"><p id="syslogPort">-</p></div>');
     $('#syslogAddress').text(logging.address);
     $('#syslogPort').text(logging.port);
   }
 });
 
 adminSocket.on('database', function(database) {
+    $('#databaseEnabled').text(database.enabled);
   if (database.engine.toUpperCase() == 'SQLITE') {
     $('#dbEngine').text('SQLite');
     adminSocket.emit('dbFile');
-    $('#databasePanel').append('<div class="col-lg-6"><strong>File Name:</strong></div><div class="col-lg-6"><p id="dbFile">-</p></div>');
+    $('#databasePanel').append('<div class="col-lg-4"><strong>File Name:</strong></div><div class="col-lg-6"><p id="dbFile">-</p></div>');
     $('#dbFile').text(database.name);
   }
   else {
     $('#dbEngine').text(database.engine);
     adminSocket.emit('dbServer');
     adminSocket.emit('dbPort');
-    $('#databasePanel').append('<div class="col-lg-6"><strong>Server Address:</strong></div><div class="col-lg-6"><p id="dbServer">-</p></div>');
-    $('#databasePanel').append('<div class="col-lg-6"><strong>Server Port:</strong></div><div class="col-lg-6"><p id="dbPort">-</p></div>');
+    $('#databasePanel').append('<div class="col-lg-4"><strong>Server Address:</strong></div><div class="col-lg-6"><p id="dbServer">-</p></div>');
+    $('#databasePanel').append('<div class="col-lg-4"><strong>Server Port:</strong></div><div class="col-lg-6"><p id="dbPort">-</p></div>');
     $('#dbServer').text(database.server);
     $('#dbPort').text(database.port);
   }

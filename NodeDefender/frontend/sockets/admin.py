@@ -67,5 +67,9 @@ def list(group):
 
 @socketio.on('mqttInfo', namespace='/admin')
 def info(host, port):
-    emit('mqttInfo', NodeDefender.db.mqtt.get(host, port).to_json())
+    mqtt = NodeDefender.db.mqtt.get_redis(host, port)
+    sql_mqtt = NodeDefender.db.mqtt.get_sql(host, port)
+    mqtt['icpes'] = [icpe.mac_address for icpe in sql_mqtt.icpes]
+    mqtt['groups'] = [group.name for group in sql_mqtt.groups]
+    emit('mqttInfo', mqtt)
     return True

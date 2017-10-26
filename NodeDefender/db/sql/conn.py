@@ -1,6 +1,7 @@
 from NodeDefender.db.sql import SQL
 from NodeDefender.db.sql.icpe import iCPEModel
 from datetime import datetime
+import NodeDefender
 
 mqtt_icpe = SQL.Table('mqtt_icpe',
                      SQL.Column('mqtt_id', SQL.Integer, SQL.ForeignKey('mqtt.id')),
@@ -26,6 +27,9 @@ class MQTTModel(SQL.Model):
         self.username = username
         self.password = password
         self.date_created = datetime.now()
+
+    def online(self):
+        return NodeDefender.db.mqtt.online(self.host, self.port)
 
     def to_json(self):
         return {'id' : str(self.id), 'host' : self.host, 'port' : self.port,

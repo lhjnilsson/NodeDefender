@@ -57,21 +57,17 @@ grouptable = document.getElementById('grouptable');
 	groupSocket.on('info', function(group) {
 		var newRow = grouptbody.insertRow(0);
 
-		var nameCell = newRow.insertCell(0);
-		var nameText = document.createTextNode(group.name);
-		nameCell.appendChild(nameText);
+		var groupName = newRow.insertCell(0);
+		var nameText = document.createElement("A");
+		nameText.innerHTML = group.name;
+		nameText.href = group.url;
+		groupName.appendChild(nameText);
 
-		var descCell = newRow.insertCell(1);
-		var descText = document.createTextNode(group.description);
-		descCell.appendChild(descText);
-
-		var usersCell = newRow.insertCell(2);
-		var usersText = document.createTextNode(group.users.length);
-		usersCell.appendChild(usersText);
-
-		var nodesCell = newRow.insertCell(3);
-		var nodesText = document.createTextNode(group.nodes.length);
-		nodesCell.appendChild(nodesText);
+		var groupMail = newRow.insertCell(1);
+		var mailText = document.createElement("A");
+		mailText.innerHTML = group.email;
+		mailText.href = group.url;
+		groupMail.appendChild(mailText);
 	});
 	</script>
 {% endif %}

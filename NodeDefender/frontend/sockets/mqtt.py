@@ -21,5 +21,5 @@ def list(group):
 
 @socketio.on('info', namespace='/mqtt')
 def info(host, port):
-    emit('info', NodeDefender.db.mqtt.get(host, port).to_json())
+    emit('info', NodeDefender.db.mqtt.get_redis(host, port))
     return True

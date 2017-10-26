@@ -23,7 +23,7 @@
 			</td>
 			<td>
 				<a href="#" onclick="MQTTInfo('{{mqtt.host}}', '{{mqtt.port}}')">
-				-
+				 {{mqtt.online()}}
 				</a>
 			</td>
 		</tr>
@@ -51,7 +51,8 @@
 							{{ FieldID("Address", "-", "mqttInfoAddress") }}
 							{{ FieldID("Port", "-", "mqttInfoPort") }}
 							{{ FieldID("Online", "-", "mqttInfoOnline") }}
-							{{ FieldID("Created On", "-", "mqttInfoCreatedOn") }}
+							{{ FieldID("Loaded", "-", "mqttInfoLoaded") }}
+							{{ FieldID("Last message", "-", "mqttInfoLastMessage") }}
 						</div>
 					</div>
 					<div id="MQTTModaliCPEs" class="tab-pane fade">
@@ -77,14 +78,14 @@ function MQTTInfo(host, port) {
 adminSocket.on("mqttInfo", function(info) {
 	cleariCPEList();
 	clearGroupList();
-
+	console.log(info);
 	$("#mqttInfoAddress").text(info.host);
 	$("#mqttInfoPort").text(info.port);
 	$("#mqttInfoOnline").text(info.online);
-	$("#mqttInfoCreatedAt").text(info.createdAt);
-
-	iCPEList(info.icpes);
-	groupList(info.groups);
+	$("#mqttInfoLoaded").text(moment.unix(info.date_loaded, "YYYYMMDD, hh:mm:ss"));
+	$("#mqttInfoLastMessage").text(moment.unix(info.date_updated, "YYYYMMDD, hh:mm:ss").fromNow());
+	groupList(info.groups)
+	iCPEList(info.icpes)
 });
 </script>
 {% endmacro %}
