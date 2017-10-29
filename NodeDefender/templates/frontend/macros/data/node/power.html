@@ -1,6 +1,13 @@
 {% macro Current(node) %}
 <p><strong>Current Power</strong></p>
-<p id="nodeCurrentPower">0.0 W</p>
+<div class="row">
+	<div class="col-lg-4">
+		<p id="nodeCurrentPower">0.0</p>
+	</div>
+	<div class="col-lg-8">
+		<p>Watt</p>
+	</div>
+</div>
 	<script>
 $(document).ready(function() {
 	node = "{{node.name}}";

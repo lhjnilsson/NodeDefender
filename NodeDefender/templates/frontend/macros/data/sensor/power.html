@@ -15,8 +15,7 @@ plotlySocket.on('sensorPowerChart', function(data) {
 	console.log(data);
 	Plotly.newPlot(chartElement, data.data, data.layout)
 });
-
-plotlySocket.emit('sensorPowerChart', "{{sensor.icpe.mac_address}}", "{{sensor.sensor_id}}");
+plotlySocket.emit('sensorPowerChart', "{{sensor.icpe}}", "{{sensor.sensor_id}}");
 </script>
 {% endmacro %}
 

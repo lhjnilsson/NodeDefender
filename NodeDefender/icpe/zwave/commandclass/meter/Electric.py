@@ -11,7 +11,7 @@ def icon(value):
 def event(payload):
     data = {'commandclass' : NodeDefender.icpe.zwave.commandclass.meter.info,
             'commandclasstype' : info, 'fields' : fields}
-    data['value'] = int(payload['data32'], 0) / 10
+    data['value'] = int(payload['data'], 0)
     data['state'] = True if data['value'] > 1.0 else False
     data['icon'] = 'fa fa-plug'
     return data

@@ -86,8 +86,9 @@ def load(*icpes):
         sensors = list(icpe.mac_address)
         for sensor in sensors:
             get(icpe.mac_address, sensor.sensor_id)
-            NodeDefender.mqtt.command.sensor.\
-                    sensor_info(icpe.mac_address, sensor.sensor_id)
+            if not sensor.product_name:
+                NodeDefender.mqtt.command.sensor.\
+                        sensor_info(icpe.mac_address, sensor.sensor_id)
     return True
 
 def create(mac_address, sensor_id):

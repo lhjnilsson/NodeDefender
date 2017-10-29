@@ -10,14 +10,13 @@ def current(node):
     if node is None or not node.icpe or not node.icpe.sensors:
         return False
     
-    ret_data = []
     node_data = {}
     node_data['name'] = node.name
     node_data['heat'] = 0.0
+    node_data['sensors'] = []
     for sensor in node.icpe.sensors:
         if not sensor.heat:
             continue
-
         sensor_data = {}
         if sensor.name:
             sensor_name = sensor.name
@@ -27,7 +26,7 @@ def current(node):
         sensor_data['sensor_id'] = sensor.sensor_id
         sensor_data['icpe'] = sensor.icpe.mac_address
         
-        min_ago = (datetime.now() - timedelta(hours=0.5))
+        min_ago = (datetime.now() - timedelta(hours=1))
         latest_heat =  SQL.session.query(HeatModel,\
                     label('sum', func.sum(HeatModel.average)),
                     label('count', func.count(HeatModel.average))).\
@@ -39,13 +38,15 @@ def current(node):
         
         if latest_heat.count:
             sensor_data['heat'] = latest_heat.sum / latest_heat.count
-            node_data['heat'] += sensor_data['heat']
+            if node_data['heat'] == 0.0:
+                node_data['heat'] = sensor_data['heat']
+            else:
+                node_data['heat'] = (sensor_data['heat'] + node_data['heat']) / 2
         else:
             sensor_data['heat'] = 0.0
 
-        ret_data.append(sensor_data)
+        node_data['sensors'].append(sensor_data)
 
-    ret_data.append(node_data)
     return node_data
 
 def average(node):

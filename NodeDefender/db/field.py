@@ -42,6 +42,8 @@ def load_from_sensor(sensor):
 
 def load_commandclass(*commandclasses):
     for commandclass in commandclasses:
+        if not commandclass.name:
+            continue
         field = eval('NodeDefender.icpe.zwave.commandclass.'+\
                      commandclass.name+'.fields')
         if field:

@@ -88,8 +88,8 @@ def group_heat_average(group):
     return True
 
 @socketio.on('nodeHeatAverage', namespace='/data')
-def node_heat_average(msg):
-    data = NodeDefender.db.data.node.heat.average(msg['name'])
+def node_heat_average(node):
+    data = NodeDefender.db.data.node.heat.average(node)
     emit('nodeHeatAverage', (data))
     return True
 

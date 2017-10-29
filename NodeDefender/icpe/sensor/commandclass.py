@@ -4,7 +4,6 @@ def commandclasses(icpe, sensor_id, *commandclasses):
     known_classes = [commandclass.number for commandclass in \
                      NodeDefender.db.commandclass.list(icpe, sensor_id)]
     
-    
     for commandclass in commandclasses:
         if commandclass not in known_classes:
             NodeDefender.db.commandclass.create(icpe, sensor_id, commandclass)
@@ -12,6 +11,9 @@ def commandclasses(icpe, sensor_id, *commandclasses):
     for commandclass in known_classes:
         if commandclass not in commandclasses:
             NodeDefender.db.commandclass.delete(icpe, sensor_id, commandclass)
+        else:
+            NodeDefender.db.commandclass.update_zwave(icpe, sensor_id,
+                                                      commandclass)
     return True
 
 def commandclass_types(icpe, sensor_id, commandclass_name, *classtypes):

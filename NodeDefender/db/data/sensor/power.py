@@ -3,6 +3,7 @@ from NodeDefender.db.sql import SQL, PowerModel, NodeModel, iCPEModel, GroupMode
 from sqlalchemy import func
 from sqlalchemy.sql import label
 from itertools import groupby
+import NodeDefender
 
 def current(icpe, sensor):
     sensor = SQL.session.query(SensorModel).\
@@ -124,27 +125,23 @@ def average(icpe, sensor):
 
     return sensor_data
 
-def chart(icpe, sensor):    
+def chart(mac_address, sensor_id):    
     from_date = (datetime.now() - timedelta(days=30))
     to_date = datetime.now()
     
-    sensor = SQL.session.query(SensorModel).\
-            join(PowerModel.icpe).\
-            filter(iCPEModel.mac_address == icpe).\
-            filter(SensorModel.sensor_id == sensor).first()
     
-    if sensor is None or sensor.power is None:
+    sensor = NodeDefender.db.sensor.get_sql(mac_address, sensor_id)
+    if sensor is None:
         return False
 
-    
     power_data = SQL.session.query(PowerModel).\
             join(PowerModel.icpe).\
             join(PowerModel.sensor).\
-            filter(iCPEModel.mac_address == sensor.icpe.mac_address).\
-            filter(SensorModel.sensor_id == sensor.sensor_id).\
+            filter(iCPEModel.mac_address == mac_address).\
+            filter(SensorModel.sensor_id == sensor_id).\
             filter(PowerModel.date > from_date).\
             filter(PowerModel.date < to_date).all()
-    
+
     sensor_data = {}
     sensor_data['name'] = sensor.name
     sensor_data['sensor'] = sensor.sensor_id

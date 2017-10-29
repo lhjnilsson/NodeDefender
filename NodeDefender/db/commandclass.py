@@ -130,7 +130,27 @@ def create(mac_address, sensor_id, classnumber):
        web_field(classnumber = classnumber):
         update(mac_address, sensor_id, classnumber = classnumber, **{'web_field' :
                                                                 True})
+    NodeDefender.db.field.load_commandclass(get_sql(mac_address, sensor_id,
+                                                    classumber = classnumber))
     return get(mac_address, sensor_id, classnumber = classnumber)
+
+def update_zwave(mac_address, sensor_id, classnumber):
+    if not get_sql(mac_address, sensor_id, classnumber = classnumber):
+        return False
+    info = NodeDefender.icpe.zwave.commandclass.info(classnumber = classnumber)
+    if info:
+        update(mac_address, sensor_id, classnumber = classnumber, **info)
+        if info['types']:
+            NodeDefender.mqtt.command.commandclass.sup(mac_address, sensor_id, \
+                                                       info['name'])
+    if NodeDefender.icpe.zwave.commandclass.\
+       web_field(classnumber = classnumber):
+        update(mac_address, sensor_id, classnumber = classnumber, **{'web_field' :
+                                                                True})
+    NodeDefender.db.field.load_commandclass(get_sql(mac_address, sensor_id,
+                                                    classnumber = classnumber))
+    return get(mac_address, sensor_id, classnumber = classnumber)
+
 
 def delete(mac_address, sensor_id, classnumber = None, classname = None):
     return delete_sql(mac_address, sensor_id, classnumber = classnumber, \
@@ -155,6 +175,7 @@ def add_type(mac_address, sensor_id, classname, classtype):
     commandclass.types.append(typeModel)
     SQL.session.add(commandclass, typeModel)
     SQL.session.commit()
+    NodeDefender.db.field.load_commandclasstype(typeModel)
     return True
 
 def get_type(mac, sensor_id, classname, classtype):

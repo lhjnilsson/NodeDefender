@@ -337,7 +337,8 @@ input:checked + .slider:before {
 	display: inline-block;
 }
 .online-text {
-  color: white;
+  color: green;
+  background-color: white;
 }
 
 .offline-text {

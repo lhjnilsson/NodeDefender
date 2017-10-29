@@ -6,8 +6,16 @@ from NodeDefender.db.redis import redisconn
 def load(commandclass, conn, **kwargs):
     if commandclass is None:
         return None
-    kwargs['mac_address'] = commandclass.sensor.icpe.mac_address
-    kwargs['sensor_id'] = commandclass.sensor.sensor_id
+    mac_address = commandclass.sensor.icpe.mac_address
+    sensor_id = commandclass.sensor.sensor_id
+    name = kwargs['name']
+    currently_loaded = get(mac_address, sensor_id, name)
+    if currently_loaded:
+        if datetime.now().timestamp() - float(currently_loaded['date_updated']) > 180:
+            return currently_loaded
+
+    kwargs['mac_address'] = mac_address
+    kwargs['sensor_id'] = sensor_id
     kwargs['commandclass_name'] = commandclass.name
     kwargs['value'] = None
     kwargs['date_updated'] = datetime.now().timestamp()

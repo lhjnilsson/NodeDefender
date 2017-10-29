@@ -125,7 +125,7 @@ $(document).ready(function() {
 		document.getElementById(name+"MonthlyPower").innerHTML = parseFloat(data.monthly).toFixed(2);
 	});
 	{% for node in group.nodes %}
-		dataSocket.emit('nodePowerAverage', {'name': "{{node.name}}"});
+		dataSocket.emit('nodePowerAverage', "{{node.name}}");
 	{% endfor %}
 });
 	</script>

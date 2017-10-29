@@ -67,7 +67,7 @@ plotlySocket.on('groupHeatChart', function(data) {
 	Plotly.newPlot(chartElement, data.data, data.layout)
 });
 
-plotlySocket.emit('groupHeatChart', {'name' : "{{group.name}}"});
+plotlySocket.emit('groupHeatChart', "{{group.name}}");
 </script>
 {% endmacro %}
 
@@ -125,7 +125,7 @@ $(document).ready(function() {
 		document.getElementById(name+"MonthlyHeat").innerHTML = parseFloat(data.monthly).toFixed(1);
 	});
 	{% for node in group.nodes %}
-		dataSocket.emit('nodeHeatAverage', {'name': "{{node.name}}"});
+		dataSocket.emit('nodeHeatAverage',"{{node.name}}");
 	{% endfor %}
 });
 	</script>

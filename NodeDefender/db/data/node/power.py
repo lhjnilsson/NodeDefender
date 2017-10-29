@@ -11,14 +11,13 @@ def current(node):
         return False
     
 
-    ret_data = []
     node_data = {}
     node_data['name'] = node.name
     node_data['power'] = 0.0
+    node_data['sensors'] = []
     for sensor in node.icpe.sensors:
         if not sensor.power:
             continue
-
         sensor_data = {}
         if sensor.name:
             sensor_name = sensor.name
@@ -28,7 +27,7 @@ def current(node):
         sensor_data['sensor_id'] = sensor.sensor_id
         sensor_data['icpe'] = sensor.icpe.mac_address
         
-        min_ago = (datetime.now() - timedelta(hours=0.5))
+        min_ago = (datetime.now() - timedelta(hours=1))
         latest_power =  SQL.session.query(PowerModel,\
                     label('sum', func.sum(PowerModel.average)),
                     label('count', func.count(PowerModel.average))).\
@@ -44,9 +43,8 @@ def current(node):
         else:
             sensor_data['power'] = 0.0
 
-        ret_data.append(sensor_data)
+        node_data['sensors'].append(sensor_data)
 
-    ret_data.append(node_data)
     return node_data
 
 def average(node):

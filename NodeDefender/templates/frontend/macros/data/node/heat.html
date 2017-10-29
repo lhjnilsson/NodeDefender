@@ -1,6 +1,13 @@
 {% macro Current(node) %}
 <p><strong>Current Heat</strong></p>
-<p id="nodeCurrentHeat">0.0 C</p>
+<div class="row">
+	<div class="col-lg-4">
+		<p id="nodeCurrentHeat">0.0</p>
+	</div>
+	<div class="col-lg-8">
+		<p>Celsius</p>
+	</div>
+</div>
 	<script>
 $(document).ready(function() {
 	node = "{{node.name}}";

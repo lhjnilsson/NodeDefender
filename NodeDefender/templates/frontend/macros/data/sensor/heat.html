@@ -16,7 +16,7 @@ plotlySocket.on('sensorHeatChart', function(data) {
 	Plotly.newPlot(chartElement, data.data, data.layout)
 });
 
-plotlySocket.emit('sensorHeatChart', {'icpe' : "{{sensor.icpe.mac_address}}", 'sensor' : '{{sensor.sensor_id}}' });
+plotlySocket.emit('sensorHeatChart', "{{sensor.icpe}}", '{{sensor.sensor_id}}');
 </script>
 {% endmacro %}
 
