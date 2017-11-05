@@ -3,10 +3,17 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_socketio import SocketIO
 from flask_login import LoginManager
 from flask_bcrypt import Bcrypt
+import os
+from datetime import datetime
 import NodeDefender.config
 from NodeDefender.factory import CreateApp, CreateLogging, CreateCelery, Serializer
 from gevent import monkey
 monkey.patch_all()
+
+# General Info
+hostname = os.uname().nodename
+release = 'Alpha-2'
+date_loaded = datetime.now()
 
 # Initialize the Flask- Application
 app = CreateApp()

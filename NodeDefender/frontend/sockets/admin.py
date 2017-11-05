@@ -1,54 +1,55 @@
 from flask_socketio import emit, send
-from NodeDefender import socketio, settings, config
 import NodeDefender
 
-@socketio.on('general', namespace='/admin')
+@NodeDefender.socketio.on('general', namespace='/admin')
 def general_info():
-    info = {'hostname' : settings.hostname, 'release' : settings.release,
-            'uptime' : settings.uptime()}
+    info = {'hostname' : NodeDefender.hostname,
+            'release' : NodeDefender.release,
+            'date_loaded' : str(NodeDefender.date_loaded),
+            'run_mode' : NodeDefender.config.general.run_mode()}
     emit('general', info)
     return True
 
-@socketio.on('logging', namespace='/admin')
+@NodeDefender.socketio.on('logging', namespace='/admin')
 def logging():
-    info = {'enabled' : config.logging.enabled(),
-            'type' : config.logging.type(),
-            'name' : config.logging.name(),
-            'server' : config.logging.server(),
-            'port' : config.logging.port()}
+    info = {'enabled' : NodeDefender.config.logging.enabled(),
+            'type' : NodeDefender.config.logging.type(),
+            'name' : NodeDefender.config.logging.name(),
+            'server' : NodeDefender.config.logging.server(),
+            'port' : NodeDefender.config.logging.port()}
     return emit('logging', info)
 
-@socketio.on('database', namespace='/admin')
+@NodeDefender.socketio.on('database', namespace='/admin')
 def database():
-    info = {'enabled' : config.database.enabled(),
-            'engine' : config.database.engine(),
-            'server' : config.database.server(),
-            'port' : config.database.port(),
-            'database' : config.database.db(),
-            'file' : config.database.file()}
+    info = {'enabled' : NodeDefender.config.database.enabled(),
+            'engine' : NodeDefender.config.database.engine(),
+            'server' : NodeDefender.config.database.server(),
+            'port' : NodeDefender.config.database.port(),
+            'database' : NodeDefender.config.database.db(),
+            'file' : NodeDefender.config.database.file()}
     return emit('database', info)
 
-@socketio.on('celery', namespace='/admin')
+@NodeDefender.socketio.on('celery', namespace='/admin')
 def celery():
-    info = {'enabled' : config.celery.enabled(),
-            'broker' : config.celery.broker(),
-            'server' : config.celery.server(),
-            'port' : config.celery.port(),
-            'database' : config.celery.database()}
+    info = {'enabled' : NodeDefender.config.celery.enabled(),
+            'broker' : NodeDefender.config.celery.broker(),
+            'server' : NodeDefender.config.celery.server(),
+            'port' : NodeDefender.config.celery.port(),
+            'database' : NodeDefender.config.celery.database()}
     return emit('celery', info)
 
-@socketio.on('mail', namespace='/admin')
+@NodeDefender.socketio.on('mail', namespace='/admin')
 def mail():
-    info = {'enabled' : config.mail.enabled(),
-            'server' : config.mail.server(),
-            'port' : config.mail.port(),
-            'tls' : config.mail.tls(),
-            'ssl' : config.mail.ssl(),
-            'username' : config.mail.username(),
-            'password' : config.mail.password()}
+    info = {'enabled' : NodeDefender.config.mail.enabled(),
+            'server' : NodeDefender.config.mail.server(),
+            'port' : NodeDefender.config.mail.port(),
+            'tls' : NodeDefender.config.mail.tls(),
+            'ssl' : NodeDefender.config.mail.ssl(),
+            'username' : NodeDefender.config.mail.username(),
+            'password' : NodeDefender.config.mail.password()}
     return emit('mail', info)
 
-@socketio.on('mqttCreate', namespace='/admin')
+@NodeDefender.socketio.on('mqttCreate', namespace='/admin')
 def create(host, port, group):
     try:
         NodeDefender.db.mqtt.create(host, port)
@@ -60,12 +61,12 @@ def create(host, port, group):
     emit('reload', namespace='/general')
     return True
 
-@socketio.on('mqttList', namespace='/admin')
+@NodeDefender.socketio.on('mqttList', namespace='/admin')
 def list(group):
     emit('list', NodeDefender.db.mqtt.list(group))
     return True
 
-@socketio.on('mqttInfo', namespace='/admin')
+@NodeDefender.socketio.on('mqttInfo', namespace='/admin')
 def info(host, port):
     mqtt = NodeDefender.db.mqtt.get_redis(host, port)
     sql_mqtt = NodeDefender.db.mqtt.get_sql(host, port)

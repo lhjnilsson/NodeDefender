@@ -1,8 +1,7 @@
 from flask_socketio import emit, send
-from NodeDefender import socketio, settings, config
 import NodeDefender
 
-@socketio.on('create', namespace='/mqtt')
+@NodeDefender.socketio.on('create', namespace='/mqtt')
 def create(host, port, group):
     try:
         NodeDefender.db.mqtt.create(host, port)
@@ -14,12 +13,12 @@ def create(host, port, group):
     emit('reload', namespace='/general')
     return True
 
-@socketio.on('list', namespace='/mqtt')
+@NodeDefender.socketio.on('list', namespace='/mqtt')
 def list(group):
     emit('list', NodeDefender.db.mqtt.list(group))
     return True
 
-@socketio.on('info', namespace='/mqtt')
+@NodeDefender.socketio.on('info', namespace='/mqtt')
 def info(host, port):
     emit('info', NodeDefender.db.mqtt.get_redis(host, port))
     return True
