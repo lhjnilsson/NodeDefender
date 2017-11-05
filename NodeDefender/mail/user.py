@@ -3,7 +3,7 @@ from flask import render_template, url_for
 import NodeDefender
 from NodeDefender import serializer
 from NodeDefender.mail import mail
-from smtplib import SMTPAuthenticationError
+import smtplib
 
 @NodeDefender.decorators.mail_enabled
 @NodeDefender.decorators.celery_task
@@ -21,7 +21,10 @@ def new_user(user):
                               url)
     try:
         mail.send(msg)
-    except SMTPAuthenticationError:
+    except smtplib.SMTPRecipientsRefused:
+        NodeDefender.mail.error("Unable to send email to: {}".\
+                                format(user.error))
+    except smtplib.SMTPAuthenticationError:
         NodeDefender.mail.logger.error("Authentication error when sending Email")
     return True
 
@@ -39,7 +42,10 @@ def confirm_user(user):
     msg.body = render_template('mail/user/user_confirmed.txt', user = user)
     try:
         mail.send(msg)
-    except SMTPAuthenticationError:
+    except smtplib.SMTPRecipientsRefused:
+        NodeDefender.mail.error("Unable to send email to: {}".\
+                                format(user.error))
+    except smtplib.SMTPAuthenticationError:
         NodeDefender.mail.logger.error("Authentication error when sending Email")
     return True
 
@@ -60,7 +66,10 @@ def reset_password(user):
                               url)
     try:
         mail.send(msg)
-    except SMTPAuthenticationError:
+    except smtplib.SMTPRecipientsRefused:
+        NodeDefender.mail.error("Unable to send email to: {}".\
+                                format(user.error))
+    except smtplib.SMTPAuthenticationError:
         NodeDefender.mail.logger.error("Authentication error when sending Email")
     return True
 
@@ -75,6 +84,9 @@ def login_changed(user):
     msg.body = render_template('mail/user/reset_password.txt', user = user)
     try:
         mail.send(msg)
-    except SMTPAuthenticationError:
+    except smtplib.SMTPRecipientsRefused:
+        NodeDefender.mail.error("Unable to send email to: {}".\
+                                format(user.error))
+    except smtplib.SMTPAuthenticationError:
         NodeDefender.mail.logger.error("Authentication error when sending Email")
     return True

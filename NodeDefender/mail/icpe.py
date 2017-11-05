@@ -3,6 +3,7 @@ from flask import render_template, url_for
 import NodeDefender
 from NodeDefender import serializer
 from NodeDefender.mail import mail
+import smtplib
 
 @NodeDefender.decorators.mail_enabled
 @NodeDefender.decorators.celery_task
@@ -21,7 +22,13 @@ def new_icpe(icpe, host, port):
     url = url_for('node_view.nodes_list')
     msg.body = render_template('mail/icpe/new_icpe.txt', icpe = icpe, mqtt =
                                mqtt, url = url)
-    mail.send(msg)
+    try:
+        mail.send(msg)
+    except smtplib.SMTPRecipientsRefused:
+        NodeDefender.mail.logger.error("Unable to send email for: {}".\
+                                 format(icpe.mac_address))
+    except smtplib.SMTPAuthenticationError:
+        NodeDefender.mail.logger.error("Authentication Error when sending email")
     return True
 
 @NodeDefender.decorators.mail_enabled
@@ -41,7 +48,11 @@ def icpe_enabled(icpe, host, port):
     url = url_for('node_view.nodes_list')
     msg.body = render_template('mail/icpe/icpe_enabled.txt', icpe = icpe, mqtt =
                                mqtt, url = url)
-    mail.send(msg)
+    try:
+        mail.send(msg)
+    except smtplib.SMTPRecipientsRefused:
+        NodeDefender.mail.logger.error("Unable to send email for: {}".\
+                                 format(icpe.mac_address))
+    except smtplib.SMTPAuthenticationError:
+        NodeDefender.mail.logger.error("Authentication Error when sending email")
     return True
-
-
