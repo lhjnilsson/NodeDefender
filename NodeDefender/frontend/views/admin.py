@@ -111,10 +111,9 @@ def admin_user(email):
                                UserGroupAdd = usergroupadd)
     
     if usersettings.Email.data and usersettings.validate():
-        NodeDefender.db.user.update(usersettings.email.data, **\
+        NodeDefender.db.user.update(usersettings.Email.data, **\
                                     {'firstname' : usersettings.Firstname.data,
-                                     'lastname' : usersettings.Lastname.data,
-                                     'email' : usersettings.Email.data})
+                                     'lastname' : usersettings.Lastname.data})
         return redirect(url_for('admin_view.admin_user', email =
                                 serializer.dumps(usersettings.Email.data)))
 

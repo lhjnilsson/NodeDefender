@@ -10,7 +10,7 @@
 {% endmacro %}
 
 {% macro AdminSettings(User, Form, Form2) %}
-{% from "frontend/macros/form.html" import render_field_with_errors, render_submit %}
+{% from "frontend/macros/form.html" import render_manual %}
 <div class="modal fade" id="UserConfigure" role="dialog">
 	<div class="modal-dialog">
 		<div class="modal-content">
@@ -19,33 +19,105 @@
 				<h2 class="modal-title">User Settings</h2>
 			</div>
 			<div class="modal-body">
-				<form action="{{url_for('admin_view.admin_user', email = serialize(User.email))}}" method="post" class="form-horizontal">
-					{{ Form.csfr_token }}
-					{{ Form.hidden_tag() }}
-					{{render_field_with_errors(Form.Firstname, User.firstname)}}
-					{{render_field_with_errors(Form.Lastname, User.lastname)}}
-					{{render_field_with_errors(Form.Email, User.email)}}
+				<ul class="nav nav-pills nav-justified">
+					<li class="active"><a data-toggle="pill" href="#modifyUserGeneral">General</a></li>
+					<li><a data-toggle="pill" href="#modifyUserRole">Role</a></li>
+					<li><a data-toggle="pill" href="#modifyUserDelete">Freeze and Delete</a></li>
+				</ul>
+				<br>
+				<div class="tab-content">
+					<div id="modifyUserGeneral" class="tab-pane fade in active">
+						<div class="row">
+							{{render_manual("Firstname", "modifyUserFirstname")}}
+							{{render_manual("Lastname", "modifyUserLastname")}}
+						</div>
+					</div>
+					<div id="modifyUserRole" class="tab-pane fade">
+						<div class="row">
+						</div>
+					</div>
+					<div id="modifyUserDelete" class="tab-pane fade">
+						<div class="row">
+							<div class="col-sm-10">
+								<i>By deleting this user you remove all the history associated with it.
+								Please confirm the action by entering the email of the user in the text- box below</i>
+							</div>
+						</div>
+						<div class="row">
+							<br>
+							<div class="form-group">
+								<label class="control-label col-sm-2">User Email:</label>
+								<div class="col-sm-10">
+									<input type="string" class="form-control" id="confirmUserDeleteEmail" onkeyup="confirmNodeDelete()">
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-error" id="deleteUser">Delete User</button>
-				{% if User.active %}
-					<button type="button" class="btn btn-warning" id="freezeUser">Freeze User</button>
-				{% else %}
-					<button type="button" class="btn btn-warning" id="enableUser">Enable User</button>
-				{% endif %}
+				<button type="button" class="btn btn-primary" id="submitUserGeneral">Save changes</button>
+				<button type="button" class="btn btn-warning" id="updatePassword">Update Password</button>
 				<button type="button" class="btn btn-warning" id="resetPassword">Reset Password</button>
-				<button type="submit" class="btn btn-primary">Save changes</button>
-				</form>
+				<button type="button" class="btn btn-warning" id="submitUserRole">Update Role</button>
+				<button type="button" class="btn btn-danger" id="deleteUser" disabled>Delete User</button>
+				<button type="button" class="btn btn-warning" id="freezeUser">Freeze User</button>
+				<button type="button" class="btn btn-success" id="enableUser">Enable User</button>
 			</div>
 		</div>
 	</div>
 </div>
 	<script>
 $(document).ready(function() {
+	userEmail = "{{User.email}}"
+	submitUserGeneral = $('#submitUserGeneral')
+	submitUserPassword = $('#updatePassword')
+	submitResetPassword = $('#resetPassword')
+	submitUserRole = $('#submitUserRole')
+	submitUserDelete = $('#deleteUser')
+	submitUserFreeze = $('#freezeUser')
+	submitUserEnable = $('#enableUser')
+
+	submitUserRole.hide();
+	submitUserDelete.hide()
+	submitUserFreeze.hide();
+	submitUserEnable.hide()
+	submitUserGeneral.show();
+	submitUserPassword.show();
+	submitResetPassword.show();
+
+	$("a[href='#modifyUserGeneral']").on('show.bs.tab', function(e) {
+	     submitUserRole.hide();
+	     submitUserDelete.hide()
+			 submitUserFreeze.hide();
+	     submitUserEnable.hide()
+	     submitUserGeneral.show();
+			 submitUserPassword.show();
+			 submitResetPassword.show();
+	});
+	$("a[href='#modifyUserRole']").on('show.bs.tab', function(e) {
+			submitUserRole.show();
+			submitUserDelete.hide()
+			submitUserFreeze.hide();
+			submitUserEnable.hide()
+			submitUserGeneral.hide();
+			submitUserPassword.hide();
+			submitResetPassword.hide();
+	});
+	$("a[href='#modifyUserDelete']").on('show.bs.tab', function(e) {
+			submitUserRole.hide();
+			submitUserDelete.show()
+			submitUserFreeze.show();
+			submitUserEnable.show()
+			submitUserGeneral.hide();
+			submitUserPassword.hide();
+			submitResetPassword.hide();
+	});
+
 	document.getElementById("deleteUser").onclick = function() {
 		userSocket.emit('delete', ('{{User.email}}'));
 	};
-	{% if User.active %}
+	{% if User.enabled %}
 	document.getElementById("freezeUser").onclick = function() {
 		userSocket.emit('freeze', {'email' : '{{User.email}}'});
 	};
