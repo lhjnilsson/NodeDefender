@@ -113,7 +113,7 @@ def add_mqtt(group_name, mqtt_host, mqtt_port):
 
 def remove_mqtt(group_name, mqtt_host, mqtt_port):
     group = get_sql(group_name)
-    mqtt = NodeDefender.db.mqtt.get(mqtt_host, mqtt_port)
+    mqtt = NodeDefender.db.mqtt.get_sql(mqtt_host, mqtt_port)
     if mqtt is None or group is None:
         return False
 

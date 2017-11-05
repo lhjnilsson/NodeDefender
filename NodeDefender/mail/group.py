@@ -37,7 +37,7 @@ def new_mqtt(group, mqttip, mqttport):
     if group.email is None:
         return False
     
-    mqtt = NodeDefender.db.mqtt.get(mqttip, mqttport)
+    mqtt = NodeDefender.db.mqtt.get_sql(mqttip, mqttport)
     if mqtt is None:
         return False
 

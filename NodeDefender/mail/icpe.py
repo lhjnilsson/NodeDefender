@@ -12,7 +12,7 @@ def new_icpe(icpe, host, port):
     if icpe is None:
         return False
 
-    mqtt = NodeDefender.db.mqtt.get(host, port)
+    mqtt = NodeDefender.db.mqtt.get_sql(host, port)
     if mqtt is None:
         return False
 
@@ -38,7 +38,7 @@ def icpe_enabled(icpe, host, port):
     if icpe is None:
         return False
 
-    mqtt = NodeDefender.db.mqtt.get(host, port)
+    mqtt = NodeDefender.db.mqtt.get_sql(host, port)
     if mqtt is None:
         return False
 

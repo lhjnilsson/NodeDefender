@@ -45,10 +45,17 @@ def delete_redis(host, port):
     return NodeDefender.db.redis.mqtt.delete(host, port)
 
 def get(host, port = 1883):
-    return get_sql(host, port)
+    mqtt = get_redis(host, port)
+    if len(mqtt):
+        return mqtt
+    if NodeDefender.db.redis.mqtt.load(get_sql(host, port)):
+        NodeDefender.db.logger.debug("Loaded MQTT: {}:{}".\
+                                     format(host, port))
+        return get_redis(host, port)
+    return False
 
 def online(host, port):
-    mqtt = get_redis(host, port)
+    mqtt = get(host, port)
     return mqtt['online']
 
 def mark_online(host, port):

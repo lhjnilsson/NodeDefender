@@ -28,7 +28,7 @@ def update_sql(mac_address, **kwargs):
 def create_sql(mac_address, mqttsrc):
     if get_sql(mac_address):
         return False
-    mqtt = NodeDefender.db.mqtt.get(**mqttsrc)
+    mqtt = NodeDefender.db.mqtt.get_sql(**mqttsrc)
     icpe = iCPEModel(mac_address)
     mqtt.icpes.append(icpe)
     SQL.session.add(mqtt, icpe)
