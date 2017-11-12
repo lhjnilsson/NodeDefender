@@ -43,17 +43,36 @@ def update(kwargs):
     emit('reload', namespace='/general')
     return True
 
+@socketio.on('name', namespace='/user')
+def name(email, firstname, lastname):
+    NodeDefender.db.user.update(email, **{'firstname' : firstname,
+                                          'lastname' : lastname})
+    emit('reload', namespace='/general')
+    return True
+
+@socketio.on('role', namespace='/user')
+def role(email, role):
+    NodeDefender.db.user.set_role(email, role)
+    emit('reload', namespace='/general')
+    return True
+
 @socketio.on('freeze', namespace='/user')
 def freeze_user(email):
-    return emit('freeze', NodeDefender.db.user.freeze(email))
+    NodeDefender.db.user.disable(email)
+    emit('reload', namespace='/general')
+    return True
 
 @socketio.on('enable', namespace='/user')
 def enable_user(email):
-    return emit('enable', NodeDefender.db.user.enable(email))
+    NodeDefender.db.user.enable(email)
+    emit('reload', namespace='/general')
+    return True
 
 @socketio.on('resetPassword', namespace='/user')
-def freeze_user(email):
-    return emit('resetPassword', NodeDefender.db.user.reset_password(email))
+def reset_password(email):
+    NodeDefender.db.user.reset_password(email)
+    emit('reload', namespace='/general')
+    return True
 
 @socketio.on('delete', namespace='/user')
 def delete_user(email):
@@ -62,5 +81,5 @@ def delete_user(email):
     except LookupError:
         emit('error')
         return
-    url = url_for('AdminView.AdminUsers')
+    url = url_for('admin_view.admin_users')
     emit('redirect', (url), namespace='/general')

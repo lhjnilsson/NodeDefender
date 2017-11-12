@@ -53,6 +53,8 @@ class UserModel(SQL.Model):
         return {'firstName': self.firstname,
                 'lastName' : self.lastname,
                 'email' : self.email,
+                'role' : self.get_role(),
+                'enabled' : self.enabled,
                 'dateCreated' : str(self.date_created),
                 'dateConfirmed' : str(self.date_confirmed)}
 
@@ -73,6 +75,16 @@ class UserModel(SQL.Model):
             return True
         else:
             return False
+
+    def get_role(self):
+        if self.superuser:
+            return 'superuser'
+        elif self.administrator:
+            return 'administrator'
+        elif self.technician:
+            return 'technician'
+        else:
+            return 'observer'
 
     def set_role(self, role):
         if role.lower() == 'observer':
