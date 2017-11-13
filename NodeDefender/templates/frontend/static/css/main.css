@@ -24,6 +24,11 @@ body {
   float: right;
 }
 
+.float-left {
+  float: left;
+}
+
+
 h3 {
 	margin-left: 1vw;
 }

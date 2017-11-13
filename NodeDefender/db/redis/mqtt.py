@@ -77,8 +77,8 @@ def updated(host, port, conn):
     return conn.hmset(host + str(port), {'date_updated' : datetime.now().timestamp()})
 
 @redisconn
-def flush(mac_address, conn):
-    if conn.hkeys(mac_address):
-        return conn.hdel(mac_address, *conn.hkeys(mac_address))
+def flush(host, port, conn):
+    if conn.hkeys(host + str(port)):
+        return conn.hdel(host + str(port), *conn.hkeys(host + str(port)))
     else:
         return True

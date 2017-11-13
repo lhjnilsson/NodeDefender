@@ -74,3 +74,20 @@ def info(host, port):
     mqtt['groups'] = [group.name for group in sql_mqtt.groups]
     emit('mqttInfo', mqtt)
     return True
+
+@NodeDefender.socketio.on('mqttUpdateHost', namespace='/admin')
+def update_mqtt(current_host, new_host):
+    mqtt = NodeDefender.db.mqtt.get_sql(current_host['host'],
+                                        current_host['port'])
+    mqtt.host = new_host['host']
+    mqtt.port = new_host['port']
+    NodeDefender.db.mqtt.save_sql(mqtt)
+    emit('reload', namespace='/general')
+    return True
+
+@NodeDefender.socketio.on('mqttDeleteHost', namespace='/admin')
+def delete_mqtt(host, port):
+    NodeDefender.db.mqtt.delete(host, port)
+    emit('reload', namespace='/general')
+    return True
+
