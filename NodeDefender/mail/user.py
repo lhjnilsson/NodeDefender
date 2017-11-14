@@ -15,15 +15,15 @@ def new_user(user):
         return False
     msg = Message('Welcome to NodeDefender', sender='noreply@nodedefender.com',
                   recipients=[user.email])
-    url = url_for('auth_view.register',\
+    url = url_for('auth_view.register_token',\
                   token = serializer.dumps_salted(user.email))
     msg.body = render_template('mail/user/create_user.txt', user = user, url =
                               url)
     try:
         mail.send(msg)
     except smtplib.SMTPRecipientsRefused:
-        NodeDefender.mail.error("Unable to send email to: {}".\
-                                format(user.error))
+        NodeDefender.mail.logger.error("Unable to send email to: {}".\
+                                format(user.email))
     except smtplib.SMTPAuthenticationError:
         NodeDefender.mail.logger.error("Authentication error when sending Email")
     return True
@@ -43,8 +43,8 @@ def confirm_user(user):
     try:
         mail.send(msg)
     except smtplib.SMTPRecipientsRefused:
-        NodeDefender.mail.error("Unable to send email to: {}".\
-                                format(user.error))
+        NodeDefender.mail.logger.error("Unable to send email to: {}".\
+                                format(user.email))
     except smtplib.SMTPAuthenticationError:
         NodeDefender.mail.logger.error("Authentication error when sending Email")
     return True
@@ -67,8 +67,8 @@ def reset_password(user):
     try:
         mail.send(msg)
     except smtplib.SMTPRecipientsRefused:
-        NodeDefender.mail.error("Unable to send email to: {}".\
-                                format(user.error))
+        NodeDefender.mail.logger.error("Unable to send email to: {}".\
+                                format(user.email))
     except smtplib.SMTPAuthenticationError:
         NodeDefender.mail.logger.error("Authentication error when sending Email")
     return True
@@ -85,8 +85,8 @@ def login_changed(user):
     try:
         mail.send(msg)
     except smtplib.SMTPRecipientsRefused:
-        NodeDefender.mail.error("Unable to send email to: {}".\
-                                format(user.error))
+        NodeDefender.mail.logger.error("Unable to send email to: {}".\
+                                format(user.email))
     except smtplib.SMTPAuthenticationError:
         NodeDefender.mail.logger.error("Authentication error when sending Email")
     return True

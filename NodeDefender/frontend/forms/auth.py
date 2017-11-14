@@ -18,6 +18,14 @@ class RegisterForm(Form):
     confirm_password = PasswordField('Retype Password', validators=[DataRequired()])
     submit = SubmitField('Submit')
 
+class RegisterTokenForm(Form):
+    firstname = StringField('Firstname', validators=[DataRequired()])
+    lastname = StringField('Lastname', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired(),
+                                                    EqualTo('confirm_password')])
+    confirm_password = PasswordField('Retype Password', validators=[DataRequired()])
+    submit = SubmitField('Submit')
+
 class PasswordForm(Form):
     password = PasswordField('Password', validators=[DataRequired(),
                                                     EqualTo('confirm_password')])
