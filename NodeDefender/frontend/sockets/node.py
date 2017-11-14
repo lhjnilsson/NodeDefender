@@ -10,7 +10,7 @@ def create(name, group, location):
     NodeDefender.db.node.create(name)
     NodeDefender.db.group.add_node(group, name)
     NodeDefender.db.node.location(name, **location)
-    NodeDefender.mail.node.new_node(name)
+    NodeDefender.mail.node.new_node(group, name)
     url = url_for('node_view.nodes_node', name = serializer.dumps(name))
     emit('redirect', (url), namespace='/general')
     return True
