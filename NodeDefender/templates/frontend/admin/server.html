@@ -97,7 +97,7 @@ $(document).ready(function() {
 
 adminSocket.on('mail', function(mail) {
   $('#mailEnabled').text(mail.enabled);
-  if (mail.enabled == 'true') {
+  if (mail.enabled) {
     $('#mailPanel').append('<div class="col-lg-4"><strong>File Name:</strong></div><div class="col-lg-6"><p id="mailEnabled">-</p></div>');
     $('#mailPanel').append('<div class="col-lg-4"><strong>File Name:</strong></div><div class="col-lg-6"><p id="mailServer">-</p></div>');
     $('#mailPanel').append('<div class="col-lg-4"><strong>File Name:</strong></div><div class="col-lg-6"><p id="mailPort">-</p></div>');
@@ -111,7 +111,7 @@ adminSocket.on('mail', function(mail) {
 });
 adminSocket.on('celery', function(celery) {
   $('#celeryEnabled').text(celery.enabled);
-  if (celery.enabled == 'true') {
+  if (celery.enabled) {
     $('#celeryPanel').append('<div class="col-lg-4"><strong>File Name:</strong></div><div class="col-lg-6"><p id="celeryBroker">-</p></div>');
     $('#celeryPanel').append('<div class="col-lg-4"><strong>File Name:</strong></div><div class="col-lg-6"><p id="celeryServer">-</p></div>');
     $('#celeryPanel').append('<div class="col-lg-4"><strong>File Name:</strong></div><div class="col-lg-6"><p id="celeryPort">-</p></div>');
@@ -124,7 +124,7 @@ adminSocket.on('celery', function(celery) {
 });
 adminSocket.on('logging', function(logging) {
   $('#loggingEnabled').text(logging.enabled);
-  if (logging.enabled == 'true') {
+  if (logging.enabled) {
     $('#loggingPanel').append('<div class="col-lg-4"><strong>File Name:</strong></div><div class="col-lg-6"><p id="loggingType">-</p></div>');
     if (logging.type == 'local') {
       $('#loggingType').text('local');
@@ -143,7 +143,7 @@ adminSocket.on('logging', function(logging) {
 
 adminSocket.on('database', function(database) {
   $('#databaseEnabled').text(database.enabled);
-  if (database.enabled == 'true') {
+  if (database.enabled) {
     $('#databasePanel').append('<div class="col-lg-4"><strong>Engine:</strong></div><div class="col-lg-6"><p id="databaseEngine">-</p></div>');
     $('#databaseEngine').text(database.engine);
     if (database.engine.toUpperCase() == 'SQLITE') {
@@ -164,7 +164,6 @@ adminSocket.on('database', function(database) {
 });
 
 adminSocket.on('general', function(info) {
-  console.log(info);
   $('#runMode').text(info.run_mode);
 	$('#hostName').text(info.hostname);
 	$('#releaseInfo').text(info.release);
