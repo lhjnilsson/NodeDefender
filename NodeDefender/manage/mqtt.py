@@ -1,5 +1,5 @@
 from flask_script import Manager, prompt
-from ..models.manage import mqtt
+import NodeDefender
 
 manager = Manager(usage='Manage MQTT')
 
@@ -28,12 +28,12 @@ def create(host, port, username, password):
     '''
 
     try:
-        mqtt.Create(host, port, username, password)
+        NodeDefender.db.mqtt.create(host, port)
     except ValueError as e:
         print("Error: ", e)
         return
 
-    print("MQTT {} Successfully created".format(host))
+    print("MQTT {}:{} Successfully created".format(host, port))
 
 
 @manager.option('-i', '--host', dest='host', default=None)
@@ -43,7 +43,7 @@ def delete(host):
         host = prompt('Host Address')
     
     try:
-         mqtt.Delete(host)
+         NodeDefender.db.mqtt.delete(host)
     except LookupError as e:
         print("Error: ", e)
         return
@@ -52,6 +52,6 @@ def delete(host):
 
 @manager.command
 def list():
-    for m in mqtt.List():
-        print("ID: {}, IP: {}:{}".format(m.id, m.host, m.port))
+    for mqtt in NodeDefender.db.mqtt.list():
+        print("ID: {}, IP: {}:{}".format(mqtt.id, mqtt.host, mqtt.port))
 

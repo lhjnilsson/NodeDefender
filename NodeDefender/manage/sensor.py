@@ -1,5 +1,5 @@
 from flask_script import Manager, prompt
-from ..models.manage import sensor
+import NodeDefender
 
 manager = Manager(usage='Manage Sensors')
 
@@ -24,8 +24,8 @@ def delete(mac, index):
 def purge():
     'Purge Sensors'
     for s in sensor.List():
-        db.session.delete(s)
-    db.session.commit()
+        SQL.session.delete(s)
+    SQL.session.commit()
     print("Sensors succesfully purged")
 
 @manager.command
@@ -33,7 +33,7 @@ def list():
     'List Sensors'
     for s in sensor.List():
         print("ID: {}, Name: {}".format(s.id, s.name))
-        print("MAC: {}, Sensor ID: {}".format(s.icpe.macaddr, s.sensorid))
+        print("MAC: {}, Sensor ID: {}".format(s.icpe.mac_address, s.sensor_id))
         print("-------------")
 
 @manager.option('-m', '--mac', dest='mac', default=None)
@@ -50,4 +50,4 @@ def info(mac, index):
         print("Unable to find iCPE {}".format(mac))
 
     print('ID: {}, Name: {}'.format(s.id, s.name))
-    print('iCPE: {}, Mac: {}'.format(s.icpe.name, s.icpe.macaddr))
+    print('iCPE: {}, Mac: {}'.format(s.icpe.name, s.icpe.mac_address))

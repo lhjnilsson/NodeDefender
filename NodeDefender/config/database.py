@@ -1,28 +1,28 @@
-from . import parser, configpath
+import NodeDefender
 
 def enabled():
-    return True if parser['DATABASE']['ENABLED'] == 'True' else False
+    return True if NodeDefender.config.parser['DATABASE']['ENABLED'] == 'True' else False
 
 def engine():
-    return parser['DATABASE']['ENGINE']
+    return NodeDefender.config.parser['DATABASE']['ENGINE']
 
 def username():
-    return parser['DATABASE']['USERNAME']
+    return NodeDefender.config.parser['DATABASE']['USERNAME']
 
 def password():
-    return parser['DATABASE']['PASSWORD']
+    return NodeDefender.config.parser['DATABASE']['PASSWORD']
 
 def server():
-    return parser['DATABASE']['SERVER']
+    return NodeDefender.config.parser['DATABASE']['SERVER']
 
 def port():
-    return parser['DATABASE']['PORT']
+    return NodeDefender.config.parser['DATABASE']['PORT']
 
 def db():
-    return parser['DATABASE']['DB']
+    return NodeDefender.config.parser['DATABASE']['DB']
 
 def file():
-    return parser['DATABASE']['FILE_PATH']
+    return NodeDefender.config.parser['DATABASE']['FILE_PATH']
 
 def mysql_uri():
     return 'mysql+pymysql://'+username()+':'+password()+'@'+server()+':'+port()+'/'+db()
@@ -32,18 +32,17 @@ def postgresql_uri():
             +server()+':'+port()+'/'+db()
 
 def sqlite_uri():
-    return 'sqlite:///' + parser['DATABASE']['FILE_PATH']
+    return 'sqlite:///' + NodeDefender.config.parser['DATABASE']['FILE_PATH']
 
 def uri():
     db_engine = engine()
     return eval(db_engine + '_uri')()
 
 def get_cfg(key):
-    return parser['DATABASE'][key]
+    return NodeDefender.config.parser['DATABASE'][key]
 
 def set_cfg(**kwargs):
     for key, value in kwargs.items():
-        parser['DATABASE'][key] = str(value)
+        NodeDefender.config.parser['DATABASE'][key] = str(value)
 
-    with open(configpath, 'w') as fw:
-        parser.write(fw)
+    return NodeDefender.config.write()

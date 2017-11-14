@@ -1,16 +1,16 @@
 from flask_script import Manager, prompt
-from ..models.manage import node, icpe
+import NodeDefender
 
 manager = Manager(usage='Manage iCPE Devices')
 
 @manager.option('-m', '--mac', dest='mac', default=None)
 def delete(mac):
-    'Remove iCPE'
+    'Delete iCPE'
     if mac is None:
         mac = prompt('Mac')
 
     try:
-        icpe.Delete(mac)
+        NodeDefender.db.icpe.delete(mac)
     except LookupError as e:
         print("Error: ", str(e))
         return
@@ -19,24 +19,24 @@ def delete(mac):
 @manager.command
 def list():
     'List iCPEs'
-    icpes = icpe.List()
+    icpes = NodeDefender.db.icpe.list()
     if not icpes:
         print("No icpes")
         return False
 
-    for i in icpes:
-        print("ID: {}, MAC: {}".format(i.id, i.macaddr))
+    for icpe in icpes:
+        print("ID: {}, MAC: {}".format(icpe.id, icpe.mac_address))
     return True
 
 @manager.command
 def unassigned():
-    icpes = icpe.Unassigned()
+    icpes = NodeDefender.db.icpe.unassigned()
     if not icpes:
         print("No Unassigned iCPEs")
         return False
 
-    for i in icpes:
-        print("ID: {}, MAC: {}".format(i.id, i.macaddr))
+    for icpe in icpes:
+        print("ID: {}, MAC: {}".format(icpe.id, icpe.mac_address))
     return True
 
 @manager.option('-mac', '--mac', dest='mac', default=None)
@@ -45,12 +45,12 @@ def info(mac):
     if mac is None:
         mac = prompt('Mac')
     
-    icpe = icpe.Get(mac)
+    icpe = NodeDefender.db.icpe.get_sql(mac)
     if icpe is None:
         print("Unable to find iCPE {}".format(mac))
 
-    print('ID: {}, MAC: {}'.format(icpe.id, icpe.macaddr))
+    print('ID: {}, MAC: {}'.format(icpe.id, icpe.mac_address))
     print('Alias {}, Node: {}'.format(icpe.alias, icpe.node.name))
     print('ZWave Sensors: ')
-    for sensor in iCPE.sensors:
+    for sensor in icpe.sensors:
         print('Alias: {}, Type: {}'.format(sensor.alias, sensor.type))

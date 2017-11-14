@@ -1,26 +1,28 @@
-from . import parser, configpath
+import NodeDefender
 
 def enabled():
-    return True if parser['LOGGING']['ENABLED'] == 'True' else False
+    return True if NodeDefender.config.parser['LOGGING']['ENABLED'] == 'True' else False
+
+def level():
+    return NodeDefender.config.parser['LOGGING']['LEVEL']
 
 def type():
-    return parser['LOGGING']['TYPE']
+    return NodeDefender.config.parser['LOGGING']['TYPE']
 
 def name():
-    return parser['LOGGING']['NAME']
+    return NodeDefender.config.parser['LOGGING']['FILEPATH']
 
 def server():
-    return parser['LOGGING']['SERVER']
+    return NodeDefender.config.parser['LOGGING']['SERVER']
 
 def port():
-    return parser['LOGGING']['PORT']
+    return NodeDefender.config.parser['LOGGING']['PORT']
 
 def get_cfg(key):
-    return parser['LOGGING'][key]
+    return NodeDefender.config.parser['LOGGING'][key]
 
 def set_cfg(**kwargs):
     for key, value in kwargs.items():
-        parser['LOGGING'][key] = str(value)
+        NodeDefender.config.parser['LOGGING'][key] = str(value)
 
-    with open(configpath, 'w') as fw:
-        parser.write(fw)
+    return NodeDefender.config.write()

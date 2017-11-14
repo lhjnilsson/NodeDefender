@@ -1,5 +1,5 @@
-from . import parser, configpath
 from datetime import datetime
+import NodeDefender
 
 def hostname():
     return os.uname().nodename
@@ -7,24 +7,29 @@ def hostname():
 def uptime():
     return str(datetime.now() - _loaded_at)
 
+def run_mode():
+    return NodeDefender.config.parser['GENERAL']['run_mode']
+
 def secret_key():
-    return parser['GENERAL']['KEY']
+    return NodeDefender.config.parser['GENERAL']['KEY']
 
 def secret_salt():
-    return parser['GENERAL']['SALT']
+    return NodeDefender.config.parser['GENERAL']['SALT']
 
 def server_name():
-    return parser['GENERAL']['SERVERNAME']
+    return NodeDefender.config.parser['GENERAL']['SERVERNAME']
 
 def server_port():
-    return parser['GENERAL']['PORT']
+    return NodeDefender.config.parser['GENERAL']['PORT']
+
+def self_registration():
+    return NodeDefender.config.parser['GENERAL']['SELF_REGISTRATION']
 
 def get_cfg(key):
-    return parser['GENERAL'][key]
+    return NodeDefender.config.parser['GENERAL'][key]
 
 def set_cfg(**kwargs):
     for key, value in kwargs.items():
-        parser['GENERAL'][key] = str(value)
+        NodeDefender.config.parser['GENERAL'][key] = str(value)
 
-    with open(configpath, 'w') as fw:
-        parser.write(fw)
+    return NodeDefender.config.write()

@@ -1,57 +1,62 @@
-'''
-Copyright (c) 2016 Connection Technology Systems Northern Europe
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE
-SOFTWARE.
-'''
 from flask_socketio import emit, send, disconnect, join_room, leave_room, \
         close_room, rooms
-from ... import socketio
-from ...models.manage import icpe as iCPESQL
+from NodeDefender import socketio
+import NodeDefender
+from flask_login import current_user
+
+def online(icpe):
+    socketio.emit('info', 'iCPE {} Online'.format(icpe['mac_address']),
+         namespace='/general', broadcast=True)
+    return True
+
+def offline(icpe):
+    socketio.emit('warning', 'iCPE {} Offline'.format(icpe['mac_address']),
+         namespace='/general', broadcast=True)
+    return True
 
 @socketio.on('list', namespace='/icpe')
-def List(msg):
-    icpes = [icpe.macaddr for icpe in iCPESQL.List(**msg)]
-    emit('listRsp', (icpes))
+def list(node):
+    data = {}
+    data['node'] = NodeDefender.db.node.get(node).to_json()
+    data['icpes'] = [icpe.to_json() for icpe in
+                     NodeDefender.db.icpe.list(node)]
+    emit('list', data)
     return True
 
 @socketio.on('unassigned', namespace='/icpe')
-def Unassigned(msg):
-    icpes = [icpe.macaddr for icpe in iCPESQL.Unassigned(**msg)]
-    emit('unassigned', (icpes), namespace='/icpe')
+def unassigned():
+    icpes = [icpe.mac_address for icpe in
+            NodeDefender.db.icpe.unassigned(current_user)]
+    emit('unassigned', icpes)
     return True
 
-
 @socketio.on('info', namespace='/icpe')
-def Info(msg):
-    icpe = iCPESQL.Get(msg['icpe'])
-    if icpe:
-        emit('info', (icpe.to_json()))
-        return True
+def info(icpe):
+    emit('info', NodeDefender.db.icpe.get(icpe))
+    return True
 
 @socketio.on('connection', namespace='/icpe')
-def connection(msg):
-    emit('connection', {'address' : '127.0.0.1', 'type' : 'wired'})
+def connection(icpe):
+    emit('connection', NodeDefender.icpe.system.network_settings(icpe))
     return True
 
 @socketio.on('power', namespace='/icpe')
-def power(msg):
-    emit('power', {'source' : 'wired', 'battery' : 'none'})
+def power(icpe):
+    #emit('power', NodeDefender.icpe.system.battery_info(icpe))
+    return True
+
+@socketio.on('mqttInclude', namespace='/icpe')
+def include_sensor(icpe):
+    NodeDefender.mqtt.command.icpe.include_mode(icpe)
+    return emit('info', 'Include Mode', namespace='/general')
+
+@socketio.on('mqttExclude', namespace='/icpe')
+def exclude_sensor(icpe):
+    NodeDefender.mqtt.command.icpe.exclude_mode(icpe)
+    return emit('info', 'Exclude Mode', namespace='/general')
+
+@socketio.on('mqttUpdate', namespace='/icpe')
+def update(icpe):
+    NodeDefender.mqtt.command.icpe.system_info(icpe)
+    NodeDefender.mqtt.command.icpe.zwave_info(icpe)
+    return emit('info', 'iCPE Updated', namespace='/general')

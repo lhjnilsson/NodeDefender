@@ -1,65 +1,71 @@
-'''
-Copyright (c) 2016 Connection Technology Systems Northern Europe
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE
-SOFTWARE.
-'''
 from flask_socketio import emit, send, disconnect, join_room, leave_room, \
         close_room, rooms
-from ... import socketio
-from ...models.manage import group as GroupSQL
-from ...models.manage import user as UserSQL
+from NodeDefender import socketio, serializer
+import NodeDefender
 from flask_login import current_user
-from ...mail import group as GroupMail
+from flask import url_for
+from geopy.geocoders import Nominatim
 
 @socketio.on('create', namespace='/group')
-def create(info):
-    if GroupSQL.Get(info['name']):
+def create(name, email, location):
+    if NodeDefender.db.group.get(name):
         emit('error', ('Group exsists'), namespace='/general')
         return False
-    group = GroupSQL.Create(info['name'], info['mail'], info['description'])
-    GroupSQL.Location(group, info['street'], info['city'])
-    GroupMail.new_group.delay(group.name)
-    emit('reload', namespace='/general')
-    return True
+    group = NodeDefender.db.group.create(name, email)
+    NodeDefender.db.group.location(name, **location)
+    NodeDefender.mail.group.new_group(name)
+    url = url_for('admin_view.admin_group', name = serializer.dumps(name))
+    return emit('redirect', (url), namespace='/general')
 
 @socketio.on('list', namespace='/group')
-def list(user):
-    user = current_user
+def list(user = None):
     if user is None:
-        return
-    if user.superuser:
-        emit('list', ([group.to_json() for group in GroupSQL.List()]))
+        user = current_user.email
+    return emit('list',  [group.name for group in
+                      NodeDefender.db.group.list(user_mail = user)])
+
+@socketio.on('delete', namespace='/group')
+def delete(name):
+    NodeDefender.db.group.delete(name)
+    url = url_for('admin_view.admin_groups')
+    return emit('redirect', (url), namespace='/general')
+
+@socketio.on('coordinates', namespace='/group')
+def coordinates(street, city):
+    geo = Nominatim()
+    coords = geo.geocode(street + ' ' + city)
+    if coords:
+        emit('coordinates', (coords.latitude, coords.longitude))
     else:
-        emit('list', ([group.to_json() for group in user.groups]))
-    return True
+        emit('error', "Coordinates not found", namespace='/general')
 
 @socketio.on('info', namespace='/group')
-def info(msg):
-    group = GroupSQL.Get(msg['name'])
-    emit('info', (group.to_json()))
-    return True
+def info(name):
+    group = NodeDefender.db.group.get(name)
+    if group:
+        group = group.to_json()
+        return emit('info', group)
+    else:
+        print("Group: ", name)
+
+@socketio.on('update', namespace='/group')
+def update(name, kwargs):
+    group = NodeDefender.db.group.update(name, **kwargs)
+    url = url_for('admin_view.admin_group', name =
+                  serializer.dumps(group.name))
+    return emit('redirect', (url), namespace='/general')
+
+@socketio.on('updateLocation', namespace='/group')
+def update_location(name, address):
+    NodeDefender.db.group.location(name, **address)
+    return emit('reload', namespace='/general')
 
 @socketio.on('addUser', namespace='/group')
-def add_user(msg):
-    UserSQL.Join(msg['user'], msg['group'])
-    emit('reload', namespace='/general')
-    return True
+def add_user(group_name, user_mail):
+    NodeDefender.db.group.add_user(group_name, user_mail)
+    return emit('reload', namespace='/general')
+
+@socketio.on('removeUser', namespace='/group')
+def add_user(group_name, user_mail):
+    NodeDefender.db.group.remove_user(group_name, user_mail)
+    return emit('reload', namespace='/general')

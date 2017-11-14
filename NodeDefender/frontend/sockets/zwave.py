@@ -1,9 +1,5 @@
-@socketio.on('icon', namespace='/zwave')
-def zwave_icon(msg):
-    if msg['classtype']:
-        icon = eval('ZWave.commandclass.' + msg['commandclass'] +
-                    msg['classtype'])(msg['value'])
-    else:
-        icon = eval('ZWave.commandclass.' + msg['commandclass'])(msg['value'])
+from NodeDefender import socketio
 
-    emit('icon', {'id' :  msg['id'], 'icon' : msg['icon']})
+def event(mac_address, sensor_id, data):
+    socketio.emit('event', (mac_address, sensor_id, data),
+                  namespace='/icpe'+mac_address, broadcast=True)

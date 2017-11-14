@@ -1,10 +1,10 @@
-from .. import app
+import NodeDefender
 
 def production():
-    app.config.from_object('factory.ProductionConfig')
+    NodeDefender.app.config.from_object('factory.ProductionConfig')
 
 def development():
-    app.config.from_object('factory.DevelopmentConfig')
+    NodeDefender.app.config.from_object('factory.DevelopmentConfig')
 
 def testing():
-    app.config.from_object('factory.TestingConfig')
+    NodeDefender.app.config.from_object('factory.TestingConfig')

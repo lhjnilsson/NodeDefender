@@ -1,32 +1,31 @@
-from . import parser, configpath
+import NodeDefender
 
 def enabled():
-    return True if parser['MAIL']['ENABLED'] == 'True' else False
+    return True if NodeDefender.config.parser['MAIL']['ENABLED'] == 'True' else False
 
 def server():
-    return parser['MAIL']['SERVER']
+    return NodeDefender.config.parser['MAIL']['SERVER']
 
 def port():
-    return parser['MAIL']['PORT']
+    return NodeDefender.config.parser['MAIL']['PORT']
 
 def tls():
-    return True if parser['MAIL']['TLS'] == 'True' else False
+    return True if NodeDefender.config.parser['MAIL']['TLS'] == 'True' else False
 
 def ssl():
-    return True if parser['MAIL']['SSL'] == 'True' else False
+    return True if NodeDefender.config.parser['MAIL']['SSL'] == 'True' else False
 
 def username():
-    return parser['MAIL']['USERNAME']
+    return NodeDefender.config.parser['MAIL']['USERNAME']
 
 def password():
-    return parser['MAIL']['PASSWORD']
+    return NodeDefender.config.parser['MAIL']['PASSWORD']
 
 def get_cfg(key):
-    return parser['MAIL'][key]
+    return NodeDefender.config.parser['MAIL'][key]
 
 def set_cfg(**kwargs):
     for key, value in kwargs.items():
-        parser['MAIL'][key] = str(value)
+        NodeDefender.config.parser['MAIL'][key] = str(value)
 
-    with open(configpath, 'w') as fw:
-        parser.write(fw)
+    return NodeDefender.config.write()

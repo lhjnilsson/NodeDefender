@@ -1,19 +1,19 @@
-from . import parser, configpath
+import NodeDefender
 
 def enabled():
-    return True if parser['CELERY']['ENABLED'] == 'True' else False
+    return True if NodeDefender.config.parser['CELERY']['ENABLED'] == 'True' else False
 
 def broker():
-    return parser['CELERY']['BROKER']
+    return NodeDefender.config.parser['CELERY']['BROKER']
 
 def server():
-    return parser['CELERY']['SERVER']
+    return NodeDefender.config.parser['CELERY']['SERVER']
 
 def port():
-    return parser['CELERY']['PORT']
+    return NodeDefender.config.parser['CELERY']['PORT']
 
 def database():
-    return parser['CELERY']['DATABASE']
+    return NodeDefender.config.parser['CELERY']['DATABASE']
 
 def broker_uri():
     if broker() == 'REDIS':
@@ -32,11 +32,10 @@ def backend_uri():
         return None
 
 def get_cfg(key):
-    return parser['CELERY'][key.upper()]
+    return NodeDefender.config.parser['CELERY'][key.upper()]
 
 def set_cfg(**kwargs):
     for key, value in kwargs.items():
-        parser['CELERY'][key] = str(value)
+        NodeDefender.config.parser['CELERY'][key] = str(value)
 
-    with open(configpath, 'w') as fw:
-        parser.write(fw)
+    return NodeDefender.config.write()

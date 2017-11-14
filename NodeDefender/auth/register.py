@@ -39,7 +39,7 @@ def register_user(token):
         flash('Account already confirmed. Please login.', 'success')
     else:
         user.confirmed = True
-        user.confirmed_on = datetime.datetime.now()
+        user.confirmed_at = datetime.datetime.now()
         db.session.add(user)
         db.session.commit()
         flash('You have confirmed your account. Thanks!', 'success')
