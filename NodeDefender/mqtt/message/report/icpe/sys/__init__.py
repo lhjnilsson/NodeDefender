@@ -1,4 +1,5 @@
 from NodeDefender.mqtt.message.report.icpe.sys import info
+import NodeDefender
 
 def event(topic, payload):
     try:

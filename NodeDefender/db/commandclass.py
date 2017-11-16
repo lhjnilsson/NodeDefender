@@ -131,7 +131,7 @@ def create(mac_address, sensor_id, classnumber):
         update(mac_address, sensor_id, classnumber = classnumber, **{'web_field' :
                                                                 True})
     NodeDefender.db.field.load_commandclass(get_sql(mac_address, sensor_id,
-                                                    classumber = classnumber))
+                                                    classnumber = classnumber))
     return get(mac_address, sensor_id, classnumber = classnumber)
 
 def update_zwave(mac_address, sensor_id, classnumber):

@@ -32,7 +32,7 @@ def postgresql_uri():
             +server()+':'+port()+'/'+db()
 
 def sqlite_uri():
-    return 'sqlite:///' + NodeDefender.config.parser['DATABASE']['FILE_PATH']
+    return 'sqlite:///' + NodeDefender.config.parser['DATABASE']['FILEPATH']
 
 def uri():
     db_engine = engine()
