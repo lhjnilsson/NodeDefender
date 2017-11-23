@@ -1,5 +1,6 @@
 from flask_login import login_user, logout_user
-from NodeDefender.frontend.forms.auth import LoginForm, RegisterForm, PasswordForm
+from NodeDefender.frontend.forms.auth import LoginForm, RegisterForm,\
+RegisterTokenForm, PasswordForm
 from flask import request, redirect, url_for, render_template, flash
 from datetime import datetime
 from NodeDefender import serializer
@@ -10,6 +11,7 @@ import NodeDefender
 def authenticate():
     login_form = LoginForm()
     if NodeDefender.app.config['SELF_REGISTRATION']:
+        print("YES")
         register_form = RegisterForm()
         return render_template('frontend/auth/login_and_register.html',
                                 LoginForm = login_form,
@@ -75,7 +77,7 @@ def register_token(token):
         flash('Invalid Token', 'error')
         return redirect(url_for('index'))
 
-    register_form = RegisterForm()
+    register_form = RegisterTokenForm()
     if request.method == 'GET':
         return render_template('frontend/auth/register.html', RegisterForm =
                                register_form, user = user)

@@ -98,11 +98,10 @@ $(document).ready(function() {
 adminSocket.on('mail', function(mail) {
   $('#mailEnabled').text(mail.enabled);
   if (mail.enabled) {
-    $('#mailPanel').append('<div class="col-lg-4"><strong>File Name:</strong></div><div class="col-lg-6"><p id="mailEnabled">-</p></div>');
-    $('#mailPanel').append('<div class="col-lg-4"><strong>File Name:</strong></div><div class="col-lg-6"><p id="mailServer">-</p></div>');
-    $('#mailPanel').append('<div class="col-lg-4"><strong>File Name:</strong></div><div class="col-lg-6"><p id="mailPort">-</p></div>');
-    $('#mailPanel').append('<div class="col-lg-4"><strong>File Name:</strong></div><div class="col-lg-6"><p id="mailTLS">-</p></div>');
-    $('#mailPanel').append('<div class="col-lg-4"><strong>File Name:</strong></div><div class="col-lg-6"><p id="mailSSL">-</p></div>');
+    $('#mailPanel').append('<div class="col-lg-4"><strong>SMTP Server:</strong></div><div class="col-lg-6"><p id="mailServer">-</p></div>');
+    $('#mailPanel').append('<div class="col-lg-4"><strong>SMTP Port:</strong></div><div class="col-lg-6"><p id="mailPort">-</p></div>');
+    $('#mailPanel').append('<div class="col-lg-4"><strong>TLS:</strong></div><div class="col-lg-6"><p id="mailTLS">-</p></div>');
+    $('#mailPanel').append('<div class="col-lg-4"><strong>SSL:</strong></div><div class="col-lg-6"><p id="mailSSL">-</p></div>');
     $('#mailServer').text(mail.server);
     $('#mailPort').text(mail.port);
     $('#mailTLS').text(mail.tls);
@@ -112,10 +111,10 @@ adminSocket.on('mail', function(mail) {
 adminSocket.on('celery', function(celery) {
   $('#celeryEnabled').text(celery.enabled);
   if (celery.enabled) {
-    $('#celeryPanel').append('<div class="col-lg-4"><strong>File Name:</strong></div><div class="col-lg-6"><p id="celeryBroker">-</p></div>');
-    $('#celeryPanel').append('<div class="col-lg-4"><strong>File Name:</strong></div><div class="col-lg-6"><p id="celeryServer">-</p></div>');
-    $('#celeryPanel').append('<div class="col-lg-4"><strong>File Name:</strong></div><div class="col-lg-6"><p id="celeryPort">-</p></div>');
-    $('#celeryPanel').append('<div class="col-lg-4"><strong>File Name:</strong></div><div class="col-lg-6"><p id="celeryDatabase">-</p></div>');
+    $('#celeryPanel').append('<div class="col-lg-4"><strong>Type:</strong></div><div class="col-lg-6"><p id="celeryBroker">-</p></div>');
+    $('#celeryPanel').append('<div class="col-lg-4"><strong>Address:</strong></div><div class="col-lg-6"><p id="celeryServer">-</p></div>');
+    $('#celeryPanel').append('<div class="col-lg-4"><strong>Port:</strong></div><div class="col-lg-6"><p id="celeryPort">-</p></div>');
+    $('#celeryPanel').append('<div class="col-lg-4"><strong>Database:</strong></div><div class="col-lg-6"><p id="celeryDatabase">-</p></div>');
     $('#celeryBroker').text(celery.broker);
     $('#celeryServer').text(celery.server);
     $('#celeryPort').text(celery.port);
@@ -125,7 +124,7 @@ adminSocket.on('celery', function(celery) {
 adminSocket.on('logging', function(logging) {
   $('#loggingEnabled').text(logging.enabled);
   if (logging.enabled) {
-    $('#loggingPanel').append('<div class="col-lg-4"><strong>File Name:</strong></div><div class="col-lg-6"><p id="loggingType">-</p></div>');
+    $('#loggingPanel').append('<div class="col-lg-4"><strong>Type:</strong></div><div class="col-lg-6"><p id="loggingType">-</p></div>');
     if (logging.type == 'local') {
       $('#loggingType').text('local');
       $('#loggingPanel').append('<div class="col-lg-4"><strong>File Name:</strong></div><div class="col-lg-6"><p id="loggingFile">-</p></div>');
@@ -133,8 +132,8 @@ adminSocket.on('logging', function(logging) {
     }
     else if (logging.type == 'SYSLOG') {
       $('#loggingType').text('Syslog');
-      $('#loggingPanel').append('<div class="col-lg-4"><strong>File Name:</strong></div><div class="col-lg-6"><p id="syslogAddress">-</p></div>');
-      $('#loggingPanel').append('<div class="col-lg-4"><strong>File Name:</strong></div><div class="col-lg-6"><p id="syslogPort">-</p></div>');
+      $('#loggingPanel').append('<div class="col-lg-4"><strong>Address:</strong></div><div class="col-lg-6"><p id="syslogAddress">-</p></div>');
+      $('#loggingPanel').append('<div class="col-lg-4"><strong>Port:</strong></div><div class="col-lg-6"><p id="syslogPort">-</p></div>');
       $('#syslogAddress').text(logging.address);
       $('#syslogPort').text(logging.port);
     }
@@ -155,8 +154,8 @@ adminSocket.on('database', function(database) {
       $('#databaseEngine').text(database.engine);
       adminSocket.emit('dbServer');
       adminSocket.emit('dbPort');
-      $('#databasePanel').append('<div class="col-lg-4"><strong>Server Address:</strong></div><div class="col-lg-6"><p id="dbServer">-</p></div>');
-      $('#databasePanel').append('<div class="col-lg-4"><strong>Server Port:</strong></div><div class="col-lg-6"><p id="dbPort">-</p></div>');
+      $('#databasePanel').append('<div class="col-lg-4"><strong>Address:</strong></div><div class="col-lg-6"><p id="dbServer">-</p></div>');
+      $('#databasePanel').append('<div class="col-lg-4"><strong>Port:</strong></div><div class="col-lg-6"><p id="dbPort">-</p></div>');
       $('#dbServer').text(database.server);
       $('#dbPort').text(database.port);
     }

@@ -116,7 +116,7 @@ $(document).ready(function() {
 		var mail = $('#submitMail').text();
 		var role = $('#submitRole').text();
 		var group = $('#submitGroup').text();
-		userSocket.emit('create', {'firstname' : firstname, 'lastname' : lastname, 'email' : mail, 'role' : role, 'group' : group});
+		userSocket.emit('create', mail, firstname, lastname, group, role);
 		return true;
 	}
 	initMultistep(userInfo, userGroup, userSubmit);

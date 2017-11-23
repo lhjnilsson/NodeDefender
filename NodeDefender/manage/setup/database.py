@@ -84,7 +84,7 @@ def config_database_file():
     else:
         filepath = NodeDefender.config.basepath + '/' + filepath
 
-    NodeDefender.config.database.set_cfg(file_path = filepath)
+    NodeDefender.config.database.set_cfg(filepath = filepath)
     return True
 
 

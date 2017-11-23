@@ -23,7 +23,7 @@ def server_port():
     return NodeDefender.config.parser['GENERAL']['PORT']
 
 def self_registration():
-    return NodeDefender.config.parser['GENERAL']['SELF_REGISTRATION']
+    return eval(NodeDefender.config.parser['GENERAL']['SELF_REGISTRATION'])
 
 def get_cfg(key):
     return NodeDefender.config.parser['GENERAL'][key]

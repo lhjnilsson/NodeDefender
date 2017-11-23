@@ -22,7 +22,7 @@ def db():
     return NodeDefender.config.parser['DATABASE']['DB']
 
 def file():
-    return NodeDefender.config.parser['DATABASE']['FILE_PATH']
+    return NodeDefender.config.parser['DATABASE']['FILEPATH']
 
 def mysql_uri():
     return 'mysql+pymysql://'+username()+':'+password()+'@'+server()+':'+port()+'/'+db()
@@ -32,7 +32,7 @@ def postgresql_uri():
             +server()+':'+port()+'/'+db()
 
 def sqlite_uri():
-    return 'sqlite:///' + NodeDefender.config.parser['DATABASE']['FILE_PATH']
+    return 'sqlite:///' + NodeDefender.config.parser['DATABASE']['FILEPATH']
 
 def uri():
     db_engine = engine()
