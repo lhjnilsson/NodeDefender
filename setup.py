@@ -8,6 +8,8 @@ setup(
     author_email="henrik.nilsson@ctsystem.se",
     license="BSD",
     url="https://github.com/CTSNE/NodeDefender",
+    packages=['nodedefender'],
+    scripts=['manage.py'],
     install_requires = [
         "alembic==0.9.1",
         "amqp==2.1.4",
@@ -66,4 +68,4 @@ setup(
         "WTForms==2.1",
         "xmltodict==0.10.2",
         ],
-)
+        zip_safe=False)

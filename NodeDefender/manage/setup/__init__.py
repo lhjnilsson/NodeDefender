@@ -45,3 +45,4 @@ import NodeDefender.manage.setup.database
 import NodeDefender.manage.setup.general
 import NodeDefender.manage.setup.logging
 import NodeDefender.manage.setup.mail
+import NodeDefender.manage.setup.redis
