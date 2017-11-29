@@ -1,5 +1,6 @@
 from redis import ConnectionPool, StrictRedis
 from functools import wraps
+import random
 import logging
 import NodeDefender
 
@@ -12,12 +13,28 @@ class LocalStorage:
         self.h = {}
         self.s = {}
 
-    def hmset(self, key, **values):
-        try:
-            self.h[key].update(values)
-        except KeyError:
-            self.h[key] = values
+    def hmset(self, key, values):
+        for k, v in values.items():
+            try:
+                self.h[key][k] = str(v)
+            except KeyError:
+                self.h[key] = {}
+                self.h[key][k] = str(v)
         return self.h[key]
+
+    def hset(self, key, k, value):
+        try:
+            self.h[key][k] = str(value)
+        except KeyError:
+            self.h[key] = {}
+            self.h[key][k] = str(value)
+        return self.h[key][k]
+
+    def hget(self, key, k):
+        try:
+            return self.h[key][k]
+        except KeyError:
+            return None
 
     def hgetall(self, key):
         try:
@@ -52,6 +69,12 @@ class LocalStorage:
             return self.s[key]
         except KeyError:
             return set()
+
+    def srandmember(self, key, items = 1):
+        try:
+            random.sample(self.s[key], items)
+        except KeyError:
+            return None
 
     def srem(self, key, value):
         try:
