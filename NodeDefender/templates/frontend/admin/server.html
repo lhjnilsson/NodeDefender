@@ -147,8 +147,8 @@ adminSocket.on('database', function(database) {
     $('#databaseEngine').text(database.engine);
     if (database.engine.toUpperCase() == 'SQLITE') {
       adminSocket.emit('dbFile');
-      $('#databasePanel').append('<div class="col-lg-4"><strong>File Name:</strong></div><div class="col-lg-6"><p id="dbFile">-</p></div>');
-      $('#dbFile').text(database.name);
+      $('#databasePanel').append('<div class="col-lg-4"><strong>File Name:</strong></div><div class="col-lg-6"><p id="dbFile" style="word-wrap: break-word">-</p></div>');
+      $('#dbFile').text(database.file);
     }
     else {
       $('#databaseEngine').text(database.engine);
