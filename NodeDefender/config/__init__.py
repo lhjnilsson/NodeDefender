@@ -4,6 +4,7 @@ import NodeDefender.config.database
 import NodeDefender.config.general
 import NodeDefender.config.logging
 import NodeDefender.config.mail
+import NodeDefender.config.redis
 import configparser
 import os
 

@@ -8,22 +8,36 @@ def technician(email):
     "List users that are member of a group"
     if email is None:
         email = prompt('Email of User')
-    return NodeDefender.db.user.set_role(email, 'technician')
+    
+    try:
+        NodeDefender.db.user.set_role(email, 'technician')
+    except AttributeError:
+        return print("User {} not found".format(email))
+    return print("User {} Added as Technician".format(email))
 
 @manager.option('-n', '-e', '--email', dest='email', default=None)
 def admin(email):
     "List users that are member of a group"
     if email is None:
         email = prompt('Email of User')
-    return NodeDefender.db.user.set_role(email, 'administrator')
+    
+    try:
+        NodeDefender.db.user.set_role(email, 'administrator')
+    except AttributeError:
+        return print("User {} not found".format(email))
+    return print("User {} Added as Administrator".format(email))
 
 @manager.option('-n', '-e', '--email', dest='email', default=None)
 def superuser(email):
     "List users that are member of a group"
     if email is None:
         email = prompt('Email of User')
-    return NodeDefender.db.user.set_role(email, 'superuser')
-
+    
+    try:
+        NodeDefender.db.user.set_role(email, 'superuser')
+    except AttributeError:
+        return print("User {} not found".format(email))
+    return print("User {} Added as superuser".format(email))
 
 @manager.option('-n', '--name', dest='name', default=None)
 @manager.option('-i', '--index', dest='index', default=None)

@@ -23,5 +23,4 @@ import NodeDefender.db.sensor
 import NodeDefender.db.commandclass
 import NodeDefender.db.field
 import NodeDefender.db.mqtt
-
 logger.info("Database initialized")

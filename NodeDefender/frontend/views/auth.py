@@ -11,7 +11,6 @@ import NodeDefender
 def authenticate():
     login_form = LoginForm()
     if NodeDefender.app.config['SELF_REGISTRATION']:
-        print("YES")
         register_form = RegisterForm()
         return render_template('frontend/auth/login_and_register.html',
                                 LoginForm = login_form,

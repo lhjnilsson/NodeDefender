@@ -7,6 +7,7 @@ manager = flask_script.Manager(usage="Setup NodeDefender Configuration")
 def all():
     NodeDefender.manage.setup.general.general()
     NodeDefender.manage.setup.database.database()
+    NodeDefender.manage.setup.redis.redis()
     NodeDefender.manage.setup.mail.mail()
     NodeDefender.manage.setup.logging.logging()
     NodeDefender.manage.setup.celery.celery()
@@ -45,3 +46,4 @@ import NodeDefender.manage.setup.database
 import NodeDefender.manage.setup.general
 import NodeDefender.manage.setup.logging
 import NodeDefender.manage.setup.mail
+import NodeDefender.manage.setup.redis
