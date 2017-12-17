@@ -1,6 +1,5 @@
 from NodeDefender.frontend.views import data_view
 from flask import request, render_template
-from NodeDefender import serializer
 from flask_login import login_required, current_user
 import NodeDefender
 
@@ -15,7 +14,7 @@ def data_power():
 @data_view.route('/data/power/group/<name>')
 @login_required
 def power_group(name):
-    name = serializer.loads(name)
+    name = NodeDefender.serializer.loads(name)
     if request.method == 'GET':
         group = NodeDefender.db.group.get(name)
         if group is None:
@@ -25,7 +24,7 @@ def power_group(name):
 @data_view.route('/data/power/node/<name>')
 @login_required
 def power_node(name):
-    name = serializer.loads(name)
+    name = NodeDefender.serializer.loads(name)
     if request.method == 'GET':
         node = NodeDefender.db.node.get(name)
         return render_template('frontend/data/node/power.html', node = node)
@@ -33,7 +32,7 @@ def power_node(name):
 @data_view.route('/data/power/sensor/<icpe>/<sensor>')
 @login_required
 def power_sensor(icpe, sensor):
-    icpe = serializer.loads(icpe)
+    icpe = NodeDefender.serializer.loads(icpe)
     
     if request.method == 'GET':
         sensor = NodeDefender.db.sensor.get(icpe, sensor)
@@ -50,7 +49,7 @@ def data_heat():
 @data_view.route('/data/heat/group/<name>')
 @login_required
 def heat_group(name):
-    name = serializer.loads(name)
+    name = NodeDefender.serializer.loads(name)
     if request.method == 'GET':
         group = NodeDefender.db.group.get(name)
         if group is None:
@@ -60,7 +59,7 @@ def heat_group(name):
 @data_view.route('/data/heat/node/<name>')
 @login_required
 def heat_node(name):
-    name = serializer.loads(name)
+    name = NodeDefender.serializer.loads(name)
     if request.method == 'GET':
         node = NodeDefender.db.node.get(name)
         return render_template('frontend/data/node/heat.html', node = node)
@@ -68,7 +67,7 @@ def heat_node(name):
 @data_view.route('/data/heat/sensor/<icpe>/<sensor>')
 @login_required
 def heat_sensor(icpe, sensor):
-    icpe = serializer.loads(icpe)
+    icpe = NodeDefender.serializer.loads(icpe)
     
     if request.method == 'GET':
         sensor = NodeDefender.db.sensor.get(icpe, sensor)

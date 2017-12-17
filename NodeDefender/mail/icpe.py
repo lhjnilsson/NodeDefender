@@ -1,8 +1,6 @@
 from flask_mail import Message
 from flask import render_template, url_for
 import NodeDefender
-from NodeDefender import serializer
-from NodeDefender.mail import mail
 import smtplib
 
 @NodeDefender.decorators.mail_enabled
@@ -23,7 +21,7 @@ def new_icpe(icpe, host, port):
     msg.body = render_template('mail/icpe/new_icpe.txt', icpe = icpe, mqtt =
                                mqtt, url = url)
     try:
-        mail.send(msg)
+        NodeDefender.mail.mail.send(msg)
     except smtplib.SMTPRecipientsRefused:
         NodeDefender.mail.logger.error("Unable to send email for: {}".\
                                  format(icpe.mac_address))
@@ -49,7 +47,7 @@ def icpe_enabled(icpe, host, port):
     msg.body = render_template('mail/icpe/icpe_enabled.txt', icpe = icpe, mqtt =
                                mqtt, url = url)
     try:
-        mail.send(msg)
+        NodeDefender.mail.mail.send(msg)
     except smtplib.SMTPRecipientsRefused:
         NodeDefender.mail.logger.error("Unable to send email for: {}".\
                                  format(icpe.mac_address))

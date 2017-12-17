@@ -4,7 +4,6 @@ from NodeDefender.frontend.forms.admin import (GeneralForm, CreateUserForm, Crea
 from NodeDefender.frontend.forms.group import ModifyGeneral
 from flask_login import login_required, current_user
 from flask import Blueprint, request, render_template, flash, redirect, url_for
-from NodeDefender import serializer
 import NodeDefender
 
 @admin_view.route('/admin/server', methods=['GET', 'POST'])
@@ -56,12 +55,12 @@ def admin_groups():
             return redirect(url_for('admin_view.admin_groups'))
         flash('Successfully Created Group: {}'.format(group.name), 'success')
         return redirect(url_for('admin_view.admin_group', name =
-                                serializer.dumps(group.name)))
+                                NodeDefender.serializer.dumps(group.name)))
 
 @admin_view.route('/admin/groups/<name>')
 @login_required
 def admin_group(name):
-    name = serializer.loads(name)
+    name = NodeDefender.serializer.loads(name)
     group = NodeDefender.db.group.get(name)
     if group is None:
         flash('Group {} not found'.format(name), 'danger')
@@ -97,7 +96,7 @@ def admin_users():
 @admin_view.route('/admin/users/<email>', methods=['GET', 'POST'])
 @login_required
 def admin_user(email):
-    email = serializer.loads(email)
+    email = NodeDefender.serializer.loads(email)
     usersettings = UserSettings()
     userpassword = UserPassword()
     usergroupadd = UserGroupAdd()
@@ -115,7 +114,7 @@ def admin_user(email):
                                     {'firstname' : usersettings.Firstname.data,
                                      'lastname' : usersettings.Lastname.data})
         return redirect(url_for('admin_view.admin_user', email =
-                                serializer.dumps(usersettings.Email.data)))
+                                NodeDefender.serializer.dumps(usersettings.Email.data)))
 
 @admin_view.route('/admin/backup')
 @login_required

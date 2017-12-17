@@ -3,7 +3,6 @@ from flask import render_template, request, flash, redirect, url_for
 from flask_login import login_required, current_user
 from NodeDefender.frontend.forms.node import (LocationForm, iCPEForm, SensorForm,
 NodeCreateForm)
-from NodeDefender import serializer
 import NodeDefender
 
 @node_view.route('/nodes/list', methods=['GET', 'POST'])
@@ -35,14 +34,14 @@ def nodes_list():
             flash("Error Creating Node: " + str(e), 'danger')
             return redirect(url_for('node_view.NodesList'))
         url = url_for("node_view.nodes_node", name =
-                      serializer.dumps(node.name))
+                      NodeDefender.serializer.dumps(node.name))
         flash('Succesfully added node: ' + node.name, 'success')
         return redirect(url)
 
 @node_view.route('/nodes/<name>', methods=['GET', 'POST'])
 @login_required
 def nodes_node(name):
-    name = serializer.loads(name)
+    name = NodeDefender.serializer.loads(name)
     node = NodeDefender.db.node.get(name)
     if request.method == 'GET':
         return render_template('frontend/nodes/node.html', Node = node)

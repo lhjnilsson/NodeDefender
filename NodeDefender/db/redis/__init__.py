@@ -6,7 +6,7 @@ import NodeDefender
 
 logger = logging.getLogger('Redis')
 logger.setLevel('INFO')
-logger.addHandler(NodeDefender.loggHandler)
+conn = None
 
 class LocalStorage:
     def __init__(self):
@@ -83,14 +83,17 @@ class LocalStorage:
             return False
         return self.s[key]
 
-if NodeDefender.config.redis.enabled():
-    host = NodeDefender.config.redis.host()
-    port = NodeDefender.config.redis.port()
-    db = NodeDefender.config.redis.database()
-    pool = ConnectionPool(host=host, port=int(port), db=db, decode_responses=True)
-    conn = StrictRedis(connection_pool=pool)
-else:
-    conn = LocalStorage()
+def load(loggHandler):
+    logger.addHandler(loggHandler)
+    global conn
+    if NodeDefender.config.redis.enabled():
+        host = NodeDefender.config.redis.host()
+        port = NodeDefender.config.redis.port()
+        db = NodeDefender.config.redis.database()
+        pool = ConnectionPool(host=host, port=int(port), db=db, decode_responses=True)
+        conn = StrictRedis(connection_pool=pool)
+    else:
+        conn = LocalStorage()
 
 def redisconn(func):
     @wraps(func)

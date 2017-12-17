@@ -1,7 +1,19 @@
 from flask_socketio import emit, send
 import NodeDefender
 
-@NodeDefender.socketio.on('general', namespace='/admin')
+def load_sockets(socketio):
+    socketio.on_event('general', general_info, namespace='/admin')
+    socketio.on_event('logging', logging_info, namespace='/admin')
+    socketio.on_event('database', database_info, namespace='/admin')
+    socketio.on_event('celery', celery_info, namespace='/admin')
+    socketio.on_event('mail', mail_info, namespace='/admin')
+    socketio.on_event('mqttCreate', create_mqtt, namespace='/admin')
+    socketio.on_event('mqttInfo', mqtt_info, namespace='/admin')
+    socketio.on_event('mqttDeleteHost', delete_mqtt, namespace='/admin')
+    socketio.on_event('mqttUpdateHost', update_mqtt, namespace='/admin')
+    socketio.on_event('mqttList', list_mqtt, namespace='/admin')
+    return True
+
 def general_info():
     info = {'hostname' : NodeDefender.hostname,
             'release' : NodeDefender.release,
@@ -10,8 +22,7 @@ def general_info():
     emit('general', info)
     return True
 
-@NodeDefender.socketio.on('logging', namespace='/admin')
-def logging():
+def logging_info():
     info = {'enabled' : NodeDefender.config.logging.enabled(),
             'type' : NodeDefender.config.logging.type(),
             'name' : NodeDefender.config.logging.name(),
@@ -19,8 +30,7 @@ def logging():
             'port' : NodeDefender.config.logging.port()}
     return emit('logging', info)
 
-@NodeDefender.socketio.on('database', namespace='/admin')
-def database():
+def database_info():
     info = {'enabled' : NodeDefender.config.database.enabled(),
             'engine' : NodeDefender.config.database.engine(),
             'server' : NodeDefender.config.database.server(),
@@ -29,8 +39,7 @@ def database():
             'file' : NodeDefender.config.database.file()}
     return emit('database', info)
 
-@NodeDefender.socketio.on('celery', namespace='/admin')
-def celery():
+def celery_info():
     info = {'enabled' : NodeDefender.config.celery.enabled(),
             'broker' : NodeDefender.config.celery.broker(),
             'server' : NodeDefender.config.celery.server(),
@@ -38,8 +47,7 @@ def celery():
             'database' : NodeDefender.config.celery.database()}
     return emit('celery', info)
 
-@NodeDefender.socketio.on('mail', namespace='/admin')
-def mail():
+def mail_info():
     info = {'enabled' : NodeDefender.config.mail.enabled(),
             'server' : NodeDefender.config.mail.server(),
             'port' : NodeDefender.config.mail.port(),
@@ -49,8 +57,7 @@ def mail():
             'password' : NodeDefender.config.mail.password()}
     return emit('mail', info)
 
-@NodeDefender.socketio.on('mqttCreate', namespace='/admin')
-def create(host, port, group):
+def create_mqtt(host, port, group):
     try:
         NodeDefender.db.mqtt.create(host, port)
     except AttributeError as e:
@@ -61,13 +68,11 @@ def create(host, port, group):
     emit('reload', namespace='/general')
     return True
 
-@NodeDefender.socketio.on('mqttList', namespace='/admin')
-def list(group):
+def list_mqtt(group):
     emit('list', NodeDefender.db.mqtt.list(group))
     return True
 
-@NodeDefender.socketio.on('mqttInfo', namespace='/admin')
-def info(host, port):
+def mqtt_info(host, port):
     mqtt = NodeDefender.db.mqtt.get_redis(host, port)
     sql_mqtt = NodeDefender.db.mqtt.get_sql(host, port)
     mqtt['icpes'] = [icpe.mac_address for icpe in sql_mqtt.icpes]
@@ -75,7 +80,6 @@ def info(host, port):
     emit('mqttInfo', mqtt)
     return True
 
-@NodeDefender.socketio.on('mqttUpdateHost', namespace='/admin')
 def update_mqtt(current_host, new_host):
     mqtt = NodeDefender.db.mqtt.get_sql(current_host['host'],
                                         current_host['port'])
@@ -85,9 +89,7 @@ def update_mqtt(current_host, new_host):
     emit('reload', namespace='/general')
     return True
 
-@NodeDefender.socketio.on('mqttDeleteHost', namespace='/admin')
 def delete_mqtt(host, port):
     NodeDefender.db.mqtt.delete(host, port)
     emit('reload', namespace='/general')
     return True
-

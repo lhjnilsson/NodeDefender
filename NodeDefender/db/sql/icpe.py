@@ -1,7 +1,6 @@
 from NodeDefender.db.sql import SQL
 from datetime import datetime
 from flask import url_for
-from NodeDefender import serializer
 
 class iCPEModel(SQL.Model):
     '''
@@ -71,7 +70,7 @@ class iCPEModel(SQL.Model):
                 'mqtt' : [mqtt.to_json() for mqtt in self.mqtt],
                 'node' : node,
                 'url' : url_for('node_view.nodes_node',
-                                name=serializer.dumps(self.node.name))}
+                                name=NodeDefender.serializer.dumps(self.node.name))}
         return icpe
 
 class SensorModel(SQL.Model):

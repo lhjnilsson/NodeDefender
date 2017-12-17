@@ -3,13 +3,17 @@ from setuptools import setup
 setup(
     name="NodeDefender",
     description="Manage Nodes with CTS-iCPE",
-    version="0.2",
+    version="0.6",
     author="Henrik Nilsson",
     author_email="henrik.nilsson@ctsystem.se",
     license="BSD",
     url="https://github.com/CTSNE/NodeDefender",
-    packages=['nodedefender'],
+    packages=['NodeDefender'],
     scripts=['manage.py'],
+    entry_points = {
+        'console_scripts' : ['nodedefender=nodedefender.bin.manage:main']
+    },
+    include_package_data=True,
     install_requires = [
         "alembic==0.9.1",
         "amqp==2.1.4",

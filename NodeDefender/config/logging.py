@@ -1,5 +1,24 @@
 import NodeDefender
 
+enabled = False
+level = "debug"
+logging_type = "local"
+logging_filepath = "/tmp/nodedefender.log"
+logging_host = "127.0.0.1"
+logging_port = 514
+
+def load_config(parser):
+    global enabled
+    global level
+    global logging_type
+    global logging_filepath
+    global logging_host
+    global logging_port
+    
+    enabled = True if parser['LOGGING']['ENABLED'] == 'True' else False
+
+
+
 def enabled():
     return True if NodeDefender.config.parser['LOGGING']['ENABLED'] == 'True' else False
 

@@ -1,8 +1,6 @@
 from flask_mail import Message
 from flask import render_template, url_for
 import NodeDefender
-from NodeDefender import serializer
-from NodeDefender.mail import mail
 import smtplib
 
 @NodeDefender.decorators.mail_enabled
@@ -16,11 +14,11 @@ def new_group(group):
 
     msg = Message('Group Created', sender='noreply@nodedefender.com',
                   recipients=[group.email])
-    url = url_for('admin_view.admin_group', name = serializer.dumps(group.name))
+    url = url_for('admin_view.admin_group', name = NodeDefender.serializer.dumps(group.name))
     msg.body = render_template('mail/group/new_group.txt', group = group, url =
                               url)
     try:
-        mail.send(msg)
+        NodeDefender.mail.mail.send(msg)
     except smtplib.SMTPRecipientsRefused:
         NodeDefender.mail.logger.error("Unable to send email to: {}".\
                                  format(group.email))
@@ -42,11 +40,11 @@ def new_mqtt(group, mqttip, mqttport):
         return False
 
     msg = Message('MQTT {} added to {}'.format(mqtt.host, group.name), sender='noreply@nodedefender.com', recipients=[group.email])
-    url = url_for('admin_view.admin_group', name = serializer.dumps(group.name))
+    url = url_for('admin_view.admin_group', name = NodeDefender.serializer.dumps(group.name))
     msg.body = render_template('mail/group/new_mqtt.txt', group = group,\
                                mqtt = mqtt, url = url)
     try:
-        mail.send(msg)
+        NodeDefender.mail.mail.send(msg)
     except smtplib.SMTPRecipientsRefused:
         NodeDefender.mail.logger.error("Unable to send email to: {}".\
                                  format(group.email))

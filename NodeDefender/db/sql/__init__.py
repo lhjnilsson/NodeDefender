@@ -1,11 +1,12 @@
-from NodeDefender import app
 from flask_sqlalchemy import SQLAlchemy
+SQL = SQLAlchemy()
 
-if not app.config['DATABASE']:
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
-    SQL = SQLAlchemy(app)
-else:
-    SQL = SQLAlchemy(app)
+def load(app):
+    global SQL
+    SQL.init_app(app)
+    if NodeDefender.config.general.run_mode == 'TESTING':
+        SQL.create_all()
+    return True
 
 from NodeDefender.db.sql.group import GroupModel
 from NodeDefender.db.sql.user import UserModel
@@ -16,5 +17,4 @@ from NodeDefender.db.sql.data import PowerModel, HeatModel, EventModel
 from NodeDefender.db.sql.conn import MQTTModel
 from NodeDefender.db.sql.message import MessageModel
 
-if not app.config['DATABASE']:
-    SQL.create_all()
+
