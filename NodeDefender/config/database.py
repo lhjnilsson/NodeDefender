@@ -1,47 +1,71 @@
 import NodeDefender
 
+config = {'enabled' : False}
+default_config = {'enabled' : False,
+                  'engine' : '',
+                  'username' : '',
+                  'password' : '',
+                  'host' : '',
+                  'port' : '',
+                  'database' : '',
+                  'filepath' : ''}
+
+def load_config(parser):
+    config['enabled'] = eval(parser['DATABASE']['ENABLED'])
+    config['engine'] = parser['DATABASE']['ENGINE']
+    config['username'] = parser['DATABASE']['USERNAME']
+    config['password'] = parser['DATABASE']['PASSWORD']
+    config['host'] = parser['DATABASE']['HOST']
+    config['port'] = parser['DATABASE']['PORT']
+    config['database'] = parser['DATABASE']['DATABASE']
+    config['filepath'] = parser['DATABASE']['FILEPATH']
+    return config
+
 def enabled():
-    return True if NodeDefender.config.parser['DATABASE']['ENABLED'] == 'True' else False
+    return config['enabled']
 
 def engine():
-    return NodeDefender.config.parser['DATABASE']['ENGINE']
+    return config['engine']
 
 def username():
-    return NodeDefender.config.parser['DATABASE']['USERNAME']
+    return config['username']
 
 def password():
-    return NodeDefender.config.parser['DATABASE']['PASSWORD']
+    return config['password']
 
-def server():
-    return NodeDefender.config.parser['DATABASE']['SERVER']
+def host():
+    return config['host']
 
 def port():
-    return NodeDefender.config.parser['DATABASE']['PORT']
+    return config['port']
 
-def db():
-    return NodeDefender.config.parser['DATABASE']['DB']
+def database():
+    return config['database']
 
-def file():
-    return NodeDefender.config.parser['DATABASE']['FILEPATH']
+def filepath():
+    return config['filepath']
 
 def mysql_uri():
-    return 'mysql+pymysql://'+username()+':'+password()+'@'+server()+':'+port()+'/'+db()
+    return 'mysql+pymysql://'+username()+':'+password()+'@'+host()+':'+port()\
+            +'/'+database()
 
 def postgresql_uri():
     return 'postgresql://'+username()+':'+password()+'@'\
-            +server()+':'+port()+'/'+db()
+            +host()+':'+port()+'/'+database()
 
 def sqlite_uri():
-    return 'sqlite:///' + NodeDefender.config.parser['DATABASE']['FILEPATH']
+    return 'sqlite:///' + filepath()
 
 def uri():
     db_engine = engine()
     return eval(db_engine + '_uri')()
 
-def get_cfg(key):
-    return NodeDefender.config.parser['DATABASE'][key]
+def set_defaults():
+    for key, value in default_config.items():
+        NodeDefender.config.parser['DATABASE'][key] = str(value)
+    return True
 
-def set_cfg(**kwargs):
+def set_config(**kwargs):
     for key, value in kwargs.items():
         NodeDefender.config.parser['DATABASE'][key] = str(value)
 

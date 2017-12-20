@@ -1,19 +1,26 @@
 import NodeDefender
 
+config = {'enabled' : False}
+default_config = {'enabled' : False,
+                  'host' : '',
+                  'port' : '',
+                  'database' : ''}
+
 def enabled():
-    return True if NodeDefender.config.parser['REDIS']['ENABLED'] == 'True' else False
+    return config['enabled']
 
 def host():
-    return NodeDefender.config.parser['REDIS']['HOST']
+    return config['host']
 
 def port():
-    return NodeDefender.config.parser['REDIS']['PORT']
+    return config['port']
 
 def database():
-    return NodeDefender.config.parser['REDIS']['DATABASE']
+    return config['database']
 
-def get_cfg(key):
-    return NodeDefender.config.parser['REDIS'][key.upper()]
+def set_defaults():
+    for key, value in default_config.items():
+        NodeDefender.config.parser['REDIS'][key] = str(value)
 
 def set_cfg(**kwargs):
     for key, value in kwargs.items():

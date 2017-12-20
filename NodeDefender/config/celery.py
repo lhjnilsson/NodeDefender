@@ -1,19 +1,33 @@
 import NodeDefender
 
+config = {'enabled' : False}
+default_config = {'enabled' : False,
+                  'broker' : '',
+                  'host' : '',
+                  'port' : '',
+                  'database' : ''}
+
+def load_config(parser):
+    config['enabled'] = eval(paser['CELERY']['ENABLED'])
+    config['broker'] = parser['CELERY']['BROKER']
+    config['host'] = parser['CELERY']['HOST']
+    config['port'] = parser['CELERY']['PORT']
+    config['database'] = parser['CELERY']['DATABASE']
+ 
 def enabled():
-    return True if NodeDefender.config.parser['CELERY']['ENABLED'] == 'True' else False
+    return config['enabled']
 
 def broker():
-    return NodeDefender.config.parser['CELERY']['BROKER']
+    return config['broker']
 
 def server():
-    return NodeDefender.config.parser['CELERY']['SERVER']
+    return config['host']
 
 def port():
-    return NodeDefender.config.parser['CELERY']['PORT']
+    return config['port']
 
 def database():
-    return NodeDefender.config.parser['CELERY']['DATABASE']
+    return config['database']
 
 def broker_uri():
     if broker() == 'REDIS':
@@ -23,18 +37,12 @@ def broker_uri():
     else:
         return None
 
-def backend_uri():
-    if broker() == 'REDIS':
-        return 'redis://'+server()+':'+port()+'/'+database()
-    elif broker() == 'AMQP':
-        return 'rpc://'+server()+':'+port()+'/'+database()
-    else:
-        return None
+def set_defaults():
+    for key, value in default_config.items():
+        NodeDefender.config.parser['CELERY'][key] = str(value)
+    return True
 
-def get_cfg(key):
-    return NodeDefender.config.parser['CELERY'][key.upper()]
-
-def set_cfg(**kwargs):
+def set_config(**kwargs):
     for key, value in kwargs.items():
         NodeDefender.config.parser['CELERY'][key] = str(value)
 

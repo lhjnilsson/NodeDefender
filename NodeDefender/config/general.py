@@ -1,6 +1,29 @@
 from datetime import datetime
 import NodeDefender
 
+config = {'run_mode' : 'TESTING',
+          'key' : 'key',
+          'salt' : 'salt',
+          'host' : '0.0.0.0',
+          'port' : '50000',
+          'self_registration' : True}
+
+default_config = {'run_mode' : 'TESTING',
+                  'key' : 'key',
+                  'salt' : 'salt',
+                  'host' : '0.0.0.0',
+                  'port' : '50000',
+                  'self_registration' : True}
+
+def load_config(parser):
+    config['run_mode'] = parser['GENERAL']['RUN_MODE']
+    config['key'] = parser['GENERAL']['KEY']
+    config['salt'] = parser['GENERAL']['SALT']
+    config['host'] = parser['GENERAL']['host']
+    config['port'] = int(parser['GENERAL']['port'])
+    config['self_registration'] = eval(parser['GENERAL']['SELF_REGISTRATION'])
+    return True
+
 def hostname():
     return os.uname().nodename
 
@@ -8,25 +31,27 @@ def uptime():
     return str(datetime.now() - _loaded_at)
 
 def run_mode():
-    return NodeDefender.config.parser['GENERAL']['run_mode']
+    return config['run_mode']
 
-def secret_key():
-    return NodeDefender.config.parser['GENERAL']['KEY']
+def key():
+    return config['key']
 
-def secret_salt():
-    return NodeDefender.config.parser['GENERAL']['SALT']
+def salt():
+    return config['salt']
 
-def server_name():
-    return NodeDefender.config.parser['GENERAL']['SERVERNAME']
+def host():
+    return config['host']
 
 def server_port():
-    return NodeDefender.config.parser['GENERAL']['PORT']
+    return config['port']
 
 def self_registration():
-    return eval(NodeDefender.config.parser['GENERAL']['SELF_REGISTRATION'])
+    return config['self_registration']
 
-def get_cfg(key):
-    return NodeDefender.config.parser['GENERAL'][key]
+def set_defaults():
+    for key, value in default_config.items():
+        NodeDefender.config.parser['GENERAL'][key] = str(value)
+    return True
 
 def set_cfg(**kwargs):
     for key, value in kwargs.items():

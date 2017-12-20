@@ -1,44 +1,44 @@
 import NodeDefender
 
-enabled = False
-level = "debug"
-logging_type = "local"
-logging_filepath = "/tmp/nodedefender.log"
-logging_host = "127.0.0.1"
-logging_port = 514
+config = {'enabled' : False}
+default_config = {'enabled' : False,
+                  'level' : 'DEBUG',
+                  'type' : '',
+                  'filepath' : '',
+                  'host' : '',
+                  'port' : ''}
 
 def load_config(parser):
-    global enabled
-    global level
-    global logging_type
-    global logging_filepath
-    global logging_host
-    global logging_port
-    
-    enabled = True if parser['LOGGING']['ENABLED'] == 'True' else False
-
-
+    config['enabled'] = eval(parser['LOGGING']['ENABLED'])
+    config['level'] = parser['LOGGING']['LEVEL']
+    config['type'] = parser['LOGGING']['TYPE']
+    config['filepath'] = parser['LOGGING']['FILEPATH']
+    config['host'] = parser['LOGGING']['HOST']
+    config['port'] = parser['LOGGING']['PORT']
+    return True
 
 def enabled():
-    return True if NodeDefender.config.parser['LOGGING']['ENABLED'] == 'True' else False
+    return config['enabled']
 
 def level():
-    return NodeDefender.config.parser['LOGGING']['LEVEL']
+    return config['level']
 
 def type():
-    return NodeDefender.config.parser['LOGGING']['TYPE']
+    return config['type']
 
-def name():
-    return NodeDefender.config.parser['LOGGING']['FILEPATH']
+def filepath():
+    return config['filepath']
 
-def server():
-    return NodeDefender.config.parser['LOGGING']['SERVER']
+def host():
+    return config['host']
 
 def port():
-    return NodeDefender.config.parser['LOGGING']['PORT']
+    return config['port']
 
-def get_cfg(key):
-    return NodeDefender.config.parser['LOGGING'][key]
+def set_defaults():
+    for key, value in default_config.items():
+        NodeDefender.config.parser['LOGGING'][key] = str(value)
+    return True
 
 def set_cfg(**kwargs):
     for key, value in kwargs.items():

@@ -1,28 +1,49 @@
 import NodeDefender
 
-def enabled():
-    return True if NodeDefender.config.parser['MAIL']['ENABLED'] == 'True' else False
+config = {'enabled' : False}
+default_config = {'enabled' : False,
+                  'host' : '',
+                  'port' : '',
+                  'tls' : False,
+                  'ssl' : False,
+                  'username' : '',
+                  'password' : ''}
 
-def server():
-    return NodeDefender.config.parser['MAIL']['SERVER']
+def load_config(parser):
+    config['enabled'] = eval(parser['MAIL']['ENABLED'])
+    config['host'] = parser['MAIL']['HOST']
+    config['port'] = int(parser['MAIL']['PORT'])
+    config['tls'] = eval(parser['MAIL']['TLS'])
+    config['ssl'] = eval(parser['MAIL']['SSL'])
+    config['username'] = parser['MAIL']['USERNAME']
+    config['password'] = parser['MAIL']['PASSWORD']
+    return True
+
+def enabled():
+    return config['enabled']
+
+def host():
+    return config['host']
 
 def port():
-    return NodeDefender.config.parser['MAIL']['PORT']
+    return config['port']
 
 def tls():
-    return True if NodeDefender.config.parser['MAIL']['TLS'] == 'True' else False
+    return config['tls']
 
 def ssl():
-    return True if NodeDefender.config.parser['MAIL']['SSL'] == 'True' else False
+    return config['ssl']
 
 def username():
-    return NodeDefender.config.parser['MAIL']['USERNAME']
+    return config['username']
 
 def password():
-    return NodeDefender.config.parser['MAIL']['PASSWORD']
+    return config['password']
 
-def get_cfg(key):
-    return NodeDefender.config.parser['MAIL'][key]
+def set_defaults():
+    for key, value in default_config.items():
+        NodeDefender.config.parser['MAIL'][key] = str(value)
+    return True
 
 def set_cfg(**kwargs):
     for key, value in kwargs.items():
