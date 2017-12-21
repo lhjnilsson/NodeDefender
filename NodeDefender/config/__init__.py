@@ -11,7 +11,6 @@ import os
 filename = None
 
 parser = configparser.ConfigParser()
-
 basepath = os.path.abspath(os.path.dirname('..'))
 
 def find_configfile():
@@ -25,12 +24,12 @@ def find_configfile():
         raise NotImplementedError("Config- file not found")
 
 def write_default():
-    NodeDefender.config.celery.set_defaults(parser)
-    NodeDefender.config.database.set_defaults(parser)
-    NodeDefender.config.general.set_defaults(parser)
-    NodeDefender.config.logging.set_defaults(parser)
-    NodeDefender.config.mail.set_defaults(parser)
-    NodeDefender.config.redis.set_defaults(parser)
+    NodeDefender.config.celery.set_defaults()
+    NodeDefender.config.database.set_defaults()
+    NodeDefender.config.general.set_defaults()
+    NodeDefender.config.logging.set_defaults()
+    NodeDefender.config.mail.set_defaults()
+    NodeDefender.config.redis.set_defaults()
     return write()
 
 def load(fname = None):
@@ -44,7 +43,7 @@ def load(fname = None):
     if not os.path.exists(fname):
         raise ValueError("File not does exists")
     
-    if not os.access(fname, os.R_OK, os.W_OK):
+    if not os.access(fname, os.R_OK):
         raise AttributeError("Read and/or write permission not set")
 
     filename = fname

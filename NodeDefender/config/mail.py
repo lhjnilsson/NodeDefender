@@ -3,7 +3,7 @@ import NodeDefender
 config = {'enabled' : False}
 default_config = {'enabled' : False,
                   'host' : '',
-                  'port' : '',
+                  'port' : 465,
                   'tls' : False,
                   'ssl' : False,
                   'username' : '',
@@ -12,7 +12,7 @@ default_config = {'enabled' : False,
 def load_config(parser):
     config['enabled'] = eval(parser['MAIL']['ENABLED'])
     config['host'] = parser['MAIL']['HOST']
-    config['port'] = int(parser['MAIL']['PORT'])
+    config['port'] = parser['MAIL']['PORT']
     config['tls'] = eval(parser['MAIL']['TLS'])
     config['ssl'] = eval(parser['MAIL']['SSL'])
     config['username'] = parser['MAIL']['USERNAME']

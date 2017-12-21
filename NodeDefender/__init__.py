@@ -30,9 +30,6 @@ login_manager = None
 bcrypt = None
 serializer = None
 
-def load_config(filename):
-    pass
-
 def create_app():
     global app
     global socketio
@@ -42,6 +39,8 @@ def create_app():
     global login_manger
     global bcrypt
     global serializer
+
+    NodeDefender.config.load()
 
     app = CreateApp()
     logger, loggHandler = CreateLogging(app)

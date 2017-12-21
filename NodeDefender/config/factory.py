@@ -4,9 +4,9 @@ class Config:
     DEBUG = False
     TESTING = False
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SECRET_KEY = NodeDefender.config.general.secret_key()
-    SECRET_SALT = NodeDefender.config.general.secret_salt()
-    SERVER_NAME = NodeDefender.config.general.server_name()
+    SECRET_KEY = NodeDefender.config.general.key()
+    SECRET_SALT = NodeDefender.config.general.salt()
+    SERVER_NAME = NodeDefender.config.general.host()
     PORT = int(NodeDefender.config.general.server_port())
     SELF_REGISTRATION = NodeDefender.config.general.self_registration()
     WTF_CSRF_ENABLED = False

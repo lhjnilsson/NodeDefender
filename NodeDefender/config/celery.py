@@ -8,7 +8,7 @@ default_config = {'enabled' : False,
                   'database' : ''}
 
 def load_config(parser):
-    config['enabled'] = eval(paser['CELERY']['ENABLED'])
+    config['enabled'] = eval(parser['CELERY']['ENABLED'])
     config['broker'] = parser['CELERY']['BROKER']
     config['host'] = parser['CELERY']['HOST']
     config['port'] = parser['CELERY']['PORT']

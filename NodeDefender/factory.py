@@ -16,11 +16,11 @@ def CreateApp():
     app = Flask(__name__)
     mode = NodeDefender.config.general.run_mode()
 
-    if mode == 'Production':
+    if mode.lower() == 'production':
         app.config.from_object('NodeDefender.config.factory.ProductionConfig')
-    elif mode == 'Development':
+    elif mode.lower() == 'development':
         app.config.from_object('NodeDefender.config.factory.DevelopmentConfig')
-    elif mode == 'Testing':
+    elif mode.lower() == 'testing':
         app.config.from_object('NodeDefender.config.factory.TestingConfig')
     else:
         raise ValueError("Mode {} not known".format(mode))
