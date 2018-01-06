@@ -15,6 +15,13 @@ def load_config(parser):
     config['filepath'] = parser['LOGGING']['FILEPATH']
     config['host'] = parser['LOGGING']['HOST']
     config['port'] = parser['LOGGING']['PORT']
+    NodeDefender.app.config.update(
+        LOGGING = config['enabled'],
+        LOGGING_LEVEL = config['level'],
+        LOGGING_TYPE = config['type'],
+        LOGGING_FILEPATH = config['filepath'],
+        LOGGING_HOST = config['host'],
+        LOGGING_PORT = config['port'])
     return True
 
 def enabled():

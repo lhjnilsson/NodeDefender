@@ -6,7 +6,6 @@ from itsdangerous import URLSafeSerializer
 from flask_wtf.csrf import CSRFProtect
 import os
 import sys
-import NodeDefender.config.factory
 import NodeDefender
 
 csfr = CSRFProtect()
@@ -15,16 +14,7 @@ moment = Moment()
 def CreateApp():
     app = Flask(__name__)
     mode = NodeDefender.config.general.run_mode()
-
-    if mode.lower() == 'production':
-        app.config.from_object('NodeDefender.config.factory.ProductionConfig')
-    elif mode.lower() == 'development':
-        app.config.from_object('NodeDefender.config.factory.DevelopmentConfig')
-    elif mode.lower() == 'testing':
-        app.config.from_object('NodeDefender.config.factory.TestingConfig')
-    else:
-        raise ValueError("Mode {} not known".format(mode))
-
+    app.config.from_object('NodeDefender.config.factory.DefaultConfig')
     app.template_folder = "templates"
     app.static_folder = "templates/frontend/static"
     moment.init_app(app)

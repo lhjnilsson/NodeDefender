@@ -9,12 +9,12 @@ def load_sockets(socketio):
     socketio.on_event('create', create, namespace='/group')
     socketio.on_event('list', list_groups, namespace='/group')
     socketio.on_event('delete', delete, namespace='/group')
-    socketio.on_event('coordinates', namespace='/group')
-    socketio.on_event('info', namespace='/group')
-    socketio.on_event('update', namespace='/group')
-    socketio.on_event('updateLocation', namespace='/group')
-    socketio.on_event('addUser', namespace='/group')
-    socketio.on_event('removeUser', namespace='/group')
+    socketio.on_event('coordinates', coordinates, namespace='/group')
+    socketio.on_event('info', info, namespace='/group')
+    socketio.on_event('update', update, namespace='/group')
+    socketio.on_event('updateLocation', update_location, namespace='/group')
+    socketio.on_event('addUser', add_user, namespace='/group')
+    socketio.on_event('removeUser', remove_user, namespace='/group')
 
 
 def create(name, email, location):

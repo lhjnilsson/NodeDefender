@@ -6,6 +6,18 @@ default_config = {'enabled' : False,
                   'port' : '',
                   'database' : ''}
 
+def load_config(parser):
+    config['enabled'] = eval(parser['REDIS']['ENABLED'])
+    config['host'] = parser['REDIS']['HOST']
+    config['port'] = parser['REDIS']['PORT']
+    config['database'] = parser['REDIS']['DATABASE']
+    NodeDefender.app.config.update(
+        REDIS = config['enabled'],
+        REDIS_HOST = config['host'],
+        REDIS_PORT = config['port'],
+        REDIS_DATABASE = config['database'])
+    return True
+
 def enabled():
     return config['enabled']
 

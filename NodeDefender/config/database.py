@@ -19,6 +19,15 @@ def load_config(parser):
     config['port'] = parser['DATABASE']['PORT']
     config['database'] = parser['DATABASE']['DATABASE']
     config['filepath'] = parser['DATABASE']['FILEPATH']
+    NodeDefender.app.config.update(
+        DATABASE = config['enabled'],
+        DATABASE_ENGINE = config['engine'],
+        DATABASE_USERNAME = config['username'],
+        DATABASE_PASSWORD = config['password'],
+        DATABASE_HOST = config['host'],
+        DATABASE_PORT = config['port'],
+        DATABASE_DATABASE = config['database'],
+        DATABASE_FILEPATH = config['filepath'])
     return config
 
 def enabled():

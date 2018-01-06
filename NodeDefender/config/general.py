@@ -22,6 +22,9 @@ def load_config(parser):
     config['host'] = parser['GENERAL']['host']
     config['port'] = int(parser['GENERAL']['port'])
     config['self_registration'] = eval(parser['GENERAL']['SELF_REGISTRATION'])
+    NodeDefender.app.config.update(
+        SECRET_KEY = config['key'],
+        SERVER_NAME = config['host'])
     return True
 
 def hostname():
@@ -40,6 +43,7 @@ def salt():
     return config['salt']
 
 def host():
+    print("Config: ", config['host'])
     return config['host']
 
 def server_port():

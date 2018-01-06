@@ -1,4 +1,5 @@
 import logging
+import NodeDefender
 
 logger = logging.getLogger(__name__)
 logger.setLevel('INFO')

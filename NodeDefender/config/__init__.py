@@ -35,10 +35,7 @@ def write_default():
 def load(fname = None):
     global filename
     if fname is None:
-        try:
-            fname = find_configfile()
-        except NotImplementedError:
-            return False
+        fname = find_configfile()
 
     if not os.path.exists(fname):
         raise ValueError("File not does exists")
@@ -48,15 +45,13 @@ def load(fname = None):
 
     filename = fname
     parser.read(filename)
-    try:
-        NodeDefender.config.celery.load_config(parser)
-        NodeDefender.config.database.load_config(parser)
-        NodeDefender.config.general.load_config(parser)
-        NodeDefender.config.logging.load_config(parser)
-        NodeDefender.config.mail.load_config(parser)
-        NodeDefender.config.redis.load_config(parser)
-    except AttributeError:
-        print("Configuration not complete")
+    print(parser['GENERAL']['host'])
+    NodeDefender.config.celery.load_config(parser)
+    NodeDefender.config.database.load_config(parser)
+    NodeDefender.config.general.load_config(parser)
+    NodeDefender.config.logging.load_config(parser)
+    NodeDefender.config.mail.load_config(parser)
+    NodeDefender.config.redis.load_config(parser)
     return True
 
 def write():

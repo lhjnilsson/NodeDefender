@@ -41,12 +41,12 @@ def trim_string(string):
 def index():
     return render_template('frontend/dashboard/index.html')
 
-def load_frontend(app):
+def load_views(app):
     NodeDefender.app.jinja_env.globals.update(trim=trim_string)
     NodeDefender.app.context_processor(inject_user)
     NodeDefender.app.context_processor(inject_serializer)
 
-    NodeDefender.app.add_url_route('/', 'index',
+    NodeDefender.app.add_url_rule('/', 'index',
                                    NodeDefender.frontend.views.index)
     
     NodeDefender.login_manager.user_loader(load_user)

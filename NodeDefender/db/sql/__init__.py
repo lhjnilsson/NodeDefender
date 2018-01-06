@@ -1,10 +1,18 @@
+import NodeDefender
 from flask_sqlalchemy import SQLAlchemy
+
 SQL = SQLAlchemy()
 
 def load(app):
     global SQL
-    SQL.init_app(app)
+    print("Here")
+    SQL.app = app
+    with app.app_context():
+        SQL.init_app(app)
+        SQL.create_all()
+    print("he")
     if NodeDefender.config.general.run_mode == 'TESTING':
+        print("creating")
         SQL.create_all()
     return True
 

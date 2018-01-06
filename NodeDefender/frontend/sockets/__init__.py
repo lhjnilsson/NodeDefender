@@ -14,8 +14,7 @@ def load_sockets(socketio):
     NodeDefender.frontend.sockets.group.load_sockets(socketio)
     NodeDefender.frontend.sockets.icpe.load_sockets(socketio)
     NodeDefender.frontend.sockets.sensor.load_sockets(socketio)
-    NodeDefender.frontend.sockets.data.load_socket(socketio)
-    NodeDefender.frontend.sockets.plotly.load_socket(socketio)
-    NodeDefender.frontend.sockets.user.load_socket(socketio)
-    NodeDefender.frontend.sockets.zwave.load_socket(socketio)
+    NodeDefender.frontend.sockets.data.load_sockets(socketio)
+    NodeDefender.frontend.sockets.plotly.load_sockets(socketio)
+    NodeDefender.frontend.sockets.user.load_sockets(socketio)
     return True

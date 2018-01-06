@@ -17,6 +17,14 @@ def load_config(parser):
     config['ssl'] = eval(parser['MAIL']['SSL'])
     config['username'] = parser['MAIL']['USERNAME']
     config['password'] = parser['MAIL']['PASSWORD']
+    NodeDefender.app.config.update(
+        MAIL = config['enabled'],
+        MAIL_HOST = config['host'],
+        MAIL_PORT = config['port'],
+        MAIL_TLS = config['tls'],
+        MAIL_SSL = config['ssl'],
+        MAIL_USERNAME = config['username'],
+        MAIL_PASSWORD = config['password'])
     return True
 
 def enabled():

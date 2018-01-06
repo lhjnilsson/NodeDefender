@@ -36,14 +36,15 @@ def create_app():
     global celery
     global logger
     global loggHandler
-    global login_manger
+    global login_manager
     global bcrypt
     global serializer
 
+    app = factory.CreateApp()
+
     NodeDefender.config.load()
 
-    app = CreateApp()
-    logger, loggHandler = CreateLogging(app)
+    logger, loggHandler = factory.CreateLogging(app)
 
     try:
         socketio = SocketIO(app, message_queue=app.config['CELERY_BROKER_URI'],
@@ -51,7 +52,7 @@ def create_app():
     except KeyError:
         socketio = SocketIO(app, async_mode='gevent')
 
-    celery = CreateCelery(app)
+    celery = factory.CreateCelery(app)
 
     login_manager = LoginManager()
     login_manager.init_app(app)
@@ -60,17 +61,17 @@ def create_app():
 
     bcrypt = Bcrypt(app)
 
-    serializer = Serializer(app)
+    serializer = factory.Serializer(app)
     
-    try:
-        NodeDefender.db.load(app, loggHandler)
-        NodeDefender.frontend.load(app, socketio)
-        NodeDefender.mqtt.load(loggHandler)
-        NodeDefender.icpe.load(loggHandler)
+    NodeDefender.db.load(app, loggHandler)
+    NodeDefender.frontend.load(app, socketio)
+    NodeDefender.mqtt.load(loggHandler)
+    NodeDefender.icpe.load(loggHandler)
+    '''
     except Exception as e:
         logger.critical("Unable to load NodeDefender")
         return None
-
+    '''
     logger.info('NodeDefender Succesfully started')
     return app
 

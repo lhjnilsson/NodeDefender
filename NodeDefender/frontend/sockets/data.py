@@ -8,7 +8,7 @@ def load_sockets(socketio):
     socketio.on_event('groupMessages', group_messages, namespace='/data')
     socketio.on_event('nodeMessages', node_messages, namespace='/data')
     socketio.on_event('userMessages', user_messages, namespace='/data')
-    socketio.on_event('groupEventsAverage', group_event_avgerage, namespace='/data')
+    socketio.on_event('groupEventsAverage', group_event_average, namespace='/data')
     socketio.on_event('groupEventsList', group_event_list, namespace='/data')
     socketio.on_event('nodeEvents', node_events, namespace='/data')
     socketio.on_event('sensorEvents', sensor_events, namespace='/data')

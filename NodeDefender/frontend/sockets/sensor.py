@@ -5,7 +5,7 @@ import NodeDefender
 def load_sockets(socketio):
     socketio.on_event('list', list_sensors, namespace='/sensor')
     socketio.on_event('info', info, namespace='/sensor')
-    socketio.on_event('update', update, namespace='/sensor')
+    socketio.on_event('update', update_fields, namespace='/sensor')
     socketio.on_event('mqttUpdate', mqtt_update, namespace='/sensor')
     socketio.on_event('fields', fields, namespace='/sensor')
     socketio.on_event('set', set_sensor, namespace='/sensor')
