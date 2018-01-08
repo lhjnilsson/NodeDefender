@@ -5,15 +5,13 @@ SQL = SQLAlchemy()
 
 def load(app):
     global SQL
-    print("Here")
     SQL.app = app
     with app.app_context():
         SQL.init_app(app)
+    if app.config['SQLALCHEMY_DATABASE_URI'] == "sqlite:///:memory:":
+        NodeDefender.db.logger.warning("Database URI not valid, using RAM as SQL")
         SQL.create_all()
-    print("he")
-    if NodeDefender.config.general.run_mode == 'TESTING':
-        print("creating")
-        SQL.create_all()
+    NodeDefender.db.logger.info("SQL Initialized")
     return True
 
 from NodeDefender.db.sql.group import GroupModel
@@ -24,5 +22,3 @@ from NodeDefender.db.sql.icpe import iCPEModel, SensorModel,\
 from NodeDefender.db.sql.data import PowerModel, HeatModel, EventModel
 from NodeDefender.db.sql.conn import MQTTModel
 from NodeDefender.db.sql.message import MessageModel
-
-

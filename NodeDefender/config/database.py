@@ -28,7 +28,31 @@ def load_config(parser):
         DATABASE_PORT = config['port'],
         DATABASE_DATABASE = config['database'],
         DATABASE_FILEPATH = config['filepath'])
+    if NodeDefender.app.testing:
+        NodeDefender.app.config.update(
+            SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:")
+    else:
+        NodeDefender.app.config.update(
+            SQLALCHEMY_DATABASE_URI = get_uri())
     return config
+
+def get_uri():
+    db_engine = engine()
+    if config['engine'] == 'sqlite':
+        return 'sqlite:///' + NodeDefender.config.parser['DATABASE']['FILEPATH']
+    
+    username = config['username']
+    password = config['password']
+    host = config['host']
+    port = config['port']
+    database = config['database']
+    if config['engine'] == 'mysql':
+        return 'mysql+pymysql://'+username+':'+password+'@'+host+':'+port+\
+            '/'+database
+    elif config['engine'] == 'postgresql':
+        return 'postgresql://'+username+':'+password+'@'+host+':'+port+\
+                '/'+database()
+    return "sqlite:///:memory:"
 
 def enabled():
     return config['enabled']

@@ -23,8 +23,17 @@ def load_config(parser):
     config['port'] = int(parser['GENERAL']['port'])
     config['self_registration'] = eval(parser['GENERAL']['SELF_REGISTRATION'])
     NodeDefender.app.config.update(
+        RUN_MODE = config['run_mode'],
         SECRET_KEY = config['key'],
+        SECRET_SALT = config['salt'],
         SERVER_NAME = config['host'])
+
+    if config['run_mode'].upper() == 'DEVELOPMENT':
+        NodeDefender.app.config.update(DEBUG = True)
+    elif config['run_mode'].upper() == 'TESTING':
+        NodeDefender.app.config.update(
+            DEBUG = True,
+            TESTING = True)
     return True
 
 def hostname():
@@ -43,7 +52,6 @@ def salt():
     return config['salt']
 
 def host():
-    print("Config: ", config['host'])
     return config['host']
 
 def server_port():

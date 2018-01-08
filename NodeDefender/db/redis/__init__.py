@@ -4,7 +4,7 @@ import random
 import logging
 import NodeDefender
 
-logger = logging.getLogger('Redis')
+logger = logging.getLogger(__name__)
 logger.setLevel('INFO')
 conn = None
 
@@ -93,7 +93,10 @@ def load(loggHandler):
         pool = ConnectionPool(host=host, port=int(port), db=db, decode_responses=True)
         conn = StrictRedis(connection_pool=pool)
     else:
+        NodeDefender.db.redis.logger.\
+                warning("Local Storage, application data is only during run- time")
         conn = LocalStorage()
+    NodeDefender.db.redis.logger.info("Local Storage caching initialized")
 
 def redisconn(func):
     @wraps(func)

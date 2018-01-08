@@ -45,7 +45,6 @@ def load(fname = None):
 
     filename = fname
     parser.read(filename)
-    print(parser['GENERAL']['host'])
     NodeDefender.config.celery.load_config(parser)
     NodeDefender.config.database.load_config(parser)
     NodeDefender.config.general.load_config(parser)
