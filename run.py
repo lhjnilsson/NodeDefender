@@ -1,14 +1,6 @@
 #!./py/bin/python
-from NodeDefender import app, db
-from NodeDefender import socketio
-from NodeDefender.mqtt import connection
-#from NodeDefender.iCPE.db import Load as LoadiCPE
+import NodeDefender
 
-if app.config['TESTING']:
-    db.create_all()
+app = NodeDefender.create_app()
 
-#LoadiCPE()
-connection.load()
-db.load()
-
-socketio.run(app, host='0.0.0.0')
+NodeDefender.socketio.run(app)
