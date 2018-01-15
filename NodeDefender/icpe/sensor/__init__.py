@@ -13,6 +13,8 @@ def load(loggHandler, *icpes):
             NodeDefender.db.sensor.get(icpe.mac_address, sensor.sensor_id)
             NodeDefender.mqtt.command.sensor.\
                     sensor_info(icpe.mac_address, sensor.sensor_id)
+            logger.debug("Sensor {}:{} Loaded".\
+                         format(icpe.mac_address, sensor.sensor_id))
     return True
 
 def verify_list(icpe, *sensors):

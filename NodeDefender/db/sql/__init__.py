@@ -1,17 +1,22 @@
 import NodeDefender
 from flask_sqlalchemy import SQLAlchemy
+import logging
 
 SQL = SQLAlchemy()
 
-def load(app):
+logger = logging.getLogger(__name__)
+logger.setLevel("INFO")
+
+def load(app, loggHandler):
+    logger.addHandler(loggHandler)
     global SQL
     SQL.app = app
     with app.app_context():
         SQL.init_app(app)
     if app.config['SQLALCHEMY_DATABASE_URI'] == "sqlite:///:memory:":
-        NodeDefender.db.logger.warning("Database URI not valid, using RAM as SQL")
+        NodeDefender.db.sql.logger.warning("Database URI not valid, using RAM as SQL")
         SQL.create_all()
-    NodeDefender.db.logger.info("SQL Initialized")
+    NodeDefender.db.sql.logger.info("SQL Initialized")
     return True
 
 from NodeDefender.db.sql.group import GroupModel

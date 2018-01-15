@@ -7,7 +7,7 @@ logger.setLevel('DEBUG')
 
 def load(app, loggHandler):
     logger.addHandler(loggHandler)
-    NodeDefender.db.sql.load(app)
+    NodeDefender.db.sql.load(app, loggHandler)
     NodeDefender.db.redis.load(loggHandler)
 
 import NodeDefender.db.data

@@ -64,7 +64,7 @@ def create_app():
     serializer = factory.Serializer(app)
     
     NodeDefender.db.load(app, loggHandler)
-    NodeDefender.frontend.load(app, socketio)
+    NodeDefender.frontend.load(app, socketio, loggHandler)
     NodeDefender.mqtt.load(loggHandler)
     NodeDefender.icpe.load(loggHandler)
     '''

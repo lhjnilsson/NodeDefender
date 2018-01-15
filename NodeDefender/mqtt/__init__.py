@@ -8,4 +8,6 @@ logger.setLevel('DEBUG')
 
 def load(loggHandler):
     logger.addHandler(loggHandler)
-    return connection.load()
+    connection.load()
+    logger.debug("MQTT Loaded")
+    return True

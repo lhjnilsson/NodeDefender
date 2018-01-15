@@ -19,5 +19,6 @@ def load(app, loggHandler):
     mail.init_app(app)
     logger.addHandler(loggHandler)
     enabled = NodeDefender.config.mail.enabled()
+    logger.info("Mail Service Enabled")
     return True
 
