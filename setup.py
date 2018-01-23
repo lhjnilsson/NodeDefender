@@ -3,15 +3,14 @@ from setuptools import setup
 setup(
     name="NodeDefender",
     description="Manage Nodes with CTS-iCPE",
-    version="0.6",
+    version="0.8.1",
     author="Henrik Nilsson",
     author_email="henrik.nilsson@ctsystem.se",
     license="BSD",
     url="https://github.com/CTSNE/NodeDefender",
     packages=['NodeDefender'],
-    scripts=['manage.py'],
     entry_points = {
-        'console_scripts' : ['nodedefender=nodedefender.bin.manage:main']
+        'console_scripts' : ['nodedefender=NodeDefender.manage:console']
     },
     include_package_data=True,
     install_requires = [

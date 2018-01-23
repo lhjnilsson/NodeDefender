@@ -4,6 +4,8 @@ from flask_login import LoginManager
 from flask_bcrypt import Bcrypt
 import os
 from datetime import datetime
+import logging
+import sys
 
 import NodeDefender.config
 import NodeDefender.factory
@@ -24,14 +26,33 @@ date_loaded = datetime.now()
 app = None
 socketio = None
 celery = None
-logger = None
-loggHandler = None
+logger = logging.getLogger("NodeDefender")
+loggHandler = logging.NullHandler()
+loggHandler.setFormatter(logging.Formatter("%(name)s - %(message)s"))
+logger.addHandler(loggHandler)
 login_manager = None
 bcrypt = None
 serializer = None
 
 def console():
     NodeDefender.manage.manager.run()
+
+def create_console_app():
+    global app
+    global bcrypt
+
+    app = factory.CreateApp()
+    bcrypt = Bcrypt(app)
+    serializer = factory.Serializer(app)
+
+    try:
+        NodeDefender.config.load()
+    except NotImplementedError:
+        pass
+
+    NodeDefender.db.load(app, loggHandler)
+
+    return app
 
 def create_app():
     global app

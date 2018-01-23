@@ -10,12 +10,13 @@ from NodeDefender.manage.sensor import manager as SensorManager
 from NodeDefender.manage.mqtt import manager as MQTTManager
 from NodeDefender.manage.setup import manager as SetupManager
 
-app = NodeDefender.create_app()
+app = NodeDefender.create_console_app()
 
 manager = Manager(app)
 
 @manager.command
 def run():
+    app = NodeDefender.create_app()
     NodeDefender.socketio.run(app)
 '''
     if NodeDefender.app.config['TESTING']:
