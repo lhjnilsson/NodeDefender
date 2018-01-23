@@ -19,7 +19,7 @@ def database():
         else:
             enabled = None
     
-    NodeDefender.config.database.set_cfg(enabled = enabled)
+    NodeDefender.config.database.set_config(enabled = enabled)
     if enabled:
         config_database_engine()
     return True
@@ -32,7 +32,7 @@ def config_database_engine():
         if engine not in supported_databases:
             engine = None
 
-    NodeDefender.config.database.set_cfg(engine = engine)
+    NodeDefender.config.database.set_config(engine = engine)
     if engine == 'mysql':
         config_database_host()
         config_database_user()
@@ -50,7 +50,7 @@ def config_database_host():
     while not port:
         port = prompt('Enter Server Port')
     
-    NodeDefender.config.database.set_cfg(server = server,\
+    NodeDefender.config.database.set_config(server = server,\
                                          port = port)
     return True
 
@@ -67,7 +67,7 @@ def config_database_user():
     while not db:
         db = prompt("Enter DB Name/Number")
 
-    NodeDefender.config.database.set_cfg(username = username,\
+    NodeDefender.config.database.set_config(username = username,\
                                          password = password,\
                                          db = db)
     return True
@@ -84,7 +84,7 @@ def config_database_file():
     else:
         filepath = NodeDefender.config.basepath + '/' + filepath
 
-    NodeDefender.config.database.set_cfg(filepath = filepath)
+    NodeDefender.config.database.set_config(filepath = filepath)
     return True
 
 

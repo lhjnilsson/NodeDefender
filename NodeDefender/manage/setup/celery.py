@@ -23,7 +23,7 @@ def celery():
             enabled = False
         else:
             enabled = None
-    NodeDefender.config.celery.set_cfg(enabled = enabled)
+    NodeDefender.config.celery.set_config(enabled = enabled)
     if not enabled:
         return True
     
@@ -32,20 +32,20 @@ def celery():
         broker = prompt("Enter Broker type(AMQP or Redis)").lower()
         if broker not in supported_brokers:
             broker = None
-    NodeDefender.config.celery.set_cfg(broker = broker)
+    NodeDefender.config.celery.set_config(broker = broker)
 
     server = None
     while server is None:
         server = prompt("Enter Server Address")
-    NodeDefender.config.celery.set_cfg(server = server)
+    NodeDefender.config.celery.set_config(server = server)
 
     port = None
     while port is None:
         port = prompt("Enter Server Port")
-    NodeDefender.config.celery.set_cfg(port = port)
+    NodeDefender.config.celery.set_config(port = port)
 
     database = ''
     while not database:
         database = prompt("Enter Database")
-    NodeDefender.config.celery.set_cfg(database = database)
+    NodeDefender.config.celery.set_config(database = database)
     return True

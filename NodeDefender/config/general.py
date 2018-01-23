@@ -1,19 +1,14 @@
 from datetime import datetime
 import NodeDefender
 
-config = {'run_mode' : 'TESTING',
-          'key' : 'key',
-          'salt' : 'salt',
-          'host' : '0.0.0.0',
-          'port' : '50000',
-          'self_registration' : True}
-
 default_config = {'run_mode' : 'TESTING',
                   'key' : 'key',
                   'salt' : 'salt',
                   'host' : '0.0.0.0',
                   'port' : '50000',
                   'self_registration' : True}
+
+config = default_config.copy()
 
 def load_config(parser):
     config['run_mode'] = parser['GENERAL']['RUN_MODE']
@@ -65,7 +60,7 @@ def set_defaults():
         NodeDefender.config.parser['GENERAL'][key] = str(value)
     return True
 
-def set_cfg(**kwargs):
+def set_config(**kwargs):
     for key, value in kwargs.items():
         NodeDefender.config.parser['GENERAL'][key] = str(value)
 

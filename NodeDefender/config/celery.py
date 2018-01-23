@@ -1,11 +1,12 @@
 import NodeDefender
 
-config = {'enabled' : False}
 default_config = {'enabled' : False,
                   'broker' : '',
                   'host' : '',
                   'port' : '',
                   'database' : ''}
+
+config = default_config.copy()
 
 def load_config(parser):
     config['enabled'] = eval(parser['CELERY']['ENABLED'])

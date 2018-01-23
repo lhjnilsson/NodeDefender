@@ -1,5 +1,6 @@
 from NodeDefender.db.sql import SQL
 from datetime import datetime
+import NodeDefender
 
 class UserModel(SQL.Model):
     '''

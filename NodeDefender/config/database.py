@@ -1,6 +1,5 @@
 import NodeDefender
 
-config = {'enabled' : False}
 default_config = {'enabled' : False,
                   'engine' : '',
                   'username' : '',
@@ -9,6 +8,8 @@ default_config = {'enabled' : False,
                   'port' : '',
                   'database' : '',
                   'filepath' : ''}
+
+config = default_config.copy()
 
 def load_config(parser):
     config['enabled'] = eval(parser['DATABASE']['ENABLED'])

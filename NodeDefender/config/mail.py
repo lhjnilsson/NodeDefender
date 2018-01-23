@@ -1,6 +1,5 @@
 import NodeDefender
 
-config = {'enabled' : False}
 default_config = {'enabled' : False,
                   'host' : '',
                   'port' : 465,
@@ -8,6 +7,8 @@ default_config = {'enabled' : False,
                   'ssl' : False,
                   'username' : '',
                   'password' : ''}
+
+config = default_config.copy()
 
 def load_config(parser):
     config['enabled'] = eval(parser['MAIL']['ENABLED'])
@@ -53,7 +54,7 @@ def set_defaults():
         NodeDefender.config.parser['MAIL'][key] = str(value)
     return True
 
-def set_cfg(**kwargs):
+def set_config(**kwargs):
     for key, value in kwargs.items():
         NodeDefender.config.parser['MAIL'][key] = str(value)
 

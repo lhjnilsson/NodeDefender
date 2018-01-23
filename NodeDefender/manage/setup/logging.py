@@ -22,7 +22,7 @@ def logging():
             enabled = False
         else:
             enabled = None
-    NodeDefender.config.logging.set_cfg(enabled = enabled)
+    NodeDefender.config.logging.set_config(enabled = enabled)
 
     if enabled:
         config_logging_type()
@@ -35,7 +35,7 @@ def config_logging_type():
         if loggtype not in supported_loggtypes:
             loggtype = None
     
-    NodeDefender.config.logging.set_cfg(TYPE = loggtype)
+    NodeDefender.config.logging.set_config(TYPE = loggtype)
     if loggtype == 'local':
         config_logging_filepath()
     elif loggtype == 'syslog':
@@ -55,7 +55,7 @@ def config_logging_filepath():
         filepath = filepath
     else:
         filepath = NodeDefender.config.basepath + '/' + filepath
-    NodeDefender.config.logging.set_cfg(filepath = filepath)
+    NodeDefender.config.logging.set_config(filepath = filepath)
 
 def config_logging_host():
     while not server:
@@ -64,7 +64,7 @@ def config_logging_host():
     while not port:
         port = prompt('Enter Syslog Port')
 
-    NodeDefender.config.set_cfg(server = server, port = port)
+    NodeDefender.config.set_config(server = server, port = port)
     return True
 
 def config_logging_level():
@@ -74,5 +74,5 @@ def config_logging_level():
         level = prompt("Debug level").lower()
         if level not in supported_levels:
             level = None
-    NodeDefender.config.logging.set_cfg(level = level)
+    NodeDefender.config.logging.set_config(level = level)
     return True

@@ -18,22 +18,22 @@ def redis():
             enabled = False
         else:
             enabled = None
-    NodeDefender.config.redis.set_cfg(enabled = enabled)
+    NodeDefender.config.redis.set_config(enabled = enabled)
     if not enabled:
         return True
 
     host = None
     while host is None:
         host = prompt("Enter Host Address")
-    NodeDefender.config.redis.set_cfg(host = host)
+    NodeDefender.config.redis.set_config(host = host)
 
     port = None
     while port is None:
         port = prompt("Enter Server Port")
-    NodeDefender.config.redis.set_cfg(port = port)
+    NodeDefender.config.redis.set_config(port = port)
 
     database = ''
     while not database:
         database = prompt("Enter Database")
-    NodeDefender.config.redis.set_cfg(database = database)
+    NodeDefender.config.redis.set_config(database = database)
     return True

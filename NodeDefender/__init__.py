@@ -30,6 +30,9 @@ login_manager = None
 bcrypt = None
 serializer = None
 
+def console():
+    NodeDefender.manage.manager.run()
+
 def create_app():
     global app
     global socketio
@@ -42,7 +45,10 @@ def create_app():
 
     app = factory.CreateApp()
 
-    NodeDefender.config.load()
+    try:
+        NodeDefender.config.load()
+    except NotImplementedError:
+        print("Config not found, loading with defaults")
 
     logger, loggHandler = factory.CreateLogging(app)
 
@@ -62,16 +68,13 @@ def create_app():
     bcrypt = Bcrypt(app)
 
     serializer = factory.Serializer(app)
-    
-    NodeDefender.db.load(app, loggHandler)
-    NodeDefender.frontend.load(app, socketio, loggHandler)
-    NodeDefender.mqtt.load(loggHandler)
-    NodeDefender.icpe.load(loggHandler)
-    '''
+    try:
+        NodeDefender.db.load(app, loggHandler)
+        NodeDefender.frontend.load(app, socketio, loggHandler)
+        NodeDefender.mqtt.load(loggHandler)
+        NodeDefender.icpe.load(loggHandler)
     except Exception as e:
         logger.critical("Unable to load NodeDefender")
-        return None
-    '''
     logger.info('NodeDefender Succesfully started')
     return app
 

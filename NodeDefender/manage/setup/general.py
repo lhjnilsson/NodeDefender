@@ -14,24 +14,24 @@ def general():
     servername = None
     while servername is None:
         servername = prompt("Enter Server Name")
-    NodeDefender.config.general.set_cfg(servername = servername)
+    NodeDefender.config.general.set_config(servername = servername)
 
     port = None
     while port is None:
         port = prompt("Which port should the server be running on")
-    NodeDefender.config.general.set_cfg(port = port)
+    NodeDefender.config.general.set_config(port = port)
 
     print_info("Security Key is used to Encrypt Password etc.")
     key = None
     while key is None:
         key = prompt("Enter Secret Key")
-    NodeDefender.config.general.set_cfg(secret_key = key)
+    NodeDefender.config.general.set_config(secret_key = key)
 
     print_info("Salt is used to genereate URLS and more.")
     salt = None
     while salt is None:
         salt = prompt("Please enter Salt")
-    NodeDefender.config.general.set_cfg(salt = salt)
+    NodeDefender.config.general.set_config(salt = salt)
     
     print_info("You can either have users register by themselfs on the\
                authentication- page or via invite mail. Invite mail requires\
@@ -47,5 +47,5 @@ def general():
             self_registration = False
         else:
             self_registration = None
-    NodeDefender.config.general.set_cfg(self_registration = self_registration)
+    NodeDefender.config.general.set_config(self_registration = self_registration)
     return True

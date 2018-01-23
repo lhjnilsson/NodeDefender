@@ -1,10 +1,11 @@
 import NodeDefender
 
-config = {'enabled' : False}
 default_config = {'enabled' : False,
                   'host' : '',
                   'port' : '',
                   'database' : ''}
+
+config = default_config.copy()
 
 def load_config(parser):
     config['enabled'] = eval(parser['REDIS']['ENABLED'])
@@ -34,7 +35,7 @@ def set_defaults():
     for key, value in default_config.items():
         NodeDefender.config.parser['REDIS'][key] = str(value)
 
-def set_cfg(**kwargs):
+def set_config(**kwargs):
     for key, value in kwargs.items():
         NodeDefender.config.parser['REDIS'][key] = str(value)
 

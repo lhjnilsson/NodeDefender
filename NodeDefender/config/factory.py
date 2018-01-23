@@ -3,14 +3,15 @@ import NodeDefender
 class DefaultConfig:
     DEBUG = False
     TESTING = False
+    SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SECRET_KEY = None
-    SECRET_SALT = None
+    SECRET_KEY = "key"
+    SECRET_SALT = "salt"
     SERVER_NAME = '127.0.0.1:5000'
     PORT = 5000
     SELF_REGISTRATION = True
     WTF_CSRF_ENABLED = False
-    
+
     DATABASE = False
     REDIS = False
     LOGGING = False

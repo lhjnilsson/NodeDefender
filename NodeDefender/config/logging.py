@@ -1,12 +1,13 @@
 import NodeDefender
 
-config = {'enabled' : False}
 default_config = {'enabled' : False,
                   'level' : 'DEBUG',
                   'type' : '',
                   'filepath' : '',
                   'host' : '',
                   'port' : ''}
+
+config = default_config.copy()
 
 def load_config(parser):
     config['enabled'] = eval(parser['LOGGING']['ENABLED'])
@@ -47,7 +48,7 @@ def set_defaults():
         NodeDefender.config.parser['LOGGING'][key] = str(value)
     return True
 
-def set_cfg(**kwargs):
+def set_config(**kwargs):
     for key, value in kwargs.items():
         NodeDefender.config.parser['LOGGING'][key] = str(value)
 
