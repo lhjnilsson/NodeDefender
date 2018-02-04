@@ -1,0 +1,200 @@
+{% block content %}
+{% from "frontend/macros/form.html" import render_manual, render_select, render_checkbox %}
+{% from "frontend/macros/info.html" import FieldID %}
+<style>
+#deployAlert {
+    position: relative;
+    z-index: 100;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+}
+</style>
+<div class="alert alert-warning alert-dismissable" id="deployAlert">
+  <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
+  <strong>Temporary session! This session is not deployed. </strong> <a href="#" data-toggle="modal" data-target="#deployNodeDefender" class="alert-link">Deploy Here</a>
+</div>
+<div class="modal fade" id="deployNodeDefender" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h2 class="modal-title">Deploy: <div class="multiform-subtitle" id="deploy-subtitle">General</div></h2>
+				<div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100"></div>
+			</div>
+			<div class="modal-body">
+				<div class="deployform-step">
+					<div class="row">
+            {{ render_select('Run Mode', 'createNodeName', "Production", "Development", "Testing") }}
+          </div>
+          <div class="row">
+            {{ render_manual('Key', 'createNodeName') }}
+            {{ render_manual('Salt', 'createNodeName') }}
+            {{ render_manual('Host', 'createNodeName') }}
+            {{ render_manual('Port', 'createNodeName') }}
+            {{ render_checkbox('Self Registration', 'createNodeName') }}
+					</div>
+				</div>
+				<div class="deployform-step">
+          <div class="row">
+            {{ render_checkbox('Enable', 'enableDatabase') }}
+            {{ render_select('Engine', 'databaseEngine', 'SQLite', 'MySQL') }}
+            {{ render_manual('Host', 'databaseHost') }}
+            {{ render_manual('Port', 'databasePort') }}
+            {{ render_manual('Username', 'databaseUsername') }}
+            {{ render_manual('Password', 'databasePassword') }}
+            {{ render_manual('Database', 'databaseDatabase') }}
+            {{ render_manual('Filepath', 'databaseFilepath') }}
+				  </div>
+        </div>
+				<div class="deployform-step">
+					<div class="row">
+            {{ render_checkbox('Enable', 'enableCache') }}
+            {{ render_manual('Host', 'cacheHost') }}
+            {{ render_manual('Port', 'cachePort') }}
+            {{ render_manual('Username', 'cacheUsername') }}
+            {{ render_manual('Password', 'cachePassword') }}
+            {{ render_manual('Database', 'cacheDatabase') }}
+          </div>
+				</div>
+        <div class="deployform-step">
+          <div class="row">
+            {{ render_checkbox('Enable', 'enableMail') }}
+            {{ render_manual('Host', 'mailHost') }}
+            {{ render_manual('Port', 'mailPort') }}
+            {{ render_manual('Username', 'mailUsername') }}
+            {{ render_manual('Password', 'mailPassword') }}
+            {{ render_checkbox('SSL', 'mailSSL') }}
+            {{ render_checkbox('TLS', 'mailTLS') }}
+          </div>
+        </div>
+        <div class="deployform-step">
+          <div class="row">
+            {{ render_checkbox('Enable', 'enableLogging') }}
+            {{ render_select('Engine', 'loggingEngine', 'Local', 'Syslog') }}
+            {{ render_manual('Host', 'loggingHost') }}
+            {{ render_manual('Port', 'loggingPort') }}
+            {{ render_manual('Username', 'loggingUsername') }}
+            {{ render_manual('Password', 'loggingPassword') }}
+            {{ render_manual('Filepath', 'loggingFilepath') }}
+          </div>
+        </div>
+        <div class="deployform-step">
+          <div class="row">
+            {{ render_checkbox('Enable', 'enableCelery') }}
+            {{ render_manual('Host', 'celeryHost') }}
+            {{ render_manual('Port', 'celeryPort') }}
+            {{ render_manual('Username', 'celeryUsername') }}
+            {{ render_manual('Password', 'celeryPassword') }}
+          </div>
+        </div>
+        <div class="deployform-step">
+          <div class="row">
+            {{ render_checkbox('Enable', 'createNodeName') }}
+          </div>
+        </div>
+			</div>
+			<div class="modal-footer">
+				<button class="multibtn deployform-back btn btn-info">Back</button>
+				<button class="multibtn deployform-next btn btn-info">Next</button>
+				<button class="multibtn deployform-submit btn btn-success">Submit</button>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+var cb = []
+var submitcb;
+var initMultistep = function() {
+	for (var i = 0; i < (arguments.length - 1); i++)
+		cb[i] = arguments[i];
+	submitcb = arguments[arguments.length - 1];
+}
+$(document).ready(function() {
+	var current = 1;
+
+	deployform   = $(".deployform-step");
+	deploynext     = $(".deployform-next");
+	deployback     = $(".deployform-back");
+	deploysubmit   = $(".deployform-submit");
+
+	// Init buttons and UI
+	deployform.not(':eq(0)').hide();
+	hideDeployButtons(current);
+	setDeployProgress(current);
+
+	// Next button click action
+	deploynext.click(function(){
+    if (current == 1) {
+      console.log("database");
+    } else if (current == 2) {
+      console.log("Cache");
+    } else if (current == 3) {
+      console.log("Mail");
+    } else if (current == 4) {
+      console.log("Logging");
+    } else if (current == 5) {
+      console.log("Concurrency");
+    } else if (current == 6) {
+      console.log("Concurrency");
+    }
+
+		if(current < deployform.length){
+                   deployform.show();
+                   deployform.not(':eq('+(current++)+')').hide();
+  		   setDeployProgress(current);
+	       }
+        hideDeployButtons(current);
+       })
+
+	// Back button click action
+  deployback.click(function(){
+		if(current > 1){
+			current = current - 2;
+			deploynext.trigger('click');
+		}
+		hideDeployButtons(current);
+	})
+
+	deploysubmit.click(function() {
+		submitcb();
+	})
+});
+/*
+checkStep = function(current) {
+	if (current > 0) {
+		return cb[current - 1]();
+	}
+	else {
+		return true;
+	}
+}
+*/
+
+// Change progress bar action
+
+$.get("api/v1/config/general", function(data, status){
+        console.log("Data: " + data + "\nStatus: " + status);
+        console.log(data);
+    });
+
+setDeployProgress = function(currstep){
+	var percent = parseFloat(100 / deployform.length) * currstep;
+	percent = percent.toFixed();
+	$(".progress-bar")
+        .css("width",percent+"%")
+        .html(percent+"%");
+}
+
+// Hide buttons according to the current step
+hideDeployButtons = function(current){
+	var limit = parseInt(deployform.length);
+
+	$(".multibtn").hide();
+
+	if(current < limit) deploynext.show();
+	if(current > 1) deployback.show();
+	if (current == limit) { deploynext.hide(); deploysubmit.show(); }
+}
+</script>
+{% endblock %}

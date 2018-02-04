@@ -96,6 +96,7 @@ def create_app():
         NodeDefender.icpe.load(loggHandler)
     except Exception as e:
         logger.critical("Unable to load NodeDefender")
+        print(e)
     logger.info('NodeDefender Succesfully started')
     return app
 

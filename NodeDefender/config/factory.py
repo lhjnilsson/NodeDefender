@@ -7,7 +7,7 @@ class DefaultConfig:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SECRET_KEY = "key"
     SECRET_SALT = "salt"
-    SERVER_NAME = '127.0.0.1:5000'
+    #SERVER_NAME = '127.0.0.1:5000'
     PORT = 5000
     SELF_REGISTRATION = True
     WTF_CSRF_ENABLED = False

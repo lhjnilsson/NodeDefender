@@ -63,3 +63,24 @@
 	</div>
 </div>
 {% endmacro %}
+
+{% macro render_checkbox(label, id) %}
+<div class="form-group">
+	<div class="checkbox col-sm-12">
+		<label><input type="checkbox">{{label}}</label>
+	</div>
+</div>
+{% endmacro %}
+
+{% macro render_select(label, id) %}
+<div class="form-group">
+	<label class="control-label col-sm-2" for="{{id}}">{{label}}:</label>
+	<div class="col-sm-10">
+	  <select class="form-control" id="sel1">
+			{% for value in varargs %}
+	    	<option>{{value}}</option>
+			{% endfor %}
+	  </select>
+	</div>
+</div>
+{% endmacro %}

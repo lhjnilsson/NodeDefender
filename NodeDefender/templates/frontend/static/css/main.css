@@ -349,3 +349,9 @@ input:checked + .slider:before {
 .offline-text {
   color: red;
 }
+
+
+.multiform-subtitle {
+  display: inline;
+  color: #777;
+}
