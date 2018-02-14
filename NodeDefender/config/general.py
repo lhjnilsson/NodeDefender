@@ -18,50 +18,33 @@ def load_config(parser):
     config['port'] = int(parser['GENERAL']['port'])
     config['self_registration'] = eval(parser['GENERAL']['SELF_REGISTRATION'])
     NodeDefender.app.config.update(
-        RUN_MODE = config['run_mode'],
-        SECRET_KEY = config['key'],
-        SECRET_SALT = config['salt'],
-        SERVER_NAME = config['host'])
+        RUN_MODE=config['run_mode'],
+        SECRET_KEY=config['key'],
+        SECRET_SALT=config['salt'],
+        SERVER_NAME=config['host'])
 
     if config['run_mode'].upper() == 'DEVELOPMENT':
-        NodeDefender.app.config.update(DEBUG = True)
+        NodeDefender.app.config.update(DEBUG=True)
     elif config['run_mode'].upper() == 'TESTING':
         NodeDefender.app.config.update(
-            DEBUG = True,
-            TESTING = True)
+            DEBUG=True,
+            TESTING=True)
     return True
-
-def hostname():
-    return os.uname().nodename
 
 def uptime():
-    return str(datetime.now() - _loaded_at)
+    return str(datetime.now() - NodeDefender.date_loaded)
 
-def run_mode():
-    return config['run_mode']
-
-def key():
-    return config['key']
-
-def salt():
-    return config['salt']
-
-def host():
-    return config['host']
-
-def server_port():
-    return config['port']
-
-def self_registration():
-    return config['self_registration']
-
-def set_defaults():
-    for key, value in default_config.items():
-        NodeDefender.config.parser['GENERAL'][key] = str(value)
+def set_default():
+    config = default_config.copy()
     return True
 
-def set_config(**kwargs):
+def set(**kwargs):
     for key, value in kwargs.items():
-        NodeDefender.config.parser['GENERAL'][key] = str(value)
+        if key not in config:
+            continue
+        NodeDefender.config.general.config[key] = str(value)
+    return True
 
+def write():
+    NodeDefender.config.parser['GENERAL'] = config
     return NodeDefender.config.write()

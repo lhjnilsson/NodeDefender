@@ -150,7 +150,21 @@ $(document).ready(function() {
 	});
 
 	deploysubmit.click(function() {
-		submitcb();
+      $.ajax({
+        url:"/api/v1/config/write",
+        type:"POST",
+        async: false,
+        contentType:"application/json;",
+        success: function(data){
+          toastr.success("Woah!");
+          return true;
+        },
+        error: function(status, d, data) {
+          toastr.error(status.responseText);
+          return false;
+        }
+      })
+    return false;
 	});
 
   $.get("/api/v1/config/general", function(data, status){
@@ -193,7 +207,6 @@ $(document).ready(function() {
   });
 
   $.get("/api/v1/config/logging", function(data, status){
-    console.log(data);
     document.getElementById("enableLogging").checked = data.enabled;
     document.getElementById("loggingEngine").value = data.engine;
     document.getElementById("loggingHost").value = data.host;
@@ -287,7 +300,31 @@ enterCache = function() {
 }
 
 submitCache = function() {
-  return console.log("CACHE OK");
+  data = {
+    enabled : document.getElementById("enableCache").checked,
+    host : document.getElementById("cacheHost").value,
+    port : document.getElementById("cachePort").value,
+    username : document.getElementById("cacheUsername").value,
+    password : document.getElementById("cachePassword").value,
+    database : document.getElementById("cacheDatabase").value
+  };
+    $.ajax({
+      url:"/api/v1/config/cache",
+      type:"POST",
+      async: false,
+      data:JSON.stringify(data),
+      contentType:"application/json;",
+      dataType:"json",
+      success: function(data){
+        nextStep();
+        return true;
+      },
+      error: function(status, d, data) {
+        toastr.error(status.responseText);
+        return false;
+      }
+    })
+  return false;
 }
 
 enterMail = function() {
@@ -295,7 +332,32 @@ enterMail = function() {
 }
 
 submitMail = function() {
-  return console.log("MAIL OK");
+  data = {
+    enabled : document.getElementById("enableMail").checked,
+    host : document.getElementById("mailHost").value,
+    port : document.getElementById("mailPort").value,
+    username : document.getElementById("mailUsername").value,
+    password : document.getElementById("mailPassword").value,
+    ssl : document.getElementById("mailSSL").checked,
+    tls : document.getElementById("mailTLS").checked
+  };
+    $.ajax({
+      url:"/api/v1/config/mail",
+      type:"POST",
+      async: false,
+      data:JSON.stringify(data),
+      contentType:"application/json;",
+      dataType:"json",
+      success: function(data){
+        nextStep();
+        return true;
+      },
+      error: function(status, d, data) {
+        toastr.error(status.responseText);
+        return false;
+      }
+    })
+  return false;
 }
 
 enterLogging = function() {
@@ -303,7 +365,32 @@ enterLogging = function() {
 }
 
 submitLogging = function() {
-  return console.log("LOGGING OK");
+  data = {
+    enabled : document.getElementById("enableLogging").checked,
+    engine : document.getElementById("loggingEngine").value,
+    host : document.getElementById("loggingHost").value,
+    port : document.getElementById("loggingPort").value,
+    username : document.getElementById("loggingUsername").value,
+    password : document.getElementById("loggingPassword").value,
+    filepath : document.getElementById("loggingFilepath").value
+  };
+    $.ajax({
+      url:"/api/v1/config/logging",
+      type:"POST",
+      async: false,
+      data:JSON.stringify(data),
+      contentType:"application/json;",
+      dataType:"json",
+      success: function(data){
+        nextStep();
+        return true;
+      },
+      error: function(status, d, data) {
+        toastr.error(status.responseText);
+        return false;
+      }
+    })
+  return false;
 }
 
 enterCelery = function() {
@@ -311,7 +398,30 @@ enterCelery = function() {
 }
 
 submitCelery = function() {
-  return console.log("CELERY OK");
+  data = {
+    enabled : document.getElementById("enableCelery").checked,
+    host : document.getElementById("celeryHost").value,
+    port : document.getElementById("celeryPort").value,
+    username : document.getElementById("celeryUsername").value,
+    password : document.getElementById("celeryPassword").value,
+  };
+    $.ajax({
+      url:"/api/v1/config/celery",
+      type:"POST",
+      async: false,
+      data:JSON.stringify(data),
+      contentType:"application/json;",
+      dataType:"json",
+      success: function(data){
+        nextStep();
+        return true;
+      },
+      error: function(status, d, data) {
+        toastr.error(status.responseText);
+        return false;
+      }
+    })
+  return false;
 }
 
 enterSubmit = function() {

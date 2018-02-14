@@ -20,42 +20,25 @@ def load_config(parser):
     config['password'] = parser['MAIL']['PASSWORD']
     NodeDefender.app.config.update(
         MAIL = config['enabled'],
-        MAIL_HOST = config['host'],
-        MAIL_PORT = config['port'],
-        MAIL_TLS = config['tls'],
-        MAIL_SSL = config['ssl'],
-        MAIL_USERNAME = config['username'],
-        MAIL_PASSWORD = config['password'])
+        MAIL_HOST=config['host'],
+        MAIL_PORT=config['port'],
+        MAIL_TLS=config['tls'],
+        MAIL_SSL=config['ssl'],
+        MAIL_USERNAME=config['username'],
+        MAIL_PASSWORD=config['password'])
     return True
 
-def enabled():
-    return config['enabled']
-
-def host():
-    return config['host']
-
-def port():
-    return config['port']
-
-def tls():
-    return config['tls']
-
-def ssl():
-    return config['ssl']
-
-def username():
-    return config['username']
-
-def password():
-    return config['password']
-
-def set_defaults():
-    for key, value in default_config.items():
-        NodeDefender.config.parser['MAIL'][key] = str(value)
+def set_default():
+    config = default_config.copy()
     return True
 
-def set_config(**kwargs):
+def set(**kwargs):
     for key, value in kwargs.items():
-        NodeDefender.config.parser['MAIL'][key] = str(value)
+        if key not in config:
+            continue
+        NodeDefender.config.mail.config[key] = str(value)
+    return True
 
+def write():
+    NodeDefender.config.parser['MAIL'] = config
     return NodeDefender.config.write()

@@ -13,7 +13,7 @@ moment = Moment()
 
 def CreateApp():
     app = Flask(__name__)
-    mode = NodeDefender.config.general.run_mode()
+    mode = NodeDefender.config.general.config['run_mode']
     app.config.from_object('NodeDefender.config.factory.DefaultConfig')
     app.template_folder = "templates"
     app.static_folder = "templates/frontend/static"
@@ -28,10 +28,10 @@ def CreateLogging(app = None):
         if app.config['LOGGING_TYPE'] == 'local':
             loggHandler = logging.FileHandler(app.config['LOGGING_NAME'])
         elif app.config['LOGGING_TYPE'] == 'syslog':
-            loggHandler = logging.handler.\
+            loggHandler = logging.Handler.\
                     SysLogHandler(address = (app.config['LOGGING_SERVER'],
                                              int(app.config['LOGGING_PORT'])))
-    level = NodeDefender.config.logging.level()
+    level = NodeDefender.config.logging.config['level']
     if level:
         loggHandler.setLevel(level.upper())
     else:
@@ -47,7 +47,7 @@ def CreateLogging(app = None):
 
 def CreateCelery(app = None):
     app = app or CreateApp()
-    if not NodeDefender.config.celery.enabled():
+    if not NodeDefender.config.celery.config['enabled']:
         NodeDefender.logger.info("Concurrency disabled")
         return False
 
@@ -58,7 +58,6 @@ def CreateCelery(app = None):
         celery = Celery(app.name)
         NodeDefender.logger.info("Concurreny configuration error")
         return False
-    
     celery.conf.update(app.config)
     TaskBase = celery.Task
     class ContextTask(TaskBase):

@@ -4,7 +4,13 @@ from NodeDefender.frontend.api import api_view
 
 @api_view.route("/config/write", methods=["POST"])
 def write_config():
-    pass
+    NodeDefender.config.general.write()
+    NodeDefender.config.database.write()
+    NodeDefender.config.redis.write()
+    NodeDefender.config.mail.write()
+    NodeDefender.config.logging.write()
+    NodeDefender.config.celery.write()
+    return "OK", 200
 
 @api_view.route("/config/default", methods=["POST"])
 def default_config():
@@ -14,10 +20,7 @@ def default_config():
 def config_general():
     if request.method == "POST":
         config = request.get_json()
-        print("Config: ", config)
-        for key, value in config.items():
-            print("KEY: {}, VALUE: {}".format(key, value))
-        #NodeDefender.config.general.set_config(**config)
+        NodeDefender.config.general.set(**config)
         return jsonify(config), 200
     config = NodeDefender.config.general.config
     return jsonify(config), 200
@@ -26,7 +29,7 @@ def config_general():
 def config_database():
     if request.method == "POST":
         config = request.get_json()
-        #NodeDefender.config.database.set_config(**config)
+        NodeDefender.config.database.set(**config)
         return jsonify(config), 200
     config = NodeDefender.config.database.config
     return jsonify(config), 200
@@ -35,7 +38,7 @@ def config_database():
 def config_cache():
     if request.method == "POST":
         config = request.get_json()
-        NodeDefender.config.redis.set_config(**config)
+        NodeDefender.config.redis.set(**config)
         return jsonify(config), 200
     config = NodeDefender.config.redis.config
     return jsonify(config), 200
@@ -44,7 +47,7 @@ def config_cache():
 def config_mail():
     if request.method == "POST":
         config = request.get_json()
-        NodeDefender.config.mail.set_config(**config)
+        NodeDefender.config.mail.set(**config)
         return jsonify(config), 200
     config = NodeDefender.config.mail.config
     return jsonify(config), 200
@@ -53,7 +56,7 @@ def config_mail():
 def config_logging():
     if request.method == "POST":
         config = request.get_json()
-        NodeDefender.config.logging.set_config(**config)
+        NodeDefender.config.logging.set(**config)
         return jsonify(config), 200
     config = NodeDefender.config.logging.config
     return jsonify(config), 200
@@ -62,7 +65,7 @@ def config_logging():
 def config_celery():
     if request.method == "POST":
         config = request.get_json()
-        NodeDefender.config.celery.set_config(**config)
+        NodeDefender.config.celery.set(**config)
         return jsonify(config), 200
     config = NodeDefender.config.celery.config
     return jsonify(config), 200

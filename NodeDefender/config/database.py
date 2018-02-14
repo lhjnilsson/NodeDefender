@@ -21,14 +21,14 @@ def load_config(parser):
     config['database'] = parser['DATABASE']['DATABASE']
     config['filepath'] = parser['DATABASE']['FILEPATH']
     NodeDefender.app.config.update(
-        DATABASE = config['enabled'],
-        DATABASE_ENGINE = config['engine'],
-        DATABASE_USERNAME = config['username'],
-        DATABASE_PASSWORD = config['password'],
-        DATABASE_HOST = config['host'],
-        DATABASE_PORT = config['port'],
-        DATABASE_DATABASE = config['database'],
-        DATABASE_FILEPATH = config['filepath'])
+        DATABASE=config['enabled'],
+        DATABASE_ENGINE=config['engine'],
+        DATABASE_USERNAME=config['username'],
+        DATABASE_PASSWORD=config['password'],
+        DATABASE_HOST=config['host'],
+        DATABASE_PORT=config['port'],
+        DATABASE_DATABASE=config['database'],
+        DATABASE_FILEPATH=config['filepath'])
     if NodeDefender.app.testing:
         NodeDefender.app.config.update(
             SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:")
@@ -38,10 +38,8 @@ def load_config(parser):
     return config
 
 def get_uri():
-    db_engine = engine()
     if config['engine'] == 'sqlite':
         return 'sqlite:///' + NodeDefender.config.parser['DATABASE']['FILEPATH']
-    
     username = config['username']
     password = config['password']
     host = config['host']
@@ -55,52 +53,18 @@ def get_uri():
                 '/'+database()
     return "sqlite:///:memory:"
 
-def enabled():
-    return config['enabled']
-
-def engine():
-    return config['engine']
-
-def username():
-    return config['username']
-
-def password():
-    return config['password']
-
-def host():
-    return config['host']
-
-def port():
-    return config['port']
-
-def database():
-    return config['database']
-
-def filepath():
-    return config['filepath']
-
-def mysql_uri():
-    return 'mysql+pymysql://'+username()+':'+password()+'@'+host()+':'+port()\
-            +'/'+database()
-
-def postgresql_uri():
-    return 'postgresql://'+username()+':'+password()+'@'\
-            +host()+':'+port()+'/'+database()
-
-def sqlite_uri():
-    return 'sqlite:///' + filepath()
-
-def uri():
-    db_engine = engine()
-    return eval(db_engine + '_uri')()
-
-def set_defaults():
+def set_default():
     for key, value in default_config.items():
         NodeDefender.config.parser['DATABASE'][key] = str(value)
     return True
 
-def set_config(**kwargs):
+def set(**kwargs):
     for key, value in kwargs.items():
-        NodeDefender.config.parser['DATABASE'][key] = str(value)
+        if key not in config:
+            continue
+        NodeDefender.config.database.config['KEY'] = str(value)
+    return True
 
-    return NodeDefender.config.write()
+def write():
+    NodeDefender.config.parser['DATABASE'] = config
+    NodeDefender.config.write()

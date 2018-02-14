@@ -86,10 +86,10 @@ class LocalStorage:
 def load(loggHandler):
     logger.addHandler(loggHandler)
     global conn
-    if NodeDefender.config.redis.enabled():
-        host = NodeDefender.config.redis.host()
-        port = NodeDefender.config.redis.port()
-        db = NodeDefender.config.redis.database()
+    if NodeDefender.config.redis.config['enabled']:
+        host = NodeDefender.config.redis.config['host']
+        port = NodeDefender.config.redis.config['port']
+        db = NodeDefender.config.redis.config['database']
         pool = ConnectionPool(host=host, port=int(port), db=db, decode_responses=True)
         conn = StrictRedis(connection_pool=pool)
     else:

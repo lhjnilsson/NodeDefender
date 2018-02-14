@@ -13,30 +13,22 @@ def load_config(parser):
     config['port'] = parser['REDIS']['PORT']
     config['database'] = parser['REDIS']['DATABASE']
     NodeDefender.app.config.update(
-        REDIS = config['enabled'],
-        REDIS_HOST = config['host'],
-        REDIS_PORT = config['port'],
-        REDIS_DATABASE = config['database'])
+        REDIS=config['enabled'],
+        REDIS_HOST=config['host'],
+        REDIS_PORT=config['port'],
+        REDIS_DATABASE=config['database'])
     return True
 
-def enabled():
-    return config['enabled']
+def set_default():
+    config = default_config.copy()
 
-def host():
-    return config['host']
-
-def port():
-    return config['port']
-
-def database():
-    return config['database']
-
-def set_defaults():
-    for key, value in default_config.items():
-        NodeDefender.config.parser['REDIS'][key] = str(value)
-
-def set_config(**kwargs):
+def set(**kwargs):
     for key, value in kwargs.items():
-        NodeDefender.config.parser['REDIS'][key] = str(value)
+        if key not in config:
+            continue
+        NodeDefender.config.redis.config[key] = str(value)
+    return True
 
+def write():
+    NodeDefender.config.parser['REDIS'] = config
     return NodeDefender.config.write()
