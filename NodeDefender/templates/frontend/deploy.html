@@ -38,7 +38,7 @@
 				<div class="deployform-step">
           <div class="row">
             {{ render_checkbox('Enable', 'enableDatabase') }}
-            {{ render_select('Engine', 'databaseEngine', 'SQLite', 'MySQL') }}
+            {{ render_select('Engine', 'databaseEngine', 'sqlite', 'mysql') }}
             {{ render_manual('Host', 'databaseHost') }}
             {{ render_manual('Port', 'databasePort') }}
             {{ render_manual('Username', 'databaseUsername') }}
@@ -71,7 +71,7 @@
         <div class="deployform-step">
           <div class="row">
             {{ render_checkbox('Enable', 'enableLogging') }}
-            {{ render_select('Engine', 'loggingEngine', 'Local', 'Syslog') }}
+            {{ render_select('Engine', 'loggingEngine', 'local', 'syslog') }}
             {{ render_manual('Host', 'loggingHost') }}
             {{ render_manual('Port', 'loggingPort') }}
             {{ render_manual('Username', 'loggingUsername') }}
@@ -90,7 +90,11 @@
         </div>
         <div class="deployform-step">
           <div class="row">
-            <h3>General</h3>
+            <h3>Submit</h3>
+            <strong>
+              Once the configuration is subbmitted please Restart the Service for the new settings to work.
+              The new settings will be effective first when the new settings are in place.
+            </strong>
           </div>
         </div>
 			</div>
@@ -156,7 +160,8 @@ $(document).ready(function() {
         async: false,
         contentType:"application/json;",
         success: function(data){
-          toastr.success("Woah!");
+          toastr.success("Configuration Saved");
+          toastr.warning("Please Restart the Application");
           return true;
         },
         error: function(status, d, data) {
@@ -177,8 +182,9 @@ $(document).ready(function() {
   });
 
   $.get("/api/v1/config/database", function(data, status){
-    document.getElementById("enableDatabase").checked = data.enabled;
-    document.getElementById("databaseEngine").value = data.engine;
+    if (data.enabled)
+      document.getElementById("enableDatabase").click();
+    document.getElementById("databaseEngine").val = data.engine;
     document.getElementById("databaseHost").value = data.host;
     document.getElementById("databasePort").value = data.port;
     document.getElementById("databaseUsername").value = data.username;
@@ -188,7 +194,8 @@ $(document).ready(function() {
   });
 
   $.get("/api/v1/config/cache", function(data, status){
-    document.getElementById("enableCache").checked = data.enabled;
+    if (data.enabled)
+      document.getElementById("enableCache").click();
     document.getElementById("cacheHost").value = data.host;
     document.getElementById("cachePort").value = data.port;
     document.getElementById("cacheUsername").value = data.username;
@@ -197,7 +204,8 @@ $(document).ready(function() {
   });
 
   $.get("/api/v1/config/mail", function(data, status){
-    document.getElementById("enableMail").checked = data.enabled;
+    if (data.enabled)
+      document.getElementById("enableMail").click();
     document.getElementById("mailHost").value = data.host;
     document.getElementById("mailPort").value = data.port;
     document.getElementById("mailUsername").value = data.username;
@@ -207,7 +215,8 @@ $(document).ready(function() {
   });
 
   $.get("/api/v1/config/logging", function(data, status){
-    document.getElementById("enableLogging").checked = data.enabled;
+    if (data.enabled)
+      document.getElementById("enableLogging").click();
     document.getElementById("loggingEngine").value = data.engine;
     document.getElementById("loggingHost").value = data.host;
     document.getElementById("loggingPort").value = data.port;
@@ -217,7 +226,8 @@ $(document).ready(function() {
   });
 
   $.get("/api/v1/config/celery", function(data, status){
-    document.getElementById("enableCelery").checked = data.enabled;
+    if (data.enabled)
+      document.getElementById("enableCelery").click();
     document.getElementById("celeryHost").value = data.host;
     document.getElementById("celeryPort").value = data.port;
     document.getElementById("celeryUsername").value = data.username;
@@ -455,11 +465,10 @@ submitDeploySection = function(step) {
 
 enableDatabase = function(){
   document.getElementById("databaseEngine").disabled = false;
-  if (document.getElementById("databaseEngine").value == "MySQL")
+  if (document.getElementById("databaseEngine").value == "mysql")
     enableRemoteDatabase();
   else
     enableLocalDatabase();
-
 }
 
 disableDatabase = function() {
@@ -499,7 +508,7 @@ document.getElementById("enableDatabase").addEventListener("change", function() 
 });
 
 document.getElementById("databaseEngine").addEventListener("change", function() {
-  if(this.value == "MySQL")
+  if(this.value == "mysql")
     enableRemoteDatabase()
   else {
     enableLocalDatabase()
@@ -558,20 +567,29 @@ document.getElementById("enableMail").addEventListener("change", function() {
 
 enableLogging = function(){
   document.getElementById("loggingEngine").disabled = false;
-  document.getElementById("loggingHost").disabled = false;
-  document.getElementById("loggingPort").disabled = false;
-  document.getElementById("loggingUsername").disabled = false;
-  document.getElementById("loggingPassword").disabled = false;
-  document.getElementById("loggingFilepath").disabled = false;
+  if (document.getElementById("loggingEngine").disabled.value == "syslog")
+    enableRemoteLogging();
+  else
+    enableLocalLogging();
 }
 
 disableLogging = function() {
   document.getElementById("loggingEngine").disabled = true;
   document.getElementById("loggingHost").disabled = true;
   document.getElementById("loggingPort").disabled = true;
-  document.getElementById("loggingUsername").disabled = true;
-  document.getElementById("loggingPassword").disabled = true;
   document.getElementById("loggingFilepath").disabled = true;
+}
+
+enableRemoteLogging = function() {
+  document.getElementById("loggingHost").disabled = false;
+  document.getElementById("loggingPort").disabled = false;
+  document.getElementById("loggingFilepath").disabled = true;
+}
+
+enableLocalLogging = function() {
+  document.getElementById("loggingHost").disabled = true;
+  document.getElementById("loggingPort").disabled = true;
+  document.getElementById("loggingFilepath").disabled = false;
 }
 
 document.getElementById("enableLogging").addEventListener("change", function() {
@@ -579,6 +597,14 @@ document.getElementById("enableLogging").addEventListener("change", function() {
     enableLogging()
   else {
     disableLogging()
+  }
+});
+
+document.getElementById("loggingEngine").addEventListener("change", function() {
+  if(this.value == "syslog")
+    enableRemoteLogging()
+  else {
+    enableLocalLogging()
   }
 });
 

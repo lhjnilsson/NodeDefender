@@ -25,10 +25,10 @@ def CreateLogging(app = None):
     if not app.config['LOGGING']:
         loggHandler = logging.StreamHandler(sys.stdout)
     else:
-        if app.config['LOGGING_TYPE'] == 'local':
+        if app.config['LOGGING_ENGINE'] == 'local':
             loggHandler = logging.FileHandler(app.config['LOGGING_NAME'])
-        elif app.config['LOGGING_TYPE'] == 'syslog':
-            loggHandler = logging.Handler.\
+        elif app.config['LOGGING_ENGINE'] == 'syslog':
+            loggHandler = logging.handlers.\
                     SysLogHandler(address = (app.config['LOGGING_SERVER'],
                                              int(app.config['LOGGING_PORT'])))
     level = NodeDefender.config.logging.config['level']
