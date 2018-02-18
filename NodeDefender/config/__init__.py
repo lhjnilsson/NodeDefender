@@ -8,43 +8,44 @@ import NodeDefender.config.redis
 import configparser
 import os
 
-filename = None
+deployed = False
+configfile = None
 
 parser = configparser.ConfigParser()
 basepath = os.path.abspath(os.path.dirname('..'))
+datafolder = None
 
-def find_configfile():
-    if os.path.exists("NodeDefender.conf"):
-        return "NodeDefender.conf"
-    
-    home_dir = os.path.expanduser('~')
-    if os.path.exists(home_dir + '.config/nodedefender/NodeDefender.conf'):
-        return home_dir + '.config/nodedefender/NodeDefender.conf'
-    else:
-        raise NotImplementedError("Config- file not found")
+if os.path.exists(basepath + "/NodeDefender.conf"):
+    datafolder = basepath
+else:
+    datafolder = os.path.expanduser("~") + "/.nodedefender"
+    if not os.path.isdir(datafolder):
+        NodeDefender.logger.info("Creating folder: {}".format(datafolder))
+        os.makedirs(datafolder)
+
+configfile = datafolder + "/NodeDefender.conf"
+migrationsfolder = datafolder + "/sql_migrations"
 
 def write_default():
-    NodeDefender.config.celery.set_defaults()
-    NodeDefender.config.database.set_defaults()
-    NodeDefender.config.general.set_defaults()
-    NodeDefender.config.logging.set_defaults()
-    NodeDefender.config.mail.set_defaults()
-    NodeDefender.config.redis.set_defaults()
+    NodeDefender.config.celery.set_default()
+    NodeDefender.config.database.set_default()
+    NodeDefender.config.general.set_default()
+    NodeDefender.config.logging.set_default()
+    NodeDefender.config.mail.set_default()
+    NodeDefender.config.redis.set_default()
     return write()
 
 def load(fname = None):
-    global filename
-    if fname is None:
-        fname = find_configfile()
+    if os.path.exists(configfile):
+        parser.read(configfile)
+    else:
+        return False
 
-    if not os.path.exists(fname):
-        raise ValueError("File not does exists")
-    
-    if not os.access(fname, os.R_OK):
-        raise AttributeError("Read and/or write permission not set")
+    if not eval(parser['GENERAL']['DEPLOYED']):
+        return False
+    global deployed
+    deployed = True
 
-    filename = fname
-    parser.read(filename)
     NodeDefender.config.celery.load_config(parser)
     NodeDefender.config.database.load_config(parser)
     NodeDefender.config.general.load_config(parser)
@@ -54,5 +55,5 @@ def load(fname = None):
     return True
 
 def write():
-    with open(filename, 'w') as fw:
+    with open(configfile, 'w') as fw:
         parser.write(fw)

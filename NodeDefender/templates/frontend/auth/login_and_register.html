@@ -60,10 +60,18 @@
 				    </div>
 			    </div>
 	      </div>
+        {% if not deployed %}
+          {% include "frontend/deploy.html" %}
+        {% endif %}
 	    </div>
     </div>
   </div>
 </body>
 	<!-- Bootstrap Core JavaScript -->
  	<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <!-- Toastr -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet">
+
 </html>

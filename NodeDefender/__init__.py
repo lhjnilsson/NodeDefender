@@ -66,10 +66,10 @@ def create_app():
 
     app = factory.CreateApp()
 
-    try:
-        NodeDefender.config.load()
-    except NotImplementedError:
-        print("Config not found, loading with defaults")
+    if NodeDefender.config.load():
+        logger.info("Using configfile: {}", NodeDefender.config.configfile)
+    else:
+        logger.warning("Configfile not found, using default settings")
 
     logger, loggHandler = factory.CreateLogging(app)
 

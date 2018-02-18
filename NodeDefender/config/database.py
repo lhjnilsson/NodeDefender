@@ -1,4 +1,6 @@
 import NodeDefender
+import flask_migrate
+import sqlalchemy
 
 default_config = {'enabled' : False,
                   'engine' : '',
@@ -37,6 +39,26 @@ def load_config(parser):
             SQLALCHEMY_DATABASE_URI = get_uri())
     return config
 
+def test():
+    pass
+
+
+def erase_alembic():
+    query = sqlalchemy.text("drop table alembic_version")
+    return NodeDefender.db.sql.SQL.engine.execute(query)
+
+def init(app):
+    with app.app_context():
+        flask_migrate.init()
+
+def migrate(app):
+    with app.app_context():
+        flask_migrate.init()
+
+def upgrade(app):
+    with app.app_context():
+        flask_migrate.init()
+
 def get_uri():
     if config['engine'] == 'sqlite':
         return 'sqlite:///' + NodeDefender.config.parser['DATABASE']['FILEPATH']
@@ -62,7 +84,7 @@ def set(**kwargs):
     for key, value in kwargs.items():
         if key not in config:
             continue
-        NodeDefender.config.database.config['KEY'] = str(value)
+        NodeDefender.config.database.config[key] = str(value)
     return True
 
 def write():

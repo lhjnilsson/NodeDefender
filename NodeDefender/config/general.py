@@ -1,11 +1,12 @@
 from datetime import datetime
 import NodeDefender
 
-default_config = {'run_mode' : 'TESTING',
+default_config = {'deployed' : False,
+                  'run_mode' : 'TESTING',
                   'key' : 'key',
                   'salt' : 'salt',
-                  'host' : '0.0.0.0',
-                  'port' : '50000',
+                  'host' : '127.0.0.1:5000',
+                  'port' : '5000',
                   'self_registration' : True}
 
 config = default_config.copy()

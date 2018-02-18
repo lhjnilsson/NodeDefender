@@ -34,6 +34,9 @@ def inject_serializer():
         return NodeDefender.serializer.dumps_salted(name)
     return dict(serialize = serialize, serialize_salted = serialize_salted)
 
+def inject_deployed():
+    return dict(deployed = NodeDefender.config.deployed)
+
 def trim_string(string):
     return string.replace(" ", "")
 
@@ -45,6 +48,7 @@ def load_views(app):
     NodeDefender.app.jinja_env.globals.update(trim=trim_string)
     NodeDefender.app.context_processor(inject_user)
     NodeDefender.app.context_processor(inject_serializer)
+    NodeDefender.app.context_processor(inject_deployed)
 
     NodeDefender.app.add_url_rule('/', 'index',
                                    NodeDefender.frontend.views.index)

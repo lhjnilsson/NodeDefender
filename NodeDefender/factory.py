@@ -26,7 +26,7 @@ def CreateLogging(app = None):
         loggHandler = logging.StreamHandler(sys.stdout)
     else:
         if app.config['LOGGING_ENGINE'] == 'local':
-            loggHandler = logging.FileHandler(app.config['LOGGING_NAME'])
+            loggHandler = logging.FileHandler(app.config['LOGGING_FILEPATH'])
         elif app.config['LOGGING_ENGINE'] == 'syslog':
             loggHandler = logging.handlers.\
                     SysLogHandler(address = (app.config['LOGGING_SERVER'],
