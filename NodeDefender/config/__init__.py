@@ -24,7 +24,7 @@ else:
         os.makedirs(datafolder)
 
 configfile = datafolder + "/NodeDefender.conf"
-migrationsfolder = datafolder + "/sql_migrations"
+migrations_folder = datafolder + "/sql_migrations"
 
 def write_default():
     NodeDefender.config.celery.set_default()

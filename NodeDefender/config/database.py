@@ -1,7 +1,10 @@
 import NodeDefender
 import flask_migrate
 import sqlalchemy
-
+import os
+from flask_sqlalchemy import SQLAlchemy
+import alembic
+import shutil
 default_config = {'enabled' : False,
                   'engine' : '',
                   'username' : '',
@@ -37,31 +40,56 @@ def load_config(parser):
     else:
         NodeDefender.app.config.update(
             SQLALCHEMY_DATABASE_URI = get_uri())
+    print(get_uri())
     return config
 
 def test():
-    pass
+    app = NodeDefender.factory.CreateApp()
+    app.config.update(SQLALCHEMY_DATABASE_URI = get_uri())
+    print(get_uri())
+    db = SQLAlchemy(app)
+    folder = NodeDefender.config.migrations_folder
+    migrate = flask_migrate.Migrate(app, db, folder)
+    try:
+        init_migrations(app)
+    except alembic.util.exc.CommandError:
+        drop_alembic_table(db)
+        remove_migrations_folder(folder)
+        init_migrations(app)
+    migrate_database(app)
+    upgrade_database(app)
+    return True
 
-
-def erase_alembic():
+def drop_alembic_table(db):
     query = sqlalchemy.text("drop table alembic_version")
-    return NodeDefender.db.sql.SQL.engine.execute(query)
+    try:
+        db.engine.execute(query)
+    except Exception:
+        pass
+    return True
 
-def init(app):
+def remove_migrations_folder(folder):
+    try:
+        shutil.rmtree(folder)
+    except FileNotFoundError:
+        pass
+    return True
+
+def init_migrations(app):
     with app.app_context():
         flask_migrate.init()
 
-def migrate(app):
+def migrate_database(app):
     with app.app_context():
-        flask_migrate.init()
+        flask_migrate.migrate()
 
-def upgrade(app):
+def upgrade_database(app):
     with app.app_context():
-        flask_migrate.init()
+        flask_migrate.upgrade()
 
 def get_uri():
     if config['engine'] == 'sqlite':
-        return 'sqlite:///' + NodeDefender.config.parser['DATABASE']['FILEPATH']
+        return 'sqlite:///' + config['filepath']
     username = config['username']
     password = config['password']
     host = config['host']
@@ -85,6 +113,7 @@ def set(**kwargs):
         if key not in config:
             continue
         NodeDefender.config.database.config[key] = str(value)
+    test()
     return True
 
 def write():
