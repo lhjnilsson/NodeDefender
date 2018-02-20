@@ -17,7 +17,7 @@ def load_sockets(socketio):
     socketio.on_event('delete', delete, namespace='/user')
     return True
 
-def create(email, firstname, lastname, group, role):
+def create(email, firstname, lastname, group = None, role = None):
     if not NodeDefender.db.group.get(group):
         emit('error', ('Group does not exist'), namespace='/general')
         return False
@@ -27,8 +27,10 @@ def create(email, firstname, lastname, group, role):
         return False
 
     user = NodeDefender.db.user.create(email, firstname, lastname)
-    NodeDefender.db.group.add_user(group, email)
-    NodeDefender.db.user.set_role(email, role)
+    if group:
+        NodeDefender.db.group.add_user(group, email)
+    if role:
+        NodeDefender.db.user.set_role(email, role)
     NodeDefender.mail.user.new_user(user)
     emit('reload', namespace='/general')
     return True

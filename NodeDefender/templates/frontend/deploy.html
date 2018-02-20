@@ -1,5 +1,5 @@
 {% block content %}
-{% from "frontend/macros/form.html" import render_manual, render_select, render_checkbox %}
+{% from "frontend/macros/form.html" import render_manual, render_secret, render_select, render_checkbox %}
 {% from "frontend/macros/info.html" import FieldID %}
 <style>
 #deployAlert {
@@ -25,7 +25,7 @@
 			<div class="modal-body">
 				<div class="deployform-step">
 					<div class="row">
-            {{ render_select('Run Mode', 'generalRunMode', "production", "development", "testing") }}
+            {{ render_select('Run Mode', 'generalRunMode', "Production", "Development", "Testing") }}
           </div>
           <div class="row">
             {{ render_manual('Key', 'generalKey') }}
@@ -44,7 +44,13 @@
             {{ render_manual('Username', 'databaseUsername') }}
             {{ render_manual('Password', 'databasePassword') }}
             {{ render_manual('Database', 'databaseDatabase') }}
-            {{ render_manual('Filepath', 'databaseFilepath') }}
+            {{ render_manual('File Name', 'databaseFilepath') }}
+            <p class="col-sm-offset-2">
+              <i>
+                SQLite will be stored in Datafolder.<br>
+                <bold>Do not use any slashes(/) in the name</bold>
+              </i>
+            </p>
 				  </div>
         </div>
 				<div class="deployform-step">
@@ -74,7 +80,13 @@
             {{ render_select('Engine', 'loggingEngine', 'local', 'syslog') }}
             {{ render_manual('Host', 'loggingHost') }}
             {{ render_manual('Port', 'loggingPort') }}
-            {{ render_manual('Filepath', 'loggingFilepath') }}
+            {{ render_manual('File Name', 'loggingFilepath') }}
+            <p class="col-sm-offset-2">
+              <i>
+                Local logging will be stored in Datafolder.<br>
+                <bold>Do not use any slashes(/) in the name</bold>
+              </i>
+            </p>
           </div>
         </div>
         <div class="deployform-step">
@@ -104,6 +116,29 @@
 		</div>
 	</div>
 </div>
+<div class="modal fade" id="deployCreateSuperuser" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h2 class="modal-title">User Settings</h2>
+			</div>
+			<div class="modal-body">
+				<div class="row">
+					{{ render_manual("Mail", "deploySuperUserMail") }}
+          {{ render_manual("Firstname", "deploySuperUserFirstname") }}
+          {{ render_manual("Lastname", "deploySuperUserLastName") }}
+          {{ render_secret("Password", "deploySuperUserPassword") }}
+          {{ render_secret("Confirm", "deploySuperUserConfirm") }}
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="submit" class="btn btn-primary" id="deploySuperUser" disabled>Create User</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
 <script>
 var cb = []
 var submitcb;
@@ -119,6 +154,7 @@ $(document).ready(function() {
 	deploynext     = $(".deployform-next");
 	deployback     = $(".deployform-back");
 	deploysubmit   = $(".deployform-submit");
+  deploySuerUser = $("#deploySuperUser");
 
 	// Init buttons and UI
 	deployform.not(':eq(0)').hide();
@@ -151,6 +187,24 @@ $(document).ready(function() {
     enterDeploySection(current);
 	});
 
+  deploySuerUser.click(function() {
+    mail = document.getElementById("deploySuperUserPassword").value;
+    firstname = document.getElementById("deploySuperUserPassword").value;
+    lastname = document.getElementById("deploySuperUserPassword").value;
+    passwod = document.getElementById("deploySuperUserPassword").value;
+    userSocket.emit('create', mail, firstname, lastname, false, "superuser");
+    return true;
+  });
+
+  document.getElementById("deploySuperUserConfirm").addEventListener("keyup", function() {
+    pw = document.getElementById("deploySuperUserPassword").value;
+    comparepw = document.getElementById("deploySuperUserConfirm").value;
+    if (pw == comparepw)
+      document.getElementById("deploySuperUser").disabled = false;
+    else
+      document.getElementById("deploySuperUser").disabled = true;
+  });
+
 	deploysubmit.click(function() {
       $.ajax({
         url:"/api/v1/config/write",
@@ -161,6 +215,7 @@ $(document).ready(function() {
           $("#deployNodeDefender").modal("hide");
           toastr.success("Configuration Saved");
           toastr.warning("Please Restart the Application");
+          $("#deployCreateSuperuser").modal("show");
           return true;
         },
         error: function(status, d, data) {
@@ -173,7 +228,7 @@ $(document).ready(function() {
 	});
 
   $.get("/api/v1/config/general", function(data, status){
-    document.getElementById("generalRunMode").value = data.run_mode;
+    document.getElementById("generalRunMode").val = data.run_mode;
     document.getElementById("generalKey").value = data.key;
     document.getElementById("generalSalt").value = data.salt;
     document.getElementById("generalHost").value = data.host;

@@ -1,4 +1,5 @@
 import NodeDefender
+import os
 
 default_config = {'enabled' : False,
                   'level' : 'DEBUG',
@@ -33,8 +34,9 @@ def set(**kwargs):
     for key, value in kwargs.items():
         if key not in config:
             continue
-        NodeDefender.config.logging.config[key] = str(value)
-
+        if key == "filepath":
+            value = os.path.join(NodeDefender.config.datafolder, value)
+        config[key] = str(value)
     return True
 
 def write():

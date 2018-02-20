@@ -40,10 +40,9 @@ def load_config(parser):
     else:
         NodeDefender.app.config.update(
             SQLALCHEMY_DATABASE_URI = get_uri())
-    print(get_uri())
     return config
 
-def test():
+def test_database():
     app = NodeDefender.factory.CreateApp()
     app.config.update(SQLALCHEMY_DATABASE_URI = get_uri())
     db = NodeDefender.db.sql.load(app)
@@ -116,9 +115,10 @@ def set(**kwargs):
     for key, value in kwargs.items():
         if key not in config:
             continue
-        NodeDefender.config.database.config[key] = str(value)
-    print(config)
-    test()
+        if key == "filepath":
+            value = os.path.join(NodeDefender.config.datafolder, value)
+        config[key] = str(value)
+    test_database()
     return True
 
 def write():
