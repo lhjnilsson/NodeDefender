@@ -155,7 +155,9 @@
 		<div id="page-wrapper">
 			<div class="container-fluid">
 				{% block content %}{% endblock %}
-				{% include "frontend/deploy.html" %}
+				{% if not deployed %}
+					{% include "frontend/deploy.html" %}
+				{% endif %}
 			</div>
 			<!-- /.container-fluid -->
 		</div>

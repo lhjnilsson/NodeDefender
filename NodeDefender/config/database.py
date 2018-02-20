@@ -46,8 +46,7 @@ def load_config(parser):
 def test():
     app = NodeDefender.factory.CreateApp()
     app.config.update(SQLALCHEMY_DATABASE_URI = get_uri())
-    print(get_uri())
-    db = SQLAlchemy(app)
+    db = NodeDefender.db.sql.load(app)
     folder = NodeDefender.config.migrations_folder
     migrate = flask_migrate.Migrate(app, db, folder)
     try:
@@ -56,8 +55,13 @@ def test():
         drop_alembic_table(db)
         remove_migrations_folder(folder)
         init_migrations(app)
-    migrate_database(app)
-    upgrade_database(app)
+    
+    try:
+        migrate_database(app)
+        upgrade_database(app)
+    except Exception:
+        pass
+
     return True
 
 def drop_alembic_table(db):
@@ -113,6 +117,7 @@ def set(**kwargs):
         if key not in config:
             continue
         NodeDefender.config.database.config[key] = str(value)
+    print(config)
     test()
     return True
 

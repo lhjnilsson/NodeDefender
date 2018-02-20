@@ -47,5 +47,6 @@ def set(**kwargs):
     return True
 
 def write():
+    config['deployed'] = True
     NodeDefender.config.parser['GENERAL'] = config
     return NodeDefender.config.write()

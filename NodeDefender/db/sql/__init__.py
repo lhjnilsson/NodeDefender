@@ -7,8 +7,9 @@ SQL = SQLAlchemy()
 logger = logging.getLogger(__name__)
 logger.setLevel("INFO")
 
-def load(app, loggHandler):
-    logger.addHandler(loggHandler)
+def load(app, loggHandler = None):
+    if loggHandler:
+        logger.addHandler(loggHandler)
     global SQL
     SQL.app = app
     with app.app_context():
@@ -17,7 +18,7 @@ def load(app, loggHandler):
         NodeDefender.db.sql.logger.warning("Database URI not valid, using RAM as SQL")
         SQL.create_all()
     NodeDefender.db.sql.logger.info("SQL Initialized")
-    return True
+    return SQL
 
 from NodeDefender.db.sql.group import GroupModel
 from NodeDefender.db.sql.user import UserModel
