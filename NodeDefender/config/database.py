@@ -43,9 +43,16 @@ def load_config(parser):
     return config
 
 def test_database():
+    app = NodeDefender.app
+    app.config.update(
+        SQLALCHEMY_DATABASE_URI = get_uri())
+    db = NodeDefender.db.sql.load(app)
+    '''
     app = NodeDefender.factory.CreateApp()
     app.config.update(SQLALCHEMY_DATABASE_URI = get_uri())
     db = NodeDefender.db.sql.load(app)
+    '''
+
     folder = NodeDefender.config.migrations_folder
     migrate = flask_migrate.Migrate(app, db, folder)
     try:

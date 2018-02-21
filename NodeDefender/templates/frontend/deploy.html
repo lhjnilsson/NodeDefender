@@ -121,13 +121,13 @@
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal">&times;</button>
-				<h2 class="modal-title">User Settings</h2>
+				<h2 class="modal-title">Create Superuser</h2>
 			</div>
 			<div class="modal-body">
 				<div class="row">
-					{{ render_manual("EMail", "deploySuperUserEail") }}
+					{{ render_manual("E-Mail", "deploySuperUserEmail") }}
           {{ render_manual("Firstname", "deploySuperUserFirstname") }}
-          {{ render_manual("Lastname", "deploySuperUserLastName") }}
+          {{ render_manual("Lastname", "deploySuperUserLastname") }}
           {{ render_secret("Password", "deploySuperUserPassword") }}
           {{ render_secret("Confirm", "deploySuperUserConfirm") }}
 				</div>
@@ -135,6 +135,29 @@
 			<div class="modal-footer">
 				<button type="submit" class="btn btn-primary" id="deploySuperUser" disabled>Create User</button>
 				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="deployCompleted" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h2 class="modal-title">Success!</h2>
+			</div>
+			<div class="modal-body">
+				<div class="row">
+					<h3>
+            <bold>
+              Deployment successful.<br>
+              Please Retart the Service on your host in order to run with the new settings.<br>
+              Superuser will be able to login and create groups and more.
+            </bold>
+          </h3>
+				</div>
+			</div>
+			<div class="modal-footer">
 			</div>
 		</div>
 	</div>
@@ -194,7 +217,7 @@ $(document).ready(function() {
 			lastname : document.getElementById("deploySuperUserLastname").value,
 			password : document.getElementById("deploySuperUserPassword").value,
 			role :	"superuser"
-		};	
+		};
     $.ajax({
       url:"/api/v1/user/create",
       type:"POST",
@@ -203,7 +226,9 @@ $(document).ready(function() {
       contentType:"application/json;",
       dataType:"json",
       success: function(data){
+        $("#deployCreateSuperuser").modal("hide");
         toastr.success("User Created")
+        $("#deployCompleted").modal("show");
         return true;
       },
       error: function(message) {
@@ -212,7 +237,8 @@ $(document).ready(function() {
       }
     })
   return false;
-}
+  })
+
   document.getElementById("deploySuperUserConfirm").addEventListener("keyup", function() {
     pw = document.getElementById("deploySuperUserPassword").value;
     comparepw = document.getElementById("deploySuperUserConfirm").value;

@@ -10,7 +10,6 @@ logger.setLevel("INFO")
 def load(app, loggHandler = None):
     if loggHandler:
         logger.addHandler(loggHandler)
-    global SQL
     SQL.app = app
     with app.app_context():
         SQL.init_app(app)
