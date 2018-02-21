@@ -125,7 +125,7 @@
 			</div>
 			<div class="modal-body">
 				<div class="row">
-					{{ render_manual("Mail", "deploySuperUserMail") }}
+					{{ render_manual("EMail", "deploySuperUserEail") }}
           {{ render_manual("Firstname", "deploySuperUserFirstname") }}
           {{ render_manual("Lastname", "deploySuperUserLastName") }}
           {{ render_secret("Password", "deploySuperUserPassword") }}
@@ -188,14 +188,31 @@ $(document).ready(function() {
 	});
 
   deploySuerUser.click(function() {
-    mail = document.getElementById("deploySuperUserPassword").value;
-    firstname = document.getElementById("deploySuperUserPassword").value;
-    lastname = document.getElementById("deploySuperUserPassword").value;
-    passwod = document.getElementById("deploySuperUserPassword").value;
-    userSocket.emit('create', mail, firstname, lastname, false, "superuser");
-    return true;
-  });
-
+		data = {
+			email : document.getElementById("deploySuperUserEmail").value,
+			firstname : document.getElementById("deploySuperUserFirstname").value,
+			lastname : document.getElementById("deploySuperUserLastname").value,
+			password : document.getElementById("deploySuperUserPassword").value,
+			role :	"superuser"
+		};	
+    $.ajax({
+      url:"/api/v1/user/create",
+      type:"POST",
+      async: false,
+      data:JSON.stringify(data),
+      contentType:"application/json;",
+      dataType:"json",
+      success: function(data){
+        toastr.success("User Created")
+        return true;
+      },
+      error: function(message) {
+        toastr.error(message)
+        return false;
+      }
+    })
+  return false;
+}
   document.getElementById("deploySuperUserConfirm").addEventListener("keyup", function() {
     pw = document.getElementById("deploySuperUserPassword").value;
     comparepw = document.getElementById("deploySuperUserConfirm").value;
