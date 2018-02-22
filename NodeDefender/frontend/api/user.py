@@ -28,6 +28,7 @@ def create_user():
     try:
         password = user['password']
         NodeDefender.db.user.set_password(email, password)
+        NodeDefender.db.user.enable(email)
     except KeyError:
         pass
     

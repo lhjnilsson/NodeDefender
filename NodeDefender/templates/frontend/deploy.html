@@ -101,10 +101,6 @@
         <div class="deployform-step">
           <div class="row">
             <h3>Submit</h3>
-            <strong>
-              Once the configuration is subbmitted please Restart the Service for the new settings to work.
-              The new settings will be effective first when the new settings are in place.
-            </strong>
           </div>
         </div>
 			</div>
@@ -125,7 +121,7 @@
 			</div>
 			<div class="modal-body">
 				<div class="row">
-					{{ render_manual("E-Mail", "deploySuperUserEmail") }}
+					{{ render_manual("Email", "deploySuperUserEmail") }}
           {{ render_manual("Firstname", "deploySuperUserFirstname") }}
           {{ render_manual("Lastname", "deploySuperUserLastname") }}
           {{ render_secret("Password", "deploySuperUserPassword") }}
@@ -257,7 +253,6 @@ $(document).ready(function() {
         success: function(data){
           $("#deployNodeDefender").modal("hide");
           toastr.success("Configuration Saved");
-          toastr.warning("Please Restart the Application");
           $("#deployCreateSuperuser").modal("show");
           return true;
         },

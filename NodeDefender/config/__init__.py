@@ -20,7 +20,7 @@ if os.path.exists(basepath + "/NodeDefender.conf"):
 else:
     datafolder = os.path.expanduser("~") + "/.nodedefender"
     if not os.path.isdir(datafolder):
-        NodeDefender.logger.info("Creating folder: {}".format(datafolder))
+        print("Creating folder: {}".format(datafolder))
         os.makedirs(datafolder)
 
 configfile = datafolder + "/NodeDefender.conf"

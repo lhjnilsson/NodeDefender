@@ -17,7 +17,7 @@ manager = Manager(app)
 @manager.command
 def run():
     app = NodeDefender.create_app()
-    NodeDefender.socketio.run(app)
+    NodeDefender.socketio.run(app, host="0.0.0.0")
 '''
     if NodeDefender.app.config['TESTING']:
         NodeDefender.db.create_all()

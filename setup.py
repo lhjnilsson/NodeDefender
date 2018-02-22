@@ -3,7 +3,7 @@ from setuptools import setup
 setup(
     name="NodeDefender",
     description="Manage Nodes with CTS-iCPE",
-    version="0.8.1",
+    version="0.8.7",
     author="Henrik Nilsson",
     author_email="henrik.nilsson@ctsystem.se",
     license="BSD",
@@ -23,7 +23,7 @@ setup(
         "billiard==3.5.0.2",
         "blinker==1.4",
         "celery==4.0.2",
-        "cffi==1.9.1",
+        "cffi==1.11.4",
         "click==6.7",
         "enum-compat==0.0.2",
         "eventlet==0.20.1",
