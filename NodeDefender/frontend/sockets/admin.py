@@ -15,47 +15,20 @@ def load_sockets(socketio):
     return True
 
 def general_info():
-    info = {'hostname' : NodeDefender.hostname,
-            'release' : NodeDefender.release,
-            'date_loaded' : str(NodeDefender.date_loaded),
-            'run_mode' : NodeDefender.config.general.run_mode()}
-    emit('general', info)
+    emit('general', NodeDefender.config.general.config)
     return True
 
 def logging_info():
-    info = {'enabled' : NodeDefender.config.logging.enabled(),
-            'type' : NodeDefender.config.logging.type(),
-            'name' : NodeDefender.config.logging.name(),
-            'server' : NodeDefender.config.logging.server(),
-            'port' : NodeDefender.config.logging.port()}
-    return emit('logging', info)
+    return emit('logging', NodeDefender.config.logging.config)
 
 def database_info():
-    info = {'enabled' : NodeDefender.config.database.enabled(),
-            'engine' : NodeDefender.config.database.engine(),
-            'server' : NodeDefender.config.database.server(),
-            'port' : NodeDefender.config.database.port(),
-            'database' : NodeDefender.config.database.db(),
-            'file' : NodeDefender.config.database.file()}
-    return emit('database', info)
+    return emit('database', NodeDefender.config.database.config)
 
 def celery_info():
-    info = {'enabled' : NodeDefender.config.celery.enabled(),
-            'broker' : NodeDefender.config.celery.broker(),
-            'server' : NodeDefender.config.celery.server(),
-            'port' : NodeDefender.config.celery.port(),
-            'database' : NodeDefender.config.celery.database()}
-    return emit('celery', info)
+    return emit('celery', NodeDefender.config.celery.config)
 
 def mail_info():
-    info = {'enabled' : NodeDefender.config.mail.enabled(),
-            'server' : NodeDefender.config.mail.server(),
-            'port' : NodeDefender.config.mail.port(),
-            'tls' : NodeDefender.config.mail.tls(),
-            'ssl' : NodeDefender.config.mail.ssl(),
-            'username' : NodeDefender.config.mail.username(),
-            'password' : NodeDefender.config.mail.password()}
-    return emit('mail', info)
+    return emit('mail', NodeDefender.config.mail.config)
 
 def create_mqtt(host, port, group):
     try:
