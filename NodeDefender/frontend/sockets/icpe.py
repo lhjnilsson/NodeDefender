@@ -15,12 +15,12 @@ def load_sockets(socketio):
     return True
 
 def online(icpe):
-    socketio.emit('info', 'iCPE {} Online'.format(icpe['mac_address']),
+    NodeDefender.socketio.emit('info', 'iCPE {} Online'.format(icpe['mac_address']),
          namespace='/general', broadcast=True)
     return True
 
 def offline(icpe):
-    socketio.emit('warning', 'iCPE {} Offline'.format(icpe['mac_address']),
+    NodeDefender.socketio.emit('warning', 'iCPE {} Offline'.format(icpe['mac_address']),
          namespace='/general', broadcast=True)
     return True
 

@@ -38,7 +38,7 @@ def load_from_icpe(icpe):
         load_from_sensor(sensor)
 
 def load_from_sensor(sensor):
-    load_commandclass(sensor.commandclasses)
+    load_commandclass(*sensor.commandclasses)
 
 def load_commandclass(*commandclasses):
     for commandclass in commandclasses:

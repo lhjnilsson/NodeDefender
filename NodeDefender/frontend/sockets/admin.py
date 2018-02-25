@@ -15,7 +15,10 @@ def load_sockets(socketio):
     return True
 
 def general_info():
-    emit('general', NodeDefender.config.general.config)
+    config = NodeDefender.config.general.config.copy()
+    config['hostname'] = NodeDefender.hostname
+    config['uptime'] = NodeDefender.config.general.uptime()
+    emit('general', config)
     return True
 
 def logging_info():

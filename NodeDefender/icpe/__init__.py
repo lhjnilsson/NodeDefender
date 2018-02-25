@@ -13,8 +13,8 @@ def load(loggHandler):
         NodeDefender.db.icpe.get(icpe.mac_address)
         NodeDefender.mqtt.command.icpe.zwave_info(icpe.mac_address)
         NodeDefender.mqtt.command.icpe.system_info(icpe.mac_address)
-        logger.debug("iCPE {} Loaded".fomrmat(icpe.mac_address))
-    NodeDefender.icpe.sensor.load(loggHandler)
+        logger.debug("iCPE {} Loaded".format(icpe.mac_address))
+    NodeDefender.icpe.sensor.load(loggHandler, *icpes)
     logger.info("iCPE Service Loaded")
     return True
 

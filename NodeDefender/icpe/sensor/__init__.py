@@ -15,6 +15,7 @@ def load(loggHandler, *icpes):
                     sensor_info(icpe.mac_address, sensor.sensor_id)
             logger.debug("Sensor {}:{} Loaded".\
                          format(icpe.mac_address, sensor.sensor_id))
+            NodeDefender.db.field.load_from_sensor(sensor)
     return True
 
 def verify_list(icpe, *sensors):

@@ -89,14 +89,15 @@ def create_app():
     bcrypt = Bcrypt(app)
 
     serializer = factory.Serializer(app)
-    try:
-        NodeDefender.db.load(app, loggHandler)
-        NodeDefender.frontend.load(app, socketio, loggHandler)
-        NodeDefender.mqtt.load(loggHandler)
-        NodeDefender.icpe.load(loggHandler)
+    NodeDefender.db.load(app, loggHandler)
+    NodeDefender.frontend.load(app, socketio, loggHandler)
+    NodeDefender.mqtt.load(loggHandler)
+    NodeDefender.icpe.load(loggHandler)
+    '''
     except Exception as e:
         logger.critical("Unable to load NodeDefender")
         print(e)
+    '''
     logger.info('NodeDefender Succesfully started')
     return app
 
