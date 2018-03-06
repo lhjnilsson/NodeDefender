@@ -41,7 +41,7 @@ def load(fname = None):
     else:
         return False
 
-    if not eval(parser['GENERAL']['DEPLOYED']):
+    if not eval(parser['DATABASE']['ENABLED']):
         return False
     global deployed
     deployed = True
