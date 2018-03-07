@@ -19,13 +19,9 @@ def mail():
             enabled = False
         else:
             enabled = None
-    NodeDefender.config.mail.set_config(enabled = enabled)
-    if enabled:
-        config_mail_host()
-        config_mail_user()
-    return True
+    if not enabled:
+        NodeDefender.config.mail.set(enabled=False)
 
-def config_mail_host():
     host = None
     while host is None:
         host = prompt("Enter Server Address")
@@ -33,11 +29,7 @@ def config_mail_host():
     port = None
     while port is None:
         port = prompt("Enter Server Port")
-    NodeDefender.config.mail.set_config(server = host,
-                                     port = port)
-    return True
 
-def config_mail_user():
     tls = None
     while tls is None:
         tls = prompt("TLS Enabled(Y/N)?")
@@ -66,8 +58,11 @@ def config_mail_user():
     while password is None:
         password = prompt('Password')
 
-    NodeDefender.config.mail.set_config(tls = tls,
-                                     ssl = ssl,
-                                     username = username,
-                                     password = password)
+    NodeDefender.config.mail.set(enabled=True,
+                                 host=host,
+                                 port=port,
+                                 tls = tls,
+                                 ssl = ssl,
+                                 username = username,
+                                 password = password)
     return True

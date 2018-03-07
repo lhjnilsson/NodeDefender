@@ -2,6 +2,7 @@
 *.log
 *.logg
 *.conf
+*.pyc
 migrations/
 __pycache__/
 py/

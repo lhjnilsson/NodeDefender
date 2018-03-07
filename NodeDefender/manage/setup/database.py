@@ -19,12 +19,9 @@ def database():
         else:
             enabled = None
     
-    NodeDefender.config.database.set_config(enabled = enabled)
-    if enabled:
-        config_database_engine()
-    return True
+    if not enabled:
+        NodeDefender.config.database.set(enabled = False)
 
-def config_database_engine():
     supported_databases = ['mysql', 'sqlite']
     engine = None
     while engine is None:
@@ -32,59 +29,42 @@ def config_database_engine():
         if engine not in supported_databases:
             engine = None
 
-    NodeDefender.config.database.set_config(engine = engine)
-    if engine == 'mysql':
-        config_database_host()
-        config_database_user()
-    
-    if engine == 'sqlite':
-        config_database_file()
-    return True
-
-def config_database_host():
-    server = None
-    while not server:
-        server = prompt('Enter Server Address')
-
+    host = None
     port = None
-    while not port:
-        port = prompt('Enter Server Port')
-    
-    NodeDefender.config.database.set_config(server = server,\
-                                         port = port)
-    return True
-
-def config_database_user():
     username = None
-    while not username:
-        username = prompt('Enter Username')
-
     password = None
-    while not password:
-        password = prompt('Enter Password')
+    database = None
 
-    db = None
-    while not db:
-        db = prompt("Enter DB Name/Number")
+    if engine == "mysql":
+        while not host:
+            host = prompt('Enter Server Address')
 
-    NodeDefender.config.database.set_config(username = username,\
-                                         password = password,\
-                                         db = db)
+        while not port:
+            port = prompt('Enter Server Port')
+
+        while not username:
+            username = prompt('Enter Username')
+
+        while not password:
+            password = prompt('Enter Password')
+
+        while not db:
+            database = prompt("Enter Database Name")
+
+    filename = None
+    if engine == "sqlite":
+        while not filename:
+            print("Filename for SQLite Database.")
+            print("SQLite will be stored as file in data- folder.")
+            print("Do not use any slashes in the filename")
+            filename = prompt("Enter File Path")
+
+    NodeDefender.config.database.set(enabled=True,
+                                     engine=engine,
+                                     host=host,
+                                     port=port,
+                                     username=username,
+                                     password=password,
+                                     database=database,
+                                     filepath = filepath)
     return True
-
-def config_database_file():
-    filepath = None
-    while not filepath:
-        print("FilePath for SQLite Database, Enter leading slash(/) for\
-              absolute- path. Otherwise relative to your current folder.")
-        filepath = prompt("Enter File Path")
-    
-    if filepath[0] == '/':
-        filepath = filepath
-    else:
-        filepath = NodeDefender.config.basepath + '/' + filepath
-
-    NodeDefender.config.database.set_config(filepath = filepath)
-    return True
-
-
