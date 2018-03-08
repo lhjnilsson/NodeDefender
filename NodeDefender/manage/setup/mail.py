@@ -21,6 +21,7 @@ def mail():
             enabled = None
     if not enabled:
         NodeDefender.config.mail.set(enabled=False)
+        return False
 
     host = None
     while host is None:
@@ -65,4 +66,6 @@ def mail():
                                  ssl = ssl,
                                  username = username,
                                  password = password)
+    if NodeDefender.config.mail.write():
+        print_info("Mail- config successfully written")
     return True

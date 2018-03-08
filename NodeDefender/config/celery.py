@@ -4,7 +4,8 @@ default_config = {'enabled' : False,
                   'broker' : '',
                   'host' : '',
                   'port' : '',
-                  'database' : ''}
+                  'database' : '',
+                  'server_name' : ''}
 
 config = default_config.copy()
 
@@ -15,11 +16,14 @@ def load_config(parser):
     config['port'] = parser['CELERY']['PORT']
     config['database'] = parser['CELERY']['DATABASE']
     NodeDefender.app.config.update(
-        CELERY=config['enabled'],
-        CELERY_BROKER=config['broker'],
-        CELERY_HOST=config['host'],
-        CELERY_PORT=config['port'],
-        CELERY_DATABASE=config['database'])
+        CELERY=config['enabled'])
+    if config['enabled']:
+        NodeDefender.app.config.update(
+            CELERY_BROKER=config['broker'],
+            CELERY_HOST=config['host'],
+            CELERY_PORT=config['port'],
+            CELERY_DATABASE=config['database'],
+            SERVER_NAME=config['server_name'])
     return True
 
 def broker_uri():

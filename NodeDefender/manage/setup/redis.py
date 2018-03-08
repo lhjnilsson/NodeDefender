@@ -37,4 +37,6 @@ def redis():
                                   host=host,
                                   port=port,
                                   database = database)
+    if NodeDefender.config.redis.write():
+        print_info("Redis- config successfully written")
     return True

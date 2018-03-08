@@ -24,7 +24,7 @@ def celery():
         else:
             enabled = None
     if not enabled:
-        NodeDefender.celery.set(enabled = False)
+        NodeDefender.config.celery.set(enabled = False)
         return True
     
     broker = None
@@ -44,9 +44,18 @@ def celery():
     database = ''
     while not database:
         database = prompt("Enter Database")
+
+    server_name = ""
+    while not server_name:
+        print_info("Server name is needed for generating same URL")
+        print_info("Format should be HOST or HOST:PORT")
+        server_name = prompt("Enter Server name")
     NodeDefender.config.celery.set(enabled=True,
                                    broker=broker,
                                    host=host,
                                    port=port,
-                                   database = database)
+                                   database=database,
+                                  server_name=server_name)
+    if NodeDefender.config.celery.write():
+        print_info("Celery- config successfully written")
     return True

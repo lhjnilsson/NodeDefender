@@ -23,10 +23,6 @@ def load_config(parser):
         SECRET_KEY=config['key'],
         SECRET_SALT=config['salt'])
 
-    if NodeDefender.config.celery.config['enabled']:
-        NodeDefender.app.config.update(
-            SERVER_NAME=config['host'])
-
     if config['run_mode'].upper() == 'DEVELOPMENT':
         NodeDefender.app.config.update(DEBUG=True)
     elif config['run_mode'].upper() == 'TESTING':

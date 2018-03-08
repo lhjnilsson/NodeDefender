@@ -11,11 +11,7 @@ def all():
     NodeDefender.manage.setup.mail.mail()
     NodeDefender.manage.setup.logging.logging()
     NodeDefender.manage.setup.celery.celery()
-    print_topic("Configuration Successfully stored!")
-    print_info("Dont forget to migrate and upgrade the database before running")
-    print_info("./manage.py db init")
-    print_info("./manage.py db migrate")
-    print_info("./manage.py db upgrade")
+    print_topic("Configuration Successfully Updated!")
     return True
 
 def get_chunks(message):

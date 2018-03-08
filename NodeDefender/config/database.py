@@ -122,7 +122,7 @@ def set(**kwargs):
     for key, value in kwargs.items():
         if key not in config:
             continue
-        if key == "filepath":
+        if key == "filepath" and value is not None:
             value = os.path.join(NodeDefender.config.datafolder, value)
         config[key] = str(value)
     test_database()

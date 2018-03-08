@@ -4,7 +4,7 @@ from flask_script import prompt
 import NodeDefender
 
 
-supported_loggtypes = ['local', 'syslog']
+supported_engines = ['local', 'syslog']
 supported_levels = ['debug', 'info', 'warning', 'error', 'critical']
 
 @manager.command
@@ -27,22 +27,22 @@ def logging():
         NodeDefender.config.logging.set(enabled=False)
         return False
     
-    loggtype = None
-    while loggtype is None:
-        loggtype = prompt("Enter Logging Type(Syslog/Local)").lower()
-        if loggtype not in supported_loggtypes:
-            loggtype = None
+    engine = None
+    while engine is None:
+        engine = prompt("Enter Logging Type(Syslog/Local)").lower()
+        if engine not in supported_engines:
+            engine = None
     
     filepath = None
     host=None
     port=None
-    if loggtype == "local":
+    if engine == "local":
         while not filepath:
             print_info("Enter filename for loggingfile.")
             print_info("File will be stored in you datafolder")
             filepath = prompt("Please Filename")
 
-    elif loggtype == "syslog":
+    elif engine == "syslog":
         while not server:
             server = prompt('Enter Syslog IP')
 
@@ -56,4 +56,6 @@ def logging():
                                     host=host,
                                     port=port,
                                     level="debug")
+    if NodeDefender.config.logging.write():
+        print_info("Logging- config successfully written")
     return True

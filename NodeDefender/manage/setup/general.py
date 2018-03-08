@@ -6,14 +6,6 @@ import NodeDefender
 
 @manager.command
 def general():
-    print_topic("General configuration")
-    print_info("Server Name is required is Celery is enabled.")
-    print_info("Format should be HOST:PORT")
-    print_info("Example: 127.0.0.1:5000")
-    host = None
-    while host is None:
-        host = prompt("Enter Server Name")
-
     port = None
     while port is None:
         port = prompt("Which port should the server be running on")
@@ -43,9 +35,10 @@ def general():
         else:
             self_registration = None
 
-    NodeDefender.config.general.set(host=host,
-                                    port=port,
+    NodeDefender.config.general.set(port=port,
                                     key=key,
                                     salt=salt,
-                                    self_registration = self_registration)
+                                    self_registration=self_registration)
+    if NodeDefender.config.general.write():
+        print_info("General- config successfully written")
     return True
