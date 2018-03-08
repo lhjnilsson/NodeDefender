@@ -18,14 +18,6 @@ manager = Manager(app)
 def run():
     app = NodeDefender.create_app()
     NodeDefender.socketio.run(app, host="0.0.0.0")
-'''
-    if NodeDefender.app.config['TESTING']:
-        NodeDefender.db.create_all()
-
-    NodeDefender.mqtt.connection.load()
-    NodeDefender.db.load()
-    NodeDefender.socketio.run(NodeDefender.app, host='0.0.0.0')
-'''
 
 manager.add_command('user', UserManager)
 manager.add_command('role', RoleManager)

@@ -25,6 +25,8 @@ def logging():
 
     if not enabled:
         NodeDefender.config.logging.set(enabled=False)
+        if NodeDefender.config.logging.write():
+            print_info("Logging- config successfully written")
         return False
     
     engine = None

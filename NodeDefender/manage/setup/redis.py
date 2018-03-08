@@ -20,6 +20,8 @@ def redis():
             enabled = None
     if not enabled:
         NodeDefender.config.redis.set(enabled=False)
+        if NodeDefender.config.redis.write():
+            print_info("Redis- config successfully written")
         return True
 
     host = None

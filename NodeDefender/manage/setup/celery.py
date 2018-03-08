@@ -25,6 +25,8 @@ def celery():
             enabled = None
     if not enabled:
         NodeDefender.config.celery.set(enabled = False)
+        if NodeDefender.config.celery.write():
+            print_info("Celery- config successfully written")
         return True
     
     broker = None

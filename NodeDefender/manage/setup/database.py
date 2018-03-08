@@ -21,6 +21,8 @@ def database():
     
     if not enabled:
         NodeDefender.config.database.set(enabled = False)
+        if NodeDefender.config.database.write():
+            print_info("Database- config successfully written")
         return False
 
     supported_databases = ['mysql', 'sqlite']

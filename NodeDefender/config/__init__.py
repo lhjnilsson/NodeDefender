@@ -15,7 +15,7 @@ parser = configparser.ConfigParser()
 basepath = os.path.abspath(os.path.dirname('..'))
 datafolder = None
 
-if os.path.exists(basepath + "/NodeDefender.conf"):
+if os.path.exists(basepath + "/manage.py"):
     datafolder = basepath
 else:
     datafolder = os.path.expanduser("~") + "/.nodedefender"
