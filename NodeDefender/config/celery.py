@@ -15,6 +15,7 @@ def load_config(parser):
     config['host'] = parser['CELERY']['HOST']
     config['port'] = parser['CELERY']['PORT']
     config['database'] = parser['CELERY']['DATABASE']
+    config['server_name'] = parser['CELERY']['SERVER_NAME']
     NodeDefender.app.config.update(
         CELERY=config['enabled'])
     if config['enabled']:

@@ -30,7 +30,6 @@
           <div class="row">
             {{ render_manual('Key', 'generalKey') }}
             {{ render_manual('Salt', 'generalSalt') }}
-            {{ render_manual('Host', 'generalHost') }}
             {{ render_manual('Port', 'generalPort') }}
             {{ render_checkbox('Self Registration', 'generalSelfRegistration') }}
 					</div>
@@ -96,11 +95,7 @@
             {{ render_manual('Port', 'celeryPort') }}
             {{ render_manual('Username', 'celeryUsername') }}
             {{ render_manual('Password', 'celeryPassword') }}
-          </div>
-        </div>
-        <div class="deployform-step">
-          <div class="row">
-            <h3>Submit</h3>
+            {{ render_manual('Server name', 'celeryServerName') }}
           </div>
         </div>
 			</div>
@@ -269,7 +264,6 @@ $(document).ready(function() {
     document.getElementById("generalRunMode").val = data.run_mode;
     document.getElementById("generalKey").value = data.key;
     document.getElementById("generalSalt").value = data.salt;
-    document.getElementById("generalHost").value = data.host;
     document.getElementById("generalPort").value = data.port;
     document.getElementById("generalSelfRegistration").checked = data.self_registration;
   });
@@ -323,6 +317,7 @@ $(document).ready(function() {
     document.getElementById("celeryPort").value = data.port;
     document.getElementById("celeryUsername").value = data.username;
     document.getElementById("celeryPassword").value = data.password;
+    document.getElementById("celeryServerName").value = data.server_name;
   });
 
   disableDatabase();
@@ -340,7 +335,6 @@ submitGeneral = function() {
     run_mode : document.getElementById("generalRunMode").value,
     key : document.getElementById("generalKey").value,
     salt : document.getElementById("generalSalt").value,
-    host : document.getElementById("generalHost").value,
     port : document.getElementById("generalPort").value,
     self_registration : document.getElementById("generalSelfRegistration").checked,
   };
@@ -503,6 +497,7 @@ submitCelery = function() {
     port : document.getElementById("celeryPort").value,
     username : document.getElementById("celeryUsername").value,
     password : document.getElementById("celeryPassword").value,
+    server_name : document.getElementById("celeryServerName").value,
   };
     $.ajax({
       url:"/api/v1/config/celery",
@@ -532,8 +527,8 @@ submitSubmit = function() {
 }
 
 
-enterDeploySections = [enterGeneral, enterDatabase, enterCache, enterMail, enterLogging, enterCelery, enterSubmit];
-submitDeploySections = [submitGeneral, submitDatabase, submitCache, submitMail, submitLogging, submitCelery,submitSubmit];
+enterDeploySections = [enterGeneral, enterDatabase, enterCache, enterMail, enterLogging, enterCelery];
+submitDeploySections = [submitGeneral, submitDatabase, submitCache, submitMail, submitLogging, submitCelery];
 enterDeploySection = function(step) {
   console.log("Step: ", step);
   if (step > 0) {
@@ -702,6 +697,8 @@ enableCelery = function(){
   document.getElementById("celeryPort").disabled = false;
   document.getElementById("celeryUsername").disabled = false;
   document.getElementById("celeryPassword").disabled = false;
+  document.getElementById("celeryServerName").disabled = false;
+
 }
 
 disableCelery = function() {
@@ -709,6 +706,7 @@ disableCelery = function() {
   document.getElementById("celeryPort").disabled = true;
   document.getElementById("celeryUsername").disabled = true;
   document.getElementById("celeryPassword").disabled = true;
+  document.getElementById("celeryServerName").disabled = true;
 }
 
 document.getElementById("enableCelery").addEventListener("change", function() {

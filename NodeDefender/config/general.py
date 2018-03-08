@@ -1,11 +1,9 @@
 from datetime import datetime
 import NodeDefender
 
-default_config = {'deployed' : False,
-                  'run_mode' : 'TESTING',
+default_config = {'run_mode' : 'TESTING',
                   'key' : 'key',
                   'salt' : 'salt',
-                  'host' : '127.0.0.1:5000',
                   'port' : '5000',
                   'self_registration' : True}
 
@@ -15,7 +13,6 @@ def load_config(parser):
     config['run_mode'] = parser['GENERAL']['RUN_MODE']
     config['key'] = parser['GENERAL']['KEY']
     config['salt'] = parser['GENERAL']['SALT']
-    config['host'] = parser['GENERAL']['host']
     config['port'] = int(parser['GENERAL']['port'])
     config['self_registration'] = eval(parser['GENERAL']['SELF_REGISTRATION'])
     NodeDefender.app.config.update(

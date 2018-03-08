@@ -3,7 +3,7 @@ from setuptools import setup
 setup(
     name="NodeDefender",
     description="Manage Nodes with CTS-iCPE",
-    version="0.8.8",
+    version="0.8.9",
     author="Henrik Nilsson",
     author_email="henrik.nilsson@ctsystem.se",
     license="BSD",
