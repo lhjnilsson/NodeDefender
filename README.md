@@ -30,20 +30,5 @@ virtualenv -p python3 py
 ```
 ./manage.py setup all
 ```
-5. Create, migrate and upgrade Database
-```
-./manage.py db init
-./manage.py db migrate
-./manage.py db upgrade
-```
-6. Create first superuser
-```
-./manage.py user create
-./manage.py role superuser
-```
-7. Run
-```
-./run.py
-```
 ## Full documentation
 
