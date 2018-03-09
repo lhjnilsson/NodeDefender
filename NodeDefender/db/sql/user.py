@@ -1,6 +1,6 @@
-from NodeDefender import bcrypt
 from NodeDefender.db.sql import SQL
 from datetime import datetime
+import NodeDefender
 
 class UserModel(SQL.Model):
     '''
@@ -71,7 +71,7 @@ class UserModel(SQL.Model):
         return False
 
     def verify_password(self, password):
-        if bcrypt.check_password_hash(self.password, password):
+        if NodeDefender.bcrypt.check_password_hash(self.password, password):
             return True
         else:
             return False

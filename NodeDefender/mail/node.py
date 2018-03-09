@@ -1,8 +1,6 @@
 from flask_mail import Message
 from flask import render_template, url_for
 import NodeDefender
-from NodeDefender import serializer
-from NodeDefender.mail import mail
 import smtplib
 
 @NodeDefender.decorators.mail_enabled
@@ -20,11 +18,11 @@ def new_node(group, node):
 
     msg = Message('Node added to {}'.format(group.name), sender='noreply@nodedefender.com',
                   recipients=[group.email])
-    url = url_for('node_view.nodes_node', name = serializer.dumps(node.name))
+    url = url_for('node_view.nodes_node', name = NodeDefender.serializer.dumps(node.name))
     msg.body = render_template('mail/node/new_node.txt', node = node, url =
                               url)
     try:
-        mail.send(msg)
+        NodeDefender.mail.mail.send(msg)
     except smtplib.SMTPRecipientsRefused:
         NodeDefender.mail.logger.error("Unable to send email to: {}".\
                                  format(group.email))

@@ -93,12 +93,6 @@ def delete(host, port = 1883):
     delete_redis(host, port)
     return True
 
-def load():
-    mqtts = MQTTModel.query.all()
-    for mqtt in mqtts:
-        NodeDefender.db.redis.mqtt.load(mqtt)
-    return len(mqtts)
-
 def message_sent(host, port, mac_address):
     return NodeDefender.db.redis.mqtt.message_sent(host, str(port), mac_address)
 

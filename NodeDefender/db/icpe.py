@@ -88,19 +88,6 @@ def list(node = None):
                 filter(NodeModel.name == node).all()
     return SQL.session.query(iCPEModel).all()
 
-def load(node = None):
-    icpes = list(node)
-    current_time = datetime.now().timestamp()
-    for icpe in icpes:
-        cached = get(icpe.mac_address)
-        if not cached:
-            continue
-        if float(cached['date_updated']) - current_time > 1200:
-            mark_offline(cached)
-        NodeDefender.mqtt.command.icpe.zwave_info(icpe.mac_address)
-        NodeDefender.mqtt.command.icpe.system_info(icpe.mac_address)
-    return True
-
 def unassigned(user):
     return SQL.session.query(iCPEModel).\
             filter(iCPEModel.node == None).all()

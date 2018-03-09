@@ -1,6 +1,22 @@
+import logging
 import NodeDefender
 import NodeDefender.icpe.sensor.command
 import NodeDefender.icpe.sensor.commandclass
+
+logger = logging.getLogger(__name__)
+logger.setLevel('INFO')
+
+def load(loggHandler, *icpes):
+    logger.addHandler(loggHandler)
+    for icpe in icpes:
+        for sensor in icpe.sensors:
+            NodeDefender.db.sensor.get(icpe.mac_address, sensor.sensor_id)
+            NodeDefender.mqtt.command.sensor.\
+                    sensor_info(icpe.mac_address, sensor.sensor_id)
+            logger.debug("Sensor {}:{} Loaded".\
+                         format(icpe.mac_address, sensor.sensor_id))
+            NodeDefender.db.field.load_from_sensor(sensor)
+    return True
 
 def verify_list(icpe, *sensors):
     known = [sensor.sensor_id for sensor in NodeDefender.db.sensor.list(icpe)]

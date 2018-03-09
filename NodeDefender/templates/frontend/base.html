@@ -57,7 +57,7 @@
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
 				</button>
-        <a class="navbar-brand" href="/index">NodeDefender</a>
+        <a class="navbar-brand" href="/">NodeDefender</a>
       </div>
       <!-- Top Menu Items -->
       <ul class="nav navbar-right top-nav">
@@ -155,6 +155,9 @@
 		<div id="page-wrapper">
 			<div class="container-fluid">
 				{% block content %}{% endblock %}
+				{% if not deployed %}
+					{% include "frontend/deploy.html" %}
+				{% endif %}
 			</div>
 			<!-- /.container-fluid -->
 		</div>

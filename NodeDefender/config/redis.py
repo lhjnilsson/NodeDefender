@@ -1,22 +1,34 @@
 import NodeDefender
 
-def enabled():
-    return True if NodeDefender.config.parser['REDIS']['ENABLED'] == 'True' else False
+default_config = {'enabled' : False,
+                  'host' : '',
+                  'port' : '',
+                  'database' : ''}
 
-def host():
-    return NodeDefender.config.parser['REDIS']['HOST']
+config = default_config.copy()
 
-def port():
-    return NodeDefender.config.parser['REDIS']['PORT']
+def load_config(parser):
+    config['enabled'] = eval(parser['REDIS']['ENABLED'])
+    config['host'] = parser['REDIS']['HOST']
+    config['port'] = parser['REDIS']['PORT']
+    config['database'] = parser['REDIS']['DATABASE']
+    NodeDefender.app.config.update(
+        REDIS=config['enabled'],
+        REDIS_HOST=config['host'],
+        REDIS_PORT=config['port'],
+        REDIS_DATABASE=config['database'])
+    return True
 
-def database():
-    return NodeDefender.config.parser['REDIS']['DATABASE']
+def set_default():
+    config = default_config.copy()
 
-def get_cfg(key):
-    return NodeDefender.config.parser['REDIS'][key.upper()]
-
-def set_cfg(**kwargs):
+def set(**kwargs):
     for key, value in kwargs.items():
-        NodeDefender.config.parser['REDIS'][key] = str(value)
+        if key not in config:
+            continue
+        NodeDefender.config.redis.config[key] = str(value)
+    return True
 
+def write():
+    NodeDefender.config.parser['REDIS'] = config
     return NodeDefender.config.write()

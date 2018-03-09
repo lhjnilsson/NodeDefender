@@ -1,12 +1,23 @@
 from flask_socketio import emit, send, disconnect, join_room, leave_room, \
         close_room, rooms
-from NodeDefender import socketio
 import NodeDefender
 from flask_login import current_user
 from flask import flash, redirect, url_for
 
-@socketio.on('create', namespace='/user')
-def create(email, firstname, lastname, group, role):
+def load_sockets(socketio):
+    socketio.on_event('create', create, namespace='/user')
+    socketio.on_event('info', info, namespace='/user')
+    socketio.on_event('groups', groups, namespace='/groups')
+    socketio.on_event('update', update, namespace='/user')
+    socketio.on_event('name', name, namespace='/user')
+    socketio.on_event('role', role, namespace='/user')
+    socketio.on_event('freeze', freeze, namespace='/user')
+    socketio.on_event('enable', enable, namespace='/user')
+    socketio.on_event('resetPassword', reset_password, namespace='/user')
+    socketio.on_event('delete', delete, namespace='/user')
+    return True
+
+def create(email, firstname, lastname, group = None, role = None):
     if not NodeDefender.db.group.get(group):
         emit('error', ('Group does not exist'), namespace='/general')
         return False
@@ -16,13 +27,14 @@ def create(email, firstname, lastname, group, role):
         return False
 
     user = NodeDefender.db.user.create(email, firstname, lastname)
-    NodeDefender.db.group.add_user(group, email)
-    NodeDefender.db.user.set_role(email, role)
+    if group:
+        NodeDefender.db.group.add_user(group, email)
+    if role:
+        NodeDefender.db.user.set_role(email, role)
     NodeDefender.mail.user.new_user(user)
     emit('reload', namespace='/general')
     return True
 
-@socketio.on('info', namespace='/user')
 def info(email):
     user = NodeDefender.db.user.get(email)
     if user:
@@ -31,51 +43,41 @@ def info(email):
         return emit('error', "User {} not found".format(email),
                     namespace='/general')
 
-@socketio.on('groups', namespace='/groups')
 def groups(email):
     return emit('groups', NodeDefender.db.user.groups(email))
 
-@socketio.on('update', namespace='/user')
 def update(kwargs):
-    print(kwargs)
     NodeDefender.db.user.update(current_user.email, **kwargs)
-    print("OK")
     emit('reload', namespace='/general')
     return True
 
-@socketio.on('name', namespace='/user')
 def name(email, firstname, lastname):
     NodeDefender.db.user.update(email, **{'firstname' : firstname,
                                           'lastname' : lastname})
     emit('reload', namespace='/general')
     return True
 
-@socketio.on('role', namespace='/user')
 def role(email, role):
     NodeDefender.db.user.set_role(email, role)
     emit('reload', namespace='/general')
     return True
 
-@socketio.on('freeze', namespace='/user')
-def freeze_user(email):
+def freeze(email):
     NodeDefender.db.user.disable(email)
     emit('reload', namespace='/general')
     return True
 
-@socketio.on('enable', namespace='/user')
-def enable_user(email):
+def enable(email):
     NodeDefender.db.user.enable(email)
     emit('reload', namespace='/general')
     return True
 
-@socketio.on('resetPassword', namespace='/user')
 def reset_password(email):
     NodeDefender.db.user.reset_password(email)
     emit('reload', namespace='/general')
     return True
 
-@socketio.on('delete', namespace='/user')
-def delete_user(email):
+def delete(email):
     try:
         NodeDefender.db.user.delete(email)
     except LookupError:

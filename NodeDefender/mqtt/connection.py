@@ -1,6 +1,5 @@
 import paho.mqtt.client as PahoMQTT
 from threading import Thread
-from NodeDefender.mqtt import logger, message
 import NodeDefender
 
 def add(host, port = 1883, username = None, password = None):
@@ -25,8 +24,14 @@ def load(mqttlist = None):
     if mqttlist is None:
         mqttlist = NodeDefender.db.mqtt.list()
 
+    if len(mqttlist) is 0:
+        NodeDefender.mqtt.logger.warning("No MQTT Connection present")
+
     for m in mqttlist:
+        NodeDefender.db.redis.mqtt.load(m)
         Thread(target=add, args=[m.host, m.port]).start()
+        NodeDefender.mqtt.logger.info("MQTT {}:{} Loaded".\
+                                      format(m.host, m.port))
     return len(mqttlist)
 
 def connection(host, port):
@@ -67,4 +72,5 @@ class MQTT:
         client.subscribe('icpe/#')
 
     def on_message(self, client, userdata, msg):
-        message.event(msg.topic, msg.payload.decode('utf-8'), self.info)
+        NodeDefender.mqtt.message.event(msg.topic,
+                                        msg.payload.decode('utf-8'), self.info)

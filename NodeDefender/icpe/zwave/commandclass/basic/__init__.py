@@ -6,7 +6,7 @@ fields = {'type' : "bool", 'readonly' : True, 'name' : 'Basic', 'web_field' :
           False}
 
 def icon(value):
-    return icons[eval(value)]
+    return icons[bool(value)]
 
 def event(payload):
     data = {'commandclass' : info, 'commandclasstype' : None,

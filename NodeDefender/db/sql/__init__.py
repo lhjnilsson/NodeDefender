@@ -1,11 +1,23 @@
-from NodeDefender import app
+import NodeDefender
 from flask_sqlalchemy import SQLAlchemy
+import logging
 
-if not app.config['DATABASE']:
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
-    SQL = SQLAlchemy(app)
-else:
-    SQL = SQLAlchemy(app)
+SQL = SQLAlchemy()
+
+logger = logging.getLogger(__name__)
+logger.setLevel("INFO")
+
+def load(app, loggHandler = None):
+    if loggHandler:
+        logger.addHandler(loggHandler)
+    SQL.app = app
+    with app.app_context():
+        SQL.init_app(app)
+    if app.config['SQLALCHEMY_DATABASE_URI'] == "sqlite:///:memory:":
+        NodeDefender.db.sql.logger.warning("Database URI not valid, using RAM as SQL")
+        SQL.create_all()
+    NodeDefender.db.sql.logger.info("SQL Initialized")
+    return SQL
 
 from NodeDefender.db.sql.group import GroupModel
 from NodeDefender.db.sql.user import UserModel
@@ -15,6 +27,3 @@ from NodeDefender.db.sql.icpe import iCPEModel, SensorModel,\
 from NodeDefender.db.sql.data import PowerModel, HeatModel, EventModel
 from NodeDefender.db.sql.conn import MQTTModel
 from NodeDefender.db.sql.message import MessageModel
-
-if not app.config['DATABASE']:
-    SQL.create_all()

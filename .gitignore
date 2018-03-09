@@ -1,7 +1,8 @@
 *.db
 *.log
 *.logg
-NodeDefender.conf
+*.conf
+*.pyc
 migrations/
 __pycache__/
 py/

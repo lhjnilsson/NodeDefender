@@ -3,7 +3,6 @@ from NodeDefender.frontend.forms.auth import LoginForm, RegisterForm,\
 RegisterTokenForm, PasswordForm
 from flask import request, redirect, url_for, render_template, flash
 from datetime import datetime
-from NodeDefender import serializer
 from NodeDefender.frontend.views import auth_view
 import NodeDefender
 
@@ -71,7 +70,7 @@ def logout():
 
 @auth_view.route('/register/<token>', methods=['GET', 'POST'])
 def register_token(token):
-    user = NodeDefender.db.user.get(serializer.loads_salted(token))
+    user = NodeDefender.db.user.get(NodeDefender.serializer.loads_salted(token))
     if user is None:
         flash('Invalid Token', 'error')
         return redirect(url_for('index'))
@@ -97,7 +96,7 @@ def register_token(token):
 
 @auth_view.route('/resetpassword/<token>', methods=['GET', 'POST'])
 def reset_password(token):
-    user = UserSQL.Get(serializer.loads_salted(token))
+    user = UserSQL.Get(NodeDefender.serializer.loads_salted(token))
     if user is None:
         flash('Invalid token', 'error')
         return redirect(url_for('auth_view.login'))

@@ -1,28 +1,45 @@
 import NodeDefender
+import os
 
-def enabled():
-    return True if NodeDefender.config.parser['LOGGING']['ENABLED'] == 'True' else False
+default_config = {'enabled' : False,
+                  'level' : 'DEBUG',
+                  'engine' : '',
+                  'filepath' : '',
+                  'host' : '',
+                  'port' : ''}
 
-def level():
-    return NodeDefender.config.parser['LOGGING']['LEVEL']
+config = default_config.copy()
 
-def type():
-    return NodeDefender.config.parser['LOGGING']['TYPE']
+def load_config(parser):
+    config['enabled'] = eval(parser['LOGGING']['ENABLED'])
+    config['level'] = parser['LOGGING']['LEVEL']
+    config['engine'] = parser['LOGGING']['ENGINE']
+    config['filepath'] = parser['LOGGING']['FILEPATH']
+    config['host'] = parser['LOGGING']['HOST']
+    config['port'] = parser['LOGGING']['PORT']
+    NodeDefender.app.config.update(
+        LOGGING=config['enabled'],
+        LOGGING_LEVEL=config['level'],
+        LOGGING_ENGINE=config['engine'],
+        LOGGING_FILEPATH=config['filepath'],
+        LOGGING_HOST=config['host'],
+        LOGGING_PORT=config['port'])
+    return True
 
-def name():
-    return NodeDefender.config.parser['LOGGING']['FILEPATH']
+def set_default():
+    config = default_config.copy()
+    return True
 
-def server():
-    return NodeDefender.config.parser['LOGGING']['SERVER']
-
-def port():
-    return NodeDefender.config.parser['LOGGING']['PORT']
-
-def get_cfg(key):
-    return NodeDefender.config.parser['LOGGING'][key]
-
-def set_cfg(**kwargs):
+def set(**kwargs):
     for key, value in kwargs.items():
-        NodeDefender.config.parser['LOGGING'][key] = str(value)
+        if key not in config:
+            continue
+        if key == "filepath":
+            value = os.path.join(NodeDefender.config.datafolder, value)
+        config[key] = str(value)
+    return True
 
-    return NodeDefender.config.write()
+def write():
+    NodeDefender.config.parser['LOGGING'] = config
+    NodeDefender.config.write()
+    return True

@@ -6,7 +6,6 @@ from itsdangerous import URLSafeSerializer
 from flask_wtf.csrf import CSRFProtect
 import os
 import sys
-import NodeDefender.config.factory
 import NodeDefender
 
 csfr = CSRFProtect()
@@ -14,17 +13,8 @@ moment = Moment()
 
 def CreateApp():
     app = Flask(__name__)
-    mode = NodeDefender.config.general.run_mode()
-
-    if mode == 'Production':
-        app.config.from_object('NodeDefender.config.factory.ProductionConfig')
-    elif mode == 'Development':
-        app.config.from_object('NodeDefender.config.factory.DevelopmentConfig')
-    elif mode == 'Testing':
-        app.config.from_object('NodeDefender.config.factory.TestingConfig')
-    else:
-        raise ValueError("Mode {} not known".format(mode))
-
+    mode = NodeDefender.config.general.config['run_mode']
+    app.config.from_object('NodeDefender.config.factory.DefaultConfig')
     app.template_folder = "templates"
     app.static_folder = "templates/frontend/static"
     moment.init_app(app)
@@ -35,13 +25,13 @@ def CreateLogging(app = None):
     if not app.config['LOGGING']:
         loggHandler = logging.StreamHandler(sys.stdout)
     else:
-        if app.config['LOGGING_TYPE'] == 'local':
-            loggHandler = logging.FileHandler(app.config['LOGGING_NAME'])
-        elif app.config['LOGGING_TYPE'] == 'syslog':
-            loggHandler = logging.handler.\
+        if app.config['LOGGING_ENGINE'] == 'local':
+            loggHandler = logging.FileHandler(app.config['LOGGING_FILEPATH'])
+        elif app.config['LOGGING_ENGINE'] == 'syslog':
+            loggHandler = logging.handlers.\
                     SysLogHandler(address = (app.config['LOGGING_SERVER'],
                                              int(app.config['LOGGING_PORT'])))
-    level = NodeDefender.config.logging.level()
+    level = NodeDefender.config.logging.config['level']
     if level:
         loggHandler.setLevel(level.upper())
     else:
@@ -57,7 +47,7 @@ def CreateLogging(app = None):
 
 def CreateCelery(app = None):
     app = app or CreateApp()
-    if not NodeDefender.config.celery.enabled():
+    if not NodeDefender.config.celery.config['enabled']:
         NodeDefender.logger.info("Concurrency disabled")
         return False
 
@@ -68,7 +58,6 @@ def CreateCelery(app = None):
         celery = Celery(app.name)
         NodeDefender.logger.info("Concurreny configuration error")
         return False
-    
     celery.conf.update(app.config)
     TaskBase = celery.Task
     class ContextTask(TaskBase):

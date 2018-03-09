@@ -3,13 +3,16 @@ from setuptools import setup
 setup(
     name="NodeDefender",
     description="Manage Nodes with CTS-iCPE",
-    version="0.2",
+    version="0.8.9",
     author="Henrik Nilsson",
     author_email="henrik.nilsson@ctsystem.se",
     license="BSD",
     url="https://github.com/CTSNE/NodeDefender",
-    packages=['nodedefender'],
-    scripts=['manage.py'],
+    packages=['NodeDefender'],
+    entry_points = {
+        'console_scripts' : ['nodedefender=NodeDefender.manage:console']
+    },
+    include_package_data=True,
     install_requires = [
         "alembic==0.9.1",
         "amqp==2.1.4",
@@ -20,7 +23,7 @@ setup(
         "billiard==3.5.0.2",
         "blinker==1.4",
         "celery==4.0.2",
-        "cffi==1.9.1",
+        "cffi==1.11.4",
         "click==6.7",
         "enum-compat==0.0.2",
         "eventlet==0.20.1",

@@ -1,17 +1,14 @@
 import logging
 import NodeDefender.db.sql
 import NodeDefender.db.redis
-from NodeDefender import loggHandler
 
 logger = logging.getLogger(__name__)
 logger.setLevel('DEBUG')
-logger.addHandler(loggHandler)
 
-def load():
-    mqtt.load()
-    icpe.load()
-    sensor.load()
-    field.load()
+def load(app, loggHandler):
+    logger.addHandler(loggHandler)
+    NodeDefender.db.sql.load(app, loggHandler)
+    NodeDefender.db.redis.load(loggHandler)
 
 import NodeDefender.db.data
 import NodeDefender.db.group
@@ -23,4 +20,3 @@ import NodeDefender.db.sensor
 import NodeDefender.db.commandclass
 import NodeDefender.db.field
 import NodeDefender.db.mqtt
-logger.info("Database initialized")

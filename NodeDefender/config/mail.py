@@ -1,31 +1,44 @@
 import NodeDefender
 
-def enabled():
-    return True if NodeDefender.config.parser['MAIL']['ENABLED'] == 'True' else False
+default_config = {'enabled' : False,
+                  'host' : '',
+                  'port' : 465,
+                  'tls' : False,
+                  'ssl' : False,
+                  'username' : '',
+                  'password' : ''}
 
-def server():
-    return NodeDefender.config.parser['MAIL']['SERVER']
+config = default_config.copy()
 
-def port():
-    return NodeDefender.config.parser['MAIL']['PORT']
+def load_config(parser):
+    config['enabled'] = eval(parser['MAIL']['ENABLED'])
+    config['host'] = parser['MAIL']['HOST']
+    config['port'] = parser['MAIL']['PORT']
+    config['tls'] = eval(parser['MAIL']['TLS'])
+    config['ssl'] = eval(parser['MAIL']['SSL'])
+    config['username'] = parser['MAIL']['USERNAME']
+    config['password'] = parser['MAIL']['PASSWORD']
+    NodeDefender.app.config.update(
+        MAIL = config['enabled'],
+        MAIL_HOST=config['host'],
+        MAIL_PORT=config['port'],
+        MAIL_TLS=config['tls'],
+        MAIL_SSL=config['ssl'],
+        MAIL_USERNAME=config['username'],
+        MAIL_PASSWORD=config['password'])
+    return True
 
-def tls():
-    return True if NodeDefender.config.parser['MAIL']['TLS'] == 'True' else False
+def set_default():
+    config = default_config.copy()
+    return True
 
-def ssl():
-    return True if NodeDefender.config.parser['MAIL']['SSL'] == 'True' else False
-
-def username():
-    return NodeDefender.config.parser['MAIL']['USERNAME']
-
-def password():
-    return NodeDefender.config.parser['MAIL']['PASSWORD']
-
-def get_cfg(key):
-    return NodeDefender.config.parser['MAIL'][key]
-
-def set_cfg(**kwargs):
+def set(**kwargs):
     for key, value in kwargs.items():
-        NodeDefender.config.parser['MAIL'][key] = str(value)
+        if key not in config:
+            continue
+        NodeDefender.config.mail.config[key] = str(value)
+    return True
 
+def write():
+    NodeDefender.config.parser['MAIL'] = config
     return NodeDefender.config.write()
