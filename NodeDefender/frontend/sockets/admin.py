@@ -16,6 +16,7 @@ def load_sockets(socketio):
 
 def general_info():
     config = NodeDefender.config.general.config.copy()
+    config['release'] = NodeDefender.release
     config['hostname'] = NodeDefender.hostname
     config['uptime'] = NodeDefender.config.general.uptime()
     emit('general', config)

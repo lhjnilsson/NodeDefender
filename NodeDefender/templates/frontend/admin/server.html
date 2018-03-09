@@ -124,14 +124,14 @@ adminSocket.on('celery', function(celery) {
 adminSocket.on('logging', function(logging) {
   $('#loggingEnabled').text(logging.enabled);
   if (logging.enabled) {
-    $('#loggingPanel').append('<div class="col-lg-4"><strong>Type:</strong></div><div class="col-lg-6"><p id="loggingType">-</p></div>');
-    if (logging.type == 'local') {
-      $('#loggingType').text('local');
+    $('#loggingPanel').append('<div class="col-lg-4"><strong>Type:</strong></div><div class="col-lg-6"><p id="loggingEngine">-</p></div>');
+    if (logging.engine == 'local') {
+      $('#loggingEngine').text('Local');
       $('#loggingPanel').append('<div class="col-lg-4"><strong>File Name:</strong></div><div class="col-lg-6"><p id="loggingFile">-</p></div>');
-      $('#loggingFile').text(logging.name)
+      $('#loggingFile').text(logging.filepath)
     }
     else if (logging.type == 'SYSLOG') {
-      $('#loggingType').text('Syslog');
+      $('#loggingEngine').text('Syslog');
       $('#loggingPanel').append('<div class="col-lg-4"><strong>Address:</strong></div><div class="col-lg-6"><p id="syslogAddress">-</p></div>');
       $('#loggingPanel').append('<div class="col-lg-4"><strong>Port:</strong></div><div class="col-lg-6"><p id="syslogPort">-</p></div>');
       $('#syslogAddress').text(logging.address);
@@ -148,7 +148,7 @@ adminSocket.on('database', function(database) {
     if (database.engine.toUpperCase() == 'SQLITE') {
       adminSocket.emit('dbFile');
       $('#databasePanel').append('<div class="col-lg-4"><strong>File Name:</strong></div><div class="col-lg-6"><p id="dbFile" style="word-wrap: break-word">-</p></div>');
-      $('#dbFile').text(database.file);
+      $('#dbFile').text(database.filepath);
     }
     else {
       $('#databaseEngine').text(database.engine);
@@ -166,7 +166,8 @@ adminSocket.on('general', function(info) {
   $('#runMode').text(info.run_mode);
 	$('#hostName').text(info.hostname);
 	$('#releaseInfo').text(info.release);
-	$('#uptime').text(moment(info.date_loaded, "YYYYMMDD, hh:mm:ss").fromNow(true));
+	console.log(info.uptime);
+	$('#uptime').text(info.uptime);
 });
 
 adminSocket.emit('general');
