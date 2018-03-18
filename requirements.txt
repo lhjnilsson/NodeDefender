@@ -15,7 +15,6 @@ Flask-moment
 geopy
 paho-mqtt
 requests
-xmltodict
 apscheduler
 Celery
 Redis
