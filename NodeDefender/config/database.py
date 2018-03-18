@@ -97,6 +97,16 @@ def upgrade_database(app):
     with app.app_context():
         flask_migrate.upgrade()
 
+def install_mysql():
+    if pip.main(['install', 'pymysql']):
+        return True
+    return False
+
+def install_postgresql():
+    if pip.main(['install', 'psycopg2']):
+        return True
+    return False
+
 def get_uri():
     if config['engine'] == 'sqlite':
         return 'sqlite:///' + config['filepath']
@@ -124,6 +134,13 @@ def set(**kwargs):
             continue
         if key == "filepath" and value is not None:
             value = os.path.join(NodeDefender.config.datafolder, value)
+        if key == 'engine' and value == 'postgresql':
+            if not install_postgresql():
+                raise ImportError("Not able to install PostgreSQL\
+                        Please verify that libpq-dev is installed")
+        if key == 'engine' and value == 'mysql':
+            if not install_mysql():
+                raise ImportError("Not able to install MySQL")
         config[key] = str(value)
     test_database()
     return True
