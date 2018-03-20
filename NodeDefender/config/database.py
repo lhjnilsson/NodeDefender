@@ -17,14 +17,9 @@ default_config = {'enabled' : False,
 config = default_config.copy()
 
 def load_config(parser):
-    config['enabled'] = eval(parser['DATABASE']['ENABLED'])
-    config['engine'] = parser['DATABASE']['ENGINE']
-    config['username'] = parser['DATABASE']['USERNAME']
-    config['password'] = parser['DATABASE']['PASSWORD']
-    config['host'] = parser['DATABASE']['HOST']
-    config['port'] = parser['DATABASE']['PORT']
-    config['database'] = parser['DATABASE']['DATABASE']
-    config['filepath'] = parser['DATABASE']['FILEPATH']
+    if eval(parser['DATABASE']['ENABLED']):
+        config.update(parser['DATABASE'])
+        config['enabled'] = True
     NodeDefender.app.config.update(
         DATABASE=config['enabled'],
         DATABASE_ENGINE=config['engine'],
