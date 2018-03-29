@@ -50,7 +50,7 @@ def load_icpe(mqtt, icpe, conn):
 def message_sent(host, port, mac_address, conn):
     sent = conn.hget(host + str(port) + mac_address, "sent")
     if sent is None:
-        sent = 1
+        sent = 0
     conn.hset(host + str(port) + mac_address, "sent", (int(sent) + 1))
     conn.hset(host + str(port) + mac_address, "last_send",
               datetime.now().timestamp())
@@ -65,6 +65,8 @@ def message_sent(host, port, mac_address, conn):
 @redisconn
 def message_recieved(host, port, mac_address, conn):
     recieved = conn.hget(host + str(port) + mac_address, "recieved")
+    if recieved is None:
+        recieved = 0
     conn.hset(host + str(port) + mac_address, "recieved", int(recieved) + 1)
     conn.hset(host + str(port) + mac_address, "last_recieved",
               datetime.now().timestamp())
