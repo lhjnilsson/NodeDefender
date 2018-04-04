@@ -5,6 +5,8 @@ import os
 from flask_sqlalchemy import SQLAlchemy
 import alembic
 import shutil
+import pip
+
 default_config = {'enabled' : False,
                   'engine' : '',
                   'username' : '',
@@ -93,9 +95,12 @@ def upgrade_database(app):
         flask_migrate.upgrade()
 
 def install_mysql():
-    if pip.main(['install', 'pymysql']):
-        return True
-    return False
+    try:
+        import pip
+    except ImportError:
+        if not pip.main(['install', 'pymysql']):
+            return False
+    return True
 
 def install_postgresql():
     if pip.main(['install', 'psycopg2']):

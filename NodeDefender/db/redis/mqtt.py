@@ -56,7 +56,6 @@ def message_sent(host, port, mac_address, conn):
               datetime.now().timestamp())
     sent = conn.srandmember(host + str(port) + mac_address + ':sent')
     if sent and NodeDefender.db.icpe.online(mac_address):
-        print(datetime.now().timestamp() - float(sent))
         if (datetime.now().timestamp() - float(sent)) > 10:
             NodeDefender.db.icpe.mark_offline(mac_address)
     conn.sadd(host + str(port) + mac_address + ':sent', datetime.now().timestamp())
