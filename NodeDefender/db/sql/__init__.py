@@ -15,7 +15,8 @@ def load(app, loggHandler = None):
         SQL.init_app(app)
     if app.config['SQLALCHEMY_DATABASE_URI'] == "sqlite:///:memory:":
         NodeDefender.db.sql.logger.warning("Database URI not valid, using RAM as SQL")
-        SQL.create_all()
+        with app.app_context():
+            SQL.create_all()
     NodeDefender.db.sql.logger.info("SQL Initialized")
     return SQL
 
