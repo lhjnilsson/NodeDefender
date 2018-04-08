@@ -48,7 +48,7 @@ class LocalStorage:
         except KeyError:
             return set()
 
-    def hdel(self, key, **values):
+    def hdel(self, key, *values):
         for value in values:
             try:
                 self.h[key].pop(value)
