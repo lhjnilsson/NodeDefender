@@ -91,7 +91,7 @@ def create_app():
     serializer = factory.Serializer(app)
     NodeDefender.db.load(app, loggHandler)
     NodeDefender.frontend.load(app, socketio, loggHandler)
-    NodeDefender.mqtt.load(loggHandler)
+    NodeDefender.mqtt.load()
     NodeDefender.icpe.load(loggHandler)
     '''
     except Exception as e:

@@ -42,7 +42,7 @@ def create_mqtt(host, port, group):
         emit('error', e, namespace='/general')
     NodeDefender.db.group.add_mqtt(group, host, port)
     NodeDefender.mail.group.new_mqtt(group, host, port)
-    NodeDefender.mqtt.connection.add(host, port)
+    NodeDefender.mqtt.connection.load(host, port)
     emit('reload', namespace='/general')
     return True
 
