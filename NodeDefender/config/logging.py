@@ -5,7 +5,7 @@ default_config = {'syslog' : False,
                   'level' : 'DEBUG',
                   'filepath' : 'nodedefender.log',
                   'host' : '',
-                  'port' : ''}
+                  'port' : '514'}
 
 config = default_config.copy()
 

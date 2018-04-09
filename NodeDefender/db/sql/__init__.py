@@ -1,15 +1,13 @@
 import NodeDefender
 from flask_sqlalchemy import SQLAlchemy
-import logging
 
 SQL = SQLAlchemy()
 
-logger = logging.getLogger(__name__)
-logger.setLevel("INFO")
+logger = None
 
 def load(app, loggHandler = None):
-    if loggHandler:
-        logger.addHandler(loggHandler)
+    global logger
+    logger = NodeDefender.db.logger.getChild("SQL")
     SQL.app = app
     with app.app_context():
         SQL.init_app(app)

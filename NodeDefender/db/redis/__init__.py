@@ -1,11 +1,9 @@
 from redis import ConnectionPool, StrictRedis
 from functools import wraps
 import random
-import logging
 import NodeDefender
 
-logger = logging.getLogger(__name__)
-logger.setLevel('INFO')
+logger = None
 conn = None
 
 class LocalStorage:
@@ -84,8 +82,9 @@ class LocalStorage:
         return self.s[key]
 
 def load(loggHandler):
-    logger.addHandler(loggHandler)
     global conn
+    global logger
+    logger = NodeDefender.db.logger.getChild("Redis")
     if NodeDefender.config.redis.config['enabled']:
         host = NodeDefender.config.redis.config['host']
         port = NodeDefender.config.redis.config['port']

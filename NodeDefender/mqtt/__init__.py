@@ -1,13 +1,12 @@
-import logging
 import NodeDefender.mqtt.message
 import NodeDefender.mqtt.command
 from NodeDefender.mqtt import connection
 
-logger = logging.getLogger(__name__)
-logger.setLevel('DEBUG')
+logger = None
 
 def load(loggHandler):
-    logger.addHandler(loggHandler)
+    global logger
+    logger = NodeDefender.logger.getChild("MQTT")
     connection.load()
     logger.debug("MQTT Loaded")
     return True

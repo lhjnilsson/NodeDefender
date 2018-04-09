@@ -98,7 +98,7 @@ def create_app():
         logger.critical("Unable to load NodeDefender")
         print(e)
     '''
-    logger.info('NodeDefender running on Port: {}'.\
+    logger.warning('NodeDefender running on Port: {}'.\
                 format(app.config['PORT']))
     return app
 
