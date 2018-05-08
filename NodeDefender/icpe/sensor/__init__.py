@@ -75,7 +75,6 @@ def event(mac_address, sensor_id, command_class, **payload):
 
     if not data:
         return False
-    
     commandclass = data['commandclass']['name']
     if data['commandclasstype']:
         commandclasstype = data['commandclasstype']['name']
